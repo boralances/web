@@ -1,1039 +1,216 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <title>Boralances Gaming Team</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-       
-        body {
-            font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-       
-        .bg-animation {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            background: linear-gradient(45deg, #0a0a0a 0%, #1a0033 50%, #000a1a 100%);
-            animation: gradientShift 15s ease infinite;
-        }
-       
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-       
-        .neon-grid {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-        }
-       
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 1;
-        }
-       
-        header {
-            text-align: center;
-            padding: 80px 20px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 20px;
-            margin-bottom: 40px;
-            border: 2px solid;
-            border-image: linear-gradient(45deg, #00ffff, #ff00ff, #00ff00) 1;
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3), inset 0 0 50px rgba(255, 0, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-       
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            animation: headerShine 3s linear infinite;
-        }
-       
-        @keyframes headerShine {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-       
-        header h1 {
-            font-size: 4em;
-            margin-bottom: 10px;
-            text-shadow:
-                0 0 10px #00ffff,
-                0 0 20px #00ffff,
-                0 0 30px #00ffff,
-                0 0 40px #ff00ff,
-                0 0 70px #ff00ff,
-                0 0 80px #ff00ff;
-            animation: neonPulse 2s ease-in-out infinite alternate;
-            position: relative;
-            z-index: 2;
-            letter-spacing: 5px;
-        }
-       
-        @keyframes neonPulse {
-            from {
-                text-shadow:
-                    0 0 10px #00ffff,
-                    0 0 20px #00ffff,
-                    0 0 30px #00ffff,
-                    0 0 40px #ff00ff;
-            }
-            to {
-                text-shadow:
-                    0 0 20px #00ffff,
-                    0 0 30px #00ffff,
-                    0 0 40px #00ffff,
-                    0 0 50px #ff00ff,
-                    0 0 60px #ff00ff;
-            }
-        }
-       
-        .subtitle {
-            font-size: 1.5em;
-            color: #00ff00;
-            margin-top: 10px;
-            text-shadow: 0 0 20px #00ff00;
-            position: relative;
-            z-index: 2;
-            letter-spacing: 3px;
-        }
-       
-        .version-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff00ff, #00ffff);
-            padding: 10px 25px;
-            border-radius: 25px;
-            margin: 20px 10px;
-            font-weight: bold;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-            animation: float 3s ease-in-out infinite;
-        }
-       
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-       
-        .ip-section {
-            background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            margin: 40px 0;
-            border: 3px solid;
-            border-image: linear-gradient(45deg, #ff00ff, #00ffff) 1;
-            box-shadow:
-                0 0 30px rgba(255, 0, 255, 0.5),
-                inset 0 0 30px rgba(0, 255, 255, 0.2);
-            position: relative;
-        }
-       
-        .ip-box {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 25px;
-            border-radius: 15px;
-            font-size: 2.2em;
-            font-weight: bold;
-            letter-spacing: 3px;
-            margin-top: 20px;
-            border: 2px solid #00ffff;
-            box-shadow:
-                0 0 20px #00ffff,
-                inset 0 0 20px rgba(0, 255, 255, 0.2);
-            animation: ipGlow 2s ease-in-out infinite alternate;
-        }
-       
-        @keyframes ipGlow {
-            from { box-shadow: 0 0 20px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.2); }
-            to { box-shadow: 0 0 40px #ff00ff, inset 0 0 30px rgba(255, 0, 255, 0.3); }
-        }
-       
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-       
-        .feature-box {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid #00ffff;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-       
-        .feature-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 40px rgba(255, 0, 255, 0.6);
-            border-color: #ff00ff;
-        }
-       
-        .price-section {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.2));
-            padding: 50px;
-            border-radius: 20px;
-            margin: 40px 0;
-            border: 3px solid #ffd700;
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
-        }
-       
-        .price-title {
-            font-size: 3em;
-            text-align: center;
-            margin-bottom: 30px;
-            color: #ffd700;
-            text-shadow: 0 0 30px #ffd700;
-            letter-spacing: 5px;
-        }
-       
-        .price-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin: 30px 0;
-        }
-       
-        .price-card {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            border: 2px solid;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 20px;
-        }
-       
-        .price-card:hover {
-            transform: scale(1.05);
-        }
-       
-        .price-card.vip { border-color: #00ff00; box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
-        .price-card.mvip { border-color: #00ffff; box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
-        .price-card.tvip { border-color: #ff00ff; box-shadow: 0 0 20px rgba(255, 0, 255, 0.5); }
-        .price-card.mtvip { border-color: #ff4500; box-shadow: 0 0 20px rgba(255, 69, 0, 0.5); }
-        .price-card.gm { border-color: #ffd700; box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
-        .price-card.ultra { border-color: #ff1493; box-shadow: 0 0 30px rgba(255, 20, 147, 0.7); }
-       
-        .price-name {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-       
-        .price-card.vip .price-name { color: #00ff00; text-shadow: 0 0 15px #00ff00; }
-        .price-card.mvip .price-name { color: #00ffff; text-shadow: 0 0 15px #00ffff; }
-        .price-card.tvip .price-name { color: #ff00ff; text-shadow: 0 0 15px #ff00ff; }
-        .price-card.mtvip .price-name { color: #ff4500; text-shadow: 0 0 15px #ff4500; }
-        .price-card.gm .price-name { color: #ffd700; text-shadow: 0 0 15px #ffd700; }
-        .price-card.ultra .price-name { color: #ff1493; text-shadow: 0 0 20px #ff1493; }
-       
-        .price-amount {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin: 15px 0;
-            color: #ffd700;
-        }
-       
-        .price-credit {
-            font-size: 1.3em;
-            opacity: 0.9;
-            margin-bottom: 10px;
-        }
-       
-        .buy-btn {
-            background: linear-gradient(135deg, #00ff00, #00ffff);
-            color: #000;
-            padding: 15px 40px;
-            border: none;
-            border-radius: 30px;
-            font-size: 1.3em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            text-decoration: none;
-            display: inline-block;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-            letter-spacing: 2px;
-        }
-       
-        .buy-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.8);
-        }
-       
-        .ranks-section {
-            margin: 60px 0;
-        }
-       
-        .section-title {
-            font-size: 3em;
-            text-align: center;
-            margin-bottom: 40px;
-            text-shadow: 0 0 30px #00ffff;
-            letter-spacing: 5px;
-            animation: titlePulse 3s ease-in-out infinite;
-        }
-       
-        @keyframes titlePulse {
-            0%, 100% { text-shadow: 0 0 30px #00ffff; }
-            50% { text-shadow: 0 0 50px #ff00ff, 0 0 70px #ff00ff; }
-        }
-       
-        .ranks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-       
-        .rank-card {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 30px;
-            border-radius: 20px;
-            border: 3px solid;
-            transition: all 0.4s ease;
-            box-shadow: 0 0 30px;
-            position: relative;
-            overflow: hidden;
-        }
-       
-        .rank-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: left 0.5s;
-        }
-       
-        .rank-card:hover::before {
-            left: 100%;
-        }
-       
-        .rank-card:hover {
-            transform: translateY(-10px) scale(1.02);
-        }
-       
-        .rank-title {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-align: center;
-            letter-spacing: 3px;
-            position: relative;
-            z-index: 1;
-        }
-       
-        .rank-subtitle {
-            text-align: center;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            opacity: 0.8;
-            position: relative;
-            z-index: 1;
-        }
-       
-        .rank-card.vip {
-            border-color: #00ff00;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
-        }
-        .rank-card.vip .rank-title {
-            color: #00ff00;
-            text-shadow: 0 0 20px #00ff00;
-        }
-       
-        .rank-card.mvip {
-            border-color: #00ffff;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-        }
-        .rank-card.mvip .rank-title {
-            color: #00ffff;
-            text-shadow: 0 0 20px #00ffff;
-        }
-       
-        .rank-card.tvip {
-            border-color: #ff00ff;
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
-        }
-        .rank-card.tvip .rank-title {
-            color: #ff00ff;
-            text-shadow: 0 0 20px #ff00ff;
-        }
-       
-        .rank-card.mtvip {
-            border-color: #ff4500;
-            box-shadow: 0 0 30px rgba(255, 69, 0, 0.5);
-        }
-        .rank-card.mtvip .rank-title {
-            color: #ff4500;
-            text-shadow: 0 0 20px #ff4500;
-        }
-       
-        .rank-card.gm {
-            border-color: #ffd700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
-        }
-        .rank-card.gm .rank-title {
-            color: #ffd700;
-            text-shadow: 0 0 20px #ffd700;
-        }
-       
-        .rank-card.ultra {
-            border-color: #ff1493;
-            box-shadow: 0 0 40px rgba(255, 20, 147, 0.7);
-            background: linear-gradient(135deg, rgba(255, 20, 147, 0.1), rgba(138, 43, 226, 0.1));
-        }
-        .rank-card.ultra .rank-title {
-            color: #ff1493;
-            text-shadow: 0 0 30px #ff1493, 0 0 50px #ff1493;
-            animation: ultraGlow 2s ease-in-out infinite alternate;
-        }
-       
-        @keyframes ultraGlow {
-            from { text-shadow: 0 0 30px #ff1493, 0 0 50px #ff1493; }
-            to { text-shadow: 0 0 40px #ff1493, 0 0 60px #ff1493, 0 0 80px #8a2be2; }
-        }
-       
-        .rank-features {
-            list-style: none;
-            margin-top: 25px;
-            position: relative;
-            z-index: 1;
-        }
-       
-        .rank-features li {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 1.05em;
-            transition: all 0.3s ease;
-        }
-       
-        .rank-features li:hover {
-            padding-left: 10px;
-            color: #00ffff;
-        }
-       
-        .rank-features li:before {
-            content: "▶ ";
-            font-weight: bold;
-            margin-right: 10px;
-        }
-       
-        .rank-card.vip .rank-features li:before { color: #00ff00; }
-        .rank-card.mvip .rank-features li:before { color: #00ffff; }
-        .rank-card.tvip .rank-features li:before { color: #ff00ff; }
-        .rank-card.mtvip .rank-features li:before { color: #ff4500; }
-        .rank-card.gm .rank-features li:before { color: #ffd700; }
-        .rank-card.ultra .rank-features li:before { color: #ff1493; }
-       
-        .invite-section {
-            background: linear-gradient(135deg, rgba(17, 153, 142, 0.3), rgba(56, 239, 125, 0.3));
-            padding: 50px;
-            border-radius: 20px;
-            margin: 60px 0;
-            text-align: center;
-            border: 3px solid;
-            border-image: linear-gradient(45deg, #11998e, #38ef7d) 1;
-            box-shadow: 0 0 40px rgba(56, 239, 125, 0.4);
-            position: relative;
-        }
-       
-        .invite-text {
-            font-size: 1.3em;
-            line-height: 2;
-            margin: 30px 0;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 40px;
-            border-radius: 15px;
-            border: 2px solid #38ef7d;
-            box-shadow: 0 0 30px rgba(56, 239, 125, 0.3);
-            text-align: left;
-        }
-       
-        .copy-btn {
-            background: linear-gradient(135deg, #00ffff, #00ff00);
-            color: #000;
-            padding: 20px 50px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1.3em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 30px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
-            letter-spacing: 2px;
-        }
-       
-        .copy-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 50px rgba(0, 255, 0, 0.8);
-            background: linear-gradient(135deg, #00ff00, #00ffff);
-        }
-       
-        footer {
-            text-align: center;
-            padding: 40px;
-            margin-top: 60px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 20px;
-            border: 2px solid;
-            border-image: linear-gradient(45deg, #00ffff, #ff00ff) 1;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-       
-        .kit-timer {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff00ff, #00ffff);
-            padding: 8px 20px;
-            border-radius: 20px;
-            margin: 10px 0;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
-            font-size: 0.9em;
-        }
-       
-        .credit-info {
-            background: rgba(255, 215, 0, 0.1);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border: 2px solid #ffd700;
-            text-align: center;
-            font-size: 1.2em;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boralances Gaming Team</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* === GENEL TASARIM === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Rajdhani', 'Orbitron', 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #000000, #001f33, #0a001a);
+      background-size: 400% 400%;
+      animation: gradientShift 25s ease infinite;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      text-align: center;
+      padding: 50px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-bottom: 2px solid cyan;
+      box-shadow: 0 0 25px cyan;
+    }
+
+    h1 {
+      font-size: clamp(2em, 5vw, 4em);
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, cyan, magenta);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: glow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px cyan, 0 0 10px magenta; }
+      to { text-shadow: 0 0 25px cyan, 0 0 50px magenta; }
+    }
+
+    /* === MAİN İÇERİK === */
+    main {
+      padding: 50px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    section {
+      max-width: 900px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 2em;
+      margin-bottom: 15px;
+      color: cyan;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    .rank-features {
+      list-style: none;
+      text-align: left;
+      font-size: clamp(0.9em, 1.5vw, 1.05em);
+    }
+
+    .rank-features li {
+      margin: 10px 0;
+    }
+
+    .price-card {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid cyan;
+      padding: clamp(15px, 3vw, 25px);
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    .price-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      transform: scale(1.03);
+      box-shadow: 0 0 20px cyan;
+    }
+
+    /* === KOPYALA BUTONU === */
+    .copy-btn {
+      background: linear-gradient(135deg, #00ffff, #00ff00);
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+    }
+
+    .copy-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
+    }
+
+    /* === FOOTER === */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-top: 2px solid magenta;
+      color: #ccc;
+    }
+
+    footer a {
+      color: #00ffff;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+
+    footer a:hover {
+      color: #ff00ff;
+      text-shadow: 0 0 10px magenta;
+    }
+
+  </style>
 </head>
 <body>
-    <div class="bg-animation"></div>
-    <div class="neon-grid"></div>
-   
-    <div class="container">
-        <header>
-            <h1>⚡ BORALANCES GAMING TEAM ⚡</h1>
-            <p class="subtitle">NEXT-LEVEL MINECRAFT EXPERIENCE</p>
-            <div>
-                <span class="version-badge">🎮 Java Edition: 1.20.1 - 1.21.5</span>
-                <span class="version-badge">📱 Bedrock Support</span>
-                <span class="version-badge">🎤 Plasmo Voice Chat</span>
-            </div>
-        </header>
-       
-        <div class="ip-section">
-            <h2 style="font-size: 2.5em; text-shadow: 0 0 30px #00ffff;">🌐 SUNUCU IP ADRESİ</h2>
-            <div class="ip-box">Boralances.exaroton.me</div>
-            <p style="margin-top: 20px; font-size: 1.3em; text-shadow: 0 0 10px #00ff00;">KOPYALA VE HEMEN KATIL! 🚀</p>
-           
-            <div class="features-grid" style="margin-top: 40px;">
-                <div class="feature-box">
-                    <h3 style="color: #00ffff; font-size: 1.5em;">🎤 SESLİ SOHBET</h3>
-                    <p>Plasmo Voice ile oyunda sesli konuş!</p>
-                </div>
-                <div class="feature-box">
-                    <h3 style="color: #ff00ff; font-size: 1.5em;">⚔️ PVP ARENA</h3>
-                    <p>Epik savaşlar ve turnuvalar!</p>
-                </div>
-                <div class="feature-box">
-                    <h3 style="color: #00ff00; font-size: 1.5em;">🏆 EVENTLER</h3>
-                    <p>Günlük ödüllü etkinlikler!</p>
-                </div>
-                <div class="feature-box">
-                    <h3 style="color: #ffd700; font-size: 1.5em;">🔥 LAG-FREE</h3>
-                    <p>Güçlü sunucu, sıfır gecikme!</p>
-                </div>
-            </div>
-        </div>
-       
-        <div class="price-section">
-            <h2 class="price-title">💰 VIP FİYATLARI 💰</h2>
-            <div class="credit-info">
-                <strong>💎 2 Kredi = 1 TL 💎</strong><br>
-                Her VIP +200 kredi artışla yükseltilir!
-            </div>
-           
-            <div class="price-grid">
-                <div class="price-card vip">
-                    <div class="price-name">VIP</div>
-                    <div class="price-credit">200 Kredi</div>
-                    <div class="price-amount">100₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-               
-                <div class="price-card mvip">
-                    <div class="price-name">MVIP</div>
-                    <div class="price-credit">400 Kredi</div>
-                    <div class="price-amount">200₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-               
-                <div class="price-card tvip">
-                    <div class="price-name">TVIP</div>
-                    <div class="price-credit">600 Kredi</div>
-                    <div class="price-amount">300₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-               
-                <div class="price-card mtvip">
-                    <div class="price-name">MTVIP</div>
-                    <div class="price-credit">800 Kredi</div>
-                    <div class="price-amount">400₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-               
-                <div class="price-card gm">
-                    <div class="price-name">GM</div>
-                    <div class="price-credit">1000 Kredi</div>
-                    <div class="price-amount">500₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-               
-                <div class="price-card ultra">
-                    <div class="price-name">ULTRA</div>
-                    <div class="price-credit">1500 Kredi</div>
-                    <div class="price-amount">750₺</div>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSctQxX9ehL7YzS23qWOxRkMuw-MjwmdWJeWojuHt3wdsat_5g/viewform" target="_blank" class="buy-btn">SATIN AL</a>
-                </div>
-            </div>
-           
-            <p style="text-align: center; margin-top: 30px; font-size: 1.2em; color: #ffd700;">
-                ⚡ Güvenli ödeme için formu doldurun! ⚡
-            </p>
-        </div>
-       
-        <div class="ranks-section">
-            <h2 class="section-title">⭐ VIP KİTLERİ ⭐</h2>
-            <p style="text-align: center; font-size: 1.3em; margin-bottom: 30px; color: #00ffff;">
-                <span class="kit-timer">⏱️ Her kit 3 günde bir alınabilir!</span>
-            </p>
-           
-            <div class="ranks-grid">
-                <div class="rank-card vip">
-                    <h3 class="rank-title">VIP</h3>
-                    <p class="rank-subtitle">Başlangıç Paketi - 100₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Diamond Helmet (Protection III, Unbreaking III)
-                            <br>- Diamond Chestplate (Protection III, Unbreaking III)
-                            <br>- Diamond Leggings (Protection III, Unbreaking III)
-                            <br>- Diamond Boots (Protection III, Feather Falling III, Unbreaking III)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Diamond Sword (Sharpness III, Unbreaking III)
-                            <br>- Bow (Power III, Punch II, Unbreaking III)
-                            <br>- 128x Arrow
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 64x Golden Apple
-                            <br>- 64x Steak
-                            <br>- 3x Potion of Healing II
-                        </li>
-                        <li><strong>Ekstra:</strong>
-                            <br>- 32x Ender Pearl
-                            <br>- 1x Diamond Pickaxe (Efficiency III)
-                        </li>
-                    </ul>
-                </div>
-               
-                <div class="rank-card mvip">
-                    <h3 class="rank-title">MVIP</h3>
-                    <p class="rank-subtitle">Gelişmiş Paket - 200₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Netherite Helmet (Protection IV, Unbreaking IV, Respiration III)
-                            <br>- Netherite Chestplate (Protection IV, Unbreaking IV)
-                            <br>- Netherite Leggings (Protection IV, Unbreaking IV)
-                            <br>- Netherite Boots (Protection IV, Feather Falling IV, Unbreaking IV, Depth Strider III)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Netherite Sword (Sharpness IV, Fire Aspect II, Unbreaking IV, Looting III)
-                            <br>- Netherite Axe (Sharpness IV, Unbreaking IV)
-                            <br>- Bow (Power IV, Punch II, Flame, Infinity, Unbreaking III)
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 128x Golden Apple
-                            <br>- 16x Enchanted Golden Apple
-                            <br>- 64x Steak
-                            <br>- 5x Potion of Healing II
-                            <br>- 3x Potion of Strength II
-                        </li>
-                        <li><strong>Ekstra:</strong>
-                            <br>- 64x Ender Pearl
-                            <br>- 1x Totem of Undying
-                            <br>- Netherite Pickaxe (Efficiency IV, Fortune III)
-                        </li>
-                    </ul>
-                </div>
-               
-                <div class="rank-card tvip">
-                    <h3 class="rank-title">TVIP</h3>
-                    <p class="rank-subtitle">Premium Paket - 300₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Netherite Helmet (Protection V, Unbreaking V, Respiration III, Aqua Affinity)
-                            <br>- Netherite Chestplate (Protection V, Unbreaking V, Thorns III)
-                            <br>- Netherite Leggings (Protection V, Unbreaking V, Thorns III)
-                            <br>- Netherite Boots (Protection V, Feather Falling V, Unbreaking V, Depth Strider III, Soul Speed III)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Netherite Sword (Sharpness V, Fire Aspect II, Unbreaking V, Looting III, Sweeping Edge III)
-                            <br>- Netherite Axe (Sharpness V, Unbreaking V, Efficiency V)
-                            <br>- Bow (Power V, Punch II, Flame, Infinity, Unbreaking V)
-                            <br>- Crossbow (Quick Charge III, Multishot, Unbreaking V)
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 256x Golden Apple
-                            <br>- 32x Enchanted Golden Apple
-                            <br>- 10x Potion of Healing II
-                            <br>- 5x Potion of Strength II (8:00)
-                            <br>- 5x Potion of Speed II (8:00)
-                            <br>- 3x Potion of Regeneration II
-                        </li>
-                        <li><strong>Ekstra:</strong>
-                            <br>- 128x Ender Pearl
-                            <br>- 3x Totem of Undying
-                            <br>- Elytra (Unbreaking V)
-                            <br>- 64x Firework Rocket
-                            <br>- Netherite Pickaxe (Efficiency V, Fortune III, Unbreaking V)
-                            <br>- Shield (Unbreaking V)
-                        </li>
-                    </ul>
-                </div>
-               
-                <div class="rank-card mtvip">
-                    <h3 class="rank-title">MTVIP</h3>
-                    <p class="rank-subtitle">Elite Paket - 400₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Netherite Helmet (Protection VI, Unbreaking VI, Respiration III, Aqua Affinity, Thorns III)
-                            <br>- Netherite Chestplate (Protection VI, Unbreaking VI, Thorns IV, Fire Protection IV)
-                            <br>- Netherite Leggings (Protection VI, Unbreaking VI, Thorns IV, Blast Protection IV)
-                            <br>- Netherite Boots (Protection VI, Feather Falling VI, Unbreaking VI, Depth Strider III, Soul Speed III, Frost Walker II)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Netherite Sword (Sharpness VI, Fire Aspect III, Unbreaking VI, Looting IV, Sweeping Edge III, Knockback II)
-                            <br>- Netherite Axe (Sharpness VI, Unbreaking VI, Efficiency VI, Silk Touch)
-                            <br>- Bow (Power VI, Punch III, Flame, Infinity, Unbreaking VI)
-                            <br>- Crossbow (Quick Charge III, Piercing IV, Unbreaking VI)
-                            <br>- Trident (Loyalty III, Riptide III, Channeling, Unbreaking VI)
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 512x Golden Apple
-                            <br>- 64x Enchanted Golden Apple
-                            <br>- 16x Potion of Healing II
-                            <br>- 10x Potion of Strength II (8:00)
-                            <br>- 10x Potion of Speed II (8:00)
-                            <br>- 5x Potion of Regeneration II (8:00)
-                            <br>- 5x Potion of Fire Resistance (8:00)
-                            <br>- 5x Potion of Night Vision (8:00)
-                        </li>
-                        <li><strong>Ekstra:</strong>
-                            <br>- 256x Ender Pearl
-                            <br>- 5x Totem of Undying
-                            <br>- Elytra (Unbreaking X, Mending)
-                            <br>- 256x Firework Rocket
-                            <br>- Shulker Box (içinde ekstra malzemeler)
-                            <br>- Netherite Pickaxe (Efficiency VI, Fortune IV, Unbreaking VI, Mending)
-                            <br>- Shield (Unbreaking X, Mending)
-                        </li>
-                    </ul>
-                </div>
-               
-                <div class="rank-card gm">
-                    <h3 class="rank-title">GM</h3>
-                    <p class="rank-subtitle">Game Master Paketi - 500₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Netherite Helmet (Protection VII, Unbreaking X, Respiration III, Aqua Affinity, Thorns V, Mending)
-                            <br>- Netherite Chestplate (Protection VII, Unbreaking X, Thorns V, Fire Protection V, Mending)
-                            <br>- Netherite Leggings (Protection VII, Unbreaking X, Thorns V, Blast Protection V, Mending)
-                            <br>- Netherite Boots (Protection VII, Feather Falling VII, Unbreaking X, Depth Strider III, Soul Speed III, Frost Walker II, Mending)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Netherite Sword (Sharpness VII, Fire Aspect III, Unbreaking X, Looting V, Sweeping Edge III, Knockback II, Mending)
-                            <br>- Netherite Axe (Sharpness VII, Unbreaking X, Efficiency VII, Silk Touch, Mending)
-                            <br>- Bow (Power VII, Punch III, Flame II, Infinity, Unbreaking X, Mending)
-                            <br>- Crossbow (Quick Charge III, Piercing V, Multishot, Unbreaking X, Mending)
-                            <br>- Trident (Loyalty III, Riptide III, Channeling, Impaling V, Unbreaking X, Mending)
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 1024x Golden Apple
-                            <br>- 128x Enchanted Golden Apple
-                            <br>- 32x Potion of Healing II
-                            <br>- 16x Potion of Strength II (8:00)
-                            <br>- 16x Potion of Speed II (8:00)
-                            <br>- 10x Potion of Regeneration II (8:00)
-                            <br>- 10x Potion of Fire Resistance (8:00)
-                            <br>- 10x Potion of Night Vision (8:00)
-                            <br>- 5x Potion of Invisibility (8:00)
-                        </li>
-                        <li><strong>Ekstra:</strong>
-                            <br>- 512x Ender Pearl
-                            <br>- 10x Totem of Undying
-                            <br>- Elytra (Unbreaking X, Mending)
-                            <br>- 512x Firework Rocket
-                            <br>- 3x Shulker Box (dolu ekstra malzemeler)
-                            <br>- Netherite Full Tool Set (Her biri: Efficiency VII, Fortune/Silk Touch, Unbreaking X, Mending)
-                            <br>- Shield (Unbreaking X, Mending)
-                            <br>- 64x TNT
-                            <br>- 128x Obsidian
-                        </li>
-                    </ul>
-                </div>
-               
-                <div class="rank-card ultra">
-                    <h3 class="rank-title">✨ ULTRA ✨</h3>
-                    <p class="rank-subtitle">Ultimate God Tier - 750₺</p>
-                    <ul class="rank-features">
-                        <li><strong>Zırh Seti:</strong>
-                            <br>- Netherite Helmet (Protection X, Unbreaking X, Respiration III, Aqua Affinity, Thorns X, Mending, Blast Protection X)
-                            <br>- Netherite Chestplate (Protection X, Unbreaking X, Thorns X, Fire Protection X, Blast Protection X, Mending)
-                            <br>- Netherite Leggings (Protection X, Unbreaking X, Thorns X, Blast Protection X, Fire Protection X, Mending)
-                            <br>- Netherite Boots (Protection X, Feather Falling X, Unbreaking X, Depth Strider III, Soul Speed III, Frost Walker II, Mending)
-                        </li>
-                        <li><strong>Silahlar:</strong>
-                            <br>- Netherite Sword (Sharpness X, Fire Aspect III, Unbreaking X, Looting X, Sweeping Edge III, Knockback III, Mending, Smite X)
-                            <br>- Netherite Axe (Sharpness X, Unbreaking X, Efficiency X, Silk Touch, Fortune V, Mending)
-                            <br>- Bow (Power X, Punch V, Flame II, Infinity, Unbreaking X, Mending)
-                            <br>- Crossbow (Quick Charge III, Piercing X, Multishot, Unbreaking X, Mending)
-                            <br>- Trident (Loyalty III, Riptide III, Channeling, Impaling X, Unbreaking X, Mending)
-                            <br>- 2. Netherite Sword (Smite X, Bane of Arthropods X, Unbreaking X, Looting X, Mending)
-                        </li>
-                        <li><strong>Yiyecek & İksirler:</strong>
-                            <br>- 2048x Golden Apple (32 Stack)
-                            <br>- 256x Enchanted Golden Apple (4 Stack)
-                            <br>- 64x Potion of Healing II (1 Stack)
-                            <br>- 32x Potion of Strength II (8:00)
-                            <br>- 32x Potion of Speed II (8:00)
-                            <br>- 32x Potion of Regeneration II (8:00)
-                            <br>- 16x Potion of Fire Resistance (8:00)
-                            <br>- 16x Potion of Night Vision (8:00)
-                            <br>- 16x Potion of Invisibility (8:00)
-                            <br>- 16x Potion of Water Breathing (8:00)
-                            <br>- 10x Potion of Turtle Master II (8:00)
-                        </li>
-                        <li><strong>Ekstra Items:</strong>
-                            <br>- 1024x Ender Pearl (16 Stack)
-                            <br>- 32x Totem of Undying
-                            <br>- 3x Elytra (Unbreaking X, Mending)
-                            <br>- 1024x Firework Rocket (16 Stack)
-                            <br>- 6x Shulker Box (her biri farklı malzemelerle dolu)
-                            <br>- Complete Netherite Tool Set (Pickaxe, Axe, Shovel, Hoe - Her biri: Efficiency X, Fortune V, Silk Touch, Unbreaking X, Mending)
-                            <br>- 2x Shield (Unbreaking X, Mending)
-                            <br>- 256x TNT (4 Stack)
-                            <br>- 512x Obsidian (8 Stack)
-                            <br>- 64x End Crystal
-                            <br>- 64x Netherite Ingot
-                            <br>- 64x Diamond Block
-                            <br>- 64x Emerald Block
-                            <br>- Enchanted Book Set (tüm max enchantlar)
-                            <br>- 64x Experience Bottle
-                        </li>
-                        <li><strong>🔥 ULTRA ÖZEL YETKİLER:</strong>
-                            <br>- Admin paneline sınırlı erişim
-                            <br>- Özel ULTRA prefix ve chat rengi
-                            <br>- Event başlatma yetkisi
-                            <br>- Özel ULTRA spawn alanı
-                            <br>- VIP bölgeye özel erişim
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-       
-        <div class="invite-section">
-            <h2 class="section-title" style="color: #00ff00;">📢 DAVET METNİ 📢</h2>
-            <div class="invite-text" id="inviteText">
-╔═══════════════════════════════════════╗
-║  ⚡ BORALANCES GAMING TEAM ⚡  ║
-╚═══════════════════════════════════════╝
 
-🎮 TÜRKİYE'NİN EN GELİŞMİŞ MİNECRAFT SUNUCUSU! 🎮
+  <header>
+    <h1>BORALANCES GAMING TEAM</h1>
+    <p>🔥 Minecraft PvP & Skyblock Sunucusu 🔥</p>
+  </header>
 
-🌐 SUNUCU IP: Boralances.exaroton.me
+  <main>
+    <section>
+      <h2>🌌 Sunucu IP</h2>
+      <p id="inviteText">Boralances.exaroton.me</p>
+      <button class="copy-btn" onclick="copyInvite()">IP'yi Kopyala 📋</button>
+    </section>
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 SUNUCU ÖZELLİKLERİ:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    <section>
+      <h2>💎 VIP Rank Özellikleri</h2>
+      <ul class="rank-features">
+        <li>✨ /fly komutu aktif</li>
+        <li>🛡️ Özel zırh seti</li>
+        <li>⚡ PvP avantajları</li>
+        <li>🎁 Haftalık ödüller</li>
+      </ul>
+      <div class="price-card">
+        <p><strong>Fiyat:</strong> 25 TL</p>
+      </div>
+    </section>
 
-✨ 6 FARKLI VIP KİTİ:
-   ⚔️ VIP (100₺) - MVIP (200₺) - TVIP (300₺)
-   🔥 MTVIP (400₺) - GM (500₺) - ULTRA (750₺)
-   🎁 Her kit 3 günde bir alınabilir!
-   💎 Max büyülü Netherite ekipmanlar!
+    <section>
+      <h2>🚀 Discord’a Katıl</h2>
+      <p>Topluluğumuza katıl ve en yeni etkinliklerden haberdar ol!</p>
+      <a href="https://discord.gg/boralances" target="_blank">
+        <button class="copy-btn">Discord’a Katıl 💬</button>
+      </a>
+    </section>
+  </main>
 
-🎤 PLASMO VOICE CHAT:
-   🗣️ Oyun içinde sesli konuş!
-   🎧 Proximity chat sistemi
-   📡 Kristal net ses kalitesi
+  <footer>
+    <p>🎮 Boralances Gaming Team © 2025</p>
+    <a href="https://discord.gg/boralances" target="_blank">Discord</a> |
+    <a href="https://youtube.com/" target="_blank">YouTube</a>
+  </footer>
 
-🎮 SÜRÜM DESTEĞİ:
-   ☕ Java Edition: 1.20.1 - 1.21.5
-   📱 Bedrock Edition: FULL DESTEK!
-   🔄 Cross-play özelliği aktif!
+  <script>
+    // Rastgele başlık mesajı
+    const messages = [
+      "🎉 Hoş geldin, savaşçı!",
+      "🔥 PvP için hazır mısın?",
+      "💎 Efsanevi bir macera seni bekliyor!",
+      "⚡ Boralances seni çağırıyor!"
+    ];
+    document.title = messages[Math.floor(Math.random() * messages.length)];
 
-⚔️ GAMEPLAY ÖZELLİKLERİ:
-   🏆 Günlük eventler ve turnuvalar
-   💰 Gelişmiş ekonomi sistemi
-   🏰 Faction & Claim sistemi
-   ⚡ PvP Arena ve ranked maçlar
-   🎯 Custom boss fightlar
-   🌍 Custom haritalar ve dungeonlar
-   🎪 Mini oyunlar (SkyWars, BedWars, ve daha fazlası!)
+    // Modern kopyalama fonksiyonu
+    function copyInvite() {
+      const text = document.getElementById('inviteText').innerText;
+      navigator.clipboard.writeText(text);
 
-🔥 TEKNİK ÖZELLİKLER:
-   ⚡ LAG-FREE deneyim
-   🛡️ Anti-cheat sistemi
-   💾 Otomatik yedekleme
-   🔒 Güvenli ve stabil sunucu
-   📊 7/24 aktif sunucu
-   👥 Profesyonel moderasyon ekibi
+      const btn = document.querySelector('.copy-btn');
+      const originalText = btn.textContent;
 
-🎁 YENİ OYUNCULARA ÖZEL:
-   ✅ İlk giriş bonusu
-   ✅ Starter kit hediye
-   ✅ Rehber NPC'ler
-   ✅ Detaylı tutorial
+      btn.textContent = '✅ KOPYALANDI! GİRİŞE HAZIRSIN!';
+      btn.style.background = 'linear-gradient(135deg, #00ff00, #00ffff)';
+      btn.style.boxShadow = '0 0 50px rgba(0, 255, 0, 1)';
 
-💎 VIP AVANTAJLARI:
-   🌟 Özel komutlar ve yetkiler
-   🎨 Custom partiküller ve efektler
-   🏆 Öncelikli event katılımı
-   💰 Ekstra ekonomi bonusları
-   🎯 Özel VIP alanları
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 NEDEN BORALANCES?
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🏅 Profesyonel Gaming Team
-🎮 4+ yıllık tecrübe
-👨‍👩‍👧‍👦 Aktif ve samimi topluluk
-🎪 Sürekli güncellemeler ve yenilikler
-🎁 Adil ve dengeli oyun deneyimi
-🛡️ Toxiclik yok, eğlence var!
-💬 Discord sunucusu
-📞 7/24 destek ekibi
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🚀 HEMEN KATIL, EFSANE OL! 🚀
-
-💻 IP: Boralances.exaroton.me
-📱 Hem Java hem Bedrock!
-🎤 Sesli chat ile daha eğlenceli!
-
-⭐ Seni de aramızda görmek isteriz! ⭐
-
-#Minecraft #MinecraftTR #Gaming #MinecraftSunucu
-#BoralancesGaming #MinecraftJava #MinecraftBedrock
-            </div>
-            <button class="copy-btn" onclick="copyInvite()">⚡ DAVET METNİNİ KOPYALA ⚡</button>
-        </div>
-       
-        <footer>
-            <h3 style="font-size: 2em; margin-bottom: 20px; text-shadow: 0 0 20px #00ffff;">⚡ BORALANCES GAMING TEAM ⚡</h3>
-            <p style="font-size: 1.2em; margin: 10px 0;">🌐 IP: <strong style="color: #00ffff;">Boralances.exaroton.me</strong></p>
-            <p style="margin-top: 20px; font-size: 1.1em;">© 2025 Boralances Gaming Team - Tüm Hakları Saklıdır</p>
-            <p style="margin-top: 15px; font-size: 1.3em; color: #00ff00; text-shadow: 0 0 15px #00ff00;">
-                🎮 GG WP! İYİ OYUNLAR! 🎮
-            </p>
-        </footer>
-    </div>
-   
-    <script>
-        function copyInvite() {
-            const inviteText = document.getElementById('inviteText').innerText;
-            const textArea = document.createElement('textarea');
-            textArea.value = inviteText;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-           
-            const btn = document.querySelector('.copy-btn');
-            const originalText = btn.textContent;
-            btn.textContent = '✅ KOPYALANDI! ✅';
-            btn.style.background = 'linear-gradient(135deg, #00ff00, #00ffff)';
-            btn.style.boxShadow = '0 0 50px rgba(0, 255, 0, 1)';
-           
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = 'linear-gradient(135deg, #00ffff, #00ff00)';
-                btn.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5)';
-            }, 2500);
-        }
-       
-        // Floating particles animation
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.style.position = 'fixed';
-            particle.style.width = '3px';
-            particle.style.height = '3px';
-            particle.style.background = ['#00ffff', '#ff00ff', '#00ff00'][Math.floor(Math.random() * 3)];
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.top = '100%';
-            particle.style.opacity = '0.7';
-            particle.style.borderRadius = '50%';
-            particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
-            particle.style.zIndex = '0';
-            particle.style.pointerEvents = 'none';
-            document.body.appendChild(particle);
-           
-            const duration = 3000 + Math.random() * 2000;
-            const startTime = Date.now();
-           
-            function animate() {
-                const elapsed = Date.now() - startTime;
-                const progress = elapsed / duration;
-               
-                if (progress < 1) {
-                    particle.style.top = (100 - progress * 110) + '%';
-                    particle.style.opacity = 0.7 * (1 - progress);
-                    requestAnimationFrame(animate);
-                } else {
-                    document.body.removeChild(particle);
-                }
-            }
-           
-            animate();
-        }
-       
-        setInterval(createParticle, 200);
-    </script>
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = 'linear-gradient(135deg, #00ffff, #00ff00)';
+        btn.style.boxShadow = '0 0 30px rgba(0, 255, 255, 0.5)';
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
