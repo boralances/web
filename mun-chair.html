@@ -496,7 +496,7 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
     </button>
     <button class="nav-item disabled" id="nav-modcaucus" onclick="showPage('modcaucus')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
-      Mod Caucus
+      Motion
     </button>
     <button class="nav-item disabled" id="nav-resolutions" onclick="showPage('resolutions')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/><path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/></svg>
@@ -714,13 +714,10 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
                 <span>sec</span>
               </div>
             </div>
-            <div class="mode-card" id="mc-motion" onclick="selectMode('motion')">
+            <div class="mode-card" id="mc-motion" onclick="openMotionSetup()">
               <div class="mode-label">Mode III</div>
               <div class="mode-name">Motion</div>
-              <div class="mode-dur">
-                <input type="number" id="t-motion" min="10" max="300" onclick="event.stopPropagation()" oninput="onDurInput('motion')"/>
-                <span>sec</span>
-              </div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px">Click to configure →</div>
             </div>
             <div class="mode-card" id="mc-unmod" onclick="selectMode('unmod')">
               <div class="mode-label">Mode IV</div>
@@ -944,8 +941,23 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
-    <!-- ═══ MODERATED CAUCUS ═══ -->
+    <!-- ═══ MOTION ═══ -->
     <div id="page-modcaucus" class="page" style="max-width:680px">
+
+      <!-- Active motion info bar -->
+      <div id="motion-info-bar" style="display:none;background:var(--blue-dim);border:1px solid rgba(56,139,253,0.35);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div id="mot-info-flag" style="flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue);margin-bottom:2px">Active Motion</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text)" id="mot-info-topic"></div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px" id="mot-info-meta"></div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="closeMotion()">Close Motion</button>
+        </div>
+      </div>
+
+      <!-- Two timers -->
       <div class="grid2" style="margin-bottom:14px">
         <div class="card">
           <div class="card-head"><div class="card-title">Per Speaker</div></div>
@@ -959,14 +971,18 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
               <button class="btn btn-secondary btn-sm" id="mc-spk-pause" onclick="mcSpkPause()" style="display:none">⏸ Pause</button>
               <button class="btn btn-ghost btn-sm" onclick="mcSpkReset()">↺ Reset</button>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;justify-content:center">
-              <label style="font-size:11px;color:var(--text3)">Duration (sec)</label>
+            <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:12px">
+              <label style="font-size:11px;color:var(--text3)">sec/speaker</label>
               <input type="number" id="mc-spk-dur" value="90" min="10" max="600" style="width:70px;text-align:center;font-family:'JetBrains Mono',monospace"/>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);min-height:38px">
+              <div id="mc-cur-flag"></div>
+              <div id="mc-cur-name" style="font-size:12px;color:var(--text3)">—</div>
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-head"><div class="card-title">Total Caucus</div></div>
+          <div class="card-head"><div class="card-title">Total Motion</div></div>
           <div class="card-body" style="text-align:center;padding:20px">
             <div style="font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:500;color:var(--orange);line-height:1;margin-bottom:16px" id="mc-total-clock">10:00</div>
             <div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:16px;overflow:hidden">
@@ -978,76 +994,229 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
               <button class="btn btn-ghost btn-sm" onclick="mcTotReset()">↺ Reset</button>
             </div>
             <div style="display:flex;align-items:center;gap:8px;justify-content:center">
-              <label style="font-size:11px;color:var(--text3)">Duration (sec)</label>
+              <label style="font-size:11px;color:var(--text3)">total sec</label>
               <input type="number" id="mc-tot-dur" value="600" min="30" max="7200" style="width:70px;text-align:center;font-family:'JetBrains Mono',monospace"/>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Speaker queue for this motion -->
       <div class="card">
         <div class="card-head">
-          <div class="card-title">Current Speaker</div>
+          <div class="card-head-left">
+            <div class="card-title">Motion Speakers</div>
+            <span class="chip chip-gray" id="mot-spk-count">0</span>
+          </div>
           <div style="display:flex;gap:6px">
-            <div class="csearch-wrap" style="min-width:200px">
+            <div class="csearch-wrap">
               <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
-              <input type="text" id="mc-spk-search" placeholder="Set current speaker..." autocomplete="off"
+              <input type="text" id="mc-spk-search" placeholder="Add speaker to motion..." autocomplete="off"
                 oninput="filterMcSpkSearch()" onfocus="openMcSpkDrop()" onblur="setTimeout(closeMcSpkDrop,200)"/>
               <div class="cdropdown" id="mc-spk-drop"></div>
             </div>
+            <button class="btn btn-danger btn-sm" onclick="clearMotionSpeakers()">Clear</button>
           </div>
         </div>
-        <div class="card-body" style="padding:14px 16px;display:flex;align-items:center;gap:12px;min-height:52px">
-          <div id="mc-cur-flag"></div>
-          <div id="mc-cur-name" style="font-size:14px;font-weight:500;color:var(--text3)">No speaker selected</div>
+        <div class="card-body">
+          <div id="mot-spk-list" class="spk-list" style="max-height:280px;overflow-y:auto"><div class="empty-state">Add speakers to this motion.</div></div>
+        </div>
+        <div style="padding:12px 16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+          <button class="btn btn-success btn-sm" onclick="finishMotion()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>
+            Finish Motion & Award Points
+          </button>
         </div>
       </div>
     </div>
 
     <!-- ═══ RESOLUTIONS ═══ -->
-    <div id="page-resolutions" class="page" style="max-width:680px">
-      <div class="card" style="margin-bottom:12px">
-        <div class="card-head"><div class="card-title">New Resolution</div></div>
-        <div class="card-body">
-          <div class="grid2" style="margin-bottom:10px">
-            <div class="field">
+    <div id="page-resolutions" class="page" style="max-width:780px">
+
+      <!-- TABS -->
+      <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:16px">
+        <button class="nav-tab active" id="res-tab-main" onclick="switchResTab('main')" style="font-family:'Inter',sans-serif">Resolution</button>
+        <button class="nav-tab" id="res-tab-vote" onclick="switchResTab('vote')" style="font-family:'Inter',sans-serif">Voting</button>
+        <button class="nav-tab" id="res-tab-scores" onclick="switchResTab('scores')" style="font-family:'Inter',sans-serif">Manual Scores</button>
+      </div>
+
+      <!-- ── MAIN TAB ── -->
+      <div id="res-main-tab">
+        <!-- Resolution setup (shown only if no resolution yet) -->
+        <div id="res-setup-card" class="card" style="margin-bottom:12px">
+          <div class="card-head"><div class="card-title">The Resolution</div></div>
+          <div class="card-body">
+            <div class="field" style="margin-bottom:10px">
               <label class="field-label">Resolution ID</label>
-              <input type="text" id="res-id" placeholder="e.g. DR 1.1, WP 2"/>
+              <input type="text" id="res-id" placeholder="e.g. DR 1.1"/>
             </div>
-            <div class="field">
-              <label class="field-label">Status</label>
-              <select id="res-status">
-                <option value="draft">Draft</option>
-                <option value="floor">On the Floor</option>
-                <option value="passed">Passed</option>
-                <option value="failed">Failed</option>
-                <option value="tabled">Tabled</option>
-              </select>
+            <div class="field" style="margin-bottom:10px">
+              <label class="field-label">Title</label>
+              <input type="text" id="res-title" placeholder="e.g. Resolution on Climate Finance"/>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="setupResolution()">Set Resolution</button>
+          </div>
+        </div>
+
+        <!-- Resolution info (shown after setup) -->
+        <div id="res-info-card" class="card" style="margin-bottom:12px;display:none">
+          <div class="card-head">
+            <div class="card-head-left">
+              <div class="card-title" id="res-display-id"></div>
+              <span class="chip chip-gray" id="res-display-status">Draft</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="resetResolution()">Reset</button>
             </div>
           </div>
-          <div class="field" style="margin-bottom:10px">
-            <label class="field-label">Title / Topic</label>
-            <input type="text" id="res-title" placeholder="e.g. Resolution on Climate Finance"/>
+          <div class="card-body">
+            <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:14px" id="res-display-title"></div>
+            <div class="grid2">
+              <div>
+                <div class="card-section">Signatories (In Committee)</div>
+                <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Listed but not co-sponsors</div>
+                <div class="csearch-wrap" style="margin-bottom:8px">
+                  <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                  <input type="text" id="res-sig-search" placeholder="Add signatory..." autocomplete="off"
+                    oninput="filterResSigSearch()" onfocus="openResSigDrop()" onblur="setTimeout(closeResSigDrop,200)"/>
+                  <div class="cdropdown" id="res-sig-drop"></div>
+                </div>
+                <div id="res-sig-list" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+              </div>
+              <div>
+                <div class="card-section">Co-Sponsors (Strong Support)</div>
+                <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Get +3 bonus points</div>
+                <div class="csearch-wrap" style="margin-bottom:8px">
+                  <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                  <input type="text" id="res-cospon-search" placeholder="Add co-sponsor..." autocomplete="off"
+                    oninput="filterResCosponSearch()" onfocus="openResCosponDrop()" onblur="setTimeout(closeResCosponDrop,200)"/>
+                  <div class="cdropdown" id="res-cospon-drop"></div>
+                </div>
+                <div id="res-cospon-list" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+              </div>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-success btn-sm" onclick="awardCosponsorBonus()">Award Co-sponsor Bonus (+3)</button>
+              <button class="btn btn-ghost btn-sm" onclick="switchResTab('vote')">Go to Voting →</button>
+            </div>
           </div>
-          <div class="field" style="margin-bottom:12px">
-            <label class="field-label">Sponsors</label>
-            <input type="text" id="res-sponsors" placeholder="e.g. France, Germany, Brazil"/>
-          </div>
-          <button class="btn btn-primary btn-sm" onclick="addResolution()">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
-            Add Resolution
-          </button>
         </div>
       </div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-head-left">
-            <div class="card-title">Resolution Tracker</div>
-            <span class="chip chip-gray" id="res-count-chip">0</span>
+
+      <!-- ── VOTING TAB ── -->
+      <div id="res-vote-tab" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 260px;gap:14px;align-items:start">
+          <!-- Left: delegate list -->
+          <div class="card">
+            <div class="card-head">
+              <div class="card-head-left">
+                <div class="card-title">Vote</div>
+                <span class="chip chip-gray" id="vote-progress-chip">0 / 0 voted</span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" onclick="resetVotes()">Reset</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:8px">
+              <div id="vote-list" style="display:flex;flex-direction:column;gap:4px;max-height:420px;overflow-y:auto"></div>
+            </div>
           </div>
-          <button class="btn btn-danger btn-sm" onclick="clearResolutions()">Clear All</button>
+          <!-- Right: live results -->
+          <div>
+            <div class="card">
+              <div class="card-head"><div class="card-title">Live Results</div></div>
+              <div class="card-body" style="padding:16px">
+
+                <!-- Verdict big badge -->
+                <div id="vote-verdict" style="display:none;padding:12px;border-radius:var(--radius);text-align:center;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px"></div>
+
+                <!-- Pass threshold graph -->
+                <div style="margin-bottom:16px">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+                    <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)">Yes votes</span>
+                    <span style="font-size:10px;color:var(--text3)">need <span id="vote-required" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue)">—</span></span>
+                  </div>
+                  <!-- stacked bar: yes / gap to threshold / over-threshold -->
+                  <div style="position:relative;height:28px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:4px">
+                    <div id="vote-yes-bar" style="position:absolute;left:0;top:0;bottom:0;background:var(--green);border-radius:4px;width:0%;transition:width 0.4s"></div>
+                    <!-- threshold line -->
+                    <div id="vote-thresh-line" style="position:absolute;top:0;bottom:0;width:2px;background:var(--blue);opacity:0.8;transition:left 0.4s;z-index:2"></div>
+                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text);z-index:3">
+                      <span id="vote-yes-num">0</span>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+                    <span>0</span>
+                    <span id="vote-thresh-label" style="color:var(--blue)">Threshold</span>
+                    <span id="vote-total-label">Total</span>
+                  </div>
+                </div>
+
+                <!-- No + Abstain -->
+                <div style="margin-bottom:8px">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+                    <span style="color:var(--red);font-weight:600">No</span>
+                    <span style="font-family:'JetBrains Mono',monospace;color:var(--red)" id="vote-no-num">0</span>
+                  </div>
+                  <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+                    <div id="vote-no-bar" style="height:100%;background:var(--red);border-radius:3px;width:0%;transition:width 0.4s"></div>
+                  </div>
+                </div>
+                <div style="margin-bottom:16px">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
+                    <span style="color:var(--text3);font-weight:600">Abstain</span>
+                    <span style="font-family:'JetBrains Mono',monospace;color:var(--text3)" id="vote-abs-num">0</span>
+                  </div>
+                  <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+                    <div id="vote-abs-bar" style="height:100%;background:var(--border2);border-radius:3px;width:0%;transition:width 0.4s"></div>
+                  </div>
+                </div>
+
+                <!-- Summary row -->
+                <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px">
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="font-size:11px;color:var(--text3)">Voted</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text)" id="vote-progress-chip">0 / 0</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                    <span style="font-size:11px;color:var(--text3)">Current Yes</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--green)" id="vote-yes-summary">0</span>
+                  </div>
+                  <div style="display:flex;justify-content:space-between">
+                    <span style="font-size:11px;color:var(--text3)">To pass needs</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue)" id="vote-need-summary">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <div id="res-list"><div class="empty-state">No resolutions added yet.</div></div>
+      </div>
+
+      <!-- ── MANUAL SCORES TAB ── -->
+      <div id="res-scores-tab" style="display:none">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Manual Point Adjustment</div></div>
+          <div class="card-body">
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+              <div class="csearch-wrap" style="flex:1;min-width:200px">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="manual-score-search" placeholder="Search delegate..." autocomplete="off"
+                  oninput="filterManualScoreSearch()" onfocus="openManualScoreDrop()" onblur="setTimeout(closeManualScoreDrop,200)"/>
+                <div class="cdropdown" id="manual-score-drop"></div>
+              </div>
+              <input type="number" id="manual-score-pts" placeholder="pts" style="width:80px;text-align:center;font-family:'JetBrains Mono',monospace"/>
+              <button class="btn btn-primary btn-sm" onclick="applyManualScore()">Apply</button>
+            </div>
+            <div style="font-size:11px;color:var(--text3);margin-bottom:14px">Enter positive or negative points (e.g. +5 or -3). Reason is optional.</div>
+            <div class="field" style="margin-bottom:12px">
+              <label class="field-label">Reason (optional)</label>
+              <input type="text" id="manual-score-reason" placeholder="e.g. Exceptional procedural knowledge"/>
+            </div>
+            <div id="manual-score-log" style="max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px">
+              <div class="empty-state">No manual adjustments yet.</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1161,7 +1330,7 @@ const PAGES_META = {
   awards:    {title:'Session Awards',     crumb:'End of session recognition'},
   warnings:    {title:'Warnings',           crumb:'Delegate disciplinary record'},
   rollcall:   {title:'Roll Call',            crumb:'Mark attendance at session opening'},
-  modcaucus:  {title:'Moderated Caucus',     crumb:'Timed debate with total session clock'},
+  modcaucus:  {title:'Motion',               crumb:'Moderated caucus with per-speaker and total timers'},
   resolutions:{title:'Resolutions',          crumb:'Draft and track resolution papers'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
@@ -1588,6 +1757,189 @@ function nextSpeaker(){
 }
 
 // ═══ MODE SELECTION ═══
+function openMotionSetup(){
+  // show motion config popup
+  const existing = document.getElementById('motion-setup-popup');
+  if(existing){ existing.remove(); return; }
+
+  const pool = delegates.length ? delegates : COUNTRIES;
+  const popup = document.createElement('div');
+  popup.id = 'motion-setup-popup';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+
+  popup.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:480px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">New Motion</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Configure Moderated Caucus</div>
+      </div>
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+        <div class="field">
+          <label class="field-label">Topic</label>
+          <input type="text" id="mot-topic" placeholder="e.g. Nuclear Disarmament in South Asia"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Raised By</label>
+          <div class="csearch-wrap">
+            <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="mot-raised-search" placeholder="Search country..." autocomplete="off"
+              oninput="filterMotRaisedSearch()" onfocus="openMotRaisedDrop()" onblur="setTimeout(closeMotRaisedDrop,200)"/>
+            <div class="cdropdown" id="mot-raised-drop"></div>
+          </div>
+          <div id="mot-raised-display" style="display:none;margin-top:6px;display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)"></div>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field-label">Total Duration (sec)</label>
+            <input type="number" id="mot-total-dur" value="600" min="30" max="7200" style="font-family:'JetBrains Mono',monospace"/>
+          </div>
+          <div class="field">
+            <label class="field-label">Per Speaker (sec)</label>
+            <input type="number" id="mot-spk-dur" value="90" min="10" max="600" style="font-family:'JetBrains Mono',monospace"/>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('motion-setup-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+        <button onclick="confirmMotionSetup()" class="btn btn-primary btn-sm">Open Motion →</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(popup);
+}
+
+let motionRaisedBy = null; // { country delegate }
+let motionSpeakers = []; // list of delegates
+let motionCurrentIdx = -1;
+
+function filterMotRaisedSearch(){
+  const q = document.getElementById('mot-raised-search').value.toLowerCase();
+  const dd = document.getElementById('mot-raised-drop');
+  const pool = delegates.length ? delegates : COUNTRIES;
+  const results = pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML = results.map(d=>{
+    const gidx=COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gidx}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const d = COUNTRIES[parseInt(el.dataset.gidx)];
+      if(!d) return;
+      motionRaisedBy = d;
+      document.getElementById('mot-raised-search').value = d.n;
+      document.getElementById('mot-raised-drop').classList.remove('open');
+      const disp = document.getElementById('mot-raised-display');
+      disp.style.display='flex';
+      disp.innerHTML = flagImg(d.c,'flag-img-sm') + `<span style="font-size:13px;color:var(--text)">${d.n}</span>`;
+    });
+  });
+  dd.classList.add('open');
+}
+function openMotRaisedDrop(){ filterMotRaisedSearch(); }
+function closeMotRaisedDrop(){ const dd=document.getElementById('mot-raised-drop'); if(dd) dd.classList.remove('open'); }
+
+function confirmMotionSetup(){
+  const topic = document.getElementById('mot-topic').value.trim();
+  if(!topic){ alert('Please enter a topic.'); return; }
+  const totalDur = parseInt(document.getElementById('mot-total-dur').value)||600;
+  const spkDur   = parseInt(document.getElementById('mot-spk-dur').value)||90;
+
+  // Set timer durations
+  document.getElementById('mc-tot-dur').value = totalDur;
+  document.getElementById('mc-spk-dur').value = spkDur;
+  mcTotSecs = mcTotTotal = totalDur;
+  mcSpkSecs = mcSpkTotal = spkDur;
+  mcTotReset(); mcSpkReset();
+
+  // Show info bar
+  document.getElementById('motion-setup-popup').remove();
+  motionSpeakers = [];
+  motionCurrentIdx = -1;
+
+  const bar = document.getElementById('motion-info-bar');
+  bar.style.display = '';
+  document.getElementById('mot-info-topic').textContent = topic;
+  const raisedBy = motionRaisedBy;
+  document.getElementById('mot-info-flag').innerHTML = raisedBy ? flagImg(raisedBy.c,'flag-img') : '';
+  document.getElementById('mot-info-meta').textContent =
+    (raisedBy ? 'Raised by ' + raisedBy.n + '  ·  ' : '') +
+    'Total: ' + Math.floor(totalDur/60) + 'm  ·  ' +
+    'Per speaker: ' + spkDur + 's';
+
+  document.getElementById('mot-spk-count').textContent = '0';
+  document.getElementById('mot-spk-list').innerHTML = '<div class="empty-state">Add speakers to this motion.</div>';
+
+  // Go to motion page and also activate mode card
+  curMode = 'motion';
+  ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('mc-'+m).classList.toggle('active',m==='motion'));
+  showPage('modcaucus');
+}
+
+function closeMotion(){
+  document.getElementById('motion-info-bar').style.display='none';
+  motionSpeakers=[];
+  motionCurrentIdx=-1;
+  motionRaisedBy=null;
+  curMode=null;
+  ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('mc-'+m).classList.remove('active'));
+  document.getElementById('mot-spk-list').innerHTML='<div class="empty-state">Add speakers to this motion.</div>';
+  document.getElementById('mot-spk-count').textContent='0';
+  mcSpkReset(); mcTotReset();
+}
+
+function clearMotionSpeakers(){
+  motionSpeakers=[];
+  motionCurrentIdx=-1;
+  renderMotionSpeakers();
+}
+
+function renderMotionSpeakers(){
+  const list = document.getElementById('mot-spk-list');
+  const cnt  = document.getElementById('mot-spk-count');
+  if(cnt) cnt.textContent = motionSpeakers.length;
+  if(!list) return;
+  if(!motionSpeakers.length){ list.innerHTML='<div class="empty-state">Add speakers to this motion.</div>'; return; }
+  list.innerHTML = motionSpeakers.map((s,i)=>{
+    const done = i < motionCurrentIdx;
+    const cur  = i === motionCurrentIdx;
+    return `<div class="spk-row ${cur?'current':''} ${done?'done':''}">
+      <span class="spk-num">${String(i+1).padStart(2,'0')}</span>
+      ${flagImg(s.c,'flag-img-sm')}
+      <span class="spk-name">${s.n}</span>
+      ${cur?'<span class="spk-badge">Speaking</span>':''}
+      <button class="spk-rm" data-idx="${i}">×</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.spk-rm').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      motionSpeakers.splice(parseInt(btn.dataset.idx),1);
+      renderMotionSpeakers();
+    });
+  });
+  // update current speaker display in per-speaker timer
+  if(motionCurrentIdx>=0 && motionCurrentIdx<motionSpeakers.length){
+    const s = motionSpeakers[motionCurrentIdx];
+    const mc_name = document.getElementById('mc-cur-name');
+    const mc_flag = document.getElementById('mc-cur-flag');
+    if(mc_name){ mc_name.textContent=s.n; mc_name.style.color='var(--text)'; }
+    if(mc_flag) mc_flag.innerHTML=flagImg(s.c,'flag-img-lg');
+  }
+}
+
+function finishMotion(){
+  // Award points: motion raiser gets +5, +0.2 per speaker
+  const spkCount = motionSpeakers.length;
+  if(motionRaisedBy){
+    const bonus = 5 + spkCount * 0.2;
+    scores[motionRaisedBy.c] = (scores[motionRaisedBy.c]||0) + bonus;
+    showToast(`${motionRaisedBy.n} → Motion bonus: +${bonus.toFixed(1)} pts (5 base + ${spkCount}×0.2)`,'info');
+  }
+  closeMotion();
+  showPage('timer');
+}
+
 function selectMode(mode){
   if(timerRunning) return;
   curMode=mode;
@@ -2101,6 +2453,12 @@ function mcSpkTick(){
     document.getElementById('mc-spk-start').style.display='';
     document.getElementById('mc-spk-pause').style.display='none';
     document.getElementById('mc-spk-clock').style.color='var(--red)';
+    // auto advance to next motion speaker
+    if(motionCurrentIdx < motionSpeakers.length-1){
+      motionCurrentIdx++;
+      renderMotionSpeakers();
+      setTimeout(()=>{ mcSpkReset(); },400);
+    }
     return;
   }
   mcSpkSecs--;
@@ -2154,7 +2512,12 @@ function filterMcSpkSearch(){
     el.addEventListener('mousedown',e=>{
       e.preventDefault();
       const d=COUNTRIES[parseInt(el.dataset.gidx)];
-      if(d){ mcCurSpeaker=d; document.getElementById('mc-cur-flag').innerHTML=flagImg(d.c,'flag-img-lg'); document.getElementById('mc-cur-name').textContent=d.n; document.getElementById('mc-cur-name').style.color='var(--text)'; document.getElementById('mc-spk-search').value=''; closeMcSpkDrop(); }
+      if(!d) return;
+      motionSpeakers.push({...d});
+      if(motionCurrentIdx===-1) motionCurrentIdx=0;
+      renderMotionSpeakers();
+      document.getElementById('mc-spk-search').value='';
+      closeMcSpkDrop();
     });
   });
 }
@@ -2162,74 +2525,263 @@ function openMcSpkDrop(){ filterMcSpkSearch(); document.getElementById('mc-spk-d
 function closeMcSpkDrop(){ document.getElementById('mc-spk-drop').classList.remove('open'); }
 
 // ═══ RESOLUTIONS ═══
-const RES_STATUS_STYLES={
-  draft:    {bg:'var(--bg4)',border:'var(--border)',color:'var(--text2)',label:'Draft'},
-  floor:    {bg:'var(--blue-dim)',border:'rgba(56,139,253,0.4)',color:'var(--blue)',label:'On the Floor'},
-  passed:   {bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Passed'},
-  failed:   {bg:'var(--red-dim)',border:'rgba(248,81,73,0.4)',color:'var(--red)',label:'Failed'},
-  tabled:   {bg:'var(--orange-dim)',border:'rgba(219,109,40,0.4)',color:'var(--orange)',label:'Tabled'},
-};
+// ═══ RESOLUTIONS ═══
+let resolution = null; // single resolution object
+let resSignatories = []; // in-committee delegates
+let coSponsors = [];     // strong supporters
+let votes = {};          // { countryCode: 'yes'|'no'|'abstain' }
+let manualScoreLog = []; // [{name,pts,reason,time}]
+let cosponsorBonusAwarded = false;
 
-function addResolution(){
-  const id=document.getElementById('res-id').value.trim();
-  const title=document.getElementById('res-title').value.trim();
-  const sponsors=document.getElementById('res-sponsors').value.trim();
-  const status=document.getElementById('res-status').value;
-  if(!id&&!title){ showToast('Enter at least a Resolution ID or title.','error'); return; }
-  resolutions.push({ id:id||'—', title:title||'Untitled', sponsors, status, created:new Date().toLocaleTimeString() });
+function switchResTab(tab){
+  ['main','vote','scores'].forEach(t=>{
+    document.getElementById('res-'+t+'-tab').style.display = t===tab?'':'none';
+    document.getElementById('res-tab-'+t).classList.toggle('active', t===tab);
+  });
+  if(tab==='vote') renderVoteList();
+  if(tab==='scores') renderManualScoreLog();
+}
+
+function setupResolution(){
+  const id = document.getElementById('res-id').value.trim();
+  const title = document.getElementById('res-title').value.trim();
+  if(!id && !title){ showToast('Enter a Resolution ID or title.','error'); return; }
+  resolution = { id: id||'DR 1.1', title: title||'Untitled', status:'draft' };
+  resSignatories = [];
+  coSponsors = [];
+  votes = {};
+  cosponsorBonusAwarded = false;
+  document.getElementById('res-setup-card').style.display='none';
+  document.getElementById('res-info-card').style.display='';
+  document.getElementById('res-display-id').textContent = resolution.id;
+  document.getElementById('res-display-title').textContent = resolution.title;
+  updateResStatusChip();
+  renderResSigList();
+  renderResCosponList();
+  const nb = document.getElementById('nav-res-badge');
+  if(nb) nb.textContent='1';
+  showToast('Resolution set: '+resolution.id);
+}
+
+function resetResolution(){
+  resolution=null; resSignatories=[]; coSponsors=[]; votes={}; cosponsorBonusAwarded=false;
+  document.getElementById('res-setup-card').style.display='';
+  document.getElementById('res-info-card').style.display='none';
   document.getElementById('res-id').value='';
   document.getElementById('res-title').value='';
-  document.getElementById('res-sponsors').value='';
-  document.getElementById('res-status').value='draft';
-  renderResolutions();
+  const nb=document.getElementById('nav-res-badge'); if(nb) nb.textContent='0';
 }
 
-function updateResStatus(idx, val){
-  if(resolutions[idx]) resolutions[idx].status=val;
-  renderResolutions();
+function updateResStatusChip(){
+  const chip = document.getElementById('res-display-status');
+  if(!chip||!resolution) return;
+  const colors={draft:'chip-gray',floor:'chip-blue',passed:'',failed:'',tabled:''};
+  const labels={draft:'Draft',floor:'On the Floor',passed:'✓ Passed',failed:'✗ Failed',tabled:'Tabled'};
+  chip.textContent = labels[resolution.status]||resolution.status;
+  chip.style.background = resolution.status==='passed'?'var(--green-dim)':resolution.status==='failed'?'var(--red-dim)':'var(--bg4)';
+  chip.style.color = resolution.status==='passed'?'var(--green)':resolution.status==='failed'?'var(--red)':'var(--text3)';
+  chip.style.border = '1px solid '+(resolution.status==='passed'?'rgba(63,185,80,0.4)':resolution.status==='failed'?'rgba(248,81,73,0.4)':'var(--border)');
 }
 
-function removeResolution(idx){
-  resolutions.splice(idx,1);
-  renderResolutions();
+// Signatories
+function filterResSigSearch(){
+  const q=document.getElementById('res-sig-search').value.toLowerCase();
+  const dd=document.getElementById('res-sig-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const results=pool.filter(c=>c.n.toLowerCase().includes(q)&&!resSignatories.find(x=>x.c===c.c)&&!coSponsors.find(x=>x.c===c.c)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=results.map(d=>`<div class="cdrop-item" data-code="${d.c}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=(delegates.length?delegates:COUNTRIES).find(x=>x.c===el.dataset.code);if(d){resSignatories.push(d);renderResSigList();document.getElementById('res-sig-search').value='';closeResSigDrop();}}));
+  dd.classList.add('open');
+}
+function openResSigDrop(){filterResSigSearch();}
+function closeResSigDrop(){const dd=document.getElementById('res-sig-drop');if(dd)dd.classList.remove('open');}
+function renderResSigList(){
+  const el=document.getElementById('res-sig-list');if(!el)return;
+  el.innerHTML=resSignatories.map(d=>`<div class="del-chip" style="padding:3px 8px 3px 5px">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px">${d.n}</span><button data-code="${d.c}" class="del-remove">×</button></div>`).join('');
+  el.querySelectorAll('.del-remove').forEach(btn=>btn.addEventListener('click',()=>{resSignatories=resSignatories.filter(x=>x.c!==btn.dataset.code);renderResSigList();}));
 }
 
-function clearResolutions(){
-  resolutions=[];
-  renderResolutions();
+// Co-sponsors
+function filterResCosponSearch(){
+  const q=document.getElementById('res-cospon-search').value.toLowerCase();
+  const dd=document.getElementById('res-cospon-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const results=pool.filter(c=>c.n.toLowerCase().includes(q)&&!coSponsors.find(x=>x.c===c.c)&&!resSignatories.find(x=>x.c===c.c)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=results.map(d=>`<div class="cdrop-item" data-code="${d.c}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=(delegates.length?delegates:COUNTRIES).find(x=>x.c===el.dataset.code);if(d){coSponsors.push(d);renderResCosponList();document.getElementById('res-cospon-search').value='';closeResCosponDrop();}}));
+  dd.classList.add('open');
+}
+function openResCosponDrop(){filterResCosponSearch();}
+function closeResCosponDrop(){const dd=document.getElementById('res-cospon-drop');if(dd)dd.classList.remove('open');}
+function renderResCosponList(){
+  const el=document.getElementById('res-cospon-list');if(!el)return;
+  el.innerHTML=coSponsors.map(d=>`<div class="del-chip" style="padding:3px 8px 3px 5px;background:var(--blue-dim);border-color:rgba(56,139,253,0.3)">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px;color:var(--blue)">${d.n}</span><button data-code="${d.c}" class="del-remove" style="color:var(--blue)">×</button></div>`).join('');
+  el.querySelectorAll('.del-remove').forEach(btn=>btn.addEventListener('click',()=>{coSponsors=coSponsors.filter(x=>x.c!==btn.dataset.code);renderResCosponList();}));
+}
+
+function awardCosponsorBonus(){
+  if(!coSponsors.length){showToast('No co-sponsors to award.','error');return;}
+  if(cosponsorBonusAwarded){showToast('Bonus already awarded for this resolution.','error');return;}
+  coSponsors.forEach(d=>{ scores[d.c]=(scores[d.c]||0)+3; });
+  cosponsorBonusAwarded=true;
+  showToast(`+3 pts awarded to ${coSponsors.length} co-sponsor${coSponsors.length!==1?'s':''}.`);
+}
+
+// ── VOTING ──
+function renderVoteList(){
+  const list=document.getElementById('vote-list');if(!list)return;
+  const pool=delegates.length?delegates:COUNTRIES;
+  if(!pool.length){list.innerHTML='<div class="empty-state">No delegates to vote.</div>';return;}
+  list.innerHTML=pool.map(d=>{
+    const v=votes[d.c]||null;
+    return `<div style="display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:var(--radius);background:${v?'var(--bg3)':'transparent'};border:1px solid ${v?'var(--border)':'transparent'};margin-bottom:3px;transition:all 0.15s">
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:var(--text)">${d.n}</span>
+      <button data-code="${d.c}" data-val="yes" class="vote-btn" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;transition:all 0.12s;background:${v==='yes'?'var(--green-dim)':'transparent'};border-color:${v==='yes'?'rgba(63,185,80,0.6)':'var(--border)'};color:${v==='yes'?'var(--green)':'var(--text3)'}">Yes</button>
+      <button data-code="${d.c}" data-val="no" class="vote-btn" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;transition:all 0.12s;background:${v==='no'?'var(--red-dim)':'transparent'};border-color:${v==='no'?'rgba(248,81,73,0.5)':'var(--border)'};color:${v==='no'?'var(--red)':'var(--text3)'}">No</button>
+      <button data-code="${d.c}" data-val="abstain" class="vote-btn" style="font-size:10px;font-weight:700;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;transition:all 0.12s;background:${v==='abstain'?'var(--bg5)':'transparent'};border-color:${v==='abstain'?'var(--border2)':'var(--border)'};color:${v==='abstain'?'var(--text2)':'var(--text3)'}">Abstain</button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.vote-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      votes[btn.dataset.code]=btn.dataset.val;
+      updateVoteStats();
+      renderVoteList();
+    });
+  });
+  updateVoteStats();
+}
+
+function updateVoteStats(){
+  const pool=delegates.length?delegates:COUNTRIES;
+  const total=pool.length;
+  const yes=Object.values(votes).filter(v=>v==='yes').length;
+  const no=Object.values(votes).filter(v=>v==='no').length;
+  const abs=Object.values(votes).filter(v=>v==='abstain').length;
+  const voted=yes+no+abs;
+  // Required = simple majority of yes+no (abstentions don't count)
+  const voting=yes+no;
+  const required=voting>0?Math.floor(voting/2)+1:Math.ceil(total/2)+1;
+
+  // Summary panel
+  const pc = document.getElementById('vote-progress-chip');
+  if(pc) pc.textContent = voted+' / '+total;
+  const ys = document.getElementById('vote-yes-summary');
+  if(ys) ys.textContent = yes;
+  const ns = document.getElementById('vote-need-summary');
+  if(ns) ns.textContent = required;
+
+  // Numbers
+  const yn=document.getElementById('vote-yes-num'); if(yn) yn.textContent=yes;
+  const nn=document.getElementById('vote-no-num');  if(nn) nn.textContent=no;
+  const an=document.getElementById('vote-abs-num'); if(an) an.textContent=abs;
+
+  // Required label
+  const rq=document.getElementById('vote-required'); if(rq) rq.textContent=required;
+
+  // Threshold graph — yes bar and threshold line
+  const graphTotal = Math.max(total, 1);
+  const yesPct   = (yes / graphTotal * 100).toFixed(1);
+  const threshPct= (required / graphTotal * 100).toFixed(1);
+
+  const yBar=document.getElementById('vote-yes-bar');
+  if(yBar) yBar.style.width=yesPct+'%';
+  // colour: green if passed, orange if close (<3 away), red if far
+  const gap = required - yes;
+  const yColor = yes>=required ? 'var(--green)' : gap<=3 ? 'var(--orange)' : 'var(--blue-dim,rgba(56,139,253,0.4))';
+  if(yBar) yBar.style.background = yColor;
+
+  const tLine=document.getElementById('vote-thresh-line');
+  if(tLine) tLine.style.left=threshPct+'%';
+
+  const tLabel=document.getElementById('vote-thresh-label');
+  if(tLabel) tLabel.textContent=required+' needed';
+
+  const totalLabel=document.getElementById('vote-total-label');
+  if(totalLabel) totalLabel.textContent=total+' total';
+
+  // No + Abstain bars (relative to total)
+  const nBar=document.getElementById('vote-no-bar');
+  if(nBar) nBar.style.width=(no/graphTotal*100)+'%';
+  const aBar=document.getElementById('vote-abs-bar');
+  if(aBar) aBar.style.width=(abs/graphTotal*100)+'%';
+
+  // Verdict
+  const verdict=document.getElementById('vote-verdict');
+  if(voting>0){
+    const passed=yes>=required;
+    verdict.style.display='';
+    verdict.textContent=passed?'✓ PASSED':'✗ FAILED';
+    verdict.style.background=passed?'var(--green-dim)':'var(--red-dim)';
+    verdict.style.color=passed?'var(--green)':'var(--red)';
+    verdict.style.border='1px solid '+(passed?'rgba(63,185,80,0.4)':'rgba(248,81,73,0.4)');
+    if(resolution){ resolution.status=passed?'passed':'failed'; updateResStatusChip(); }
+  } else {
+    verdict.style.display='none';
+  }
+}
+
+function resetVotes(){
+  votes={};
+  renderVoteList();
+}
+
+// ── MANUAL SCORES ──
+function filterManualScoreSearch(){
+  const q=document.getElementById('manual-score-search').value.toLowerCase();
+  const dd=document.getElementById('manual-score-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const results=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=results.map(d=>`<div class="cdrop-item" data-code="${d.c}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=(delegates.length?delegates:COUNTRIES).find(x=>x.c===el.dataset.code);if(d){document.getElementById('manual-score-search').value=d.n;document.getElementById('manual-score-search').dataset.code=d.c;document.getElementById('manual-score-search').dataset.name=d.n;closeManualScoreDrop();}}));
+  dd.classList.add('open');
+}
+function openManualScoreDrop(){filterManualScoreSearch();}
+function closeManualScoreDrop(){const dd=document.getElementById('manual-score-drop');if(dd)dd.classList.remove('open');}
+
+function applyManualScore(){
+  const inp=document.getElementById('manual-score-search');
+  const code=inp.dataset.code;
+  const name=inp.dataset.name||inp.value;
+  const pts=parseFloat(document.getElementById('manual-score-pts').value);
+  const reason=document.getElementById('manual-score-reason').value.trim();
+  if(!code||isNaN(pts)){showToast('Select a delegate and enter points.','error');return;}
+  scores[code]=(scores[code]||0)+pts;
+  manualScoreLog.unshift({name,code,pts,reason,time:new Date().toLocaleTimeString()});
+  document.getElementById('manual-score-pts').value='';
+  document.getElementById('manual-score-reason').value='';
+  inp.value=''; inp.dataset.code=''; inp.dataset.name='';
+  showToast(`${name} → ${pts>0?'+':''}${pts} pts (Total: ${scores[code].toFixed(1)})`);
+  renderManualScoreLog();
+}
+
+function renderManualScoreLog(){
+  const el=document.getElementById('manual-score-log');if(!el)return;
+  if(!manualScoreLog.length){el.innerHTML='<div class="empty-state">No manual adjustments yet.</div>';return;}
+  el.innerHTML=manualScoreLog.map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${e.name}</div>
+        ${e.reason?`<div style="font-size:11px;color:var(--text3)">${e.reason}</div>`:''}
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:${e.pts>0?'var(--green)':'var(--red)'}">${e.pts>0?'+':''}${e.pts}</span>
+      <span style="font-size:10px;color:var(--text3)">${e.time}</span>
+      <button data-i="${i}" class="ml-rm" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px">×</button>
+    </div>
+  `).join('');
+  el.querySelectorAll('.ml-rm').forEach(btn=>btn.addEventListener('click',()=>{
+    const entry=manualScoreLog[parseInt(btn.dataset.i)];
+    if(entry){ scores[entry.code]=(scores[entry.code]||0)-entry.pts; manualScoreLog.splice(parseInt(btn.dataset.i),1); renderManualScoreLog(); showToast('Adjustment removed.'); }
+  }));
 }
 
 function renderResolutions(){
-  const list=document.getElementById('res-list');
-  if(!list) return;
-  const chip=document.getElementById('res-count-chip');
-  if(chip) chip.textContent=resolutions.length;
-  const navBadge=document.getElementById('nav-res-badge');
-  if(navBadge) navBadge.textContent=resolutions.length;
-  if(!resolutions.length){ list.innerHTML='<div class="empty-state">No resolutions added yet.</div>'; return; }
-  list.innerHTML=resolutions.map((r,i)=>{
-    const st=RES_STATUS_STYLES[r.status]||RES_STATUS_STYLES.draft;
-    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px">
-      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">${r.id}</span>
-            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:${st.bg};border:1px solid ${st.border};color:${st.color}">${st.label}</span>
-          </div>
-          <div style="font-size:13px;color:var(--text);margin-bottom:3px">${r.title}</div>
-          ${r.sponsors?`<div style="font-size:11px;color:var(--text3)">Sponsors: ${r.sponsors}</div>`:''}
-        </div>
-        <button data-idx="${i}" class="res-rm-btn" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:0;flex-shrink:0">×</button>
-      </div>
-      <div style="display:flex;gap:5px;flex-wrap:wrap">
-        ${Object.entries(RES_STATUS_STYLES).map(([val,s])=>`
-          <button data-idx="${i}" data-val="${val}" class="res-status-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.12s;background:${r.status===val?s.bg:'transparent'};border-color:${r.status===val?s.border:'var(--border)'};color:${r.status===val?s.color:'var(--text3)'}">${s.label}</button>
-        `).join('')}
-      </div>
-    </div>`;
-  }).join('');
-  list.querySelectorAll('.res-rm-btn').forEach(btn=>btn.addEventListener('click',()=>removeResolution(parseInt(btn.dataset.idx))));
-  list.querySelectorAll('.res-status-btn').forEach(btn=>btn.addEventListener('click',()=>updateResStatus(parseInt(btn.dataset.idx),btn.dataset.val)));
+  // legacy - update badge only
+  const nb=document.getElementById('nav-res-badge');
+  if(nb) nb.textContent=resolution?'1':'0';
 }
 
 // ═══ STATS ═══
