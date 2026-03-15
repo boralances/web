@@ -3276,8 +3276,7 @@ function showScorePopup(delegate, onDone) {
   // Expose callbacks on window so the score popup can call back
   window._scoreCallback = function(basePts, total, mods) {
     scores[delegate.c] = (scores[delegate.c]||0) + total;
-    const modStr = mods.length ? ' ('+mods.join(', ')+')' : '';
-    showToast(`${delegate.n} → +${basePts}${modStr} = ${total} pts  |  Total: ${scores[delegate.c]}`, 'info');
+    // No toast — score is private, only visible in Scores tab
     if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
     if(typeof renderScoreTab==='function') renderScoreTab();
     URL.revokeObjectURL(url);
@@ -4606,17 +4605,16 @@ function printNameplate(code, name){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nameplate — ${name}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500&display=swap');
-    @page{size:A4 landscape;margin:0}
+    @page{size:A5 landscape;margin:0}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{width:297mm;height:210mm;display:flex;align-items:center;justify-content:center;background:#fff}
-    .card{width:260mm;height:90mm;background:linear-gradient(135deg,#0a0f1e 0%,#131d35 60%,#0a1628 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
-    .card::before{content:'';position:absolute;top:-40px;left:-40px;width:120px;height:120px;background:rgba(56,139,253,0.12);border-radius:50%;filter:blur(40px)}
-    .card::after{content:'';position:absolute;bottom:-40px;right:-40px;width:140px;height:140px;background:rgba(56,139,253,0.08);border-radius:50%;filter:blur(50px)}
-    .flag{width:90px;height:63px;object-fit:cover;border-radius:4px;border:3px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.4);position:relative;z-index:1}
-    .name{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
-    .committee{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
-    .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:4px 0;position:relative;z-index:1}
-    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+    body{width:210mm;height:148mm;display:flex;align-items:center;justify-content:center;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .card{width:200mm;height:130mm;background:linear-gradient(135deg,#0a0f1e 0%,#131d35 60%,#0a1628 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;position:relative;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
+    .card::before{content:'';position:absolute;top:-30px;left:-30px;width:100px;height:100px;background:rgba(56,139,253,0.12);border-radius:50%;filter:blur(30px)}
+    .card::after{content:'';position:absolute;bottom:-30px;right:-30px;width:100px;height:100px;background:rgba(56,139,253,0.08);border-radius:50%;filter:blur(30px)}
+    .flag{width:72px;height:50px;object-fit:cover;border-radius:4px;border:3px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.4);position:relative;z-index:1}
+    .name{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
+    .committee{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
+    .line{width:60px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:3px 0;position:relative;z-index:1}
   </style></head><body>
   <div class="card">
     <img class="flag" src="https://flagcdn.com/w160/${code.toLowerCase()}.png" onerror="this.style.display='none'"/>
@@ -4641,13 +4639,13 @@ function printAllNameplates(){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nameplates</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@500&display=swap');
-    @page{size:A4 landscape;margin:0}
+    @page{size:A5 landscape;margin:0}
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:#fff}
-    .card{width:297mm;height:210mm;background:linear-gradient(135deg,#0a0f1e,#131d35,#0a1628);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+    .card{width:210mm;height:148mm;background:linear-gradient(135deg,#0a0f1e,#131d35,#0a1628);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden}
     .card::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:rgba(56,139,253,0.1);border-radius:50%;filter:blur(60px)}
     .flag{width:120px;height:84px;object-fit:cover;border-radius:6px;border:3px solid rgba(255,255,255,0.2);box-shadow:0 4px 20px rgba(0,0,0,0.5);position:relative;z-index:1}
-    .name{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
+    .name{font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
     .committee{font-family:'Inter',sans-serif;font-size:16px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
     .line{width:100px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:6px 0;position:relative;z-index:1}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
@@ -4696,27 +4694,65 @@ function placardBackHTML(code, name, committee, org){
     </div>`;
 }
 
-function placardCSS(fullPage){
-  const W = fullPage ? '297mm' : '270mm';
-  const H = fullPage ? '95mm' : '95mm';
-  const fontSize = fullPage ? '62pt' : '50pt';
-  const labelSize = fullPage ? '14pt' : '12pt';
+function placardHalfCSS(){
+  // Each half is 148.5mm wide (half of A4 landscape 297mm), full 210mm tall
   return `
-    .placard{width:${W};height:${H};background:#fff;display:flex;align-items:stretch;overflow:hidden;${fullPage?'':'border-radius:6px;box-shadow:0 6px 30px rgba(0,0,0,0.18);'}}
-    .accent{width:14mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap');
+    @page{size:A4 landscape;margin:0}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{width:297mm;height:210mm;display:flex;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .half{width:148.5mm;height:210mm;display:flex;align-items:stretch;overflow:hidden}
+    .fold-line{width:1px;height:210mm;background:repeating-linear-gradient(to bottom,#b0b8cc 0,#b0b8cc 6px,transparent 6px,transparent 12px);flex-shrink:0;position:relative}
+    .fold-line::after{content:'FOLD';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(90deg);font-size:7pt;color:#b0b8cc;font-family:'Inter',sans-serif;letter-spacing:0.2em;white-space:nowrap;background:#fff;padding:0 4px}
+    .accent{width:10mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
     .back-accent{background:linear-gradient(0deg,#003087 0%,#0052cc 100%)}
-    .body{flex:1;padding:${fullPage?'12mm 20mm':'10mm 16mm'};display:flex;flex-direction:column;justify-content:center;gap:4mm}
-    .back-body{flex-direction:column;justify-content:center}
-    .label{font-family:'Inter',sans-serif;font-size:${labelSize};font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
-    .country{font-family:'Inter',sans-serif;font-size:${fontSize};font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1}
-    .footer{display:flex;align-items:center;gap:10px;padding-top:4mm;border-top:2px solid #e0e8f5}
-    .globe{width:${fullPage?'30px':'26px'};height:${fullPage?'30px':'26px'};background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .committee{font-family:'Inter',sans-serif;font-size:${fullPage?'11pt':'9.5pt'};font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
-    .org{font-family:'Inter',sans-serif;font-size:${fullPage?'9pt':'8pt'};font-weight:500;color:#7a8fa6;letter-spacing:0.14em;text-transform:uppercase}
-    .flag-panel{width:${fullPage?'70mm':'62mm'};flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:${fullPage?'13mm':'10mm'}}
+    .body{flex:1;padding:14mm 12mm;display:flex;flex-direction:column;justify-content:center;gap:5mm}
+    .label{font-family:'Inter',sans-serif;font-size:10pt;font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
+    .country{font-family:'Inter',sans-serif;font-size:32pt;font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1.05}
+    .footer{display:flex;align-items:center;gap:8px;padding-top:4mm;border-top:2px solid #e0e8f5}
+    .globe{width:22px;height:22px;background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .committee{font-family:'Inter',sans-serif;font-size:8pt;font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
+    .org{font-family:'Inter',sans-serif;font-size:7pt;font-weight:500;color:#7a8fa6;letter-spacing:0.12em;text-transform:uppercase}
+    .flag-panel{width:48mm;flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:10mm}
     .back-flag{order:-1}
-    .flag{width:100%;object-fit:cover;border-radius:4px;border:2px solid #dde6f0;box-shadow:0 3px 12px rgba(0,0,0,0.1)}
+    .flag{width:100%;object-fit:cover;border-radius:4px;border:2px solid #dde6f0;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   `;
+}
+
+function placardSingleHTML(code, name, committee, org, isBack){
+  const globeSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg>`;
+  if(!isBack){
+    return `<div class="half">
+      <div class="accent"></div>
+      <div class="body">
+        <div>
+          <div class="label">Delegate of</div>
+          <div class="country">${name}</div>
+        </div>
+        <div class="footer">
+          <div class="globe">${globeSvg}</div>
+          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
+        </div>
+      </div>
+      <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
+    </div>`;
+  } else {
+    // Back: mirror — flag on left, accent on right
+    return `<div class="half">
+      <div class="flag-panel back-flag"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
+      <div class="body">
+        <div>
+          <div class="label">Delegate of</div>
+          <div class="country">${name}</div>
+        </div>
+        <div class="footer">
+          <div class="globe">${globeSvg}</div>
+          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
+        </div>
+      </div>
+      <div class="accent back-accent"></div>
+    </div>`;
+  }
 }
 
 function printPlacard(code, name){
@@ -4725,19 +4761,10 @@ function printPlacard(code, name){
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Placard — ${name}</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
-    @page{size:A4 landscape;margin:0}
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{width:297mm;height:210mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5mm;background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    ${placardCSS(false)}
-    .fold-line{width:270mm;border:none;border-top:1.5px dashed #b0b8cc;position:relative}
-    .fold-line::after{content:'— fold here —';position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:#f0f2f5;padding:0 8px;font-size:7pt;color:#a0a8b8;font-family:'Inter',sans-serif;letter-spacing:0.1em;white-space:nowrap}
-    @media print{body{background:#fff}.fold-line::after{background:#fff}}
-  </style></head><body>
-  ${placardFrontHTML(code, name, committee, org)}
-  <hr class="fold-line"/>
-  ${placardBackHTML(code, name, committee, org)}
+  <style>${placardHalfCSS()}</style></head><body>
+  ${placardSingleHTML(code, name, committee, org, false)}
+  <div class="fold-line"></div>
+  ${placardSingleHTML(code, name, committee, org, true)}
   <script>window.onload=()=>window.print();<\/script>
   </body></html>`);
   w.document.close();
@@ -4747,26 +4774,18 @@ function printAllPlacards(){
   if(!delegates.length){showToast('No delegates registered.','error');return;}
   const committee = session.committee||'Model United Nations';
   const org = session.agenda ? session.agenda.split('—')[0].trim() : 'UNITED NATIONS';
-  // Each page: front on top half + back on bottom half (fold line in middle)
-  const pages = delegates.map((d,i)=>`
-    <div class="page-wrap" ${i<delegates.length-1?'style="page-break-after:always"':''}>
-      ${placardFrontHTML(d.c, d.n, committee, org)}
-      <hr class="fold-line"/>
-      ${placardBackHTML(d.c, d.n, committee, org)}
-    </div>`).join('');
+  const pages = delegates.map((d,i)=>{
+    const pb = i<delegates.length-1 ? 'style="page-break-after:always"' : '';
+    return `<div ${pb} style="width:297mm;height:210mm;display:flex">
+      ${placardSingleHTML(d.c, d.n, committee, org, false)}
+      <div class="fold-line"></div>
+      ${placardSingleHTML(d.c, d.n, committee, org, true)}
+    </div>`;
+  }).join('');
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>All Placards</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap');
-    @page{size:A4 landscape;margin:0}
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .page-wrap{width:297mm;height:210mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4mm;background:#fff;padding:5mm 0}
-    ${placardCSS(true)}
-    .fold-line{width:287mm;border:none;border-top:1.5px dashed #c0c8d8;position:relative}
-    .fold-line::after{content:'— fold —';position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:#fff;padding:0 6px;font-size:7pt;color:#b0b8cc;font-family:'Inter',sans-serif;letter-spacing:0.1em;white-space:nowrap}
-  </style></head><body>${pages}<script>window.onload=()=>window.print();<\/script></body></html>`);
+  <style>${placardHalfCSS()}</style></head><body>${pages}<script>window.onload=()=>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
