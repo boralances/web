@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boralances - Studio</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Rajdhani',sans-serif;background:#0a0e27;color:#fff;overflow-x:hidden;line-height:1.6}
+
+        .cyber-grid{position:fixed;top:0;left:0;width:100%;height:100%;
+            background:linear-gradient(90deg,rgba(0,255,255,0.03) 1px,transparent 1px),
+                       linear-gradient(rgba(0,255,255,0.03) 1px,transparent 1px);
+            background-size:50px 50px;pointer-events:none;z-index:1}
+
+        /* ── NAV ── */
+        header{position:relative;z-index:10;padding:20px 0;background:rgba(10,14,39,0.85);backdrop-filter:blur(10px);border-bottom:2px solid #0ff;box-shadow:0 0 20px rgba(0,255,255,0.5)}
+        nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px}
+        .logo{font-size:28px;font-weight:900;font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 10px #0ff,0 0 20px #0ff;letter-spacing:3px;animation:logoGlow 3s ease-in-out infinite;text-decoration:none}
+        @keyframes logoGlow{0%,100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff}50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px #0ff}}
+        .nav-links{display:flex;gap:24px;list-style:none;align-items:center}
+        .nav-links a{color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:8px 16px;border:2px solid transparent;transition:all 0.4s;position:relative;text-transform:uppercase;letter-spacing:2px}
+        .nav-links a::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,#0ff,#f0f);opacity:0;transition:opacity 0.3s;z-index:-1;filter:blur(20px)}
+        .nav-links a:hover::before{opacity:0.7}
+        .nav-links a:hover{color:#0ff;border:2px solid #0ff;box-shadow:0 0 20px #0ff,inset 0 0 10px rgba(0,255,255,0.3);text-shadow:0 0 10px #0ff;transform:translateY(-3px)}
+        .nav-mun{background:linear-gradient(135deg,rgba(56,139,253,0.15),rgba(56,139,253,0.05));border:2px solid rgba(56,139,253,0.6)!important;color:#388bfd!important;font-size:14px!important;letter-spacing:1px!important;border-radius:4px;display:flex!important;align-items:center;gap:6px}
+        .nav-mun:hover{color:#6db3ff!important;border-color:#388bfd!important;box-shadow:0 0 20px rgba(56,139,253,0.5)!important;text-shadow:0 0 10px #388bfd!important;background:linear-gradient(135deg,rgba(56,139,253,0.25),rgba(56,139,253,0.1))!important}
+
+        /* ── LAYOUT ── */
+        main{position:relative;z-index:5;max-width:1200px;margin:0 auto;padding:40px 20px}
+
+        /* ── HERO ── */
+        .studio-hero{text-align:center;padding:70px 20px 50px;margin-bottom:20px;position:relative}
+        .studio-hero::before{content:'STUDIO';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Orbitron',sans-serif;font-size:clamp(5rem,15vw,14rem);font-weight:900;color:rgba(255,0,255,0.04);letter-spacing:0.1em;white-space:nowrap;pointer-events:none;z-index:0}
+        .studio-hero h1{font-size:clamp(2.5rem,6vw,4.5rem);font-family:'Orbitron',sans-serif;font-weight:900;color:#f0f;text-shadow:0 0 20px #f0f,0 0 40px #f0f;margin-bottom:16px;animation:glow 2s ease-in-out infinite alternate;letter-spacing:4px;position:relative;z-index:1}
+        @keyframes glow{from{text-shadow:0 0 20px #f0f,0 0 40px #f0f}to{text-shadow:0 0 30px #f0f,0 0 60px #f0f,0 0 80px #0ff}}
+        .studio-hero p{font-size:1.3em;color:#0ff;text-shadow:0 0 10px #0ff;letter-spacing:3px;position:relative;z-index:1}
+        .studio-hero .tagline{font-size:1.1em;color:#aaa;font-weight:300;margin-top:12px;max-width:600px;margin-left:auto;margin-right:auto;position:relative;z-index:1}
+
+        /* ── SECTION TITLE ── */
+        .sec-title{font-size:2rem;font-family:'Orbitron',sans-serif;font-weight:700;color:#0ff;text-shadow:0 0 15px #0ff;letter-spacing:3px;margin-bottom:10px;display:flex;align-items:center;gap:14px}
+        .sec-title::after{content:'';flex:1;height:2px;background:linear-gradient(to right,rgba(0,255,255,0.4),transparent)}
+        .sec-desc{font-size:1.05em;color:#888;font-weight:300;margin-bottom:32px}
+
+        /* ── WHAT WE DO ── */
+        .what-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-bottom:60px}
+        .what-card{background:rgba(20,25,50,0.7);border:2px solid rgba(0,255,255,0.3);border-radius:4px;padding:32px 28px;transition:all 0.4s;position:relative;overflow:hidden}
+        .what-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,#0ff,#f0f);transform:scaleX(0);transform-origin:left;transition:transform 0.4s}
+        .what-card:hover::before{transform:scaleX(1)}
+        .what-card:hover{border-color:rgba(0,255,255,0.7);transform:translateY(-6px);box-shadow:0 12px 40px rgba(0,255,255,0.2)}
+        .what-icon{font-size:2.8rem;margin-bottom:16px;display:block}
+        .what-card h3{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:#f0f;text-shadow:0 0 10px #f0f;margin-bottom:10px;letter-spacing:1px}
+        .what-card p{font-size:0.95rem;color:#aaa;font-weight:300;line-height:1.7}
+
+        /* ── PROJECTS ── */
+        .projects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;margin-bottom:60px}
+        .project-card{background:rgba(15,18,40,0.85);border:2px solid #f0f;border-radius:4px;overflow:hidden;transition:all 0.4s;position:relative}
+        .project-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,0,255,0.05),rgba(0,255,255,0.05));opacity:0;transition:opacity 0.4s}
+        .project-card:hover::before{opacity:1}
+        .project-card:hover{transform:translateY(-8px);box-shadow:0 16px 50px rgba(255,0,255,0.35)}
+        .project-banner{height:140px;display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;overflow:hidden}
+        .project-banner::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(15,18,40,0.9))}
+        .banner-mc{background:linear-gradient(135deg,#0a2a0a,#0a4a0a)}
+        .banner-tool{background:linear-gradient(135deg,#1a0a2a,#2a0a4a)}
+        .banner-map{background:linear-gradient(135deg,#0a1a2a,#0a2a4a)}
+        .banner-event{background:linear-gradient(135deg,#2a1a00,#4a2a00)}
+        .project-body{padding:24px}
+        .project-status{display:inline-block;font-size:0.65rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-bottom:10px}
+        .status-live{background:rgba(0,255,0,0.15);border:1px solid #0f0;color:#0f0}
+        .status-wip{background:rgba(255,165,0,0.15);border:1px solid orange;color:orange}
+        .status-soon{background:rgba(0,200,255,0.15);border:1px solid #0cf;color:#0cf}
+        .project-body h3{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:#0ff;text-shadow:0 0 8px rgba(0,255,255,0.5);margin-bottom:8px;letter-spacing:1px}
+        .project-body p{font-size:0.95rem;color:#aaa;font-weight:300;line-height:1.7;margin-bottom:16px}
+        .project-tags{display:flex;flex-wrap:wrap;gap:6px}
+        .ptag{font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:2px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#888}
+
+        /* ── TOOLS ── */
+        .tools-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:60px}
+        .tool-chip{background:rgba(10,14,39,0.8);border:1px solid rgba(0,255,255,0.2);border-radius:4px;padding:16px 20px;display:flex;align-items:center;gap:12px;transition:all 0.3s}
+        .tool-chip:hover{border-color:rgba(0,255,255,0.6);background:rgba(0,255,255,0.05);transform:translateX(4px)}
+        .tool-logo{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+        .tool-name{font-size:0.9rem;font-weight:600;color:#e0e0e0;letter-spacing:0.04em}
+        .tool-type{font-size:0.7rem;color:#666;text-transform:uppercase;letter-spacing:0.1em}
+
+        /* ── TEAM ── */
+        .team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;margin-bottom:60px}
+        .team-card{background:rgba(20,25,50,0.7);border:2px solid transparent;border-radius:4px;padding:28px 24px;text-align:center;transition:all 0.4s;position:relative;overflow:hidden}
+        .team-card::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,#0ff,#f0f,#0ff);border-radius:6px;z-index:-1;opacity:0;transition:opacity 0.4s}
+        .team-card:hover::before{opacity:1}
+        .team-card:hover{transform:translateY(-6px)}
+        .team-avatar{width:72px;height:72px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2rem;border:2px solid;position:relative}
+        .avatar-cyan{border-color:#0ff;background:rgba(0,255,255,0.1);box-shadow:0 0 20px rgba(0,255,255,0.3)}
+        .avatar-magenta{border-color:#f0f;background:rgba(255,0,255,0.1);box-shadow:0 0 20px rgba(255,0,255,0.3)}
+        .avatar-green{border-color:#0f0;background:rgba(0,255,0,0.1);box-shadow:0 0 20px rgba(0,255,0,0.3)}
+        .avatar-gold{border-color:#ffd700;background:rgba(255,215,0,0.1);box-shadow:0 0 20px rgba(255,215,0,0.3)}
+        .team-name{font-family:'Orbitron',sans-serif;font-size:1rem;color:#fff;letter-spacing:1px;margin-bottom:4px}
+        .team-role{font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px}
+        .role-cyan{color:#0ff;text-shadow:0 0 8px #0ff}
+        .role-magenta{color:#f0f;text-shadow:0 0 8px #f0f}
+        .role-green{color:#0f0;text-shadow:0 0 8px #0f0}
+        .role-gold{color:#ffd700;text-shadow:0 0 8px #ffd700}
+        .team-bio{font-size:0.85rem;color:#888;font-weight:300;line-height:1.5}
+
+        /* ── TIMELINE ── */
+        .timeline{position:relative;margin-bottom:60px;padding-left:24px}
+        .timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#0ff,#f0f,#0ff)}
+        .tl-item{position:relative;margin-bottom:36px;padding-left:28px}
+        .tl-dot{position:absolute;left:-33px;top:4px;width:14px;height:14px;border-radius:50%;border:2px solid;background:#0a0e27;box-shadow:0 0 10px}
+        .tl-dot.cyan{border-color:#0ff;box-shadow:0 0 10px #0ff}
+        .tl-dot.magenta{border-color:#f0f;box-shadow:0 0 10px #f0f}
+        .tl-dot.green{border-color:#0f0;box-shadow:0 0 10px #0f0}
+        .tl-dot.gold{border-color:#ffd700;box-shadow:0 0 10px #ffd700}
+        .tl-date{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#666;margin-bottom:4px}
+        .tl-title{font-family:'Orbitron',sans-serif;font-size:1rem;color:#0ff;letter-spacing:1px;margin-bottom:6px}
+        .tl-text{font-size:0.95rem;color:#aaa;font-weight:300;line-height:1.6}
+
+        /* ── JOIN SECTION ── */
+        .join-section{background:linear-gradient(135deg,rgba(255,0,255,0.1),rgba(0,255,255,0.1));border:2px solid;border-image:linear-gradient(45deg,#f0f,#0ff) 1;padding:50px 40px;text-align:center;margin-bottom:40px;position:relative;overflow:hidden}
+        .join-section::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent,rgba(255,0,255,0.04),transparent);animation:shine 6s linear infinite}
+        @keyframes shine{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .join-section h2{font-family:'Orbitron',sans-serif;font-size:2rem;color:#f0f;text-shadow:0 0 20px #f0f;margin-bottom:16px;letter-spacing:3px;position:relative;z-index:1}
+        .join-section p{font-size:1.1em;color:#ccc;font-weight:300;max-width:580px;margin:0 auto 28px;line-height:1.8;position:relative;z-index:1}
+        .join-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px;position:relative;z-index:1}
+        .join-req{background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:16px;text-align:left}
+        .join-req .jreq-icon{font-size:1.5rem;margin-bottom:6px}
+        .join-req h4{font-size:0.85rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#0ff;margin-bottom:4px}
+        .join-req p{font-size:0.85rem;color:#888;margin:0}
+        .apply-btn{display:inline-block;background:linear-gradient(135deg,#f0f,#0ff);color:#0a0e27;font-family:'Orbitron',sans-serif;font-size:1rem;font-weight:900;letter-spacing:3px;text-transform:uppercase;padding:16px 44px;text-decoration:none;clip-path:polygon(12px 0%,100% 0%,calc(100% - 12px) 100%,0% 100%);transition:all 0.3s;position:relative;z-index:1;box-shadow:0 0 30px rgba(255,0,255,0.4)}
+        .apply-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(0,255,255,0.6);letter-spacing:4px}
+
+        /* ── FOOTER ── */
+        footer{position:relative;z-index:10;text-align:center;padding:30px;background:rgba(10,14,39,0.9);border-top:2px solid #f0f;box-shadow:0 0 20px rgba(255,0,255,0.5);margin-top:60px}
+        footer p{color:#0ff;text-shadow:0 0 10px #0ff}
+
+        @media(max-width:768px){.nav-links{flex-direction:column;gap:10px}.join-section{padding:30px 20px}}
+    </style>
+</head>
+<body>
+<div class="cyber-grid"></div>
+
+<header>
+    <nav>
+        <a href="index.html" class="logo">BORALANCES</a>
+        <ul class="nav-links">
+            <li><a href="server.html">Server</a></li>
+            <li><a href="mods.html">Mods</a></li>
+            <li><a href="modpack.html">Modpack</a></li>
+            <li><a href="studio.html">Studio</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="mun-chair.html" class="nav-mun">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+                MUN Chair
+            </a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+
+    <!-- HERO -->
+    <section class="studio-hero">
+        <h1>BORALANCES STUDIO</h1>
+        <p>&gt;&gt;&gt; Game Development & Creation Lab &lt;&lt;&lt;</p>
+        <p class="tagline">Modlar, araçlar ve deneyimler üretiyoruz. Oyunu sadece oynamıyoruz — inşa ediyoruz.</p>
+    </section>
+
+    <!-- WHAT WE DO -->
+    <div style="margin-bottom:50px">
+        <div class="sec-title">Ne Yapıyoruz</div>
+        <p class="sec-desc">Boralances Studio; mod geliştirme, araç üretimi, harita tasarımı ve topluluk içerikleri üzerine odaklanan yaratıcı kolumuz.</p>
+        <div class="what-grid">
+            <div class="what-card">
+                <span class="what-icon">🧱</span>
+                <h3>Mod Geliştirme</h3>
+                <p>Minecraft evrenini genişleten özel modlar tasarlıyoruz. Yeni bloklar, mekanikler, yaratıklar ve sistemler — hepsi Boralances kalitesiyle.</p>
+            </div>
+            <div class="what-card">
+                <span class="what-icon">🗺️</span>
+                <h3>Harita Tasarımı</h3>
+                <p>Oyuncuların kaybolmak isteyeceği dünyalar inşa ediyoruz. Dungeon'lardan adventure map'lere, her piksel özenle yerleştirilmiş.</p>
+            </div>
+            <div class="what-card">
+                <span class="what-icon">🛠️</span>
+                <h3>Araç & Plugin</h3>
+                <p>Sunucu yönetimini kolaylaştıran, oturum süreçlerini optimize eden araçlar geliştiriyoruz. MUN Chair bunun en güncel örneği.</p>
+            </div>
+            <div class="what-card">
+                <span class="what-icon">🎮</span>
+                <h3>Oyun Modları</h3>
+                <p>Minigame'ler, custom game modları ve event sistemleri. Topluluk için, toplulukla birlikte üretilmiş eğlence paketleri.</p>
+            </div>
+            <div class="what-card">
+                <span class="what-icon">📦</span>
+                <h3>Resource Pack</h3>
+                <p>Oyunun görsel dilini dönüştüren texture ve ses paketleri. Cyberpunk'tan fanteziye geniş bir estetik yelpazede.</p>
+            </div>
+            <div class="what-card">
+                <span class="what-icon">🤝</span>
+                <h3>Topluluk İçerikleri</h3>
+                <p>Topluluk üyelerinin fikirlerini gerçeğe dönüştürüyoruz. Her fikir bir projenin tohumudur.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div style="margin-bottom:50px">
+        <div class="sec-title">Projeler</div>
+        <p class="sec-desc">Üzerinde çalıştığımız ve yayınladığımız içerikler.</p>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-banner banner-mc"><span style="position:relative;z-index:1">🧱</span></div>
+                <div class="project-body">
+                    <span class="project-status status-live">● Yayında</span>
+                    <h3>BoralancesContent</h3>
+                    <p>Oyununuza yüzlerce yeni içerik katan kapsamlı mod. Yeni bloklar, crafting tarifleri, özel yaratıklar ve gelişmiş mekanikler içeriyor.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Forge</span>
+                        <span class="ptag">1.20.1</span>
+                        <span class="ptag">1.21.x</span>
+                        <span class="ptag">CurseForge</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-banner banner-tool"><span style="position:relative;z-index:1">⏱️</span></div>
+                <div class="project-body">
+                    <span class="project-status status-live">● Yayında</span>
+                    <h3>MUN Chair Tool</h3>
+                    <p>Model BM oturumlarını yönetmek için geliştirilen profesyonel web aracı. 195+ ülke bayrağı, 4 zamanlayıcı modu ve konuşmacı kuyruğu.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Web App</span>
+                        <span class="ptag">HTML/JS</span>
+                        <span class="ptag">Open Source</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-banner banner-map"><span style="position:relative;z-index:1">🗺️</span></div>
+                <div class="project-body">
+                    <span class="project-status status-wip">◐ Geliştiriliyor</span>
+                    <h3>Neon City Map</h3>
+                    <p>Siber punk estetiğiyle tasarlanmış büyük şehir haritası. Görevler, gizli alanlar ve özel NPC sistemi ile birlikte geliyor.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Adventure Map</span>
+                        <span class="ptag">1.21</span>
+                        <span class="ptag">Multiplayer</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-banner banner-event"><span style="position:relative;z-index:1">🏆</span></div>
+                <div class="project-body">
+                    <span class="project-status status-wip">◐ Geliştiriliyor</span>
+                    <h3>Arena Tournament System</h3>
+                    <p>Sunucumuza özel turnuva ve etkinlik yönetim sistemi. Otomatik eşleşme, liderboard ve ödül dağıtımı tek sistemde.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Plugin</span>
+                        <span class="ptag">Paper</span>
+                        <span class="ptag">Java</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-banner banner-mc"><span style="position:relative;z-index:1">📦</span></div>
+                <div class="project-body">
+                    <span class="project-status status-live">● Yayında</span>
+                    <h3>BoralancesCraft Modpack</h3>
+                    <p>500+ optimize mod içeren kapsamlı modpack. Tek tıkla kurulum, özel konfigürasyonlar ve performans iyileştirmeleriyle hazır.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Modpack</span>
+                        <span class="ptag">CurseForge</span>
+                        <span class="ptag">1.20.1</span>
+                    </div>
+                </div>
+            </div>
+            <div class="project-card">
+                <div class="project-banner banner-tool"><span style="position:relative;z-index:1">🎨</span></div>
+                <div class="project-body">
+                    <span class="project-status status-soon">○ Yakında</span>
+                    <h3>CyberPunk Resource Pack</h3>
+                    <p>Minecraft'ı cyberpunk estetiğine büründüren kapsamlı texture pack. Neon ışıklar, holografik efektler ve geleceğin sesi.</p>
+                    <div class="project-tags">
+                        <span class="ptag">Resource Pack</span>
+                        <span class="ptag">1.21</span>
+                        <span class="ptag">OptiFine</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOOLS WE USE -->
+    <div style="margin-bottom:50px">
+        <div class="sec-title">Kullandığımız Araçlar</div>
+        <p class="sec-desc">Üretimlerimizde güvendiğimiz teknoloji yığını.</p>
+        <div class="tools-row">
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(255,77,0,0.15)">☕</div>
+                <div><div class="tool-name">Java</div><div class="tool-type">Mod & Plugin</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(56,139,253,0.15)">🌐</div>
+                <div><div class="tool-name">HTML / JS / CSS</div><div class="tool-type">Web Araçları</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(0,255,255,0.1)">🔨</div>
+                <div><div class="tool-name">Forge / Fabric</div><div class="tool-type">Mod Framework</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(255,165,0,0.1)">📦</div>
+                <div><div class="tool-name">CurseForge</div><div class="tool-type">Dağıtım</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(255,0,255,0.1)">🎨</div>
+                <div><div class="tool-name">Blockbench</div><div class="tool-type">3D Modelleme</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(100,200,100,0.1)">🐙</div>
+                <div><div class="tool-name">GitHub</div><div class="tool-type">Versiyon Kontrol</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(88,101,242,0.15)">💬</div>
+                <div><div class="tool-name">Discord</div><div class="tool-type">Ekip İletişimi</div></div>
+            </div>
+            <div class="tool-chip">
+                <div class="tool-logo" style="background:rgba(0,255,0,0.1)">🐘</div>
+                <div><div class="tool-name">PaperMC</div><div class="tool-type">Sunucu Platform</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEAM -->
+    <div style="margin-bottom:50px">
+        <div class="sec-title">Ekip</div>
+        <p class="sec-desc">Boralances Studio'nun arkasındaki insanlar.</p>
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar avatar-cyan">👑</div>
+                <div class="team-name">Bora</div>
+                <div class="team-role role-cyan">Kurucu & Lead Dev</div>
+                <div class="team-bio">Projenin yaratıcısı. Mod geliştirme, sunucu yönetimi ve vizyonun sahibi.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar avatar-magenta">⚔️</div>
+                <div class="team-name">Lance</div>
+                <div class="team-role role-magenta">Gameplay Designer</div>
+                <div class="team-bio">Oyun mekaniklerini dengeleyen ve PvP sistemlerini tasarlayan kişi.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar avatar-green">🗺️</div>
+                <div class="team-name">Pixel</div>
+                <div class="team-role role-green">Map Builder</div>
+                <div class="team-bio">Haritaları ve yapıları inşa eden, her bloğu özenle yerleştiren yaratıcı.</div>
+            </div>
+            <div class="team-card">
+                <div class="team-avatar avatar-gold">🎨</div>
+                <div class="team-name">Neon</div>
+                <div class="team-role role-gold">Art & Texture</div>
+                <div class="team-bio">Texture pack'ler ve görseller. Siber punk estetiğinin mimarı.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div style="margin-bottom:50px">
+        <div class="sec-title">Tarihçe</div>
+        <p class="sec-desc">Nereden nereye geldik.</p>
+        <div class="timeline">
+            <div class="tl-item">
+                <div class="tl-dot gold"></div>
+                <div class="tl-date">2022 — Başlangıç</div>
+                <div class="tl-title">Boralances Kuruldu</div>
+                <div class="tl-text">Küçük bir Minecraft topluluğu olarak başladık. İlk sunucumuz ve ilk mod denemelerimiz bu dönemde gerçekleşti.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot cyan"></div>
+                <div class="tl-date">2023 — Büyüme</div>
+                <div class="tl-title">BoralancesContent Yayınlandı</div>
+                <div class="tl-text">İlk resmi modumuz CurseForge'da yayına girdi. Topluluk büyüdü, sunucu aktif hale geldi.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot magenta"></div>
+                <div class="tl-date">2024 — Genişleme</div>
+                <div class="tl-title">Modpack ve Studio Kolumuz Açıldı</div>
+                <div class="tl-text">BoralancesCraft modpack'i yayınlandı. Studio bölümü resmi olarak faaliyete geçti ve ekibimiz büyüdü.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot green"></div>
+                <div class="tl-date">2025 — Araçlar</div>
+                <div class="tl-title">MUN Chair Tool Geliştirildi</div>
+                <div class="tl-text">Oyun dışına çıkarak profesyonel bir web aracı geliştirdik. Studio sadece oyun değil, araçlar da üretiyor.</div>
+            </div>
+            <div class="tl-item">
+                <div class="tl-dot cyan"></div>
+                <div class="tl-date">2026 — Şimdi</div>
+                <div class="tl-title">Neon City & Tournament System</div>
+                <div class="tl-text">En büyük projelerimiz geliştirme aşamasında. Siber punk harita ve turnuva sistemi yakında geliyor.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOIN -->
+    <div class="join-section">
+        <h2>EKİBE KATIL</h2>
+        <p>Boralances Studio büyüyor. Eğer Minecraft modlama, harita yapımı, plugin geliştirme ya da içerik üretimine tutkun biriysen, seninle çalışmak isteriz.</p>
+        <div class="join-grid">
+            <div class="join-req">
+                <div class="jreq-icon">💻</div>
+                <h4>Teknik Bilgi</h4>
+                <p>Java, JavaScript veya herhangi bir modding frameworkü bilmek artı.</p>
+            </div>
+            <div class="join-req">
+                <div class="jreq-icon">🎮</div>
+                <h4>Minecraft Tutkusu</h4>
+                <p>Oyunu gerçekten sevmen ve nasıl çalıştığını anlamanı istiyoruz.</p>
+            </div>
+            <div class="join-req">
+                <div class="jreq-icon">🤝</div>
+                <h4>Ekip Ruhu</h4>
+                <p>Discord'da aktif olmak ve ekiple birlikte çalışmaya hazır olmak şart.</p>
+            </div>
+            <div class="join-req">
+                <div class="jreq-icon">🔥</div>
+                <h4>Motivasyon</h4>
+                <p>Başladığın işi bitirme azmi. Yarım kalan projeler herkesi yorar.</p>
+            </div>
+        </div>
+        <a href="https://discord.gg/boralances" class="apply-btn">Discord'dan Başvur</a>
+    </div>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 BORALANCES STUDIO — All Rights Reserved in the Digital Realm</p>
+</footer>
+</body>
+</html>
