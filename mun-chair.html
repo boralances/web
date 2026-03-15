@@ -3124,109 +3124,176 @@ function setArc(ratio){
 
 // ═══ AWARDS ═══
 
-// ── Score popup shown after each speech ──
+// ── Score popup shown after each speech — opens as separate window ──
+let scorePopupWin = null;
+
 function showScorePopup(delegate, onDone) {
-  const existing = document.getElementById('score-popup');
-  if(existing) existing.remove();
-  // Score popup appears as a small panel at bottom-left — chair-side only
-  // Does NOT cover the main timer area visible on HDMI
+  // Close any existing score window
+  if(scorePopupWin && !scorePopupWin.closed) scorePopupWin.close();
 
   const warnCount = (warnings[delegate.c]||[]).length;
   const currentPts = scores[delegate.c]||0;
+  const flagSrc = `https://flagcdn.com/w80/${delegate.c.toLowerCase()}.png`;
+  const committee = session.committee||'Committee';
 
-  const popup = document.createElement('div');
-  popup.id = 'score-popup';
-  // Bottom-left panel — stays on chair's screen, does NOT overlay the timer visible on HDMI
-  popup.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:700;width:360px;animation:slideUp 0.2s ease;';
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Rate Speech — ${delegate.n}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0d1117;color:#e6edf3;font-family:'Inter',sans-serif;display:flex;flex-direction:column;height:100vh;overflow:hidden;-webkit-font-smoothing:antialiased}
+    .header{background:#161b22;border-bottom:1px solid #21262d;padding:16px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .flag{width:52px;height:36px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.12)}
+    .delegate-name{font-size:20px;font-weight:700;color:#e6edf3}
+    .delegate-sub{font-size:11px;color:#388bfd;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+    .pts-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:#388bfd}
+    .warn-badge{font-size:12px;color:#f85149;margin-top:2px;text-align:right}
+    .section{padding:16px 24px;border-bottom:1px solid #21262d;flex-shrink:0}
+    .section-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#656d76;margin-bottom:10px}
+    .score-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+    .score-btn{background:#161b22;border:2px solid #21262d;border-radius:10px;padding:18px 8px;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Inter',sans-serif}
+    .score-btn:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.4)}
+    .score-btn .pts{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:700}
+    .score-btn .lbl{font-size:11px;color:#8d96a0;font-weight:500}
+    .checks{display:flex;gap:10px}
+    .check-card{flex:1;background:#161b22;border:1px solid #21262d;border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:border-color 0.15s}
+    .check-card:hover{border-color:#3d444d}
+    .check-card input{width:16px;height:16px;cursor:pointer}
+    .check-label{font-size:13px;font-weight:600}
+    .footer{margin-top:auto;padding:16px 24px;border-top:1px solid #21262d;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+    .skip-btn{background:transparent;border:1px solid #30363d;color:#8d96a0;font-family:'Inter',sans-serif;font-size:13px;padding:9px 20px;border-radius:8px;cursor:pointer;transition:all 0.15s}
+    .skip-btn:hover{border-color:#484f58;color:#e6edf3}
+    .chair-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#388bfd;background:rgba(56,139,253,0.12);border:1px solid rgba(56,139,253,0.25);padding:3px 10px;border-radius:10px}
+  </style>
+  </head><body>
 
-  const scoreOptions = [
-    { pts:5, label:'Excellent',  color:'var(--green)',  sub:'Exceptional contribution' },
-    { pts:4, label:'Very Good',  color:'var(--blue)',   sub:'Strong performance' },
-    { pts:3, label:'Good',       color:'var(--text)',   sub:'Solid contribution' },
-    { pts:2, label:'Fair',       color:'var(--orange)', sub:'Adequate participation' },
-    { pts:1, label:'Minimal',    color:'var(--red)',    sub:'Limited contribution' },
-  ];
-
-  popup.innerHTML = `
-    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.7);">
-
-      <!-- Header -->
-      <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-        ${flagImg(delegate.c,'flag-img-sm')}
-        <div style="flex:1">
-          <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue)">🔒 Chair — Rate Speech</div>
-          <div style="font-size:13px;font-weight:600;color:var(--text)">${delegate.n}</div>
-        </div>
-        <div style="text-align:right;font-size:11px;color:var(--text3)">
-          <span style="color:var(--blue);font-weight:700">${currentPts} pts</span>
-          ${warnCount>0?`<div style="color:var(--red);font-size:10px">⚠ ${warnCount} warn</div>`:''}
-        </div>
-      </div>
-
-      <!-- Improvisation + AI checkboxes compact -->
-      <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px">
-        <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;cursor:pointer;" id="improv-label">
-          <input type="checkbox" id="chk-improv" style="accent-color:var(--green);cursor:pointer"/>
-          <span style="font-size:11px;font-weight:600;color:var(--green)">🎤 Improv +2</span>
-        </label>
-        <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;cursor:pointer;" id="ai-label">
-          <input type="checkbox" id="chk-ai" style="accent-color:var(--red);cursor:pointer"/>
-          <span style="font-size:11px;font-weight:600;color:var(--red)">🤖 AI −5</span>
-        </label>
-      <!-- Score buttons compact -->
-      <div style="padding:10px 12px;display:flex;gap:5px;flex-wrap:wrap">
-        ${scoreOptions.map(o => `
-          <button data-pts="${o.pts}" style="flex:1;min-width:52px;display:flex;flex-direction:column;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:7px 6px;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif"
-            onmouseover="this.style.borderColor='${o.color}';this.style.background='var(--bg4)'"
-            onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg3)'">
-            <div style="font-size:16px;font-weight:700;color:${o.color};font-family:'JetBrains Mono',monospace">+${o.pts}</div>
-            <div style="font-size:9px;color:var(--text3);margin-top:1px">${o.label}</div>
-          </button>
-        `).join('')}
-      </div>
-
-      <!-- Footer -->
-      <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
-        <button id="score-skip-btn" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;padding:5px 12px;border-radius:var(--radius);cursor:pointer">Skip →</button>
-      </div>
+  <div class="header">
+    <img class="flag" src="${flagSrc}" onerror="this.style.display='none'"/>
+    <div>
+      <div class="delegate-sub">🔒 Chair — Rate Speech</div>
+      <div class="delegate-name">${delegate.n}</div>
     </div>
-  `;
+    <div style="margin-left:auto;text-align:right">
+      <div class="pts-badge">${currentPts} pts</div>
+      ${warnCount>0?`<div class="warn-badge">⚠ ${warnCount} warning${warnCount>1?'s':''}</div>`:''}
+    </div>
+  </div>
 
-  document.body.appendChild(popup);
+  <div class="section">
+    <div class="section-label">Speech Rating</div>
+    <div class="score-grid">
+      <button class="score-btn" onclick="apply(5)" style="border-color:rgba(63,185,80,0.3)">
+        <span class="pts" style="color:#3fb950">+5</span><span class="lbl">Excellent</span>
+      </button>
+      <button class="score-btn" onclick="apply(4)" style="border-color:rgba(56,139,253,0.3)">
+        <span class="pts" style="color:#388bfd">+4</span><span class="lbl">Very Good</span>
+      </button>
+      <button class="score-btn" onclick="apply(3)" style="border-color:rgba(255,255,255,0.1)">
+        <span class="pts" style="color:#e6edf3">+3</span><span class="lbl">Good</span>
+      </button>
+      <button class="score-btn" onclick="apply(2)" style="border-color:rgba(219,109,40,0.3)">
+        <span class="pts" style="color:#db6d28">+2</span><span class="lbl">Fair</span>
+      </button>
+      <button class="score-btn" onclick="apply(1)" style="border-color:rgba(248,81,73,0.3)">
+        <span class="pts" style="color:#f85149">+1</span><span class="lbl">Minimal</span>
+      </button>
+    </div>
+  </div>
 
-  function applyAndClose(basePts) {
-    const yms = document.getElementById('chk-improv').checked;
-    const ai  = document.getElementById('chk-ai').checked;
-    let total = basePts;
-    const modifiers = [];
-    if(yms){ total += 2; modifiers.push('+2 Improv'); }
-    if(ai){  total -= 5; modifiers.push('-5 AI'); }
-    scores[delegate.c] = (scores[delegate.c]||0) + total;
-    popup.remove();
-    const modStr = modifiers.length ? ' ('+modifiers.join(', ')+')' : '';
-    showToast(`${delegate.n} → +${basePts}${modStr} = ${total} pts  |  Total: ${scores[delegate.c]}`, 'info');
-  if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
-    onDone();
-  }
+  <div class="section">
+    <div class="section-label">Modifiers</div>
+    <div class="checks">
+      <label class="check-card" id="improv-card">
+        <input type="checkbox" id="chk-improv" onchange="updateImprov(this)"/>
+        <div>
+          <div class="check-label" style="color:#3fb950">🎤 Improvisation</div>
+          <div style="font-size:11px;color:#656d76">Spoke without notes → +2 pts</div>
+        </div>
+      </label>
+      <label class="check-card" id="ai-card">
+        <input type="checkbox" id="chk-ai" onchange="updateAI(this)"/>
+        <div>
+          <div class="check-label" style="color:#f85149">🤖 AI Detected</div>
+          <div style="font-size:11px;color:#656d76">AI-generated content → −5 pts</div>
+        </div>
+      </label>
+    </div>
+  </div>
 
-  popup.querySelectorAll('[data-pts]').forEach(btn => {
-    btn.addEventListener('click', () => applyAndClose(parseInt(btn.dataset.pts)));
-  });
+  <div class="footer">
+    <span class="chair-tag">Private — Chair Only</span>
+    <button class="skip-btn" onclick="skip()">Skip / No Score →</button>
+  </div>
 
-  document.getElementById('score-skip-btn').addEventListener('click', () => {
-    const yms = document.getElementById('chk-improv').checked;
-    const ai  = document.getElementById('chk-ai').checked;
-    if(yms||ai){
-      let total = 0;
-      const mods = [];
-      if(yms){ total+=2; mods.push('+2 Improv'); }
-      if(ai){ total-=5; mods.push('-5 AI'); }
-      scores[delegate.c]=(scores[delegate.c]||0)+total;
-      showToast(`${delegate.n} → ${mods.join(', ')} = ${total} pts  |  Total: ${scores[delegate.c]}`,'info');
+  <script>
+    function getModifiers(){
+      const improv = document.getElementById('chk-improv').checked;
+      const ai = document.getElementById('chk-ai').checked;
+      return {improv, ai};
     }
-    popup.remove();
+    function updateImprov(el){
+      document.getElementById('improv-card').style.borderColor = el.checked ? 'rgba(63,185,80,0.5)' : '';
+    }
+    function updateAI(el){
+      document.getElementById('ai-card').style.borderColor = el.checked ? 'rgba(248,81,73,0.5)' : '';
+    }
+    function apply(base){
+      const {improv, ai} = getModifiers();
+      let total = base;
+      const mods = [];
+      if(improv){ total+=2; mods.push('+2 Improv'); }
+      if(ai){ total-=5; mods.push('-5 AI'); }
+      window.opener && window.opener._scoreCallback && window.opener._scoreCallback(base, total, mods);
+      window.close();
+    }
+    function skip(){
+      const {improv, ai} = getModifiers();
+      if(improv||ai){
+        let total=0; const mods=[];
+        if(improv){total+=2;mods.push('+2 Improv');}
+        if(ai){total-=5;mods.push('-5 AI');}
+        window.opener && window.opener._scoreCallback && window.opener._scoreCallback(0, total, mods);
+      } else {
+        window.opener && window.opener._scoreSkip && window.opener._scoreSkip();
+      }
+      window.close();
+    }
+    // Keyboard shortcuts
+    document.addEventListener('keydown', e=>{
+      if(e.key==='5') apply(5);
+      else if(e.key==='4') apply(4);
+      else if(e.key==='3') apply(3);
+      else if(e.key==='2') apply(2);
+      else if(e.key==='1') apply(1);
+      else if(e.key==='Escape') skip();
+    });
+  <\/script>
+  </body></html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+
+  // Expose callbacks on window so the score popup can call back
+  window._scoreCallback = function(basePts, total, mods) {
+    scores[delegate.c] = (scores[delegate.c]||0) + total;
+    const modStr = mods.length ? ' ('+mods.join(', ')+')' : '';
+    showToast(`${delegate.n} → +${basePts}${modStr} = ${total} pts  |  Total: ${scores[delegate.c]}`, 'info');
+    if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
+    if(typeof renderScoreTab==='function') renderScoreTab();
+    URL.revokeObjectURL(url);
     onDone();
-  });
+  };
+  window._scoreSkip = function() {
+    URL.revokeObjectURL(url);
+    onDone();
+  };
+
+  scorePopupWin = window.open(
+    url,
+    'MUN_RateSpeech',
+    'width=560,height=500,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
+  );
+  if(!scorePopupWin){ showToast('Popup blocked — allow popups for this page.','error'); onDone(); }
 }
 
 // ── Build sorted ranking from scores ──
