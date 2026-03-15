@@ -386,6 +386,69 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 /* SCROLLABLE PANEL */
 .scroll-panel{max-height:300px;overflow-y:auto}
 .scroll-panel-tall{max-height:420px;overflow-y:auto}
+
+/* ═══ AWARDS PAGE ═══ */
+.awards-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.92);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn 0.4s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.awards-modal{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);width:100%;max-width:560px;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 80px rgba(0,0,0,0.7);
+  animation:slideUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.awards-header{
+  text-align:center;padding:28px 24px 20px;
+  border-bottom:1px solid var(--border);
+}
+.awards-gavel{font-size:40px;margin-bottom:10px;animation:gavelpulse 2s ease infinite}
+@keyframes gavelpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.awards-header h2{
+  font-size:18px;font-weight:700;color:var(--text);
+  letter-spacing:0.06em;text-transform:uppercase;margin-bottom:4px;
+}
+.awards-header p{font-size:12px;color:var(--text3)}
+
+.awards-list{padding:20px 24px;display:flex;flex-direction:column;gap:10px}
+
+.award-row{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-radius:var(--radius);
+  border:1px solid var(--border);
+  animation:awardIn 0.5s ease both;
+  transition:background 0.15s;
+}
+.award-row:hover{background:var(--bg3)}
+@keyframes awardIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+
+.award-medal{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.medal-best{background:linear-gradient(135deg,#b8860b,#ffd700);box-shadow:0 0 16px rgba(255,215,0,0.4)}
+.medal-outstanding{background:linear-gradient(135deg,#7b96b0,#c0d8f0);box-shadow:0 0 12px rgba(192,216,240,0.3)}
+.medal-verbal{background:linear-gradient(135deg,#7a5c38,#cd8b4a);box-shadow:0 0 10px rgba(205,139,74,0.25)}
+
+.award-info{flex:1;min-width:0}
+.award-type{
+  font-size:9px;font-weight:700;letter-spacing:0.14em;
+  text-transform:uppercase;margin-bottom:3px;
+}
+.type-best{color:#ffd700}
+.type-outstanding{color:#b0cce8}
+.type-verbal{color:#cd8b4a}
+.award-name{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.award-flag{flex-shrink:0}
+
+.awards-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 </style>
 </head>
 <body>
@@ -416,6 +479,15 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
       Speakers
       <span class="nav-badge" id="nav-spk-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-warnings" onclick="showPage('warnings')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+      Warnings
+      <span class="nav-badge" id="nav-warn-count" style="background:rgba(248,81,73,0.2);color:var(--red)">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-awards" onclick="showPage('awards')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/></svg>
+      Awards
     </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
@@ -781,6 +853,60 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ AWARDS ═══ -->
+    <div id="page-awards" class="page" style="max-width:600px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Session Awards</div>
+          <span class="chip chip-gray" id="awards-session-chip"></span>
+        </div>
+        <div class="card-body">
+          <div id="awards-content">
+            <div class="empty-state">Awards will appear here after ending a session with delegates.</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+            <button class="btn btn-ghost btn-sm" onclick="rerollAwards()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+              Reroll
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ WARNINGS ═══ -->
+    <div id="page-warnings" class="page" style="max-width:600px">
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Issue Warning</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <label class="field-label" style="margin-bottom:6px;display:block">Select Delegate</label>
+          <div class="csearch-wrap" style="margin-bottom:10px">
+            <svg class="csearch-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="warn-search" placeholder="Search delegate to warn..." autocomplete="off"
+              oninput="filterWarnSearch()" onfocus="openWarnDrop()" onblur="setTimeout(closeWarnDrop,200)"/>
+            <div class="cdropdown" id="warn-drop"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text3);padding:8px 0">Delegates with 3 warnings are disqualified from awards. Each warning applies -5 pts.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Warning Log</div>
+            <span class="chip chip-gray" id="warn-total-chip">0 warnings</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearWarnings()">Clear All</button>
+        </div>
+        <div class="card-body">
+          <div id="warn-list"><div class="empty-state">No warnings issued</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -873,6 +999,7 @@ function flagImg(code, cls=''){
 // ═══ STATE ═══
 let delegates=[], speakers=[], currentSpkIdx=-1, speechesDone=0;
 let curMode=null, timerSecs=0, totalSecs=0, timerRunning=false, timerInterval=null;
+let scores={}; // { countryCode: totalPoints }
 let session={committee:'',agenda:'',timers:{opening:120,gsl:90,motion:60,unmod:600}};
 const ARC_C = 2*Math.PI*85; // 534.07
 
@@ -881,6 +1008,8 @@ const PAGES_META = {
   timer:     {title:'Timer',            crumb:'Active session — select a mode to begin'},
   speakers:  {title:'Speakers List',    crumb:'Manage the speaker queue'},
   delegates: {title:'Delegates',        crumb:'Registered committee members'},
+  awards:    {title:'Session Awards',     crumb:'End of session recognition'},
+  warnings:  {title:'Warnings',           crumb:'Delegate disciplinary record'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -1015,9 +1144,10 @@ function beginSession(){
   document.getElementById('tb-del-chip').style.display='';
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
+  scores={}; warnings={};
   updateStats();
   renderAllSpk();
   showPage('timer');
@@ -1040,7 +1170,7 @@ function endSession(){
     <div style="color:var(--text3);font-size:12px;margin-bottom:12px">This will reset the timer and clear the speaker queue.</div>
     <div style="display:flex;gap:8px;justify-content:flex-end">
       <button id="end-cancel-btn" class="btn btn-ghost btn-sm">Cancel</button>
-      <button id="end-confirm-btn" class="btn btn-danger btn-sm">End Session</button>
+      <button id="end-confirm-btn" class="btn btn-danger btn-sm">End & Award 🏆</button>
     </div>
   `;
   document.body.appendChild(toast);
@@ -1048,6 +1178,7 @@ function endSession(){
   document.getElementById('end-confirm-btn').onclick = () => {
     toast.remove();
     doEndSession();
+    showAwardsCeremony();
   };
 }
 
@@ -1074,7 +1205,7 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
   ['opening','gsl','motion','unmod'].forEach(m => {
@@ -1284,9 +1415,19 @@ function updateSpkPanel(){
 
 function nextSpeaker(){
   stopTimer(); timerRunning=false;
-  speechesDone=currentSpkIdx+1;
-  currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
-  renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+  // Score the current speaker before advancing
+  const spk = (currentSpkIdx>=0 && currentSpkIdx<speakers.length) ? speakers[currentSpkIdx] : null;
+  if(spk && (curMode==='opening'||curMode==='gsl')){
+    showScorePopup(spk, ()=>{
+      speechesDone=currentSpkIdx+1;
+      currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
+      renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+    });
+  } else {
+    speechesDone=currentSpkIdx+1;
+    currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
+    renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+  }
 }
 
 // ═══ MODE SELECTION ═══
@@ -1375,6 +1516,343 @@ function setArc(ratio){
   fill.style.strokeDashoffset=ARC_C*(1-Math.max(0,ratio));
   fill.style.stroke=ratio<=0.1?'var(--red)':ratio<=0.25?'var(--orange)':'var(--blue)';
 }
+
+
+// ═══ AWARDS ═══
+
+// ── Score popup shown after each speech ──
+function showScorePopup(delegate, onDone) {
+  const existing = document.getElementById('score-popup');
+  if(existing) existing.remove();
+
+  const warnCount = (warnings[delegate.c]||[]).length;
+  const currentPts = scores[delegate.c]||0;
+
+  const popup = document.createElement('div');
+  popup.id = 'score-popup';
+  popup.style.cssText = `position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;`;
+
+  const scoreOptions = [
+    { pts:5, label:'Excellent',  color:'var(--green)',  sub:'Exceptional contribution' },
+    { pts:4, label:'Very Good',  color:'var(--blue)',   sub:'Strong performance' },
+    { pts:3, label:'Good',       color:'var(--text)',   sub:'Solid contribution' },
+    { pts:2, label:'Fair',       color:'var(--orange)', sub:'Adequate participation' },
+    { pts:1, label:'Minimal',    color:'var(--red)',    sub:'Limited contribution' },
+  ];
+
+  popup.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
+
+      <!-- Header -->
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+        ${flagImg(delegate.c,'flag-img-lg')}
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Rate Speech</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text)">${delegate.n}</div>
+        </div>
+        <div style="text-align:right;font-size:11px;color:var(--text3)">
+          <div>Score: <span style="color:var(--blue);font-weight:700">${currentPts} pts</span></div>
+          ${warnCount>0?`<div style="color:var(--red);margin-top:2px">⚠ ${warnCount} warning${warnCount>1?'s':''}</div>`:''}
+        </div>
+      </div>
+
+      <!-- Improvisation + AI checkboxes -->
+      <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px">
+        <label style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;cursor:pointer;" id="improv-label">
+          <input type="checkbox" id="chk-improv" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer"/>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--green)">🎤 Improvisation</div>
+            <div style="font-size:10px;color:var(--text3)">Spoke without notes → +2 pts</div>
+          </div>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;cursor:pointer;" id="ai-label">
+          <input type="checkbox" id="chk-ai" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer"/>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:var(--red)">🤖 AI Detected</div>
+            <div style="font-size:10px;color:var(--text3)">AI-generated content → -5 pts</div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Score buttons -->
+      <div style="padding:14px 20px;display:flex;flex-direction:column;gap:7px">
+        ${scoreOptions.map(o => `
+          <button data-pts="${o.pts}" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;color:var(--text);text-align:left;width:100%"
+            onmouseover="this.style.borderColor='${o.color}';this.style.background='var(--bg4)'"
+            onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg3)'">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:${o.color}">${o.label}</div>
+              <div style="font-size:10px;color:var(--text3)">${o.sub}</div>
+            </div>
+            <div style="font-size:18px;font-weight:700;color:${o.color};font-family:'JetBrains Mono',monospace">+${o.pts}</div>
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Footer -->
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+        <button id="score-skip-btn" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;padding:6px 14px;border-radius:var(--radius);cursor:pointer">Skip / No score</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  function applyAndClose(basePts) {
+    const yms = document.getElementById('chk-improv').checked;
+    const ai  = document.getElementById('chk-ai').checked;
+    let total = basePts;
+    const modifiers = [];
+    if(yms){ total += 2; modifiers.push('+2 Improv'); }
+    if(ai){  total -= 5; modifiers.push('-5 AI'); }
+    scores[delegate.c] = (scores[delegate.c]||0) + total;
+    popup.remove();
+    const modStr = modifiers.length ? ' ('+modifiers.join(', ')+')' : '';
+    showToast(`${delegate.n} → +${basePts}${modStr} = ${total} pts  |  Total: ${scores[delegate.c]}`, 'info');
+    onDone();
+  }
+
+  popup.querySelectorAll('[data-pts]').forEach(btn => {
+    btn.addEventListener('click', () => applyAndClose(parseInt(btn.dataset.pts)));
+  });
+
+  document.getElementById('score-skip-btn').addEventListener('click', () => {
+    const yms = document.getElementById('chk-improv').checked;
+    const ai  = document.getElementById('chk-ai').checked;
+    if(yms||ai){
+      let total = 0;
+      const mods = [];
+      if(yms){ total+=2; mods.push('+2 Improv'); }
+      if(ai){ total-=5; mods.push('-5 AI'); }
+      scores[delegate.c]=(scores[delegate.c]||0)+total;
+      showToast(`${delegate.n} → ${mods.join(', ')} = ${total} pts  |  Total: ${scores[delegate.c]}`,'info');
+    }
+    popup.remove();
+    onDone();
+  });
+}
+
+// ── Build sorted ranking from scores ──
+function computeAwardsFromScores() {
+  // Get all delegates who have at least 1 point
+  const ranked = Object.entries(scores)
+    .filter(([code, pts]) => pts > 0)
+    .sort((a, b) => b[1] - a[1]) // highest first
+    .map(([code, pts]) => {
+      const d = delegates.find(x => x.c === code) || COUNTRIES.find(x => x.c === code);
+      return d ? { d, pts } : null;
+    })
+    .filter(Boolean);
+
+  if (!ranked.length) return null;
+
+  // Filter out disqualified delegates (3+ warnings)
+  const eligible = ranked.filter(({d}) => (warnings[d.c]||[]).length < 3);
+  const ineligible = ranked.filter(({d}) => (warnings[d.c]||[]).length >= 3);
+
+  return {
+    best:        eligible.slice(0, 1),
+    outstanding: eligible.slice(1, 3),
+    verbal:      eligible.slice(3, 5),
+    all:         ranked,  // show everyone in leaderboard
+    ineligible,
+  };
+}
+
+function renderAwardsPage(awards, committeeLabel) {
+  const content = document.getElementById('awards-content');
+  const chip = document.getElementById('awards-session-chip');
+  if (chip) chip.textContent = committeeLabel || '';
+
+  if (!awards || !awards.all || awards.all.length === 0) {
+    content.innerHTML = `
+      <div class="empty-state">
+        No scored speeches yet.<br>
+        <span style="font-size:11px;color:var(--text3)">Rate speeches using the scoring popup after each speaker.</span>
+      </div>`;
+    return;
+  }
+
+  const rows = [];
+  awards.best.forEach(({d,pts}, i) =>
+    rows.push({ d, pts, type:'best', label:'Best Delegate', medal:'🥇', delay: i*80 }));
+  awards.outstanding.forEach(({d,pts}, i) =>
+    rows.push({ d, pts, type:'outstanding', label:'Outstanding Delegate', medal:'🥈', delay:(1+i)*80 }));
+  awards.verbal.forEach(({d,pts}, i) =>
+    rows.push({ d, pts, type:'verbal', label:'Verbal Commendation', medal:'🥉', delay:(3+i)*80 }));
+
+  // Full leaderboard
+  const leaderboard = awards.all.map(({d,pts}, i) => `
+    <div style="
+      display:flex;align-items:center;gap:10px;
+      padding:8px 12px;border-radius:var(--radius);
+      background:${i<5?'var(--bg3)':'transparent'};
+      border:1px solid ${i<5?'var(--border)':'transparent'};
+      margin-bottom:4px;opacity:${i>=5?0.5:1};
+    ">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:20px">${String(i+1).padStart(2,'0')}</span>
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:var(--text)">${d.n}</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:${i===0?'#ffd700':i<3?'var(--blue)':'var(--text2)'}">${pts}</span>
+      <span style="font-size:10px;color:var(--text3)">pts</span>
+    </div>
+  `).join('');
+
+  content.innerHTML = `
+    <div style="margin-bottom:20px">
+      ${rows.map(({d,pts,type,label,medal,delay}) => `
+        <div class="award-row" style="animation-delay:${delay}ms">
+          <div class="award-medal medal-${type}">${medal}</div>
+          <div class="award-info">
+            <div class="award-type type-${type}">${label}</div>
+            <div class="award-name">${d.n}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0">
+            ${flagImg(d.c,'flag-img')}
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text3)">${pts} pts</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">
+      Full Leaderboard
+    </div>
+    ${leaderboard}
+    ${awards.ineligible && awards.ineligible.length ? `
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--red);margin:16px 0 8px">
+        Disqualified — 3+ warnings
+      </div>
+      ${awards.ineligible.map(({d,pts})=>`
+        <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius);background:rgba(248,81,73,0.06);border:1px solid rgba(248,81,73,0.2);margin-bottom:4px;opacity:0.6">
+          ${flagImg(d.c,'flag-img-sm')}
+          <span style="flex:1;font-size:13px;color:var(--text);text-decoration:line-through">${d.n}</span>
+          <span style="font-size:10px;color:var(--red)">⚠ ${(warnings[d.c]||[]).length} warnings</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text3)">${pts} pts</span>
+        </div>
+      `).join('')}
+    ` : ''}
+  `;
+}
+
+function rerollAwards() {
+  // No reroll needed — scores are fixed. Just re-render.
+  showAwardsCeremony();
+}
+
+function showAwardsCeremony() {
+  const awards = computeAwardsFromScores();
+  renderAwardsPage(awards, session.committee);
+  showPage('awards');
+}
+
+
+// ═══ WARNINGS ═══
+let warnings = {}; // { countryCode: [{ reason, time }] }
+
+function addWarning(delegate) {
+  if(!warnings[delegate.c]) warnings[delegate.c] = [];
+  warnings[delegate.c].push({ time: new Date().toLocaleTimeString() });
+  // Apply -5 score penalty
+  scores[delegate.c] = (scores[delegate.c]||0) - 5;
+  const count = warnings[delegate.c].length;
+  renderWarningsList();
+  updateWarnBadge();
+  if(count >= 3){
+    showToast(`⚠ ${delegate.n} — 3rd warning! Disqualified from awards. (-5 pts)`, 'error');
+  } else {
+    showToast(`⚠ ${delegate.n} — Warning ${count}/3 issued. (-5 pts)`, 'error');
+  }
+}
+
+function removeWarning(code, idx) {
+  if(!warnings[code]) return;
+  // Restore the -5 penalty
+  scores[code] = (scores[code]||0) + 5;
+  warnings[code].splice(idx, 1);
+  if(warnings[code].length === 0) delete warnings[code];
+  renderWarningsList();
+  updateWarnBadge();
+}
+
+function clearWarnings() {
+  // Restore all -5 penalties
+  Object.entries(warnings).forEach(([code, list]) => {
+    scores[code] = (scores[code]||0) + (list.length * 5);
+  });
+  warnings = {};
+  renderWarningsList();
+  updateWarnBadge();
+}
+
+function updateWarnBadge() {
+  const total = Object.values(warnings).reduce((s,arr)=>s+arr.length, 0);
+  const badge = document.getElementById('nav-warn-count');
+  if(badge) badge.textContent = total;
+}
+
+function renderWarningsList() {
+  const list = document.getElementById('warn-list');
+  if(!list) return;
+  const entries = Object.entries(warnings);
+  if(!entries.length) { list.innerHTML = '<div class="empty-state">No warnings issued</div>'; return; }
+
+  const chip = document.getElementById('warn-total-chip');
+  const total = entries.reduce((s,[,arr])=>s+arr.length,0);
+  if(chip) chip.textContent = total + ' warning' + (total!==1?'s':'');
+
+  list.innerHTML = entries.map(([code, list]) => {
+    const d = delegates.find(x=>x.c===code) || COUNTRIES.find(x=>x.c===code);
+    if(!d) return '';
+    const disq = list.length >= 3;
+    return `<div style="background:var(--bg3);border:1px solid ${disq?'rgba(248,81,73,0.4)':'var(--border)'};border-radius:var(--radius);padding:12px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        ${flagImg(d.c,'flag-img-sm')}
+        <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${d.n}</span>
+        ${disq?'<span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:rgba(248,81,73,0.15);border:1px solid rgba(248,81,73,0.3);color:var(--red)">DISQUALIFIED</span>':''}
+        <span style="font-size:11px;color:var(--text3)">${list.length}/3</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        ${list.map((w,i)=>`
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3)">
+            <span style="color:var(--red)">⚠</span>
+            <span style="flex:1">Warning #${i+1} — ${w.time}</span>
+            <button data-code="${d.c}" data-idx="${i}" class="warn-rm-btn" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px">×</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  list.querySelectorAll('.warn-rm-btn').forEach(btn => {
+    btn.addEventListener('click', () => removeWarning(btn.dataset.code, parseInt(btn.dataset.idx)));
+  });
+}
+
+// Warn search dropdown
+function filterWarnSearch() {
+  const q = document.getElementById('warn-search').value.toLowerCase();
+  const dd = document.getElementById('warn-drop');
+  const pool = delegates.length ? delegates : COUNTRIES;
+  const results = pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML = results.map((d,i)=>{
+    const gidx = COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gidx}">
+      ${flagImg(d.c)}
+      <span class="cdrop-name">${d.n}</span>
+      ${(warnings[d.c]||[]).length>0?`<span style="font-size:10px;color:var(--red);margin-left:auto">⚠${(warnings[d.c]).length}</span>`:''}
+    </div>`;
+  }).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const d = COUNTRIES[parseInt(el.dataset.gidx)];
+      if(d){ addWarning(d); document.getElementById('warn-search').value=''; closeWarnDrop(); }
+    });
+  });
+}
+function openWarnDrop(){ filterWarnSearch(); document.getElementById('warn-drop').classList.add('open'); }
+function closeWarnDrop(){ document.getElementById('warn-drop').classList.remove('open'); }
 
 // ═══ STATS ═══
 function updateStats(){
