@@ -64,11 +64,11 @@ body.light-theme .session-pill{background:#f4f6f9}
   border-bottom:1px solid var(--border);flex-shrink:0;
 }
 .sb-logo-mark{
-  width:30px;height:30px;border-radius:8px;
-  background:linear-gradient(135deg,#388bfd,#1f6feb);
+  width:32px;height:32px;border-radius:9px;
+  background:linear-gradient(135deg,#388bfd 0%,#1f6feb 100%);
   display:flex;align-items:center;justify-content:center;
   font-size:15px;font-weight:800;color:#fff;flex-shrink:0;
-  letter-spacing:-0.5px;
+  letter-spacing:-0.5px;box-shadow:0 2px 8px rgba(56,139,253,0.35);
 }
 .sb-logo-text{font-size:14px;font-weight:600;color:var(--text)}
 .sb-logo-ver{font-size:10px;color:var(--text3);margin-top:1px}
@@ -80,11 +80,11 @@ body.light-theme .session-pill{background:#f4f6f9}
 .sb-nav{padding:4px 8px;flex:1;overflow-y:auto}
 .nav-item{
   display:flex;align-items:center;gap:10px;
-  padding:8px 10px;border-radius:var(--radius);
-  cursor:pointer;color:var(--text2);font-size:12.5px;font-weight:400;
-  transition:background var(--transition),color var(--transition);
+  padding:7px 10px;border-radius:var(--radius);
+  cursor:pointer;color:var(--text2);font-size:12px;font-weight:400;
+  transition:all var(--transition);
   margin-bottom:1px;border:none;background:none;width:100%;text-align:left;
-  font-family:'Inter',sans-serif;
+  font-family:'Inter',sans-serif;letter-spacing:0.01em;
 }
 .nav-item svg{opacity:0.6;flex-shrink:0;transition:opacity var(--transition)}
 .nav-item:hover{background:var(--bg4);color:var(--text)}
@@ -108,7 +108,8 @@ body.light-theme .session-pill{background:#f4f6f9}
 .pill-value{font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
 .pill-sub{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text4);margin-right:6px;vertical-align:middle}
-.status-dot.live{background:var(--green);box-shadow:0 0 0 2px rgba(63,185,80,0.25)}
+.status-dot.live{background:var(--green);box-shadow:0 0 0 2px rgba(63,185,80,0.25);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 2px rgba(63,185,80,0.25)}50%{box-shadow:0 0 0 4px rgba(63,185,80,0.12)}}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
@@ -141,8 +142,9 @@ body.light-theme .session-pill{background:#f4f6f9}
 .card{
   background:var(--bg2);border:1px solid var(--border);
   border-radius:var(--radius-lg);padding:0;overflow:hidden;
-  margin-bottom:14px;
+  margin-bottom:14px;transition:border-color 0.2s ease;
 }
+.card:hover{border-color:var(--border2)}
 .card-head{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px;border-bottom:1px solid var(--border);
@@ -591,6 +593,23 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
       Lobby Room
     </button>
+    <button class="nav-item disabled" id="nav-seating" onclick="showPage('seating')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M3 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H3zm0-1h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
+      Seating
+    </button>
+    <button class="nav-item disabled" id="nav-comreport" onclick="showPage('comreport')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM3 6.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 0-1h-9a.5.5 0 0 0-.5.5zm0 2a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 0-1h-9a.5.5 0 0 0-.5.5zm0 2a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 0-1h-5a.5.5 0 0 0-.5.5z"/></svg>
+      Com. Report
+    </button>
+    <button class="nav-item disabled" id="nav-motionvotes" onclick="showPage('motionvotes')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.235 1.559a.5.5 0 0 0-.47 0l-7.5 4a.5.5 0 0 0 0 .882L3.188 8 .264 9.559a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882L12.813 8l2.922-1.559a.5.5 0 0 0 0-.882l-7.5-4z"/></svg>
+      Motion Votes
+      <span class="nav-badge" id="nav-mv-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-feedback" onclick="showPage('feedback')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm4.271 1.055a.5.5 0 0 0-.542.832l3.5 2.25a.5.5 0 0 0 .542 0l3.5-2.25a.5.5 0 1 0-.542-.832L8 8.522 4.271 6.055z"/></svg>
+      Feedback
+    </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
       Delegates
@@ -604,6 +623,47 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <div class="pill-value" id="pill-committee">Not configured</div>
       <div class="pill-sub" id="pill-agenda">—</div>
     </div>
+
+    <!-- Session action buttons — shown only when session is active -->
+    <div id="sb-session-actions" style="display:none;margin-top:10px;display:none;flex-direction:column;gap:5px">
+      <!-- Export All -->
+      <button onclick="saveSession()" style="
+        display:flex;align-items:center;gap:8px;width:100%;
+        padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border);
+        background:none;color:var(--text3);font-size:11px;font-weight:500;
+        cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;
+        transition:all var(--transition);text-align:left;
+      " onmouseover="this.style.background='var(--bg4)';this.style.color='var(--text)';this.style.borderColor='var(--border2)'"
+         onmouseout="this.style.background='';this.style.color='var(--text3)';this.style.borderColor='var(--border)'">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+        💾 Export All
+      </button>
+      <!-- End Session (suspend) -->
+      <button onclick="openSuspendDialog()" style="
+        display:flex;align-items:center;gap:8px;width:100%;
+        padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border);
+        background:none;color:var(--text3);font-size:11px;font-weight:500;
+        cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;
+        transition:all var(--transition);text-align:left;
+      " onmouseover="this.style.background='rgba(56,139,253,0.08)';this.style.color='var(--blue)';this.style.borderColor='rgba(56,139,253,0.4)'"
+         onmouseout="this.style.background='';this.style.color='var(--text3)';this.style.borderColor='var(--border)'">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+        ⏸ End Session
+      </button>
+      <!-- End Meeting (permanent) -->
+      <button onclick="endMeeting()" style="
+        display:flex;align-items:center;gap:8px;width:100%;
+        padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border);
+        background:none;color:var(--text3);font-size:11px;font-weight:500;
+        cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;
+        transition:all var(--transition);text-align:left;
+      " onmouseover="this.style.background='rgba(248,81,73,0.08)';this.style.color='var(--red)';this.style.borderColor='rgba(248,81,73,0.4)'"
+         onmouseout="this.style.background='';this.style.color='var(--text3)';this.style.borderColor='var(--border)'">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        ✕ End Meeting
+      </button>
+    </div>
+
     <a href="index.html" style="
       display:flex;align-items:center;gap:8px;margin-top:10px;
       padding:8px 10px;border-radius:var(--radius);
@@ -1496,20 +1556,28 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
     </div>
 
     <!-- ═══ NAMEPLATE ═══ -->
-    <div id="page-nameplate" class="page" style="max-width:700px">
+    <div id="page-nameplate" class="page" style="max-width:820px">
+      <!-- Style toggle -->
       <div class="card" style="margin-bottom:12px">
         <div class="card-head">
           <div class="card-head-left">
-            <div class="card-title">Print Nameplates</div>
+            <div class="card-title">Nameplates & Placards</div>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="printAllNameplates()">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zm4 7h2a1 1 0 0 1 0 2H9v1h2v1H8v-4h1v1zm-3 0v4H5v-1h1v-1H5v-1h1V8H4zm4-4a1 1 0 0 1 1 1H6a1 1 0 0 1 1-1h3z"/></svg>
-            Print All
-          </button>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm nav-tab active" id="np-tab-placard" onclick="switchNpTab('placard')">📋 Official Placard</button>
+            <button class="btn btn-ghost btn-sm nav-tab" id="np-tab-dark" onclick="switchNpTab('dark')">🌑 Dark Nameplate</button>
+          </div>
         </div>
-        <div class="card-body" style="padding:8px">
-          <div id="nameplate-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
+        <div class="card-body" style="padding:6px 8px">
+          <div id="nameplate-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px"></div>
         </div>
+      </div>
+      <!-- Print all -->
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-primary btn-sm" id="np-print-all-btn" onclick="printAllPlacards()">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5z"/></svg>
+          Print All
+        </button>
       </div>
     </div>
 
@@ -1837,6 +1905,121 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ SEATING CHART ═══ -->
+    <div id="page-seating" class="page" style="max-width:820px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Seating Chart</div>
+            <span class="chip chip-gray" id="seat-count-chip">0 seated</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <select id="seat-layout" onchange="renderSeating()" style="width:auto">
+              <option value="horseshoe">Horseshoe</option>
+              <option value="rows">Rows</option>
+              <option value="circle">Circle</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="shuffleSeats()">🔀 Shuffle</button>
+            <button class="btn btn-ghost btn-sm" onclick="resetSeats()">↺ Reset</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:16px;overflow-x:auto">
+          <div id="seating-canvas" style="min-height:320px;position:relative"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Unassigned</div><span class="chip chip-gray" id="seat-unassigned-chip">0</span></div>
+        <div class="card-body" style="padding:10px">
+          <div id="seat-unassigned-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ COMMITTEE REPORT ═══ -->
+    <div id="page-comreport" class="page" style="max-width:700px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-title">Committee Report</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-primary btn-sm" onclick="exportComReport()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+              Export PDF
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="comreport-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MOTION VOTES ═══ -->
+    <div id="page-motionvotes" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">Record Procedural Vote</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">Motion</label>
+              <input type="text" id="mv-motion" placeholder="e.g. Motion to extend GSL by 5 min"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Raised By</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="mv-raised-search" placeholder="Search..." autocomplete="off"
+                  oninput="filterMvRaisedSearch()" onfocus="filterMvRaisedSearch();document.getElementById('mv-raised-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('mv-raised-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="mv-raised-drop"></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+            <div class="field">
+              <label class="field-label" style="color:var(--green)">✓ Yes</label>
+              <input type="number" id="mv-yes" value="0" min="0"/>
+            </div>
+            <div class="field">
+              <label class="field-label" style="color:var(--red)">✗ No</label>
+              <input type="number" id="mv-no" value="0" min="0"/>
+            </div>
+            <div class="field">
+              <label class="field-label" style="color:var(--text3)">○ Abstain</label>
+              <input type="number" id="mv-abs" value="0" min="0"/>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="recordMotionVote()">Record Vote</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Vote Record</div>
+            <span class="chip chip-gray" id="mv-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearMotionVotes()">Clear</button>
+        </div>
+        <div class="card-body">
+          <div id="mv-list"><div class="empty-state">No procedural votes recorded.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ FEEDBACK ═══ -->
+    <div id="page-feedback" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Delegate Feedback</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="exportAllFeedback()">Export All PDFs</button>
+        </div>
+        <div class="card-body">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Generate a personal feedback PDF for each delegate showing their score, speeches, warnings, and vote record.</div>
+          <div id="feedback-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -1987,6 +2170,10 @@ const PAGES_META = {
   speakstats: {title:'Speaker Stats',          crumb:'Visual chart of delegate participation'},
   postracker: {title:'Position Papers',        crumb:'Track submitted position papers'},
   lobbyroom:  {title:'Lobby Room',             crumb:'Informal session timer'},
+  seating:    {title:'Seating Chart',          crumb:'Visual room layout of delegate positions'},
+  comreport:  {title:'Committee Report',       crumb:'Auto-draft official committee report'},
+  motionvotes:{title:'Motion Votes',           crumb:'Procedural motion voting tracker'},
+  feedback:   {title:'Delegate Feedback',      crumb:'Generate per-delegate feedback PDFs'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -2016,6 +2203,10 @@ function showPage(id){
   if(id==='speakstats') renderSpeakStats();
   if(id==='postracker') renderPosTracker();
   if(id==='lobbyroom') initLobbyRoom();
+  if(id==='seating') renderSeating();
+  if(id==='comreport') renderComReport();
+  if(id==='motionvotes') renderMotionVotes();
+  if(id==='feedback') renderFeedback();
   if(id==='summary') renderSummary();
   if(id==='nameplate') renderNameplates();
 }
@@ -2139,7 +2330,7 @@ function beginSession(){
   document.getElementById('tb-del-chip').style.display='';
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
   sessionStartTime=Date.now();
@@ -2200,6 +2391,7 @@ function doEndSession(){
   safe('btn-save-session', el => el.style.display='none');
   safe('btn-suspend', el => el.style.display='none');
   safe('btn-end-meeting', el => el.style.display='none');
+  safe('sb-session-actions', el => el.style.display='none');
   safe('tb-del-chip',el=> el.style.display='none');
   safe('pill-committee', el => el.textContent='Not configured');
   safe('pill-agenda',    el => el.textContent='—');
@@ -2209,7 +2401,7 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
   sessionStartTime=null; sessionHistory=[]; placardQueue=[]; amendments=[];
@@ -4759,7 +4951,7 @@ function loadSession(evt){
       document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
       document.getElementById('session-clock-chip').style.display='';
       document.getElementById('quorum-chip').style.display='';
-      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{
         const el=document.getElementById(id); if(el) el.classList.remove('disabled');
       });
       startSessionClock();
@@ -4889,12 +5081,13 @@ function restoreSuspended(){
       document.getElementById('pill-committee').textContent=session.committee;
       document.getElementById('pill-agenda').textContent=session.agenda;
       document.getElementById('status-dot').classList.add('live');
-      ['btn-end','btn-poo','btn-save-session','btn-suspend'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
+      ['btn-end','btn-poo','btn-save-session','btn-suspend','btn-end-meeting'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
+      const _sba=document.getElementById('sb-session-actions');if(_sba)_sba.style.display='flex';
       document.getElementById('tb-del-chip').style.display='';
       document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
       document.getElementById('session-clock-chip').style.display='';
       document.getElementById('quorum-chip').style.display='';
-      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
       startSessionClock(); updateQuorumCheck(); updateStats(); renderAllSpk();
       localStorage.removeItem('mun-suspended-session');
       document.querySelectorAll('[style*="Suspended session found"]').forEach(el=>el.remove());
@@ -5041,6 +5234,304 @@ function endMeeting(){
     showPage('setup');
     showToast('Meeting ended.');
   };
+}
+
+
+// ═══ SEATING CHART ═══
+let seatOrder=[]; // [countryCode] in seat positions
+
+function renderSeating(){
+  const canvas=document.getElementById('seating-canvas'); if(!canvas) return;
+  const layout=document.getElementById('seat-layout').value;
+  const pool=delegates.length?[...delegates]:[];
+  if(!seatOrder.length) seatOrder=pool.map(d=>d.c);
+  
+  // seat delegates in order
+  const seated=seatOrder.map(c=>delegates.find(d=>d.c===c)).filter(Boolean);
+  const unassigned=delegates.filter(d=>!seatOrder.includes(d.c));
+  
+  const chip=document.getElementById('seat-count-chip'); if(chip) chip.textContent=seated.length+' seated';
+  const uch=document.getElementById('seat-unassigned-chip'); if(uch) uch.textContent=unassigned.length;
+  
+  const uList=document.getElementById('seat-unassigned-list');
+  if(uList) uList.innerHTML=unassigned.map(d=>`<div class="del-chip" style="padding:3px 8px 3px 5px;cursor:pointer" onclick="addToSeats('${d.c}')">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px">${d.n}</span></div>`).join('');
+
+  if(!seated.length){ canvas.innerHTML='<div class="empty-state">No delegates to seat.</div>'; return; }
+  
+  const n=seated.length;
+  const W=canvas.offsetWidth||700, H=320;
+  canvas.style.height=H+'px';
+  
+  let positions=[];
+  if(layout==='horseshoe'){
+    // Horseshoe: bottom row + two sides
+    const cols=Math.ceil(n/3), sideRows=Math.floor(n/3);
+    const bottomN=Math.min(cols,n-sideRows*2);
+    const leftN=sideRows, rightN=sideRows;
+    const startIdx={left:0,right:leftN,bottom:leftN+rightN};
+    // left side (top to bottom)
+    for(let i=0;i<leftN;i++) positions.push({x:40,y:20+i*(H-40)/Math.max(leftN-1,1)});
+    // right side (top to bottom)
+    for(let i=0;i<rightN;i++) positions.push({x:W-40,y:20+i*(H-40)/Math.max(rightN-1,1)});
+    // bottom row
+    for(let i=0;i<bottomN;i++) positions.push({x:80+i*(W-160)/Math.max(bottomN-1,1),y:H-30});
+    // fill remaining in second row from bottom
+    const remaining=n-leftN-rightN-bottomN;
+    for(let i=0;i<remaining;i++) positions.push({x:80+i*(W-160)/Math.max(remaining-1,1),y:H-65});
+  } else if(layout==='circle'){
+    const cx=W/2, cy=H/2, rx=(W-100)/2, ry=(H-60)/2;
+    for(let i=0;i<n;i++){
+      const a=(2*Math.PI*i/n)-Math.PI/2;
+      positions.push({x:cx+rx*Math.cos(a),y:cy+ry*Math.sin(a)});
+    }
+  } else { // rows
+    const cols=Math.min(8,Math.ceil(Math.sqrt(n*1.5)));
+    for(let i=0;i<n;i++) positions.push({x:40+(i%cols)*(W-80)/(cols-1||1),y:30+Math.floor(i/cols)*70});
+  }
+  
+  canvas.innerHTML='<svg width="100%" height="'+H+'">'+
+    // Chair podium at top-center
+    `<rect x="${W/2-40}" y="4" width="80" height="28" rx="6" fill="rgba(56,139,253,0.15)" stroke="rgba(56,139,253,0.4)" stroke-width="1"/>
+     <text x="${W/2}" y="22" text-anchor="middle" fill="#388bfd" font-size="11" font-family="Inter" font-weight="600">CHAIR</text>`+
+    positions.slice(0,seated.length).map((p,i)=>{
+      const d=seated[i];
+      const score=scores[d.c]||0;
+      const warn=(warnings[d.c]||[]).length;
+      const borderColor=warn>=3?'#f85149':score>5?'#3fb950':'#30363d';
+      return `<g transform="translate(${p.x},${p.y})" style="cursor:pointer">
+        <circle r="22" fill="#1c2333" stroke="${borderColor}" stroke-width="1.5"/>
+        <image href="${flagUrl(d.c)}" x="-14" y="-10" width="28" height="20" clip-path="circle(12px at 0 0)" style="opacity:0.9"/>
+        <text y="26" text-anchor="middle" fill="#8d96a0" font-size="8" font-family="Inter">${d.n.split(' ').pop().slice(0,10)}</text>
+        ${score!==0?`<text x="16" y="-14" text-anchor="middle" fill="${score>0?'#3fb950':'#f85149'}" font-size="8" font-family="JetBrains Mono" font-weight="700">${score>0?'+':''}${score}</text>`:''}
+      </g>`;
+    }).join('')+
+  '</svg>';
+}
+
+function shuffleSeats(){ seatOrder=[...delegates].sort(()=>Math.random()-0.5).map(d=>d.c); renderSeating(); }
+function resetSeats(){ seatOrder=delegates.map(d=>d.c); renderSeating(); }
+function addToSeats(code){ if(!seatOrder.includes(code)) seatOrder.push(code); renderSeating(); }
+
+// ═══ COMMITTEE REPORT ═══
+function renderComReport(){
+  const el=document.getElementById('comreport-content'); if(!el) return;
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const elapsed=sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
+  const dur=h?`${h}h ${m}m`:`${m}m`;
+  el.innerHTML=`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;font-size:12px;color:var(--text3);font-style:italic">
+      Preview of the official committee report. Click Export PDF to generate a printable version.
+    </div>
+    <div style="font-size:13px;color:var(--text);line-height:1.8">
+      <p style="margin-bottom:8px"><strong>Committee:</strong> ${session.committee||'—'}</p>
+      <p style="margin-bottom:8px"><strong>Agenda Item:</strong> ${session.agenda||'—'}</p>
+      <p style="margin-bottom:8px"><strong>Date:</strong> ${date}</p>
+      <p style="margin-bottom:8px"><strong>Session Duration:</strong> ${dur}</p>
+      <p style="margin-bottom:8px"><strong>Registered Delegates:</strong> ${delegates.length}</p>
+      <p style="margin-bottom:8px"><strong>Present:</strong> ${Object.values(rollCallData).filter(v=>v!=='absent').length}</p>
+      <p style="margin-bottom:8px"><strong>Total Speeches:</strong> ${sessionHistory.filter(e=>e.type==='speech').length}</p>
+      <p style="margin-bottom:8px"><strong>Moderated Caucuses:</strong> ${caucusLog.length}</p>
+      <p style="margin-bottom:8px"><strong>Warnings Issued:</strong> ${Object.values(warnings).reduce((a,l)=>a+l.length,0)}</p>
+      ${(()=>{const r=typeof resolution!=='undefined'&&resolution?resolution:null;return r?`<p style="margin-bottom:8px"><strong>Resolution:</strong> ${r.id} — ${r.title} (${r.status||'Draft'})</p>`:''})()}
+      <p style="margin-bottom:8px"><strong>Amendments:</strong> ${amendments.length} (${amendments.filter(a=>a.status==='accepted').length} accepted)</p>
+    </div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Delegate Scores</div>
+      ${Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]).map(([code,pts])=>{
+        const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+        return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">${flagImg(code,'flag-img-sm')}<span style="flex:1;font-size:12px">${d?d.n:code}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${pts>0?'var(--green)':'var(--red)'}">${pts>0?'+':''}${pts}</span></div>`;
+      }).join('')}
+    </div>`;
+}
+
+function exportComReport(){
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const elapsed=sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
+  const dur=h?`${h}h ${m}m`:`${m}m`;
+  const scoreRows=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]).map(([code,pts])=>{
+    const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    return `<tr><td>${d?d.n:code}</td><td style="text-align:right;color:${pts>0?'green':'red'};font-weight:bold">${pts>0?'+':''}${pts}</td></tr>`;
+  }).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Committee Report</title>
+  <style>body{font-family:Georgia,serif;margin:40px;color:#111;max-width:700px}
+  h1{font-size:22px;margin-bottom:4px}h2{font-size:16px;margin:20px 0 8px;border-bottom:2px solid #333;padding-bottom:4px}
+  p{margin:4px 0;line-height:1.7}table{width:100%;border-collapse:collapse;margin-top:8px}
+  td,th{padding:6px 10px;border:1px solid #ddd;font-size:13px}th{background:#f5f5f5}
+  .sig{margin-top:40px;border-top:1px solid #333;padding-top:8px;font-size:12px;color:#555}
+  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+  <h1>Official Committee Report</h1>
+  <p style="color:#555;font-size:13px">${session.committee||'Committee'} &nbsp;·&nbsp; ${date}</p>
+  <h2>Session Information</h2>
+  <p><strong>Agenda Item:</strong> ${session.agenda||'—'}</p>
+  <p><strong>Duration:</strong> ${dur}</p>
+  <p><strong>Delegates:</strong> ${delegates.length} registered, ${Object.values(rollCallData).filter(v=>v!=='absent').length} present</p>
+  <p><strong>Speeches:</strong> ${sessionHistory.filter(e=>e.type==='speech').length}</p>
+  <p><strong>Moderated Caucuses:</strong> ${caucusLog.length}</p>
+  <p><strong>Warnings:</strong> ${Object.values(warnings).reduce((a,l)=>a+l.length,0)}</p>
+  ${(()=>{const r=typeof resolution!=='undefined'&&resolution?resolution:null;return r?`<p><strong>Resolution:</strong> ${r.id} — ${r.title} (${r.status||'Draft'})</p>`:''})()}
+  <h2>Delegate Performance</h2>
+  <table><tr><th>Delegate</th><th style="text-align:right">Score</th></tr>${scoreRows}</table>
+  <div class="sig">Chair of the Committee &nbsp;&nbsp; _______________________</div>
+  </body></html>`;
+  const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups.','error');return;}
+  w.document.write(html); w.document.close(); setTimeout(()=>w.print(),400);
+}
+
+// ═══ MOTION VOTES ═══
+let motionVotes=[]; // [{motion,raisedBy,yes,no,abs,result,time}]
+let _mvRaisedBy=null;
+
+function filterMvRaisedSearch(){
+  const q=document.getElementById('mv-raised-search').value.toLowerCase();
+  const dd=document.getElementById('mv-raised-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,10);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_mvRaisedBy=d;document.getElementById('mv-raised-search').value=d.n;dd.classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function recordMotionVote(){
+  const motion=document.getElementById('mv-motion').value.trim();
+  if(!motion){showToast('Enter a motion description.','error');return;}
+  const yes=parseInt(document.getElementById('mv-yes').value)||0;
+  const no=parseInt(document.getElementById('mv-no').value)||0;
+  const abs=parseInt(document.getElementById('mv-abs').value)||0;
+  const result=yes>no?'passed':'failed';
+  motionVotes.push({motion,raisedBy:_mvRaisedBy?{..._mvRaisedBy}:null,yes,no,abs,result,time:new Date().toLocaleTimeString()});
+  document.getElementById('mv-motion').value='';
+  document.getElementById('mv-yes').value='0';
+  document.getElementById('mv-no').value='0';
+  document.getElementById('mv-abs').value='0';
+  document.getElementById('mv-raised-search').value=''; _mvRaisedBy=null;
+  renderMotionVotes();
+}
+
+function clearMotionVotes(){ motionVotes=[]; renderMotionVotes(); }
+
+function renderMotionVotes(){
+  const list=document.getElementById('mv-list'); if(!list) return;
+  const chip=document.getElementById('mv-count-chip'); if(chip) chip.textContent=motionVotes.length;
+  const nb=document.getElementById('nav-mv-count'); if(nb) nb.textContent=motionVotes.length;
+  if(!motionVotes.length){list.innerHTML='<div class="empty-state">No procedural votes recorded.</div>';return;}
+  list.innerHTML=[...motionVotes].reverse().map((v,i)=>{
+    const total=v.yes+v.no+v.abs;
+    const pct=total?Math.round(v.yes/total*100):0;
+    const passed=v.result==='passed';
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:6px">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:3px">${v.motion}</div>
+          <div style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            ${v.raisedBy?`${flagImg(v.raisedBy.c,'flag-img-sm')} ${v.raisedBy.n} ·`:''} ${v.time}
+          </div>
+        </div>
+        <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:${passed?'var(--green-dim)':'var(--red-dim)'};border:1px solid ${passed?'rgba(63,185,80,0.4)':'rgba(248,81,73,0.4)'};color:${passed?'var(--green)':'var(--red)'};">${passed?'PASSED':'FAILED'}</span>
+      </div>
+      <div style="display:flex;gap:12px;font-size:12px;margin-bottom:6px">
+        <span style="color:var(--green);font-weight:600">✓ ${v.yes}</span>
+        <span style="color:var(--red);font-weight:600">✗ ${v.no}</span>
+        <span style="color:var(--text3)">○ ${v.abs}</span>
+        <span style="color:var(--text3);margin-left:auto">${pct}% in favor</span>
+      </div>
+      <div style="height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex">
+        <div style="height:100%;background:var(--green);width:${total?v.yes/total*100:0}%;border-radius:2px 0 0 2px;transition:width 0.3s"></div>
+        <div style="height:100%;background:var(--border2);width:${total?v.abs/total*100:0}%;transition:width 0.3s"></div>
+        <div style="height:100%;background:var(--red);width:${total?v.no/total*100:0}%;border-radius:0 2px 2px 0;transition:width 0.3s"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ FEEDBACK ═══
+function renderFeedback(){
+  const list=document.getElementById('feedback-list'); if(!list) return;
+  if(!delegates.length){list.innerHTML='<div class="empty-state">No delegates registered.</div>';return;}
+  list.innerHTML=delegates.map(d=>{
+    const pts=scores[d.c]||0;
+    const warnCount=(warnings[d.c]||[]).length;
+    const speeches=sessionHistory.filter(e=>e.delegate&&e.delegate.c===d.c&&e.type==='speech').length;
+    const vote=votes[d.c]||'—';
+    const rc=rollCallData[d.c]||'absent';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">
+      ${flagImg(d.c,'flag-img')}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--text)">${d.n}</div>
+        <div style="font-size:11px;color:var(--text3)">Score: <strong style="color:${pts>0?'var(--blue)':'var(--text)'}">${pts>0?'+':''}${pts}</strong> &nbsp;·&nbsp; Speeches: <strong>${speeches}</strong> &nbsp;·&nbsp; Warnings: <strong style="color:${warnCount>0?'var(--red)':'var(--text)'}">${warnCount}</strong></div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="exportFeedback('${d.c}')">PDF</button>
+    </div>`;
+  }).join('');
+}
+
+function exportFeedback(code){
+  const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+  if(!d) return;
+  const pts=scores[d.c]||0;
+  const warnCount=(warnings[d.c]||[]).length;
+  const speeches=sessionHistory.filter(e=>e.delegate&&e.delegate.c===d.c&&e.type==='speech').length;
+  const vote=votes[d.c]||'—';
+  const rc=rollCallData[d.c]||'absent';
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const warnList=(warnings[d.c]||[]).map(w=>`<li>${w}</li>`).join('');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Feedback — ${d.n}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap');
+    @page{size:A4;margin:0}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8f4ee;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .sheet{background:#fff;width:180mm;padding:32px 36px;border-radius:4px;box-shadow:0 2px 20px rgba(0,0,0,0.08)}
+    .header{display:flex;align-items:center;gap:16px;margin-bottom:24px;padding-bottom:20px;border-bottom:2px solid #1a1a1a}
+    .flag{width:64px;height:44px;object-fit:cover;border-radius:3px;border:1px solid #ddd}
+    .name{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#1a1a1a;margin-bottom:3px}
+    .committee{font-size:12px;color:#888;letter-spacing:0.1em;text-transform:uppercase}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+    .stat{background:#f8f8f8;border-radius:6px;padding:14px;text-align:center}
+    .stat-val{font-size:28px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+    .stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:#888}
+    .section{margin-bottom:18px}
+    .section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:#888;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:4px}
+    .feedback-note{font-size:13px;color:#444;line-height:1.7;padding:12px;background:#fafafa;border-left:3px solid #c8a84b;border-radius:0 4px 4px 0}
+    .footer{margin-top:24px;padding-top:16px;border-top:1px solid #eee;display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+    @media print{body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>
+  <div class="sheet">
+    <div class="header">
+      <img class="flag" src="https://flagcdn.com/w160/${d.c}.png" onerror="this.style.display='none'"/>
+      <div>
+        <div class="name">${d.n}</div>
+        <div class="committee">${session.committee||'Model UN'} &nbsp;·&nbsp; ${date}</div>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="stat"><div class="stat-val" style="color:${pts>=0?'#1a7f37':'#cf222e'}">${pts>0?'+':''}${pts}</div><div class="stat-label">Score</div></div>
+      <div class="stat"><div class="stat-val">${speeches}</div><div class="stat-label">Speeches</div></div>
+      <div class="stat"><div class="stat-val" style="color:${warnCount>0?'#cf222e':'#1a7f37'}">${warnCount}</div><div class="stat-label">Warnings</div></div>
+    </div>
+    <div class="section">
+      <div class="section-title">Attendance & Vote</div>
+      <p style="font-size:13px;color:#444"><strong>Roll Call:</strong> ${rc} &nbsp;·&nbsp; <strong>Resolution Vote:</strong> ${vote}</p>
+    </div>
+    ${warnList?`<div class="section"><div class="section-title">Warnings</div><ul style="font-size:13px;color:#cf222e;padding-left:18px">${warnList}</ul></div>`:''}
+    <div class="section">
+      <div class="section-title">Chair Feedback</div>
+      <div class="feedback-note">Performance feedback for this delegate will appear here. Consider participation, procedural knowledge, collaboration, and written work.</div>
+    </div>
+    <div class="footer"><span>${session.agenda||''}</span><span>Chair of the Committee</span></div>
+  </div>
+  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups.','error');return;}
+  w.document.write(html); w.document.close();
+}
+
+function exportAllFeedback(){
+  if(!delegates.length){showToast('No delegates registered.','error');return;}
+  delegates.forEach((d,i)=>setTimeout(()=>exportFeedback(d.c),i*300));
 }
 
 // ═══ STATS ═══
