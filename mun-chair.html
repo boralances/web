@@ -503,6 +503,15 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       Resolutions
       <span class="nav-badge" id="nav-res-badge">0</span>
     </button>
+    <button class="nav-item disabled" id="nav-placard" onclick="showPage('placard')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/></svg>
+      Placard
+      <span class="nav-badge" id="nav-placard-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-history" onclick="showPage('history')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/></svg>
+      History
+    </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
       Delegates
@@ -773,6 +782,14 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
                 Next
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
               </button>
+            </div>
+            <!-- Yield / Right of Reply row — visible when a speaker is active -->
+            <div id="yield-row" style="display:none;padding:10px 16px;border-top:1px solid var(--border);display:none;gap:6px;flex-wrap:wrap;justify-content:center">
+              <button class="btn btn-ghost btn-sm" onclick="yieldFloor()" title="Yield remaining time to the floor (no points)">⬇ Yield to Floor</button>
+              <button class="btn btn-ghost btn-sm" onclick="openYieldDelegate()" title="Yield to another delegate (+0)">↗ Yield to Delegate</button>
+              <button class="btn btn-ghost btn-sm" onclick="openQuestionsMode()" title="Open to questions (+1 per question to other delegates)">❓ Open to Questions</button>
+              <button class="btn btn-secondary btn-sm" id="btn-ror" onclick="openRightOfReply()" title="Right of Reply">🎤 Right of Reply</button>
+              <button class="btn btn-secondary btn-sm" onclick="showPage('placard')" title="View placard queue">🏳 Placard Queue <span id="placard-badge" style="font-size:10px;margin-left:2px;color:var(--blue)"></span></button>
             </div>
           </div>
 
@@ -1222,6 +1239,62 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ PLACARD ═══ -->
+    <div id="page-placard" class="page" style="max-width:600px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Raise Placard</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <label class="field-label" style="margin-bottom:6px;display:block">Delegate</label>
+          <div class="csearch-wrap">
+            <svg class="csearch-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="placard-search" placeholder="Search delegate..." autocomplete="off"
+              oninput="filterPlacardSearch()" onfocus="openPlacardDrop()" onblur="setTimeout(closePlacardDrop,200)"/>
+            <div class="cdropdown" id="placard-drop"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Placard Queue</div>
+            <span class="chip chip-gray" id="placard-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearPlacards()">Clear</button>
+        </div>
+        <div class="card-body">
+          <div id="placard-list"><div class="empty-state">No placards raised.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ HISTORY ═══ -->
+    <div id="page-history" class="page" style="max-width:700px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Session History</div>
+            <span class="chip chip-gray" id="history-count">0 events</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-primary btn-sm" onclick="exportPDF()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+              Export PDF
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:8px">
+          <div id="history-list" style="max-height:500px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
+            <div class="empty-state">No events recorded yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -1321,6 +1394,9 @@ let mcSpkSecs=90,mcSpkTotal=90,mcSpkRunning=false,mcSpkInterval=null;
 let mcTotSecs=600,mcTotTotal=600,mcTotRunning=false,mcTotInterval=null;
 let mcCurSpeaker=null;
 let session={committee:'',agenda:'',timers:{opening:120,gsl:90,motion:60,unmod:600}};
+let sessionHistory=[]; // [{type, delegate, detail, time, pts}]
+let placardQueue=[]; // [{ delegate }] — raised placards waiting to speak
+let sessionStartTime=null;
 const ARC_C = 2*Math.PI*85; // 534.07
 
 const PAGES_META = {
@@ -1333,6 +1409,8 @@ const PAGES_META = {
   rollcall:   {title:'Roll Call',            crumb:'Mark attendance at session opening'},
   modcaucus:  {title:'Motion',               crumb:'Moderated caucus with per-speaker and total timers'},
   resolutions:{title:'Resolutions',          crumb:'Draft and track resolution papers'},
+  history:    {title:'Session History',       crumb:'Full log of events and PDF export'},
+  placard:    {title:'Placard Queue',          crumb:'Delegates signalling to speak'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -1349,6 +1427,8 @@ function showPage(id){
   if(id==='speakers'){ renderAllSpk(); renderDelegatePicker(); }
   if(id==='rollcall') renderRollCall();
   if(id==='resolutions') renderResolutions();
+  if(id==='history') renderHistory();
+  if(id==='placard') renderPlacardPage();
 }
 
 // ═══ SETUP ═══
@@ -1470,9 +1550,10 @@ function beginSession(){
   document.getElementById('tb-del-chip').style.display='';
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
+  sessionStartTime=Date.now();
   scores={}; warnings={}; rollCallData={}; resolutions=[];
   updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
@@ -1532,9 +1613,10 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
+  sessionStartTime=null; sessionHistory=[]; placardQueue=[];
   ['opening','gsl','motion','unmod'].forEach(m => {
     safe('mc-'+m, el => el.classList.remove('active'));
   });
@@ -1745,6 +1827,7 @@ function nextSpeaker(){
   // Score the current speaker before advancing
   const spk = (currentSpkIdx>=0 && currentSpkIdx<speakers.length) ? speakers[currentSpkIdx] : null;
   if(spk && (curMode==='opening'||curMode==='gsl')){
+    logEvent('speech',spk,'Speech completed',0);
     showScorePopup(spk, ()=>{
       speechesDone=currentSpkIdx+1;
       currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
@@ -1959,6 +2042,8 @@ function selectMode(mode){
   document.getElementById('btn-resume').style.display='none';
   const showNext=(mode==='opening'||mode==='gsl')&&speakers.length>0;
   document.getElementById('btn-next').style.display=showNext?'':'none';
+  const yr=document.getElementById('yield-row');
+  if(yr) yr.style.display=(mode==='opening'||mode==='gsl')?'flex':'none';
 }
 
 function onDurInput(mode){
@@ -2797,6 +2882,308 @@ function renderResolutions(){
   // legacy - update badge only
   const nb=document.getElementById('nav-res-badge');
   if(nb) nb.textContent=resolution?'1':'0';
+}
+
+
+// ═══ SESSION HISTORY ═══
+function logEvent(type, delegate, detail, pts){
+  const entry={type, delegate:delegate?{...delegate}:null, detail, pts:pts||0, time:new Date().toLocaleTimeString()};
+  sessionHistory.push(entry);
+  const badge=document.getElementById('history-count');
+  if(badge) badge.textContent=sessionHistory.length+' events';
+}
+
+function renderHistory(){
+  const list=document.getElementById('history-list');
+  if(!list) return;
+  if(!sessionHistory.length){list.innerHTML='<div class="empty-state">No events recorded yet.</div>';return;}
+  const TYPE_ICONS={speech:'🎤',yield_floor:'⬇',yield_delegate:'↗',questions:'❓',ror:'🎤',placard:'🏳',warning:'⚠',score:'⭐',motion:'📋',vote:'🗳'};
+  const TYPE_COLORS={speech:'var(--blue)',yield_floor:'var(--text3)',yield_delegate:'var(--text3)',questions:'var(--orange)',ror:'var(--green)',placard:'var(--text2)',warning:'var(--red)',score:'var(--yellow)',motion:'var(--blue)',vote:'var(--green)'};
+  list.innerHTML=[...sessionHistory].reverse().map((e,i)=>{
+    const icon=TYPE_ICONS[e.type]||'•';
+    const col=TYPE_COLORS[e.type]||'var(--text3)';
+    return `<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:var(--radius);background:var(--bg3);border:1px solid var(--border)">
+      <span style="font-size:14px;flex-shrink:0;margin-top:1px">${icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${e.delegate?`<span style="font-size:12px;font-weight:600;color:var(--text)">${flagImg(e.delegate.c,'flag-img-sm')} ${e.delegate.n}</span>`:''}
+          <span style="font-size:11px;color:${col};font-weight:600;text-transform:uppercase;letter-spacing:0.06em">${e.type.replace('_',' ')}</span>
+          ${e.pts!==0?`<span style="font-size:11px;font-family:'JetBrains Mono',monospace;color:${e.pts>0?'var(--green)':'var(--red)'};font-weight:700">${e.pts>0?'+':''}${e.pts}</span>`:''}
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${e.time}</span>
+        </div>
+        ${e.detail?`<div style="font-size:11px;color:var(--text3);margin-top:2px">${e.detail}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clearHistory(){ sessionHistory=[]; renderHistory(); }
+
+function exportPDF(){
+  const committee=session.committee||'Committee';
+  const agenda=session.agenda||'Agenda';
+  const date=new Date().toLocaleDateString();
+
+  let html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <title>Session Report — ${committee}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:32px;color:#111;font-size:13px}
+    h1{font-size:22px;margin-bottom:4px}
+    h2{font-size:16px;margin:20px 0 8px;border-bottom:1px solid #ccc;padding-bottom:4px}
+    .meta{color:#555;margin-bottom:16px}
+    table{width:100%;border-collapse:collapse;margin-bottom:16px}
+    th{background:#f0f0f0;padding:6px 10px;text-align:left;font-size:12px;border:1px solid #ddd}
+    td{padding:6px 10px;border:1px solid #ddd;font-size:12px}
+    .pts-pos{color:green;font-weight:bold} .pts-neg{color:red;font-weight:bold}
+  </style></head><body>
+  <h1>Session Report</h1>
+  <div class="meta"><strong>${committee}</strong> &nbsp;·&nbsp; ${agenda} &nbsp;·&nbsp; ${date}</div>
+  <h2>Score Leaderboard</h2>
+  <table><tr><th>#</th><th>Delegate</th><th>Score</th></tr>`;
+
+  const ranked=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]);
+  ranked.forEach(([code,pts],i)=>{
+    const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    const name=d?d.n:code;
+    const cls=pts>0?'pts-pos':'pts-neg';
+    html+=`<tr><td>${i+1}</td><td>${name}</td><td class="${cls}">${pts>0?'+':''}${pts}</td></tr>`;
+  });
+  html+=`</table><h2>Event Log (${sessionHistory.length} events)</h2>
+  <table><tr><th>Time</th><th>Type</th><th>Delegate</th><th>Detail</th><th>Pts</th></tr>`;
+  sessionHistory.forEach(e=>{
+    const cls=e.pts>0?'pts-pos':e.pts<0?'pts-neg':'';
+    html+=`<tr><td>${e.time}</td><td>${e.type.replace('_',' ')}</td><td>${e.delegate?e.delegate.n:''}</td><td>${e.detail||''}</td><td class="${cls}">${e.pts!==0?(e.pts>0?'+':'')+e.pts:''}</td></tr>`;
+  });
+  html+=`</table></body></html>`;
+
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+}
+
+// ═══ YIELD TO FLOOR ═══
+function yieldFloor(){
+  const spk=currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  stopTimer(); timerRunning=false;
+  if(spk){
+    logEvent('yield_floor',spk,'Yielded remaining time to the floor',0);
+    showToast(`${spk.n} yields to the floor (no points)`);
+  }
+  nextSpeaker();
+}
+
+// ═══ YIELD TO DELEGATE ═══
+function openYieldDelegate(){
+  const spk=currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  const existing=document.getElementById('yield-popup'); if(existing) existing.remove();
+  const popup=document.createElement('div');
+  popup.id='yield-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  const pool=delegates.length?delegates:COUNTRIES;
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px">Yield Time</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">${spk?spk.n:'Speaker'} yields to...</div>
+      </div>
+      <div style="padding:14px 20px">
+        <div class="csearch-wrap" style="margin-bottom:10px">
+          <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+          <input type="text" id="yield-del-search" placeholder="Search delegate..." autocomplete="off"
+            oninput="filterYieldSearch()" onfocus="filterYieldSearch();document.getElementById('yield-del-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('yield-del-drop').classList.remove('open'),200)"/>
+          <div class="cdropdown open" id="yield-del-drop" style="max-height:180px">${pool.slice(0,10).map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return `<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('')}</div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+        <button onclick="document.getElementById('yield-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      const target=COUNTRIES[parseInt(el.dataset.gidx)];
+      if(!target) return;
+      popup.remove();
+      if(spk) logEvent('yield_delegate',spk,`Yielded to ${target.n}`,0);
+      stopTimer(); timerRunning=false;
+      // Insert yielded-to delegate at next position
+      speakers.splice(currentSpkIdx+1,0,{...target});
+      renderAllSpk(); updateStats();
+      nextSpeaker();
+    });
+  });
+  function filterYieldSearch(){
+    const q=document.getElementById('yield-del-search').value.toLowerCase();
+    const pool2=delegates.length?delegates:COUNTRIES;
+    const res=pool2.filter(c=>c.n.toLowerCase().includes(q)).slice(0,10);
+    const dd=document.getElementById('yield-del-drop');
+    dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return `<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+    dd.querySelectorAll('.cdrop-item').forEach(el2=>{el2.addEventListener('mousedown',e=>{e.preventDefault();const t2=COUNTRIES[parseInt(el2.dataset.gidx)];if(!t2)return;popup.remove();if(spk)logEvent('yield_delegate',spk,`Yielded to ${t2.n}`,0);stopTimer();timerRunning=false;speakers.splice(currentSpkIdx+1,0,{...t2});renderAllSpk();updateStats();nextSpeaker();});});
+  }
+}
+
+// ═══ OPEN TO QUESTIONS ═══
+function openQuestionsMode(){
+  const spk=currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  if(!spk) return;
+  stopTimer(); timerRunning=false;
+  const existing=document.getElementById('questions-popup'); if(existing) existing.remove();
+  const popup=document.createElement('div');
+  popup.id='questions-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        ${flagImg(spk.c,'flag-img-lg')}
+        <div>
+          <div style="font-size:10px;color:var(--orange);text-transform:uppercase;letter-spacing:0.1em;font-weight:600">Open to Questions</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">${spk.n}</div>
+          <div style="font-size:11px;color:var(--text3)">+1 pt per question asked by others</div>
+        </div>
+      </div>
+      <div style="padding:16px 20px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Who asked a question?</div>
+        <div class="csearch-wrap" style="margin-bottom:8px">
+          <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+          <input type="text" id="q-asker-search" placeholder="Add questioner..." autocomplete="off"
+            oninput="filterQAskerSearch()" onfocus="filterQAskerSearch();document.getElementById('q-asker-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('q-asker-drop').classList.remove('open'),200)"/>
+          <div class="cdropdown" id="q-asker-drop"></div>
+        </div>
+        <div id="q-asker-list" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px"></div>
+        <div style="font-size:11px;color:var(--text3)">Speaker gets +1 per question received. Each questioner gets +1.</div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('questions-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+        <button id="q-done-btn" onclick="finalizeQuestions('${spk.c}')" class="btn btn-primary btn-sm">Done</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+
+  window._questionAskers=[];
+
+  function filterQAskerSearch(){
+    const q=document.getElementById('q-asker-search').value.toLowerCase();
+    const pool=delegates.length?delegates:COUNTRIES;
+    const res=pool.filter(c=>c.n.toLowerCase().includes(q)&&c.c!==spk.c&&!window._questionAskers.find(x=>x.c===c.c)).slice(0,10);
+    const dd=document.getElementById('q-asker-drop');
+    if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+    dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+    dd.querySelectorAll('.cdrop-item').forEach(el=>{el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;window._questionAskers.push(d);document.getElementById('q-asker-search').value='';renderQAskerList();filterQAskerSearch();});});
+    dd.classList.add('open');
+  }
+  function renderQAskerList(){
+    document.getElementById('q-asker-list').innerHTML=window._questionAskers.map(d=>`<div class="del-chip" style="padding:3px 8px 3px 5px">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px">${d.n}</span><button data-code="${d.c}" class="del-remove">×</button></div>`).join('');
+    document.getElementById('q-asker-list').querySelectorAll('.del-remove').forEach(btn=>btn.addEventListener('click',()=>{window._questionAskers=window._questionAskers.filter(x=>x.c!==btn.dataset.code);renderQAskerList();}));
+    document.getElementById('q-done-btn').textContent=`Done (${window._questionAskers.length} questions)`;
+  }
+  filterQAskerSearch();
+}
+
+function finalizeQuestions(spkCode){
+  const spk=delegates.find(x=>x.c===spkCode)||COUNTRIES.find(x=>x.c===spkCode);
+  const askers=window._questionAskers||[];
+  const qCount=askers.length;
+  if(spk && qCount>0){
+    scores[spk.c]=(scores[spk.c]||0)+qCount;
+    logEvent('questions',spk,`Opened to questions — ${qCount} asked`,qCount);
+    askers.forEach(d=>{ scores[d.c]=(scores[d.c]||0)+1; logEvent('questions',d,`Asked question to ${spk.n}`,1); });
+    showToast(`${spk.n} +${qCount} pts | ${qCount} questioner${qCount!==1?'s':''} each +1 pt`);
+  }
+  document.getElementById('questions-popup').remove();
+  nextSpeaker();
+}
+
+// ═══ RIGHT OF REPLY ═══
+function openRightOfReply(){
+  const existing=document.getElementById('ror-popup'); if(existing) existing.remove();
+  const popup=document.createElement('div');
+  popup.id='ror-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2px">🎤 Right of Reply</div>
+        <div style="font-size:14px;font-weight:600;color:var(--text)">Which delegate is replying?</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Select who raised the Right of Reply — their speech will be added to the queue</div>
+      </div>
+      <div style="padding:14px 20px">
+        <div class="csearch-wrap">
+          <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+          <input type="text" id="ror-search" placeholder="Search delegate..." autocomplete="off"
+            oninput="filterRorSearch()" onfocus="filterRorSearch();document.getElementById('ror-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('ror-drop').classList.remove('open'),200)"/>
+          <div class="cdropdown" id="ror-drop"></div>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+        <button onclick="document.getElementById('ror-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  function filterRorSearch(){
+    const q=document.getElementById('ror-search').value.toLowerCase();
+    const pool=delegates.length?delegates:COUNTRIES;
+    const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+    const dd=document.getElementById('ror-drop');
+    if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+    dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+    dd.querySelectorAll('.cdrop-item').forEach(el=>{el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;popup.remove();speakers.splice(currentSpkIdx+1,0,{...d});logEvent('ror',d,'Right of Reply granted',0);renderAllSpk();updateStats();showToast(`Right of Reply: ${d.n} added next in queue`);});});
+    dd.classList.add('open');
+  }
+  filterRorSearch();
+}
+
+// ═══ PLACARD ═══
+function filterPlacardSearch(){
+  const q=document.getElementById('placard-search').value.toLowerCase();
+  const dd=document.getElementById('placard-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)&&!placardQueue.find(x=>x.c===c.c)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;placardQueue.push({...d});renderPlacardPage();updatePlacardBadge();document.getElementById('placard-search').value='';closePlacardDrop();});});
+  dd.classList.add('open');
+}
+function openPlacardDrop(){filterPlacardSearch();}
+function closePlacardDrop(){const dd=document.getElementById('placard-drop');if(dd)dd.classList.remove('open');}
+
+function renderPlacardPage(){
+  const list=document.getElementById('placard-list');
+  const chip=document.getElementById('placard-count-chip');
+  if(chip) chip.textContent=placardQueue.length;
+  updatePlacardBadge();
+  if(!list) return;
+  if(!placardQueue.length){list.innerHTML='<div class="empty-state">No placards raised.</div>';return;}
+  list.innerHTML=placardQueue.map((d,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius);background:var(--bg3);border:1px solid var(--border);margin-bottom:4px">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:20px">${i+1}</span>
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:var(--text)">${d.n}</span>
+      <button class="btn btn-ghost btn-sm" data-idx="${i}" onclick="addPlacardToQueue(${i})">+ Queue</button>
+      <button class="spk-rm" data-idx="${i}">×</button>
+    </div>`).join('');
+  list.querySelectorAll('.spk-rm').forEach(btn=>btn.addEventListener('click',()=>{placardQueue.splice(parseInt(btn.dataset.idx),1);renderPlacardPage();}));
+  list.querySelectorAll('[onclick^="addPlacardToQueue"]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();}));
+}
+
+function addPlacardToQueue(idx){
+  const d=placardQueue[idx];
+  if(!d) return;
+  speakers.push({...d});
+  placardQueue.splice(idx,1);
+  if(currentSpkIdx===-1) currentSpkIdx=0;
+  renderAllSpk(); updateStats(); renderPlacardPage();
+  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  showToast(`${d.n} added to speaker queue from placard`);
+  logEvent('placard',d,'Added to queue from placard raise',0);
+}
+
+function clearPlacards(){ placardQueue=[]; renderPlacardPage(); updatePlacardBadge(); }
+
+function updatePlacardBadge(){
+  const b1=document.getElementById('nav-placard-count'); if(b1) b1.textContent=placardQueue.length;
+  const b2=document.getElementById('placard-badge'); if(b2) b2.textContent=placardQueue.length?placardQueue.length:'';
 }
 
 // ═══ STATS ═══
