@@ -970,6 +970,7 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
               <button class="btn btn-primary btn-sm" id="mc-spk-start" onclick="mcSpkStart()">▶ Start</button>
               <button class="btn btn-secondary btn-sm" id="mc-spk-pause" onclick="mcSpkPause()" style="display:none">⏸ Pause</button>
               <button class="btn btn-ghost btn-sm" onclick="mcSpkReset()">↺ Reset</button>
+              <button class="btn btn-success btn-sm" onclick="mcNextSpeaker()">Next ›</button>
             </div>
             <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:12px">
               <label style="font-size:11px;color:var(--text3)">sec/speaker</label>
@@ -1459,7 +1460,7 @@ function beginSession(){
     motion:parseInt(document.getElementById('def-motion').value)||60,
     unmod:parseInt(document.getElementById('def-unmod').value)||600,
   };
-  ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('t-'+m).value=session.timers[m]);
+  ['opening','gsl','unmod'].forEach(m=>document.getElementById('t-'+m).value=session.timers[m]);
   // Update sidebar
   document.getElementById('pill-committee').textContent=session.committee;
   document.getElementById('pill-agenda').textContent=session.agenda;
@@ -1942,6 +1943,7 @@ function finishMotion(){
 
 function selectMode(mode){
   if(timerRunning) return;
+  if(mode==='motion'){ openMotionSetup(); return; }
   curMode=mode;
   ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('mc-'+m).classList.toggle('active',m===mode));
   const secs=parseInt(document.getElementById('t-'+mode).value)||session.timers[mode];
@@ -1960,6 +1962,7 @@ function selectMode(mode){
 }
 
 function onDurInput(mode){
+  if(mode==='motion') return;
   if(curMode===mode&&!timerRunning){
     timerSecs=parseInt(document.getElementById('t-'+mode).value)||session.timers[mode];
     totalSecs=timerSecs; renderClock(); setArc(1);
@@ -2440,12 +2443,14 @@ function mcFmtTime(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+Strin
 
 function mcSpkStart(){
   if(mcSpkRunning) return;
-  mcSpkTotal = parseInt(document.getElementById('mc-spk-dur').value)||90;
+  const _spkDurEl=document.getElementById('mc-spk-dur'); mcSpkTotal=_spkDurEl?parseInt(_spkDurEl.value)||90:90;
   if(mcSpkSecs<=0) mcSpkSecs=mcSpkTotal;
   mcSpkRunning=true;
   document.getElementById('mc-spk-start').style.display='none';
   document.getElementById('mc-spk-pause').style.display='';
   mcSpkInterval=setInterval(mcSpkTick,1000);
+  // Auto-start total timer if not already running
+  if(!mcTotRunning) mcTotStart();
 }
 function mcSpkTick(){
   if(mcSpkSecs<=0){
@@ -2469,11 +2474,21 @@ function mcSpkTick(){
   document.getElementById('mc-spk-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--blue)';
 }
 function mcSpkPause(){ clearInterval(mcSpkInterval); mcSpkRunning=false; document.getElementById('mc-spk-pause').style.display='none'; document.getElementById('mc-spk-start').style.display=''; }
-function mcSpkReset(){ clearInterval(mcSpkInterval); mcSpkRunning=false; mcSpkSecs=parseInt(document.getElementById('mc-spk-dur').value)||90; mcSpkTotal=mcSpkSecs; document.getElementById('mc-spk-clock').textContent=mcFmtTime(mcSpkSecs); document.getElementById('mc-spk-clock').style.color='var(--text)'; document.getElementById('mc-spk-bar').style.width='100%'; document.getElementById('mc-spk-bar').style.background='var(--blue)'; document.getElementById('mc-spk-start').style.display=''; document.getElementById('mc-spk-pause').style.display='none'; }
+function mcNextSpeaker(){
+  clearInterval(mcSpkInterval); mcSpkRunning=false;
+  document.getElementById('mc-spk-start').style.display='';
+  document.getElementById('mc-spk-pause').style.display='none';
+  if(motionSpeakers.length>0 && motionCurrentIdx < motionSpeakers.length-1){
+    motionCurrentIdx++;
+    renderMotionSpeakers();
+  }
+  mcSpkReset();
+}
+function mcSpkReset(){ clearInterval(mcSpkInterval); mcSpkRunning=false; const _sd=document.getElementById('mc-spk-dur'); mcSpkSecs=_sd?parseInt(_sd.value)||90:90; mcSpkTotal=mcSpkSecs; document.getElementById('mc-spk-clock').textContent=mcFmtTime(mcSpkSecs); document.getElementById('mc-spk-clock').style.color='var(--text)'; document.getElementById('mc-spk-bar').style.width='100%'; document.getElementById('mc-spk-bar').style.background='var(--blue)'; document.getElementById('mc-spk-start').style.display=''; document.getElementById('mc-spk-pause').style.display='none'; }
 
 function mcTotStart(){
   if(mcTotRunning) return;
-  mcTotTotal=parseInt(document.getElementById('mc-tot-dur').value)||600;
+  const _totDurEl=document.getElementById('mc-tot-dur'); mcTotTotal=_totDurEl?parseInt(_totDurEl.value)||600:600;
   if(mcTotSecs<=0) mcTotSecs=mcTotTotal;
   mcTotRunning=true;
   document.getElementById('mc-tot-start').style.display='none';
@@ -2496,7 +2511,7 @@ function mcTotTick(){
   document.getElementById('mc-total-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'#e8a020':'var(--orange)';
 }
 function mcTotPause(){ clearInterval(mcTotInterval); mcTotRunning=false; document.getElementById('mc-tot-pause').style.display='none'; document.getElementById('mc-tot-start').style.display=''; }
-function mcTotReset(){ clearInterval(mcTotInterval); mcTotRunning=false; mcTotSecs=parseInt(document.getElementById('mc-tot-dur').value)||600; mcTotTotal=mcTotSecs; document.getElementById('mc-total-clock').textContent=mcFmtTime(mcTotSecs); document.getElementById('mc-total-clock').style.color='var(--orange)'; document.getElementById('mc-total-bar').style.width='100%'; document.getElementById('mc-total-bar').style.background='var(--orange)'; document.getElementById('mc-tot-start').style.display=''; document.getElementById('mc-tot-pause').style.display='none'; }
+function mcTotReset(){ clearInterval(mcTotInterval); mcTotRunning=false; const _td=document.getElementById('mc-tot-dur'); mcTotSecs=_td?parseInt(_td.value)||600:600; mcTotTotal=mcTotSecs; document.getElementById('mc-total-clock').textContent=mcFmtTime(mcTotSecs); document.getElementById('mc-total-clock').style.color='var(--orange)'; document.getElementById('mc-total-bar').style.width='100%'; document.getElementById('mc-total-bar').style.background='var(--orange)'; document.getElementById('mc-tot-start').style.display=''; document.getElementById('mc-tot-pause').style.display='none'; }
 
 function filterMcSpkSearch(){
   const q=document.getElementById('mc-spk-search').value.toLowerCase();
