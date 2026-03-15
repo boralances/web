@@ -749,6 +749,7 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <button id="btn-scoreboard" onclick="openScoreboard()" class="btn btn-ghost btn-sm" style="display:none;font-size:11px;font-weight:600" title="Open fullscreen scoreboard">
         🏆 Scoreboard
       </button>
+      <button onclick="showShortcutsOverlay()" class="btn btn-ghost btn-sm" title="Keyboard shortcuts" style="padding:5px 9px;font-size:13px;font-weight:700">?</button>
       <button id="lang-toggle-btn" onclick="toggleLang()" class="btn btn-ghost btn-sm" title="Dil / Language" style="padding:5px 10px;font-size:11px;font-weight:700;letter-spacing:0.06em">TR</button>
       <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-ghost btn-sm" title="Toggle theme" style="padding:5px 8px;font-size:14px">🌙</button>
       <span class="chip chip-gray" id="tb-del-chip" style="display:none"></span>
@@ -1121,6 +1122,42 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
           </div>
         </div>
       </div>
+      <!-- Logo upload for certificates & placards -->
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">Certificate & Placard Logos</div></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="field" style="margin:0">
+              <label class="field-label">Left Logo</label>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                <div id="logo-left-preview" style="width:48px;height:48px;border:2px dashed var(--border2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:var(--bg3);flex-shrink:0;overflow:hidden">
+                  <span style="font-size:18px;color:var(--text3)">+</span>
+                </div>
+                <div>
+                  <input type="file" id="logo-left-input" accept="image/*" style="display:none" onchange="loadLogo('left',this)"/>
+                  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('logo-left-input').click()">Upload</button>
+                  <button class="btn btn-ghost btn-sm" onclick="clearLogo('left')" style="margin-top:4px">Clear</button>
+                </div>
+              </div>
+            </div>
+            <div class="field" style="margin:0">
+              <label class="field-label">Right Logo</label>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+                <div id="logo-right-preview" style="width:48px;height:48px;border:2px dashed var(--border2);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:var(--bg3);flex-shrink:0;overflow:hidden">
+                  <span style="font-size:18px;color:var(--text3)">+</span>
+                </div>
+                <div>
+                  <input type="file" id="logo-right-input" accept="image/*" style="display:none" onchange="loadLogo('right',this)"/>
+                  <button class="btn btn-ghost btn-sm" onclick="document.getElementById('logo-right-input').click()">Upload</button>
+                  <button class="btn btn-ghost btn-sm" onclick="clearLogo('right')" style="margin-top:4px">Clear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:10px">Logos appear on certificate corners and placard footers. PNG with transparent background recommended.</div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-head">
           <div class="card-title">Session Awards</div>
@@ -1130,7 +1167,10 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
           <div id="awards-content">
             <div class="empty-state">Awards will appear here after ending a session with delegates.</div>
           </div>
-          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap">
+            <button class="btn btn-primary btn-sm" onclick="generateAllCertificates()">
+              🏅 Print All Certificates
+            </button>
             <button class="btn btn-ghost btn-sm" onclick="rerollAwards()">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
               Reroll
@@ -2325,6 +2365,9 @@ let sessionHistory=[]; // [{type, delegate, detail, time, pts}]
 let placardQueue=[]; // [{ delegate }] — raised placards waiting to speak
 let sessionStartTime=null;
 let chairNotes='';
+let customLogoLeft=''; // base64 data URL
+let customLogoRight=''; // base64 data URL
+let autoSaveInterval=null;
 let amendments=[]; // [{id,type,text,sponsor,status}]
 let blocs={}; // {blocName: {color, delegates:[code]}}
 let caucusLog=[]; // [{topic,raisedBy,speakers,totalSecs,spkSecs,outcome,time}]
@@ -2543,6 +2586,7 @@ function beginSession(){
   });
   sessionStartTime=Date.now();
   startSessionClock();
+  startAutoSave();
   document.getElementById('session-clock-chip').style.display='';
   document.getElementById('quorum-chip').style.display='';
   updateQuorumCheck();
@@ -2615,7 +2659,8 @@ function doEndSession(){
   ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
-  sessionStartTime=null; sessionHistory=[]; placardQueue=[]; amendments=[];
+  sessionStartTime=null; sessionHistory=[]; placardQueue=[];
+  stopAutoSave(); amendments=[];
   stopSessionClock();
   safe('session-clock-chip',el=>el.style.display='none');
   safe('quorum-chip',el=>el.style.display='none');
@@ -4446,7 +4491,8 @@ document.addEventListener('keydown', e => {
   if(key === 'n'){ const btn=document.getElementById('btn-next'); if(btn&&btn.style.display!=='none') nextSpeaker(); }
   if(key === 'p'){ const btn=document.getElementById('btn-poo'); if(btn&&btn.style.display!=='none') raisePointOfOrder(); }
   if(key === 'r'){ const btn=document.getElementById('btn-ror'); if(btn&&btn.style.display!=='none') openRightOfReply(); }
-  if(key === 'escape'){ document.querySelectorAll('[id$="-popup"],[id="score-popup"],[id="end-confirm-toast"],[id="poo-toast"]').forEach(el=>el.remove()); }
+  if(key === 'escape'){ document.querySelectorAll('[id$="-popup"],[id="score-popup"],[id="end-confirm-toast"],[id="poo-toast"],[id="shortcuts-overlay"],[id="inline-score-panel"]').forEach(el=>el.remove()); }
+  if(key === '?'||key === '/'){ showShortcutsOverlay(); }
 });
 
 // ═══ DELEGATE PROFILES ═══
@@ -4747,7 +4793,7 @@ function placardSingleHTML(code, name, committee, org, isBack){
       <div class="footer">
         <div class="globe">${globeSvg}</div>
         <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
-      </div>
+      ${customLogoLeft?`<img src="${customLogoLeft}" style="height:24px;max-width:40px;object-fit:contain;margin-left:auto;opacity:0.7"/>`:''}${customLogoRight?`<img src="${customLogoRight}" style="height:24px;max-width:40px;object-fit:contain;opacity:0.7"/>`:''}      </div>
     </div>
     <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
   </div>`;
@@ -6004,7 +6050,7 @@ function toggleHdmi(){
 }
 
 // ═══ SCOREBOARD OVERLAY ═══
-function buildScoreboardHTML(hideScores){
+function _buildScoreboardHTML_unused(hideScores){
   const ranked = Object.entries(scores)
     .sort((a,b)=>b[1]-a[1])
     .map(([code,pts])=>{ const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code); return d?{d,pts}:null; })
@@ -6527,6 +6573,196 @@ function showInlineScorePanel(delegate, onDone){
     panel.remove();
     onDone();
   });
+}
+
+
+// ═══ LOGO UPLOAD ═══
+function loadLogo(side, input){
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const data = e.target.result;
+    if(side==='left'){
+      customLogoLeft = data;
+      const prev = document.getElementById('logo-left-preview');
+      if(prev) prev.innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:contain"/>`;
+    } else {
+      customLogoRight = data;
+      const prev = document.getElementById('logo-right-preview');
+      if(prev) prev.innerHTML = `<img src="${data}" style="width:100%;height:100%;object-fit:contain"/>`;
+    }
+    showToast(`${side === 'left' ? 'Left' : 'Right'} logo loaded`);
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearLogo(side){
+  if(side==='left'){
+    customLogoLeft='';
+    const prev=document.getElementById('logo-left-preview');
+    if(prev) prev.innerHTML='<span style="font-size:18px;color:var(--text3)">+</span>';
+  } else {
+    customLogoRight='';
+    const prev=document.getElementById('logo-right-preview');
+    if(prev) prev.innerHTML='<span style="font-size:18px;color:var(--text3)">+</span>';
+  }
+}
+
+// ═══ AUTO-SAVE ═══
+function startAutoSave(){
+  stopAutoSave();
+  autoSaveInterval = setInterval(()=>{
+    if(!session.committee) return; // only if session started
+    try {
+      const snap = buildSessionSnapshot();
+      localStorage.setItem('mun-autosave', JSON.stringify(snap));
+      localStorage.setItem('mun-autosave-time', new Date().toLocaleTimeString());
+    } catch(e){}
+  }, 30000);
+}
+function stopAutoSave(){ clearInterval(autoSaveInterval); autoSaveInterval=null; }
+
+// Start auto-save when session begins (hook into beginSession)
+const _origBeginSession_autosave = typeof beginSession === 'function' ? null : null;
+
+// ═══ KEYBOARD SHORTCUTS OVERLAY ═══
+function showShortcutsOverlay(){
+  const existing = document.getElementById('shortcuts-overlay');
+  if(existing){ existing.remove(); return; }
+
+  const overlay = document.createElement('div');
+  overlay.id = 'shortcuts-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  overlay.onclick = e => { if(e.target===overlay) overlay.remove(); };
+
+  const shortcuts = [
+    {key:'Space', desc:'Start / Pause timer'},
+    {key:'N', desc:'Next speaker'},
+    {key:'P', desc:'Point of Order'},
+    {key:'R', desc:'Right of Reply'},
+    {key:'Esc', desc:'Close popups'},
+    {key:'1–5', desc:'Rate speech (1=Minimal → 5=Excellent)'},
+  ];
+
+  overlay.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.7);overflow:hidden;animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">⌨️ Keyboard Shortcuts</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">Works when not typing in an input</div>
+        </div>
+        <button onclick="document.getElementById('shortcuts-overlay').remove()" style="background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <div style="padding:12px 20px">
+        ${shortcuts.map(s=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:13px;color:var(--text)">${s.desc}</span>
+            <kbd style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;background:var(--bg4);border:1px solid var(--border2);border-radius:5px;padding:3px 10px;color:var(--text);letter-spacing:0.04em">${s.key}</kbd>
+          </div>`).join('')}
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);text-align:center">
+        <button onclick="document.getElementById('shortcuts-overlay').remove()" class="btn btn-ghost btn-sm">Close</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(overlay);
+}
+
+// ═══ SCOREBOARD DARK/LIGHT SYNC ═══
+// buildScoreboardHTML already uses inline dark styles, add light mode support
+const _origBuildScoreboardHTML = buildScoreboardHTML;
+function _buildScoreboardHTML_unused(hideScores){
+  // Override to inject theme info
+  const isLight = document.body.classList.contains('light-theme');
+  return _buildScoreboardHTMLThemed(hideScores, isLight);
+}
+
+function _buildScoreboardHTMLThemed(hideScores, isLight){
+  const bg = isLight ? '#f4f6f9' : '#0d1117';
+  const bg2 = isLight ? '#ffffff' : '#161b22';
+  const border = isLight ? '#d0d7e3' : '#21262d';
+  const text = isLight ? '#1a202c' : '#e6edf3';
+  const text3 = isLight ? '#718096' : '#656d76';
+  const blue = '#388bfd';
+
+  const ranked = Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([code,pts])=>{ const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code); return d?{d,pts}:null; })
+    .filter(Boolean);
+
+  const allDel = delegates.length ? [...delegates] : [];
+  allDel.forEach(d=>{ if(!ranked.find(r=>r.d.c===d.c)) ranked.push({d,pts:0}); });
+
+  const rows = ranked.map((r,i)=>{
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const warn = (warnings[r.d.c]||[]).length;
+    const disq = warn >= 3;
+    const disqColor = isLight ? '#cf222e' : 'rgba(248,81,73,0.7)';
+    const rowBg = i===0?(isLight?'rgba(210,153,34,0.06)':'rgba(210,153,34,0.08)'):'transparent';
+    return `<div style="display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid ${border};background:${rowBg}">
+      <span style="font-size:11px;color:${text3};font-family:'JetBrains Mono',monospace;min-width:24px">${String(i+1).padStart(2,'0')}</span>
+      <span style="font-size:22px;min-width:28px">${medal}</span>
+      <img src="https://flagcdn.com/w40/${r.d.c}.png" style="width:32px;height:22px;object-fit:cover;border-radius:3px;border:1px solid ${border}" onerror="this.style.display='none'"/>
+      <span style="flex:1;font-size:15px;font-weight:600;color:${disq?disqColor:text}">${r.d.n}${disq?' ⚠':''}</span>
+      ${hideScores
+        ? `<span style="font-size:13px;color:${text3}">—</span>`
+        : `<span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:${r.pts>0?'#3fb950':r.pts<0?'#f85149':text3}">${r.pts>0?'+':''}${r.pts}</span>`
+      }
+    </div>`;
+  }).join('');
+
+  const spk = currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  const committee = session.committee||'Committee';
+  const elapsed = sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60),s=elapsed%60;
+  const clockStr=(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Scoreboard — ${committee}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:${bg};color:${text};font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+    .header{padding:20px 32px;background:${bg2};border-bottom:1px solid ${border};display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .title{font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${blue};margin-bottom:3px}
+    .committee{font-size:22px;font-weight:700;color:${text}}
+    .clock{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;color:${text}}
+    .clock-label{font-size:10px;color:${text3};text-transform:uppercase;letter-spacing:0.1em}
+    .cur-speaker{padding:16px 32px;background:${bg2};border-bottom:1px solid ${border};display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .cur-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:${text3}}
+    .cur-name{font-size:16px;font-weight:600;color:${text}}
+    .scores{flex:1;overflow-y:auto;background:${bg}}
+    .mode-chip{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:10px;background:rgba(56,139,253,0.15);border:1px solid rgba(56,139,253,0.3);color:${blue};margin-left:8px}
+    .footer{padding:12px 32px;background:${bg2};border-top:1px solid ${border};font-size:10px;color:${text3};text-align:center;flex-shrink:0;letter-spacing:0.1em;text-transform:uppercase}
+    .theme-btn{position:fixed;bottom:16px;right:16px;background:${bg2};border:1px solid ${border};border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+  </style></head><body>
+  <div class="header">
+    <div>
+      <div class="title">Model United Nations</div>
+      <div class="committee">${committee}${curMode?`<span class="mode-chip">${curMode.toUpperCase()}</span>`:''}</div>
+    </div>
+    <div style="text-align:right">
+      <div class="clock" id="sb-clock">${clockStr}</div>
+      <div class="clock-label">Session Time</div>
+    </div>
+  </div>
+  ${spk?`<div class="cur-speaker">
+    <img src="https://flagcdn.com/w40/${spk.c}.png" style="width:36px;height:25px;object-fit:cover;border-radius:3px;border:1px solid ${border}" onerror="this.style.display='none'"/>
+    <div><div class="cur-label">Current Speaker</div><div class="cur-name">${spk.n}</div></div>
+  </div>`:''}
+  <div class="scores">${rows||`<div style="padding:40px;text-align:center;color:${text3}">No delegates registered</div>`}</div>
+  <div class="footer">${session.agenda||'—'} · ${delegates.length} delegates · ${hideScores?'Scores hidden':'Live scores'}</div>
+  <button class="theme-btn" onclick="document.body.style.background=document.body.style.background===''?'#f4f6f9':''" title="Toggle display">🌓</button>
+  <script>
+    setInterval(()=>{ if(window.opener&&!window.opener.closed) window.opener.updateScoreboard(); },3000);
+    const start=${sessionStartTime||Date.now()};
+    setInterval(()=>{
+      const e=Math.floor((Date.now()-start)/1000);
+      const h=Math.floor(e/3600),m=Math.floor((e%3600)/60),s=e%60;
+      const el=document.getElementById('sb-clock');
+      if(el) el.textContent=(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    },1000);
+  <\/script>
+  </body></html>`;
 }
 
 // ═══ STATS ═══
