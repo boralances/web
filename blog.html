@@ -169,8 +169,11 @@
 
 <script>
 // ── CONFIG ──
+// GitHub kullanıyorsan: 'https://raw.githubusercontent.com/KULLANICI/REPO/main/posts/'
+// Yerel sunucu kullanıyorsan: 'posts/'
+// Aynı dizinde ise: ''
+const POSTS_DIR = 'https://raw.githubusercontent.com/boralances/web/main/posts/';
 const TOTAL = 1000;
-const POSTS_DIR = 'posts/'; // .md dosyalarının bulunduğu klasör — aynı dizindeyse '' yap
 
 // ── STATE ──
 let allPosts = []; // { num, title, excerpt, raw, tags, readTime }
@@ -273,7 +276,7 @@ function readTime(raw) {
 async function fetchPost(num) {
     const url = `${POSTS_DIR}${num}.md`;
     try {
-        const res = await fetch(url);
+        const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) return null;
         const text = await res.text();
         if (!text || text.trim().length === 0) return null;
@@ -289,8 +292,12 @@ async function loadAllPosts() {
     const loaderFill = document.getElementById('loader-fill');
     const loaderSub  = document.getElementById('loader-sub');
 
+    // Show where we're reading from
+    const source = POSTS_DIR.includes('raw.githubusercontent') ? 'GitHub' : 'Yerel';
+    loaderText.textContent = source + " TARANIY0R...";
+
     for (let i = 1; i <= TOTAL; i++) {
-        loaderSub.textContent  = i + '.md kontrol ediliyor...';
+        loaderSub.textContent  = source + ' — ' + i + '.md okunuyor...';
         loaderFill.style.width = (i / TOTAL * 100) + '%';
 
         const raw = await fetchPost(i);
