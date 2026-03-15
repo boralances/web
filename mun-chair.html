@@ -3287,12 +3287,19 @@ function showScorePopup(delegate, onDone) {
     onDone();
   };
 
-  scorePopupWin = window.open(
-    url,
-    'MUN_RateSpeech',
-    'width=560,height=500,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
-  );
-  if(!scorePopupWin){ showToast('Popup blocked — allow popups for this page.','error'); onDone(); }
+  if(hdmiMode){
+    // HDMI mode ON: open as separate window (chair's screen only)
+    scorePopupWin = window.open(
+      url,
+      'MUN_RateSpeech',
+      'width=560,height=500,resizable=yes,toolbar=no,menubar=no,location=no,status=no'
+    );
+    if(!scorePopupWin){ showToast('Popup blocked — allow popups for this page.','error'); onDone(); }
+  } else {
+    // HDMI mode OFF: show as inline corner panel (no separate window needed)
+    URL.revokeObjectURL(url);
+    showInlineScorePanel(delegate, onDone);
+  }
 }
 
 // ── Build sorted ranking from scores ──
@@ -4695,64 +4702,49 @@ function placardBackHTML(code, name, committee, org){
 }
 
 function placardHalfCSS(){
-  // Each half is 148.5mm wide (half of A4 landscape 297mm), full 210mm tall
+  // A4 portrait: 210mm wide x 297mm tall
+  // Top half (148.5mm) = front face  |  Bottom half (148.5mm) = back face (upside down)
+  // Fold horizontally along center line — holds upright as a tent card
   return `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700;900&display=swap');
-    @page{size:A4 landscape;margin:0}
+    @page{size:A4 portrait;margin:0}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{width:297mm;height:210mm;display:flex;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .half{width:148.5mm;height:210mm;display:flex;align-items:stretch;overflow:hidden}
-    .fold-line{width:1px;height:210mm;background:repeating-linear-gradient(to bottom,#b0b8cc 0,#b0b8cc 6px,transparent 6px,transparent 12px);flex-shrink:0;position:relative}
-    .fold-line::after{content:'FOLD';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(90deg);font-size:7pt;color:#b0b8cc;font-family:'Inter',sans-serif;letter-spacing:0.2em;white-space:nowrap;background:#fff;padding:0 4px}
-    .accent{width:10mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
-    .back-accent{background:linear-gradient(0deg,#003087 0%,#0052cc 100%)}
-    .body{flex:1;padding:14mm 12mm;display:flex;flex-direction:column;justify-content:center;gap:5mm}
-    .label{font-family:'Inter',sans-serif;font-size:10pt;font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
-    .country{font-family:'Inter',sans-serif;font-size:32pt;font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1.05}
+    body{width:210mm;height:297mm;display:flex;flex-direction:column;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .half{width:210mm;height:148.5mm;display:flex;align-items:stretch;overflow:hidden}
+    .half-back{transform:rotate(180deg)}
+    .fold-line{width:210mm;height:1px;background:repeating-linear-gradient(to right,#b0b8cc 0,#b0b8cc 8px,transparent 8px,transparent 16px);flex-shrink:0;position:relative}
+    .fold-line::after{content:'— FOLD HERE —';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:7pt;color:#b0b8cc;font-family:'Inter',sans-serif;letter-spacing:0.2em;white-space:nowrap;background:#fff;padding:0 6px}
+    .accent{width:12mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
+    .body{flex:1;padding:12mm 14mm;display:flex;flex-direction:column;justify-content:center;gap:5mm}
+    .label{font-family:'Inter',sans-serif;font-size:11pt;font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
+    .country{font-family:'Inter',sans-serif;font-size:38pt;font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1.05}
     .footer{display:flex;align-items:center;gap:8px;padding-top:4mm;border-top:2px solid #e0e8f5}
-    .globe{width:22px;height:22px;background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .committee{font-family:'Inter',sans-serif;font-size:8pt;font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
-    .org{font-family:'Inter',sans-serif;font-size:7pt;font-weight:500;color:#7a8fa6;letter-spacing:0.12em;text-transform:uppercase}
-    .flag-panel{width:48mm;flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:10mm}
-    .back-flag{order:-1}
+    .globe{width:24px;height:24px;background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .committee{font-family:'Inter',sans-serif;font-size:9pt;font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
+    .org{font-family:'Inter',sans-serif;font-size:7.5pt;font-weight:500;color:#7a8fa6;letter-spacing:0.12em;text-transform:uppercase}
+    .flag-panel{width:55mm;flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:10mm}
     .flag{width:100%;object-fit:cover;border-radius:4px;border:2px solid #dde6f0;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
   `;
 }
 
 function placardSingleHTML(code, name, committee, org, isBack){
-  const globeSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg>`;
-  if(!isBack){
-    return `<div class="half">
-      <div class="accent"></div>
-      <div class="body">
-        <div>
-          <div class="label">Delegate of</div>
-          <div class="country">${name}</div>
-        </div>
-        <div class="footer">
-          <div class="globe">${globeSvg}</div>
-          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
-        </div>
+  const globeSvg = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg>`;
+  // Both front and back are identical layout — back is just rotated 180deg
+  // so when the paper is folded, both sides read correctly
+  return `<div class="half${isBack?' half-back':''}">
+    <div class="accent"></div>
+    <div class="body">
+      <div>
+        <div class="label">Delegate of</div>
+        <div class="country">${name}</div>
       </div>
-      <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
-    </div>`;
-  } else {
-    // Back: mirror — flag on left, accent on right
-    return `<div class="half">
-      <div class="flag-panel back-flag"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
-      <div class="body">
-        <div>
-          <div class="label">Delegate of</div>
-          <div class="country">${name}</div>
-        </div>
-        <div class="footer">
-          <div class="globe">${globeSvg}</div>
-          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
-        </div>
+      <div class="footer">
+        <div class="globe">${globeSvg}</div>
+        <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
       </div>
-      <div class="accent back-accent"></div>
-    </div>`;
-  }
+    </div>
+    <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
+  </div>`;
 }
 
 function printPlacard(code, name){
@@ -4761,7 +4753,7 @@ function printPlacard(code, name){
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Placard — ${name}</title>
-  <style>${placardHalfCSS()}</style></head><body>
+  <style>${placardHalfCSS()}</style></head><body style="flex-direction:column">
   ${placardSingleHTML(code, name, committee, org, false)}
   <div class="fold-line"></div>
   ${placardSingleHTML(code, name, committee, org, true)}
@@ -4776,7 +4768,7 @@ function printAllPlacards(){
   const org = session.agenda ? session.agenda.split('—')[0].trim() : 'UNITED NATIONS';
   const pages = delegates.map((d,i)=>{
     const pb = i<delegates.length-1 ? 'style="page-break-after:always"' : '';
-    return `<div ${pb} style="width:297mm;height:210mm;display:flex">
+    return `<div ${pb} style="width:210mm;height:297mm;display:flex;flex-direction:column">
       ${placardSingleHTML(d.c, d.n, committee, org, false)}
       <div class="fold-line"></div>
       ${placardSingleHTML(d.c, d.n, committee, org, true)}
@@ -6438,6 +6430,98 @@ function applyScoreTabEntry(){
 }
 
 // HDMI sync with score tab handled inside renderScoreTab (called after toggle)
+
+
+// ── Inline score panel for when HDMI mode is OFF ──
+function showInlineScorePanel(delegate, onDone){
+  const existing = document.getElementById('inline-score-panel');
+  if(existing) existing.remove();
+
+  const warnCount = (warnings[delegate.c]||[]).length;
+  const currentPts = scores[delegate.c]||0;
+
+  const panel = document.createElement('div');
+  panel.id = 'inline-score-panel';
+  panel.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:800;width:380px;animation:slideUp 0.2s ease;';
+
+  panel.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);box-shadow:0 8px 40px rgba(0,0,0,0.7);overflow:hidden">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg3)">
+        ${flagImg(delegate.c,'flag-img')}
+        <div style="flex:1">
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue)">🔒 Rate Speech</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">${delegate.n}</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--blue)">${currentPts} pts</div>
+      </div>
+      <div style="padding:12px 14px;display:flex;gap:6px">
+        <button data-pts="5" class="isp-btn" style="flex:1;padding:10px 4px;border-radius:var(--radius);border:2px solid rgba(63,185,80,0.3);background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;font-family:'Inter',sans-serif" onmouseover="this.style.background='rgba(63,185,80,0.12)';this.style.borderColor='rgba(63,185,80,0.6)'" onmouseout="this.style.background='var(--bg3)';this.style.borderColor='rgba(63,185,80,0.3)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#3fb950">+5</span>
+          <span style="font-size:9px;color:var(--text3)">Excellent</span>
+        </button>
+        <button data-pts="4" class="isp-btn" style="flex:1;padding:10px 4px;border-radius:var(--radius);border:2px solid rgba(56,139,253,0.3);background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;font-family:'Inter',sans-serif" onmouseover="this.style.background='rgba(56,139,253,0.12)';this.style.borderColor='rgba(56,139,253,0.6)'" onmouseout="this.style.background='var(--bg3)';this.style.borderColor='rgba(56,139,253,0.3)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#388bfd">+4</span>
+          <span style="font-size:9px;color:var(--text3)">Very Good</span>
+        </button>
+        <button data-pts="3" class="isp-btn" style="flex:1;padding:10px 4px;border-radius:var(--radius);border:2px solid var(--border2);background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;font-family:'Inter',sans-serif" onmouseover="this.style.background='var(--bg4)';this.style.borderColor='var(--border3)'" onmouseout="this.style.background='var(--bg3)';this.style.borderColor='var(--border2)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:var(--text)">+3</span>
+          <span style="font-size:9px;color:var(--text3)">Good</span>
+        </button>
+        <button data-pts="2" class="isp-btn" style="flex:1;padding:10px 4px;border-radius:var(--radius);border:2px solid rgba(219,109,40,0.3);background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;font-family:'Inter',sans-serif" onmouseover="this.style.background='rgba(219,109,40,0.1)';this.style.borderColor='rgba(219,109,40,0.6)'" onmouseout="this.style.background='var(--bg3)';this.style.borderColor='rgba(219,109,40,0.3)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#db6d28">+2</span>
+          <span style="font-size:9px;color:var(--text3)">Fair</span>
+        </button>
+        <button data-pts="1" class="isp-btn" style="flex:1;padding:10px 4px;border-radius:var(--radius);border:2px solid rgba(248,81,73,0.3);background:var(--bg3);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all 0.15s;font-family:'Inter',sans-serif" onmouseover="this.style.background='rgba(248,81,73,0.1)';this.style.borderColor='rgba(248,81,73,0.6)'" onmouseout="this.style.background='var(--bg3)';this.style.borderColor='rgba(248,81,73,0.3)'">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;color:#f85149">+1</span>
+          <span style="font-size:9px;color:var(--text3)">Minimal</span>
+        </button>
+      </div>
+      <div style="padding:8px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1">
+          <input type="checkbox" id="isp-improv" style="accent-color:var(--green)"/>
+          <span style="font-size:11px;color:var(--green);font-weight:600">🎤 Improv +2</span>
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1">
+          <input type="checkbox" id="isp-ai" style="accent-color:var(--red)"/>
+          <span style="font-size:11px;color:var(--red);font-weight:600">🤖 AI −5</span>
+        </label>
+        <button id="isp-skip" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;padding:5px 12px;border-radius:var(--radius);cursor:pointer;white-space:nowrap">Skip →</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(panel);
+
+  function applyInline(basePts){
+    const improv = document.getElementById('isp-improv').checked;
+    const ai = document.getElementById('isp-ai').checked;
+    let total = basePts;
+    if(improv) total += 2;
+    if(ai) total -= 5;
+    scores[delegate.c] = (scores[delegate.c]||0) + total;
+    if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
+    if(typeof renderScoreTab==='function') renderScoreTab();
+    panel.remove();
+    onDone();
+  }
+
+  panel.querySelectorAll('.isp-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>applyInline(parseInt(btn.dataset.pts)));
+  });
+  document.getElementById('isp-skip').addEventListener('click',()=>{
+    const improv=document.getElementById('isp-improv').checked;
+    const ai=document.getElementById('isp-ai').checked;
+    if(improv||ai){
+      let total=0;
+      if(improv) total+=2;
+      if(ai) total-=5;
+      scores[delegate.c]=(scores[delegate.c]||0)+total;
+      if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
+      if(typeof renderScoreTab==='function') renderScoreTab();
+    }
+    panel.remove();
+    onDone();
+  });
+}
 
 // ═══ STATS ═══
 function updateStats(){
