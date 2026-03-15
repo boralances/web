@@ -2675,16 +2675,22 @@ function addSpkFromQ(gidx){
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
   if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
-  document.getElementById('spk-q').value='';
-  closeSpkQDrop();
+  const inp=document.getElementById('spk-q');
+  inp.value='';
+  filterSpkQ();
+  document.getElementById('spk-q-drop').classList.add('open');
+  inp.focus();
 }
 function addSpkFromMain(gidx){
   const c=COUNTRIES[gidx]; if(!c) return;
   speakers.push({...c});
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
-  document.getElementById('spk-search2').value='';
-  closeSpk2Drop();
+  const inp=document.getElementById('spk-search2');
+  inp.value='';
+  filterSpk2();
+  document.getElementById('spk-drop2').classList.add('open');
+  inp.focus();
 }
 
 function removeSpeaker(idx){
