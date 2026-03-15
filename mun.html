@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MUN Chair</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;--bg4:#21262d;--bg5:#2d333b;
+  --border:#30363d;--border2:#3d444d;--border3:#484f58;
+  --blue:#388bfd;--blue2:#1f6feb;--blue-dim:rgba(56,139,253,0.15);--blue-glow:rgba(56,139,253,0.08);
+  --green:#3fb950;--green-dim:rgba(63,185,80,0.15);
+  --orange:#db6d28;--orange-dim:rgba(219,109,40,0.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,0.12);
+  --text:#e6edf3;--text2:#8d96a0;--text3:#656d76;--text4:#3d444d;
+  --radius:6px;--radius-lg:10px;
+  --sidebar:230px;
+  --transition:0.15s ease;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* SHELL */
+.shell{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  user-select:none;
+}
+.sb-logo{
+  height:56px;padding:0 16px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.sb-logo-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,#388bfd,#1f6feb);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:800;color:#fff;flex-shrink:0;
+  letter-spacing:-0.5px;
+}
+.sb-logo-text{font-size:14px;font-weight:600;color:var(--text)}
+.sb-logo-ver{font-size:10px;color:var(--text3);margin-top:1px}
+.sb-section{
+  padding:16px 12px 6px;
+  font-size:10px;font-weight:600;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text3);
+}
+.sb-nav{padding:4px 8px;flex:1;overflow-y:auto}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:var(--radius);
+  cursor:pointer;color:var(--text2);font-size:12.5px;font-weight:400;
+  transition:background var(--transition),color var(--transition);
+  margin-bottom:1px;border:none;background:none;width:100%;text-align:left;
+  font-family:'Inter',sans-serif;
+}
+.nav-item svg{opacity:0.6;flex-shrink:0;transition:opacity var(--transition)}
+.nav-item:hover{background:var(--bg4);color:var(--text)}
+.nav-item:hover svg{opacity:0.8}
+.nav-item.active{background:var(--blue-dim);color:var(--blue);font-weight:500}
+.nav-item.active svg{opacity:1;color:var(--blue)}
+.nav-item.disabled{opacity:0.35;cursor:not-allowed;pointer-events:none}
+.nav-badge{
+  margin-left:auto;font-size:10px;font-weight:600;
+  background:var(--bg5);color:var(--text3);
+  padding:1px 6px;border-radius:10px;
+}
+.nav-item.active .nav-badge{background:rgba(56,139,253,0.2);color:var(--blue)}
+
+.sb-footer{padding:12px;border-top:1px solid var(--border);flex-shrink:0}
+.session-pill{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius);padding:10px 12px;
+}
+.pill-label{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.pill-value{font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:2px}
+.pill-sub{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text4);margin-right:6px;vertical-align:middle}
+.status-dot.live{background:var(--green);box-shadow:0 0 0 2px rgba(63,185,80,0.25)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{
+  height:56px;min-height:56px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:12px;
+  justify-content:space-between;flex-shrink:0;
+}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.topbar-title{font-size:14px;font-weight:600;color:var(--text)}
+.topbar-divider{width:1px;height:16px;background:var(--border2)}
+.topbar-crumb{font-size:12px;color:var(--text3)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:500;padding:3px 9px;
+  border-radius:12px;border:1px solid;
+}
+.chip-blue{background:var(--blue-dim);border-color:rgba(56,139,253,0.3);color:var(--blue)}
+.chip-green{background:var(--green-dim);border-color:rgba(63,185,80,0.3);color:var(--green)}
+.chip-gray{background:var(--bg4);border-color:var(--border2);color:var(--text3)}
+
+.content{flex:1;overflow-y:auto;padding:20px 24px}
+.page{display:none;animation:fadeIn 0.15s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* CARDS */
+.card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:0;overflow:hidden;
+  margin-bottom:14px;
+}
+.card-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border-bottom:1px solid var(--border);
+}
+.card-head-left{display:flex;align-items:center;gap:10px}
+.card-num{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--blue);color:#fff;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-desc{font-size:11px;color:var(--text3);margin-top:1px}
+.card-body{padding:16px}
+.card-section{
+  font-size:10px;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:10px;
+}
+
+/* FORM */
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3)}
+input[type=text],input[type=number],select,textarea{
+  background:var(--bg);border:1px solid var(--border);color:var(--text);
+  font-family:'Inter',sans-serif;font-size:13px;
+  padding:8px 11px;border-radius:var(--radius);outline:none;
+  transition:border-color var(--transition),box-shadow var(--transition);width:100%;
+  -webkit-appearance:none;
+}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+input::placeholder{color:var(--text3)}
+select{
+  cursor:pointer;padding-right:30px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23656d76'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;
+}
+select option{background:var(--bg2)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* BUTTONS */
+.btn{
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:500;
+  padding:7px 14px;border-radius:var(--radius);
+  cursor:pointer;border:1px solid transparent;
+  transition:all var(--transition);display:inline-flex;
+  align-items:center;gap:6px;white-space:nowrap;
+}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue2);border-color:var(--blue2)}
+.btn-secondary{background:var(--bg4);border-color:var(--border2);color:var(--text)}
+.btn-secondary:hover{background:var(--bg5);border-color:var(--border3)}
+.btn-ghost{background:transparent;border-color:var(--border);color:var(--text2)}
+.btn-ghost:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.btn-danger{background:transparent;border-color:var(--border);color:var(--red)}
+.btn-danger:hover{background:var(--red-dim);border-color:rgba(248,81,73,0.4)}
+.btn-success{background:transparent;border-color:var(--border);color:var(--green)}
+.btn-success:hover{background:var(--green-dim);border-color:rgba(63,185,80,0.4)}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-lg{padding:10px 22px;font-size:13px}
+
+/* FLAG IMAGE */
+.flag-img{
+  width:20px;height:14px;border-radius:2px;
+  object-fit:cover;flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.08);
+  display:inline-block;vertical-align:middle;
+}
+.flag-img-sm{width:16px;height:11px}
+.flag-img-lg{width:26px;height:18px}
+
+/* COUNTRY SEARCH */
+.csearch-wrap{position:relative}
+.csearch-wrap input{padding-left:34px}
+.csearch-icon{
+  position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--text3);pointer-events:none;
+}
+.cdropdown{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);
+  box-shadow:0 8px 24px rgba(0,0,0,0.5);
+  max-height:240px;overflow-y:auto;z-index:200;display:none;
+}
+.cdropdown.open{display:block}
+.cdrop-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;cursor:pointer;
+  transition:background var(--transition);border-bottom:1px solid rgba(48,54,61,0.5);
+}
+.cdrop-item:last-child{border-bottom:none}
+.cdrop-item:hover{background:var(--bg4)}
+.cdrop-name{flex:1;font-size:13px;color:var(--text)}
+.cdrop-code{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.cdrop-empty{padding:14px;text-align:center;color:var(--text3);font-size:12px}
+
+/* DELEGATE CHIPS */
+.del-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.del-chip{
+  display:flex;align-items:center;gap:7px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:20px;padding:4px 10px 4px 6px;
+  font-size:12px;color:var(--text2);
+  transition:border-color var(--transition);
+}
+.del-chip:hover{border-color:var(--border2)}
+.del-chip button{
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);font-size:14px;line-height:1;
+  padding:0;margin-left:2px;transition:color var(--transition);
+}
+.del-chip button:hover{color:var(--red)}
+
+/* TIMER MODE CARDS */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.mode-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:13px 14px;
+  cursor:pointer;transition:all var(--transition);
+  position:relative;overflow:hidden;
+}
+.mode-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--border2);transition:background var(--transition);
+}
+.mode-card:hover{border-color:var(--border3);background:var(--bg4)}
+.mode-card.active{border-color:rgba(56,139,253,0.4);background:var(--blue-dim)}
+.mode-card.active::before{background:var(--blue)}
+.mode-label{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.mode-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:8px}
+.mode-dur{display:flex;align-items:center;gap:6px}
+.mode-dur input{width:64px;padding:5px 8px;font-size:12px;font-family:'JetBrains Mono',monospace;text-align:center}
+.mode-dur span{font-size:11px;color:var(--text3)}
+
+/* ARC TIMER */
+.timer-wrap{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+  margin-bottom:14px;
+}
+.timer-inner{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 24px 22px;
+}
+.arc-container{position:relative;width:200px;height:200px;margin-bottom:18px}
+.arc-container svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+circle.track{fill:none;stroke:var(--bg4);stroke-width:10}
+circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 0.8s linear,stroke 0.4s}
+.arc-face{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.arc-clock{
+  font-family:'JetBrains Mono',monospace;
+  font-size:42px;font-weight:500;letter-spacing:0.02em;
+  color:var(--text);line-height:1;transition:color 0.4s;
+}
+.arc-clock.warn{color:var(--orange)}
+.arc-clock.danger{color:var(--red)}
+.arc-clock.idle{color:var(--text3)}
+.arc-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-top:5px}
+
+.timer-speaker-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;background:var(--bg3);border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);min-height:44px;
+}
+.ts-flag{flex-shrink:0}
+.ts-name{font-size:13px;font-weight:500;color:var(--text);flex:1}
+.ts-sub{font-size:11px;color:var(--text3)}
+
+.timer-controls-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:14px 16px;
+}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:12px 14px;
+}
+.stat-label{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;line-height:1}
+.stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* SPEAKERS */
+.spk-list{display:flex;flex-direction:column;gap:3px}
+.spk-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:var(--radius);
+  border:1px solid transparent;transition:all var(--transition);
+}
+.spk-row:hover{background:var(--bg3)}
+.spk-row.current{background:var(--blue-dim);border-color:rgba(56,139,253,0.25)}
+.spk-row.done{opacity:0.3}
+.spk-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);min-width:20px}
+.spk-name{flex:1;font-size:13px;color:var(--text)}
+.spk-badge{
+  font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  padding:2px 7px;border-radius:10px;background:var(--blue-dim);color:var(--blue);
+  border:1px solid rgba(56,139,253,0.3);
+}
+.spk-rm{
+  background:none;border:none;cursor:pointer;
+  color:var(--text4);font-size:16px;line-height:1;
+  padding:0 2px;transition:color var(--transition);
+}
+.spk-rm:hover{color:var(--red)}
+
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
+.empty-state svg{opacity:0.3;margin-bottom:10px}
+
+/* PICKER CHIPS */
+.picker-chip{
+  display:flex;align-items:center;gap:6px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:20px;padding:5px 10px 5px 6px;
+  font-size:12px;color:var(--text2);cursor:pointer;
+  transition:all var(--transition);user-select:none;
+}
+.picker-chip:hover{border-color:var(--border2);color:var(--text)}
+.picker-chip.selected{
+  background:var(--blue-dim);border-color:rgba(56,139,253,0.5);
+  color:var(--blue);
+}
+.picker-chip .pcheck{
+  width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--border2);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:all var(--transition);
+}
+.picker-chip.selected .pcheck{
+  background:var(--blue);border-color:var(--blue);
+}
+.picker-chip.selected .pcheck::after{
+  content:'';display:block;width:5px;height:5px;
+  border-radius:50%;background:#fff;
+}
+
+/* LAYOUT */
+.timer-page-grid{display:grid;grid-template-columns:1fr 280px;gap:14px}
+
+/* PRESET PILLS */
+.preset-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* ANIMATIONS */
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.arc-clock.blink{animation:blink 0.65s ease infinite}
+@keyframes gong{0%{background:rgba(248,81,73,0)}30%{background:rgba(248,81,73,0.1)}100%{background:rgba(248,81,73,0)}}
+.timer-wrap.gong{animation:gong 0.8s ease}
+
+/* SECTION FOOTER */
+.page-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+
+/* SCROLLABLE PANEL */
+.scroll-panel{max-height:300px;overflow-y:auto}
+.scroll-panel-tall{max-height:420px;overflow-y:auto}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">MC</div>
+    <div>
+      <div class="sb-logo-text">MUN Chair</div>
+      <div class="sb-logo-ver">Session Tool v2</div>
+    </div>
+  </div>
+
+  <div class="sb-section">Navigation</div>
+  <div class="sb-nav">
+    <button class="nav-item active" id="nav-setup" onclick="showPage('setup')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/><path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.434.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/></svg>
+      Setup
+    </button>
+    <button class="nav-item disabled" id="nav-timer" onclick="showPage('timer')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+      Timer
+      <span class="nav-badge" id="nav-timer-mode">—</span>
+    </button>
+    <button class="nav-item disabled" id="nav-speakers" onclick="showPage('speakers')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+      Speakers
+      <span class="nav-badge" id="nav-spk-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
+      Delegates
+      <span class="nav-badge" id="nav-del-count">0</span>
+    </button>
+  </div>
+
+  <div class="sb-footer">
+    <div class="session-pill">
+      <div class="pill-label"><span class="status-dot" id="status-dot"></span>Session</div>
+      <div class="pill-value" id="pill-committee">Not configured</div>
+      <div class="pill-sub" id="pill-agenda">—</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-title" id="tb-title">Session Setup</span>
+      <div class="topbar-divider"></div>
+      <span class="topbar-crumb" id="tb-crumb">Configure committee and delegates</span>
+    </div>
+    <div class="topbar-right">
+      <span class="chip chip-gray" id="tb-del-chip" style="display:none"></span>
+      <button class="btn btn-danger btn-sm" id="btn-end" onclick="endSession()" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+        End Session
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ═══ SETUP ═══ -->
+    <div id="page-setup" class="page active" style="max-width:700px">
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-num">1</div>
+            <div><div class="card-title">Committee & Agenda</div><div class="card-desc">Select the committee type and enter the agenda item</div></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="grid2">
+            <div class="field">
+              <label class="field-label">Committee</label>
+              <select id="setup-committee" onchange="onCommitteeChange()">
+                <option value="">Select committee...</option>
+                <optgroup label="General Assembly">
+                  <option>GA — First Committee (DISEC)</option>
+                  <option>GA — Third Committee (SOCHUM)</option>
+                  <option>GA — Fourth Committee (SPECPOL)</option>
+                  <option>GA — Fifth Committee (Admin & Budget)</option>
+                  <option>GA — Sixth Committee (Legal)</option>
+                </optgroup>
+                <optgroup label="Security Council">
+                  <option>Security Council (SC)</option>
+                  <option>Security Council — Expanded (SC+)</option>
+                </optgroup>
+                <optgroup label="Councils & Bodies">
+                  <option>Human Rights Council (HRC)</option>
+                  <option>Economic & Social Council (ECOSOC)</option>
+                  <option>Environment Programme (UNEP)</option>
+                  <option>Commission on Status of Women (CSW)</option>
+                  <option>UNICEF</option><option>WHO</option>
+                  <option>UNESCO</option><option>UNHCR</option>
+                </optgroup>
+                <optgroup label="Special">
+                  <option>Crisis Committee</option>
+                  <option>Historical Committee</option>
+                  <option>Joint Crisis Committee</option>
+                  <option value="custom">Custom Committee...</option>
+                </optgroup>
+              </select>
+            </div>
+            <div class="field" id="custom-field" style="display:none">
+              <label class="field-label">Custom Name</label>
+              <input type="text" id="setup-custom" placeholder="Enter committee name"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Agenda Item</label>
+            <input type="text" id="setup-agenda" placeholder="e.g. Addressing the proliferation of autonomous weapons systems"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-num">2</div>
+            <div><div class="card-title">Delegates</div><div class="card-desc">Add countries to the committee roster (all 195+ nations available)</div></div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearDelegates()">Clear All</button>
+        </div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Search Country</label>
+            <div class="csearch-wrap">
+              <svg class="csearch-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              <input type="text" id="del-search" placeholder="Type to search all countries..." autocomplete="off"
+                oninput="filterDelSearch()" onfocus="openDelDrop()" onblur="setTimeout(closeDelDrop,200)"/>
+              <div class="cdropdown" id="del-drop"></div>
+            </div>
+          </div>
+          <div class="card-section">Quick Add Presets</div>
+          <div class="preset-row">
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('p5')">P5</button>
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('g4')">G4</button>
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('sc15')">Security Council (15)</button>
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('g20')">G20</button>
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('eu27')">EU (27)</button>
+            <button class="btn btn-ghost btn-sm" onclick="addPreset('brics')">BRICS</button>
+          </div>
+          <div class="del-grid" id="del-grid"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-num">3</div>
+            <div><div class="card-title">Timer Defaults</div><div class="card-desc">Set default durations — adjustable during session</div></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="mode-grid" style="margin-bottom:0">
+            <div class="mode-card">
+              <div class="mode-label">Mode I</div>
+              <div class="mode-name">Opening Speech</div>
+              <div class="mode-dur">
+                <input type="number" id="def-opening" value="120" min="10" max="900"/>
+                <span>seconds</span>
+              </div>
+            </div>
+            <div class="mode-card">
+              <div class="mode-label">Mode II</div>
+              <div class="mode-name">General Speakers List</div>
+              <div class="mode-dur">
+                <input type="number" id="def-gsl" value="90" min="10" max="600"/>
+                <span>seconds</span>
+              </div>
+            </div>
+            <div class="mode-card">
+              <div class="mode-label">Mode III</div>
+              <div class="mode-name">Motion</div>
+              <div class="mode-dur">
+                <input type="number" id="def-motion" value="60" min="10" max="300"/>
+                <span>seconds</span>
+              </div>
+            </div>
+            <div class="mode-card">
+              <div class="mode-label">Mode IV</div>
+              <div class="mode-name">Unmoderated Caucus</div>
+              <div class="mode-dur">
+                <input type="number" id="def-unmod" value="600" min="30" max="3600"/>
+                <span>seconds</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-actions">
+        <button class="btn btn-secondary" onclick="resetSetup()">Reset</button>
+        <button class="btn btn-primary btn-lg" onclick="beginSession()">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/></svg>
+          Convene Session
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ TIMER ═══ -->
+    <div id="page-timer" class="page">
+      <div class="timer-page-grid">
+        <!-- LEFT -->
+        <div>
+          <div class="mode-grid">
+            <div class="mode-card" id="mc-opening" onclick="selectMode('opening')">
+              <div class="mode-label">Mode I</div>
+              <div class="mode-name">Opening Speech</div>
+              <div class="mode-dur">
+                <input type="number" id="t-opening" min="10" max="900" onclick="event.stopPropagation()" oninput="onDurInput('opening')"/>
+                <span>sec</span>
+              </div>
+            </div>
+            <div class="mode-card" id="mc-gsl" onclick="selectMode('gsl')">
+              <div class="mode-label">Mode II</div>
+              <div class="mode-name">GSL</div>
+              <div class="mode-dur">
+                <input type="number" id="t-gsl" min="10" max="600" onclick="event.stopPropagation()" oninput="onDurInput('gsl')"/>
+                <span>sec</span>
+              </div>
+            </div>
+            <div class="mode-card" id="mc-motion" onclick="selectMode('motion')">
+              <div class="mode-label">Mode III</div>
+              <div class="mode-name">Motion</div>
+              <div class="mode-dur">
+                <input type="number" id="t-motion" min="10" max="300" onclick="event.stopPropagation()" oninput="onDurInput('motion')"/>
+                <span>sec</span>
+              </div>
+            </div>
+            <div class="mode-card" id="mc-unmod" onclick="selectMode('unmod')">
+              <div class="mode-label">Mode IV</div>
+              <div class="mode-name">Unmod Caucus</div>
+              <div class="mode-dur">
+                <input type="number" id="t-unmod" min="30" max="3600" onclick="event.stopPropagation()" oninput="onDurInput('unmod')"/>
+                <span>sec</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timer-wrap" id="timer-wrap">
+            <div class="timer-inner">
+              <div class="arc-container">
+                <svg viewBox="0 0 200 200">
+                  <circle class="track" cx="100" cy="100" r="85"/>
+                  <circle class="fill" id="arc-fill" cx="100" cy="100" r="85"
+                    stroke="#388bfd" style="stroke-dasharray:534;stroke-dashoffset:0"/>
+                </svg>
+                <div class="arc-face">
+                  <div class="arc-clock idle" id="arc-clock">--:--</div>
+                  <div class="arc-label" id="arc-label">SELECT MODE</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="timer-speaker-row" id="ts-row">
+              <div class="ts-flag" id="ts-flag"></div>
+              <div>
+                <div class="ts-name" id="ts-name" style="color:var(--text3)">No mode selected</div>
+                <div class="ts-sub" id="ts-sub"></div>
+              </div>
+            </div>
+
+            <div class="timer-controls-row">
+              <button class="btn btn-primary" id="btn-start" onclick="startTimer()">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                Start
+              </button>
+              <button class="btn btn-secondary" id="btn-pause" onclick="pauseTimer()" style="display:none">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 3.5A1.5 1.5 0 0 1 7 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5zm5 0A1.5 1.5 0 0 1 12 5v6a1.5 1.5 0 0 1-3 0V5a1.5 1.5 0 0 1 1.5-1.5z"/></svg>
+                Pause
+              </button>
+              <button class="btn btn-secondary" id="btn-resume" onclick="resumeTimer()" style="display:none">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+                Resume
+              </button>
+              <button class="btn btn-ghost" onclick="resetTimer()">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>
+                Reset
+              </button>
+              <button class="btn btn-success" id="btn-next" onclick="nextSpeaker()" style="display:none">
+                Next
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-label">Delegates</div><div class="stat-val" id="s-del">0</div><div class="stat-sub">registered</div></div>
+            <div class="stat-card"><div class="stat-label">In Queue</div><div class="stat-val" id="s-queue">0</div><div class="stat-sub">speakers</div></div>
+            <div class="stat-card"><div class="stat-label">Speeches</div><div class="stat-val" id="s-done">0</div><div class="stat-sub">completed</div></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: quick speakers -->
+        <div>
+          <div class="card" style="margin-bottom:0">
+            <div class="card-head" style="padding:12px 14px">
+              <div class="card-title" style="font-size:12px">Speakers Queue</div>
+              <button class="btn btn-ghost btn-sm" onclick="showPage('speakers')">Full View</button>
+            </div>
+            <div class="card-body" style="padding:12px 14px">
+              <div class="field" style="margin-bottom:10px">
+                <div class="csearch-wrap">
+                  <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                  <input type="text" id="spk-q" placeholder="Add speaker..." autocomplete="off"
+                    oninput="filterSpkQ()" onfocus="openSpkQDrop()" onblur="setTimeout(closeSpkQDrop,200)"/>
+                  <div class="cdropdown" id="spk-q-drop"></div>
+                </div>
+              </div>
+              <div class="spk-list scroll-panel-tall" id="quick-spk-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SPEAKERS ═══ -->
+    <div id="page-speakers" class="page" style="max-width:640px">
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Add Speakers</div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="addAllDelegates()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+              Add All Delegates
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="shuffleSpeakers()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.624 9.624 0 0 0 7.556 8a9.624 9.624 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.595 10.595 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.624 9.624 0 0 0 6.444 8a9.624 9.624 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5z"/><path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192zm0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192z"/></svg>
+              Shuffle Queue
+            </button>
+          </div>
+        </div>
+
+        <div style="padding:10px 16px 6px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)">Select from Roster</span>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="btn btn-ghost btn-sm" onclick="pickerSelectAll()" style="font-size:10px;padding:3px 8px">All</button>
+              <button class="btn btn-ghost btn-sm" onclick="pickerDeselectAll()" style="font-size:10px;padding:3px 8px">None</button>
+              <button class="btn btn-primary btn-sm" onclick="addPickerSelected()" style="font-size:10px;padding:3px 8px" id="picker-add-btn">Add Selected (0)</button>
+            </div>
+          </div>
+          <div id="del-picker-grid" style="display:flex;flex-wrap:wrap;gap:6px;max-height:180px;overflow-y:auto;padding-bottom:4px">
+            <div class="cdrop-empty" style="width:100%">No delegates registered — go to Setup first.</div>
+          </div>
+        </div>
+
+        <div class="card-body" style="padding-top:14px">
+          <label class="field-label" style="margin-bottom:6px;display:block">Search Any Country</label>
+          <div class="csearch-wrap">
+            <svg class="csearch-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="spk-search2" placeholder="Search and add any country..." autocomplete="off"
+              oninput="filterSpk2()" onfocus="openSpk2Drop()" onblur="setTimeout(closeSpk2Drop,200)"/>
+            <div class="cdropdown" id="spk-drop2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Current Queue</div>
+            <span class="chip chip-gray" id="spk-count-chip">0 speakers</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-danger btn-sm" onclick="clearSpeakers()">Clear All</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="spk-list scroll-panel-tall" id="main-spk-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DELEGATES ═══ -->
+    <div id="page-delegates" class="page" style="max-width:700px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Registered Delegates</div>
+          <button class="btn btn-ghost btn-sm" onclick="showPage('setup')">Edit Roster</button>
+        </div>
+        <div class="card-body">
+          <div class="del-grid" id="del-full-grid" style="gap:8px"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// COUNTRIES — lowercase ISO codes for flagcdn
+// ═══════════════════════════════════════════
+const COUNTRIES = [
+  {n:"Afghanistan",c:"af"},{n:"Albania",c:"al"},{n:"Algeria",c:"dz"},{n:"Andorra",c:"ad"},
+  {n:"Angola",c:"ao"},{n:"Antigua and Barbuda",c:"ag"},{n:"Argentina",c:"ar"},{n:"Armenia",c:"am"},
+  {n:"Australia",c:"au"},{n:"Austria",c:"at"},{n:"Azerbaijan",c:"az"},{n:"Bahamas",c:"bs"},
+  {n:"Bahrain",c:"bh"},{n:"Bangladesh",c:"bd"},{n:"Barbados",c:"bb"},{n:"Belarus",c:"by"},
+  {n:"Belgium",c:"be"},{n:"Belize",c:"bz"},{n:"Benin",c:"bj"},{n:"Bhutan",c:"bt"},
+  {n:"Bolivia",c:"bo"},{n:"Bosnia and Herzegovina",c:"ba"},{n:"Botswana",c:"bw"},{n:"Brazil",c:"br"},
+  {n:"Brunei",c:"bn"},{n:"Bulgaria",c:"bg"},{n:"Burkina Faso",c:"bf"},{n:"Burundi",c:"bi"},
+  {n:"Cabo Verde",c:"cv"},{n:"Cambodia",c:"kh"},{n:"Cameroon",c:"cm"},{n:"Canada",c:"ca"},
+  {n:"Central African Republic",c:"cf"},{n:"Chad",c:"td"},{n:"Chile",c:"cl"},{n:"China",c:"cn"},
+  {n:"Colombia",c:"co"},{n:"Comoros",c:"km"},{n:"Congo",c:"cg"},{n:"Costa Rica",c:"cr"},
+  {n:"Croatia",c:"hr"},{n:"Cuba",c:"cu"},{n:"Cyprus",c:"cy"},{n:"Czech Republic",c:"cz"},
+  {n:"Denmark",c:"dk"},{n:"Djibouti",c:"dj"},{n:"Dominica",c:"dm"},{n:"Dominican Republic",c:"do"},
+  {n:"DR Congo",c:"cd"},{n:"Ecuador",c:"ec"},{n:"Egypt",c:"eg"},{n:"El Salvador",c:"sv"},
+  {n:"Equatorial Guinea",c:"gq"},{n:"Eritrea",c:"er"},{n:"Estonia",c:"ee"},{n:"Eswatini",c:"sz"},
+  {n:"Ethiopia",c:"et"},{n:"Fiji",c:"fj"},{n:"Finland",c:"fi"},{n:"France",c:"fr"},
+  {n:"Gabon",c:"ga"},{n:"Gambia",c:"gm"},{n:"Georgia",c:"ge"},{n:"Germany",c:"de"},
+  {n:"Ghana",c:"gh"},{n:"Greece",c:"gr"},{n:"Grenada",c:"gd"},{n:"Guatemala",c:"gt"},
+  {n:"Guinea",c:"gn"},{n:"Guinea-Bissau",c:"gw"},{n:"Guyana",c:"gy"},{n:"Haiti",c:"ht"},
+  {n:"Honduras",c:"hn"},{n:"Hungary",c:"hu"},{n:"Iceland",c:"is"},{n:"India",c:"in"},
+  {n:"Indonesia",c:"id"},{n:"Iran",c:"ir"},{n:"Iraq",c:"iq"},{n:"Ireland",c:"ie"},
+  {n:"Israel",c:"il"},{n:"Italy",c:"it"},{n:"Ivory Coast",c:"ci"},{n:"Jamaica",c:"jm"},
+  {n:"Japan",c:"jp"},{n:"Jordan",c:"jo"},{n:"Kazakhstan",c:"kz"},{n:"Kenya",c:"ke"},
+  {n:"Kiribati",c:"ki"},{n:"Kuwait",c:"kw"},{n:"Kyrgyzstan",c:"kg"},{n:"Laos",c:"la"},
+  {n:"Latvia",c:"lv"},{n:"Lebanon",c:"lb"},{n:"Lesotho",c:"ls"},{n:"Liberia",c:"lr"},
+  {n:"Libya",c:"ly"},{n:"Liechtenstein",c:"li"},{n:"Lithuania",c:"lt"},{n:"Luxembourg",c:"lu"},
+  {n:"Madagascar",c:"mg"},{n:"Malawi",c:"mw"},{n:"Malaysia",c:"my"},{n:"Maldives",c:"mv"},
+  {n:"Mali",c:"ml"},{n:"Malta",c:"mt"},{n:"Marshall Islands",c:"mh"},{n:"Mauritania",c:"mr"},
+  {n:"Mauritius",c:"mu"},{n:"Mexico",c:"mx"},{n:"Micronesia",c:"fm"},{n:"Moldova",c:"md"},
+  {n:"Monaco",c:"mc"},{n:"Mongolia",c:"mn"},{n:"Montenegro",c:"me"},{n:"Morocco",c:"ma"},
+  {n:"Mozambique",c:"mz"},{n:"Myanmar",c:"mm"},{n:"Namibia",c:"na"},{n:"Nauru",c:"nr"},
+  {n:"Nepal",c:"np"},{n:"Netherlands",c:"nl"},{n:"New Zealand",c:"nz"},{n:"Nicaragua",c:"ni"},
+  {n:"Niger",c:"ne"},{n:"Nigeria",c:"ng"},{n:"North Korea",c:"kp"},{n:"North Macedonia",c:"mk"},
+  {n:"Norway",c:"no"},{n:"Oman",c:"om"},{n:"Pakistan",c:"pk"},{n:"Palau",c:"pw"},
+  {n:"Palestine",c:"ps"},{n:"Panama",c:"pa"},{n:"Papua New Guinea",c:"pg"},{n:"Paraguay",c:"py"},
+  {n:"Peru",c:"pe"},{n:"Philippines",c:"ph"},{n:"Poland",c:"pl"},{n:"Portugal",c:"pt"},
+  {n:"Qatar",c:"qa"},{n:"Romania",c:"ro"},{n:"Russia",c:"ru"},{n:"Rwanda",c:"rw"},
+  {n:"Saint Kitts and Nevis",c:"kn"},{n:"Saint Lucia",c:"lc"},{n:"Saint Vincent",c:"vc"},
+  {n:"Samoa",c:"ws"},{n:"San Marino",c:"sm"},{n:"Sao Tome and Principe",c:"st"},
+  {n:"Saudi Arabia",c:"sa"},{n:"Senegal",c:"sn"},{n:"Serbia",c:"rs"},{n:"Seychelles",c:"sc"},
+  {n:"Sierra Leone",c:"sl"},{n:"Singapore",c:"sg"},{n:"Slovakia",c:"sk"},{n:"Slovenia",c:"si"},
+  {n:"Solomon Islands",c:"sb"},{n:"Somalia",c:"so"},{n:"South Africa",c:"za"},
+  {n:"South Korea",c:"kr"},{n:"South Sudan",c:"ss"},{n:"Spain",c:"es"},{n:"Sri Lanka",c:"lk"},
+  {n:"Sudan",c:"sd"},{n:"Suriname",c:"sr"},{n:"Sweden",c:"se"},{n:"Switzerland",c:"ch"},
+  {n:"Syria",c:"sy"},{n:"Taiwan",c:"tw"},{n:"Tajikistan",c:"tj"},{n:"Tanzania",c:"tz"},
+  {n:"Thailand",c:"th"},{n:"Timor-Leste",c:"tl"},{n:"Togo",c:"tg"},{n:"Tonga",c:"to"},
+  {n:"Trinidad and Tobago",c:"tt"},{n:"Tunisia",c:"tn"},{n:"Turkey",c:"tr"},
+  {n:"Turkmenistan",c:"tm"},{n:"Tuvalu",c:"tv"},{n:"Uganda",c:"ug"},{n:"Ukraine",c:"ua"},
+  {n:"United Arab Emirates",c:"ae"},{n:"United Kingdom",c:"gb"},{n:"United States",c:"us"},
+  {n:"Uruguay",c:"uy"},{n:"Uzbekistan",c:"uz"},{n:"Vanuatu",c:"vu"},{n:"Venezuela",c:"ve"},
+  {n:"Vietnam",c:"vn"},{n:"Yemen",c:"ye"},{n:"Zambia",c:"zm"},{n:"Zimbabwe",c:"zw"},
+  {n:"European Union",c:"eu"},{n:"Kosovo",c:"xk"},{n:"Taiwan",c:"tw"},
+];
+
+const PRESETS = {
+  p5:   ["China","France","Russia","United Kingdom","United States"],
+  g4:   ["Brazil","Germany","India","Japan"],
+  sc15: ["China","France","Russia","United Kingdom","United States","Albania","Brazil","Gabon","Ghana","India","Ireland","Kenya","Mexico","Norway","United Arab Emirates"],
+  g20:  ["Argentina","Australia","Brazil","Canada","China","France","Germany","India","Indonesia","Italy","Japan","Mexico","Russia","Saudi Arabia","South Africa","South Korea","Turkey","United Kingdom","United States"],
+  eu27: ["Austria","Belgium","Bulgaria","Croatia","Cyprus","Czech Republic","Denmark","Estonia","Finland","France","Germany","Greece","Hungary","Ireland","Italy","Latvia","Lithuania","Luxembourg","Malta","Netherlands","Poland","Portugal","Romania","Slovakia","Slovenia","Spain","Sweden"],
+  brics:["Brazil","Russia","India","China","South Africa","Iran","Saudi Arabia","Egypt","Ethiopia","United Arab Emirates"],
+};
+
+function flagUrl(code){ return `https://flagcdn.com/w40/${code.toLowerCase()}.png`; }
+function flagImg(code, cls=''){
+  return `<img class="flag-img ${cls}" src="${flagUrl(code)}" alt="${code}" onerror="this.style.display='none'"/>`;
+}
+
+// ═══ STATE ═══
+let delegates=[], speakers=[], currentSpkIdx=-1, speechesDone=0;
+let curMode=null, timerSecs=0, totalSecs=0, timerRunning=false, timerInterval=null;
+let session={committee:'',agenda:'',timers:{opening:120,gsl:90,motion:60,unmod:600}};
+const ARC_C = 2*Math.PI*85; // 534.07
+
+const PAGES_META = {
+  setup:     {title:'Session Setup',    crumb:'Configure committee, delegates and timers'},
+  timer:     {title:'Timer',            crumb:'Active session — select a mode to begin'},
+  speakers:  {title:'Speakers List',    crumb:'Manage the speaker queue'},
+  delegates: {title:'Delegates',        crumb:'Registered committee members'},
+};
+const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
+
+// ═══ NAV ═══
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  const m=PAGES_META[id];
+  document.getElementById('tb-title').textContent=m.title;
+  document.getElementById('tb-crumb').textContent=m.crumb;
+  if(id==='delegates') renderFullDelegates();
+  if(id==='speakers'){ renderAllSpk(); renderDelegatePicker(); }
+}
+
+// ═══ SETUP ═══
+function onCommitteeChange(){
+  document.getElementById('custom-field').style.display=
+    document.getElementById('setup-committee').value==='custom'?'':'none';
+}
+
+// ═══ DELEGATE SEARCH ═══
+function filterDelSearch(){
+  const q=document.getElementById('del-search').value.toLowerCase();
+  renderCDrop('del-drop', q, delegates.map(d=>d.c), 'addDelegateByIdx');
+}
+function openDelDrop(){ filterDelSearch(); document.getElementById('del-drop').classList.add('open'); }
+function closeDelDrop(){ document.getElementById('del-drop').classList.remove('open'); }
+
+function renderCDrop(dropId, q, excludeCodes, fnName){
+  const dd=document.getElementById(dropId);
+  const results=COUNTRIES
+    .map((c,i)=>({c,i}))
+    .filter(({c})=> c.n.toLowerCase().includes(q) && !excludeCodes.includes(c.c))
+    .slice(0,20);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results found</div>';return;}
+  dd.innerHTML=results.map(({c,i})=>
+    `<div class="cdrop-item" data-fn="${fnName}" data-idx="${i}">
+      ${flagImg(c.c)}
+      <span class="cdrop-name">${c.n}</span>
+      <span class="cdrop-code">${c.c.toUpperCase()}</span>
+    </div>`
+  ).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const idx=parseInt(el.dataset.idx);
+      const fn=el.dataset.fn;
+      window[fn](idx);
+    });
+  });
+}
+
+function addDelegateByIdx(idx){
+  const c=COUNTRIES[idx];
+  if(!delegates.find(d=>d.c===c.c)) delegates.push(c);
+  renderDelegates(); renderDelegatePicker(); updateNav();
+  document.getElementById('del-search').value='';
+  closeDelDrop();
+}
+function removeDelegate(code){
+  delegates=delegates.filter(d=>d.c!==code);
+  pickerSelected.delete(code);
+  renderDelegates(); renderDelegatePicker(); updateNav();
+}
+function clearDelegates(){ delegates=[]; pickerSelected.clear(); renderDelegates(); renderDelegatePicker(); updateNav(); }
+function addPreset(key){
+  (PRESETS[key]||[]).forEach(name=>{
+    const c=COUNTRIES.find(x=>x.n===name);
+    if(c&&!delegates.find(d=>d.c===c.c)) delegates.push(c);
+  });
+  renderDelegates(); renderDelegatePicker(); updateNav();
+}
+
+function renderDelegates(){
+  const grid=document.getElementById('del-grid');
+  if(!delegates.length){grid.innerHTML='';return;}
+  grid.innerHTML=delegates.map(d=>
+    `<div class="del-chip">
+      ${flagImg(d.c,'flag-img-sm')}
+      <span>${d.n}</span>
+      <button data-code="${d.c}">×</button>
+    </div>`
+  ).join('');
+  grid.querySelectorAll('button[data-code]').forEach(btn=>{
+    btn.addEventListener('click',()=>removeDelegate(btn.dataset.code));
+  });
+}
+
+function renderFullDelegates(){
+  const grid=document.getElementById('del-full-grid');
+  if(!delegates.length){grid.innerHTML='<div class="empty-state">No delegates. Go to Setup to add countries.</div>';return;}
+  grid.innerHTML=delegates.map(d=>
+    `<div class="del-chip" style="padding:6px 12px 6px 8px;font-size:13px">
+      ${flagImg(d.c)}
+      <span style="color:var(--text)">${d.n}</span>
+    </div>`
+  ).join('');
+}
+
+function resetSetup(){
+  if(!confirm('Reset all setup fields?')) return;
+  delegates=[];
+  document.getElementById('del-grid').innerHTML='';
+  document.getElementById('setup-committee').value='';
+  document.getElementById('setup-agenda').value='';
+  document.getElementById('custom-field').style.display='none';
+  updateNav();
+}
+
+// ═══ SESSION ═══
+function beginSession(){
+  const sel=document.getElementById('setup-committee').value;
+  const agenda=document.getElementById('setup-agenda').value.trim();
+  if(!sel){showToast('Please select a committee.','error');return;}
+  if(!agenda){showToast('Please enter an agenda item.','error');return;}
+  session.committee=sel==='custom'?(document.getElementById('setup-custom').value.trim()||'Custom Committee'):sel;
+  session.agenda=agenda;
+  session.timers={
+    opening:parseInt(document.getElementById('def-opening').value)||120,
+    gsl:parseInt(document.getElementById('def-gsl').value)||90,
+    motion:parseInt(document.getElementById('def-motion').value)||60,
+    unmod:parseInt(document.getElementById('def-unmod').value)||600,
+  };
+  ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('t-'+m).value=session.timers[m]);
+  // Update sidebar
+  document.getElementById('pill-committee').textContent=session.committee;
+  document.getElementById('pill-agenda').textContent=session.agenda;
+  document.getElementById('status-dot').classList.add('live');
+  document.getElementById('btn-end').style.display='';
+  document.getElementById('tb-del-chip').style.display='';
+  document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
+  // Unlock nav
+  ['nav-timer','nav-speakers','nav-delegates'].forEach(id=>{
+    document.getElementById(id).classList.remove('disabled');
+  });
+  updateStats();
+  renderAllSpk();
+  showPage('timer');
+}
+
+function endSession(){
+  // Show inline confirm instead of browser confirm (blocked in some contexts)
+  const existing = document.getElementById('end-confirm-toast');
+  if(existing){ existing.remove(); return; }
+  const toast = document.createElement('div');
+  toast.id = 'end-confirm-toast';
+  toast.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:999;
+    background:var(--bg2);border:1px solid rgba(248,81,73,0.5);
+    border-radius:10px;padding:14px 16px;font-size:13px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.5);min-width:260px;
+  `;
+  toast.innerHTML = `
+    <div style="font-weight:600;color:var(--text);margin-bottom:6px">End session?</div>
+    <div style="color:var(--text3);font-size:12px;margin-bottom:12px">This will reset the timer and clear the speaker queue.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="end-cancel-btn" class="btn btn-ghost btn-sm">Cancel</button>
+      <button id="end-confirm-btn" class="btn btn-danger btn-sm">End Session</button>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  document.getElementById('end-cancel-btn').onclick = () => toast.remove();
+  document.getElementById('end-confirm-btn').onclick = () => {
+    toast.remove();
+    doEndSession();
+  };
+}
+
+function doEndSession(){
+  stopTimer();
+  curMode=null; timerSecs=0; totalSecs=0; timerRunning=false;
+  speakers=[]; currentSpkIdx=-1; speechesDone=0;
+
+  const safe = (id, fn) => { const el=document.getElementById(id); if(el) fn(el); };
+
+  safe('arc-clock', el => { el.textContent='--:--'; el.className='arc-clock idle'; });
+  safe('arc-label', el => el.textContent='SELECT MODE');
+  safe('ts-name',   el => { el.textContent='No mode selected'; el.style.color='var(--text3)'; });
+  safe('ts-flag',   el => el.innerHTML='');
+  safe('ts-sub',    el => el.textContent='');
+  safe('status-dot',el => el.classList.remove('live'));
+  safe('btn-end',   el => el.style.display='none');
+  safe('tb-del-chip',el=> el.style.display='none');
+  safe('pill-committee', el => el.textContent='Not configured');
+  safe('pill-agenda',    el => el.textContent='—');
+  safe('nav-timer-mode', el => el.textContent='—');
+  safe('btn-start',  el => el.style.display='');
+  safe('btn-pause',  el => el.style.display='none');
+  safe('btn-resume', el => el.style.display='none');
+  safe('btn-next',   el => el.style.display='none');
+
+  ['nav-timer','nav-speakers','nav-delegates'].forEach(id => {
+    safe(id, el => el.classList.add('disabled'));
+  });
+  ['opening','gsl','motion','unmod'].forEach(m => {
+    safe('mc-'+m, el => el.classList.remove('active'));
+  });
+
+  try { setArc(1); } catch(e){}
+  try { updateStats(); } catch(e){}
+  try { renderAllSpk(); } catch(e){}
+
+  showPage('setup');
+}
+
+// ═══ SPEAKER DROPDOWNS ═══
+function filterSpkQ(){
+  const q=document.getElementById('spk-q').value.toLowerCase();
+  const pool=delegates.length?delegates:COUNTRIES;
+  renderSpkDrop('spk-q-drop',q,pool,'addSpkFromQ');
+}
+function openSpkQDrop(){ filterSpkQ(); document.getElementById('spk-q-drop').classList.add('open'); }
+function closeSpkQDrop(){ document.getElementById('spk-q-drop').classList.remove('open'); }
+
+function filterSpk2(){
+  const q=document.getElementById('spk-search2').value.toLowerCase();
+  const pool=delegates.length?delegates:COUNTRIES;
+  renderSpkDrop('spk-drop2',q,pool,'addSpkFromMain');
+}
+function openSpk2Drop(){ filterSpk2(); document.getElementById('spk-drop2').classList.add('open'); }
+function closeSpk2Drop(){ document.getElementById('spk-drop2').classList.remove('open'); }
+
+function renderSpkDrop(dropId, q, pool, fnName){
+  const dd=document.getElementById(dropId);
+  const results=pool
+    .map((c,i)=>({c, globalIdx:COUNTRIES.findIndex(x=>x.c===c.c)}))
+    .filter(({c})=>c.n.toLowerCase().includes(q))
+    .slice(0,15);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=results.map(({c,globalIdx})=>
+    `<div class="cdrop-item" data-fn="${fnName}" data-gidx="${globalIdx}">
+      ${flagImg(c.c)}
+      <span class="cdrop-name">${c.n}</span>
+    </div>`
+  ).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      const gidx=parseInt(el.dataset.gidx);
+      window[el.dataset.fn](gidx);
+    });
+  });
+}
+
+function addSpkFromQ(gidx){
+  const c=COUNTRIES[gidx]; if(!c) return;
+  speakers.push({...c});
+  if(currentSpkIdx===-1) currentSpkIdx=0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  document.getElementById('spk-q').value='';
+  closeSpkQDrop();
+}
+function addSpkFromMain(gidx){
+  const c=COUNTRIES[gidx]; if(!c) return;
+  speakers.push({...c});
+  if(currentSpkIdx===-1) currentSpkIdx=0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  document.getElementById('spk-search2').value='';
+  closeSpk2Drop();
+}
+
+function removeSpeaker(idx){
+  speakers.splice(idx,1);
+  if(currentSpkIdx>=speakers.length) currentSpkIdx=speakers.length-1;
+  if(!speakers.length) currentSpkIdx=-1;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+}
+function clearSpeakers(){
+  speakers=[]; currentSpkIdx=-1; speechesDone=0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+}
+
+// ═══ BULK ADD ═══
+let pickerSelected = new Set();
+
+function renderDelegatePicker(){
+  const grid = document.getElementById('del-picker-grid');
+  if(!grid) return;
+  if(!delegates.length){
+    grid.innerHTML='<div class="cdrop-empty" style="width:100%">No delegates registered — go to Setup first.</div>';
+    pickerSelected.clear();
+    updatePickerBtn();
+    return;
+  }
+  grid.innerHTML = delegates.map(d =>
+    `<div class="picker-chip ${pickerSelected.has(d.c)?'selected':''}" data-code="${d.c}">
+      <div class="pcheck"></div>
+      ${flagImg(d.c,'flag-img-sm')}
+      <span>${d.n}</span>
+    </div>`
+  ).join('');
+  grid.querySelectorAll('.picker-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const code = chip.dataset.code;
+      if(pickerSelected.has(code)) pickerSelected.delete(code);
+      else pickerSelected.add(code);
+      chip.classList.toggle('selected', pickerSelected.has(code));
+      updatePickerBtn();
+    });
+  });
+}
+
+function updatePickerBtn(){
+  const btn = document.getElementById('picker-add-btn');
+  if(btn) btn.textContent = `Add Selected (${pickerSelected.size})`;
+}
+
+function pickerSelectAll(){
+  delegates.forEach(d => pickerSelected.add(d.c));
+  renderDelegatePicker();
+}
+function pickerDeselectAll(){
+  pickerSelected.clear();
+  renderDelegatePicker();
+}
+
+function addPickerSelected(){
+  if(!pickerSelected.size){ showToast('No delegates selected.','error'); return; }
+  let added = 0;
+  delegates.filter(d => pickerSelected.has(d.c)).forEach(d => {
+    speakers.push({...d});
+    added++;
+  });
+  if(currentSpkIdx===-1 && speakers.length) currentSpkIdx=0;
+  pickerSelected.clear();
+  renderDelegatePicker();
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  showToast(`Added ${added} speaker${added!==1?'s':''} to the queue.`);
+}
+
+function addAllDelegates(){
+  if(!delegates.length){ showToast('No delegates registered.','error'); return; }
+  delegates.forEach(d => speakers.push({...d}));
+  if(currentSpkIdx===-1 && speakers.length) currentSpkIdx=0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  showToast(`Added all ${delegates.length} delegates to the queue.`);
+}
+
+function shuffleSpeakers(){
+  if(speakers.length < 2){ showToast('Need at least 2 speakers to shuffle.','error'); return; }
+  // Fisher-Yates shuffle
+  for(let i=speakers.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [speakers[i],speakers[j]]=[speakers[j],speakers[i]];
+  }
+  currentSpkIdx=0; speechesDone=0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  showToast('Queue shuffled randomly.');
+}
+
+function renderAllSpk(){
+  const listHtml = speakers.length ? speakers.map((s,i)=>{
+    const done=i<speechesDone, cur=i===currentSpkIdx;
+    return `<div class="spk-row ${cur?'current':''} ${done?'done':''}">
+      <span class="spk-num">${String(i+1).padStart(2,'0')}</span>
+      ${flagImg(s.c,'flag-img-sm')}
+      <span class="spk-name">${s.n}</span>
+      ${cur?'<span class="spk-badge">Speaking</span>':''}
+      <button class="spk-rm" data-idx="${i}">×</button>
+    </div>`;
+  }).join('') : '<div class="empty-state"><svg width="24" height="24" viewBox="0 0 16 16" fill="currentColor"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8z"/><path d="M1 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.082C4.542 10.426 5.693 10 7 10c.695 0 1.354.155 1.917.43A1.5 1.5 0 0 1 8 9.5C8 8.672 8.672 8 9.5 8S11 8.672 11 9.5c0 .172-.035.335-.08.49l.08.01H15a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H1z"/></svg><br>No speakers in queue</div>';
+
+  ['quick-spk-list','main-spk-list'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    el.innerHTML=listHtml;
+    el.querySelectorAll('.spk-rm').forEach(btn=>{
+      btn.addEventListener('click',()=>removeSpeaker(parseInt(btn.dataset.idx)));
+    });
+  });
+  // update chip
+  const chip=document.getElementById('spk-count-chip');
+  if(chip) chip.textContent=speakers.length+' speaker'+(speakers.length!==1?'s':'');
+}
+
+function updateSpkPanel(){
+  const el=document.getElementById('ts-flag');
+  const nm=document.getElementById('ts-name');
+  const sb=document.getElementById('ts-sub');
+  if(!curMode){return;}
+  if(curMode==='unmod'){nm.textContent='Unmoderated caucus';nm.style.color='var(--text2)';el.innerHTML='';sb.textContent='';return;}
+  if(curMode==='motion'){nm.textContent='Motion on the floor';nm.style.color='var(--text2)';el.innerHTML='';sb.textContent='';return;}
+  if(currentSpkIdx>=0&&currentSpkIdx<speakers.length){
+    const s=speakers[currentSpkIdx];
+    el.innerHTML=flagImg(s.c,'flag-img-lg');
+    nm.textContent=s.n;
+    nm.style.color='var(--text)';
+    sb.textContent=`Speaker ${currentSpkIdx+1} of ${speakers.length}`;
+  } else {
+    el.innerHTML='';
+    nm.textContent=MODE_NAMES[curMode]||'';
+    nm.style.color='var(--text2)';
+    sb.textContent='No speaker selected';
+  }
+}
+
+function nextSpeaker(){
+  stopTimer(); timerRunning=false;
+  speechesDone=currentSpkIdx+1;
+  currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
+  renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+}
+
+// ═══ MODE SELECTION ═══
+function selectMode(mode){
+  if(timerRunning) return;
+  curMode=mode;
+  ['opening','gsl','motion','unmod'].forEach(m=>document.getElementById('mc-'+m).classList.toggle('active',m===mode));
+  const secs=parseInt(document.getElementById('t-'+mode).value)||session.timers[mode];
+  timerSecs=secs; totalSecs=secs;
+  document.getElementById('arc-label').textContent=MODE_NAMES[mode];
+  document.getElementById('nav-timer-mode').textContent=
+    {opening:'Opening',gsl:'GSL',motion:'Motion',unmod:'Unmod'}[mode];
+  renderClock(); setArc(1); updateSpkPanel();
+  document.getElementById('arc-clock').className='arc-clock';
+  document.getElementById('timer-wrap').classList.remove('gong');
+  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-pause').style.display='none';
+  document.getElementById('btn-resume').style.display='none';
+  const showNext=(mode==='opening'||mode==='gsl')&&speakers.length>0;
+  document.getElementById('btn-next').style.display=showNext?'':'none';
+}
+
+function onDurInput(mode){
+  if(curMode===mode&&!timerRunning){
+    timerSecs=parseInt(document.getElementById('t-'+mode).value)||session.timers[mode];
+    totalSecs=timerSecs; renderClock(); setArc(1);
+  }
+}
+
+// ═══ TIMER ═══
+function startTimer(){
+  if(!curMode) return;
+  if(timerSecs<=0) timerSecs=totalSecs;
+  timerRunning=true;
+  document.getElementById('btn-start').style.display='none';
+  document.getElementById('btn-pause').style.display='';
+  document.getElementById('btn-resume').style.display='none';
+  timerInterval=setInterval(tick,1000);
+}
+function tick(){
+  if(timerSecs<=0){
+    stopTimer(); timerRunning=false; timerSecs=0;
+    renderClock(); setArc(0);
+    document.getElementById('btn-start').style.display='';
+    document.getElementById('btn-pause').style.display='none';
+    document.getElementById('btn-resume').style.display='none';
+    document.getElementById('arc-clock').className='arc-clock danger blink';
+    document.getElementById('timer-wrap').classList.add('gong');
+    return;
+  }
+  renderClock(); setArc(timerSecs/totalSecs); timerSecs--;
+}
+function pauseTimer(){
+  stopTimer(); timerRunning=false;
+  document.getElementById('btn-pause').style.display='none';
+  document.getElementById('btn-resume').style.display='';
+}
+function resumeTimer(){
+  timerRunning=true;
+  document.getElementById('btn-pause').style.display='';
+  document.getElementById('btn-resume').style.display='none';
+  timerInterval=setInterval(tick,1000);
+}
+function resetTimer(){
+  stopTimer(); timerRunning=false;
+  if(curMode){timerSecs=totalSecs;renderClock();setArc(1);}
+  document.getElementById('arc-clock').className='arc-clock';
+  document.getElementById('timer-wrap').classList.remove('gong');
+  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-pause').style.display='none';
+  document.getElementById('btn-resume').style.display='none';
+}
+function stopTimer(){ clearInterval(timerInterval); timerInterval=null; }
+
+function renderClock(){
+  const m=Math.floor(timerSecs/60), s=timerSecs%60;
+  document.getElementById('arc-clock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  const r=totalSecs>0?timerSecs/totalSecs:1;
+  const cl=document.getElementById('arc-clock');
+  if(!cl.classList.contains('blink')){
+    cl.className='arc-clock'+(r<=0.1?' danger':r<=0.25?' warn':'');
+  }
+}
+function setArc(ratio){
+  const fill=document.getElementById('arc-fill');
+  fill.style.strokeDashoffset=ARC_C*(1-Math.max(0,ratio));
+  fill.style.stroke=ratio<=0.1?'var(--red)':ratio<=0.25?'var(--orange)':'var(--blue)';
+}
+
+// ═══ STATS ═══
+function updateStats(){
+  document.getElementById('s-del').textContent=delegates.length;
+  document.getElementById('s-queue').textContent=speakers.length;
+  document.getElementById('s-done').textContent=speechesDone;
+  document.getElementById('nav-del-count').textContent=delegates.length;
+  document.getElementById('nav-spk-count').textContent=speakers.length;
+}
+function updateNav(){
+  document.getElementById('nav-del-count').textContent=delegates.length;
+  document.getElementById('s-del').textContent=delegates.length;
+}
+
+// ═══ TOAST ═══
+function showToast(msg, type='info'){
+  const t=document.createElement('div');
+  t.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:999;
+    background:${type==='error'?'#3d1a1a':'#1c2333'};
+    border:1px solid ${type==='error'?'rgba(248,81,73,0.5)':'var(--border2)'};
+    color:${type==='error'?'var(--red)':'var(--text)'};
+    padding:10px 16px;border-radius:8px;font-size:13px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.4);
+    animation:fadeIn 0.2s ease`;
+  t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+// init
+updateStats();
+renderAllSpk();
+</script>
+</body>
+</html>
