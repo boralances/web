@@ -23,6 +23,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter'
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
+
+/* LIGHT THEME */
+body.light-theme{
+  --bg:#f4f6f9;--bg2:#ffffff;--bg3:#eef1f5;--bg4:#e4e8ef;--bg5:#d8dde6;
+  --border:#d0d7e3;--border2:#bcc5d4;--border3:#a8b4c6;
+  --text:#1a202c;--text2:#4a5568;--text3:#718096;--text4:#a0aec0;
+}
+body.light-theme .sidebar{background:#fff;border-color:#d0d7e3}
+body.light-theme .topbar{background:#fff;border-color:#d0d7e3}
+body.light-theme .card{background:#fff}
+body.light-theme input,body.light-theme select,body.light-theme textarea{background:#f9fafc;border-color:#d0d7e3;color:#1a202c}
+body.light-theme .cdropdown{background:#fff;border-color:#bcc5d4}
+body.light-theme .cdrop-item:hover{background:#f0f4f8}
+body.light-theme .nav-item:hover{background:#f0f4f8}
+body.light-theme .nav-item.active{background:rgba(56,139,253,0.1)}
+body.light-theme .arc-container svg circle.track{stroke:#e4e8ef}
+body.light-theme .mode-card{background:#f4f6f9}
+body.light-theme .timer-wrap{background:#fff}
+body.light-theme .stat-card{background:#f4f6f9}
+body.light-theme .spk-row:hover{background:#eef1f5}
+body.light-theme .session-pill{background:#f4f6f9}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
@@ -512,6 +533,64 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/></svg>
       History
     </button>
+    <button class="nav-item disabled" id="nav-notes" onclick="showPage('notes')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/></svg>
+      Notes
+    </button>
+    <button class="nav-item disabled" id="nav-amendments" onclick="showPage('amendments')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/></svg>
+      Amendments
+      <span class="nav-badge" id="nav-amd-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-profiles" onclick="showPage('profiles')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>
+      Profiles
+    </button>
+    <button class="nav-item disabled" id="nav-summary" onclick="showPage('summary')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/></svg>
+      Summary
+    </button>
+    <button class="nav-item disabled" id="nav-nameplate" onclick="showPage('nameplate')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A2.5 2.5 0 0 1 3.5 0h9A2.5 2.5 0 0 1 15 2.5v11a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 13.5v-11zM3.5 1A1.5 1.5 0 0 0 2 2.5v11A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 12.5 1h-9z"/><path d="M3 4.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/></svg>
+      Nameplates
+    </button>
+    <button class="nav-item disabled" id="nav-modlog" onclick="showPage('modlog')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+      Mod Log
+      <span class="nav-badge" id="nav-modlog-count" style="background:rgba(248,81,73,0.2);color:var(--red)">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-gslbank" onclick="showPage('gslbank')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+      GSL Bank
+    </button>
+    <button class="nav-item disabled" id="nav-workpapers" onclick="showPage('workpapers')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/><path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/></svg>
+      Working Papers
+      <span class="nav-badge" id="nav-wp-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-blocs" onclick="showPage('blocs')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/><path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+      Blocs
+      <span class="nav-badge" id="nav-blocs-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-caucuslog" onclick="showPage('caucuslog')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+      Caucus Log
+      <span class="nav-badge" id="nav-caucus-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-speakstats" onclick="showPage('speakstats')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5h-2v12h2V2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z"/></svg>
+      Stats
+    </button>
+    <button class="nav-item disabled" id="nav-postracker" onclick="showPage('postracker')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3zM3 8.5a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 0-1h-9a.5.5 0 0 0-.5.5zm0 2a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 0-1h-9a.5.5 0 0 0-.5.5zm0 2a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 0-1h-4a.5.5 0 0 0-.5.5z"/></svg>
+      Position Papers
+      <span class="nav-badge" id="nav-pp-count">0</span>
+    </button>
+    <button class="nav-item disabled" id="nav-lobbyroom" onclick="showPage('lobbyroom')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+      Lobby Room
+    </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
       Delegates
@@ -548,13 +627,23 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <span class="topbar-crumb" id="tb-crumb">Configure committee and delegates</span>
     </div>
     <div class="topbar-right">
+      <button id="btn-end-meeting" onclick="endMeeting()" class="btn btn-danger btn-sm" style="display:none;font-size:11px;font-weight:600" title="End meeting permanently">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+        End Meeting
+      </button>
+      <button id="btn-suspend" onclick="openSuspendDialog()" class="btn btn-secondary btn-sm" style="display:none;font-size:11px;font-weight:600" title="Suspend session until next time">⏸ End Session</button>
+      <button id="btn-save-session" onclick="saveSession()" class="btn btn-ghost btn-sm" style="display:none;font-size:11px;font-weight:600" title="Save session to file">💾 Save</button>
+      <button id="lang-toggle-btn" onclick="toggleLang()" class="btn btn-ghost btn-sm" title="Dil / Language" style="padding:5px 10px;font-size:11px;font-weight:700;letter-spacing:0.06em">TR</button>
+      <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-ghost btn-sm" title="Toggle theme" style="padding:5px 8px;font-size:14px">🌙</button>
       <span class="chip chip-gray" id="tb-del-chip" style="display:none"></span>
+      <span class="chip" id="quorum-chip" style="display:none;background:var(--green-dim);border-color:rgba(63,185,80,0.4);color:var(--green)">Quorum ✓</span>
+      <span class="chip chip-gray" id="session-clock-chip" style="display:none;font-family:'JetBrains Mono',monospace;font-size:11px">00:00</span>
       <button class="btn btn-sm" id="btn-poo" onclick="raisePointOfOrder()" style="display:none;background:rgba(210,153,34,0.15);border-color:rgba(210,153,34,0.5);color:var(--yellow,#d29922);font-weight:700;letter-spacing:0.05em">
         ⚡ Point of Order
       </button>
-      <button class="btn btn-danger btn-sm" id="btn-end" onclick="endSession()" style="display:none">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
-        End Session
+      <button class="btn btn-success btn-sm" id="btn-end" onclick="endSession()" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5z"/></svg>
+        End & Awards 🏆
       </button>
     </div>
   </div>
@@ -564,6 +653,17 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
     <!-- ═══ SETUP ═══ -->
     <div id="page-setup" class="page active" style="max-width:700px">
 
+      <div class="card" style="margin-bottom:12px;border-color:rgba(56,139,253,0.3);background:var(--blue-dim)">
+        <div class="card-body" style="display:flex;align-items:center;gap:12px;padding:12px 16px">
+          <span style="font-size:20px">📂</span>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:var(--text)">Restore Previous Session</div>
+            <div style="font-size:11px;color:var(--text3)">Load a saved .json session file to continue</div>
+          </div>
+          <input type="file" id="restore-file-input" accept=".json" style="display:none" onchange="loadSession(event)"/>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('restore-file-input').click()">Load Session</button>
+        </div>
+      </div>
       <div class="card">
         <div class="card-head">
           <div class="card-head-left">
@@ -886,6 +986,25 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 
     <!-- ═══ AWARDS ═══ -->
     <div id="page-awards" class="page" style="max-width:600px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">Custom Award Titles</div></div>
+        <div class="card-body">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:18px">🥇</span>
+              <input type="text" id="award-title-best" value="Best Delegate" style="flex:1" oninput="customAwardTitles.best=this.value"/>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:18px">🥈</span>
+              <input type="text" id="award-title-outstanding" value="Outstanding Delegate" style="flex:1" oninput="customAwardTitles.outstanding=this.value"/>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:18px">🥉</span>
+              <input type="text" id="award-title-verbal" value="Verbal Commendation" style="flex:1" oninput="customAwardTitles.verbal=this.value"/>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="card">
         <div class="card-head">
           <div class="card-title">Session Awards</div>
@@ -1123,89 +1242,76 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 
       <!-- ── VOTING TAB ── -->
       <div id="res-vote-tab" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 260px;gap:14px;align-items:start">
-          <!-- Left: delegate list -->
-          <div class="card">
-            <div class="card-head">
-              <div class="card-head-left">
-                <div class="card-title">Vote</div>
-                <span class="chip chip-gray" id="vote-progress-chip">0 / 0 voted</span>
-              </div>
-              <div style="display:flex;gap:6px">
-                <button class="btn btn-ghost btn-sm" onclick="resetVotes()">Reset</button>
-              </div>
+        <!-- Mode toggle -->
+        <div style="display:flex;gap:8px;margin-bottom:14px;align-items:center">
+          <button class="btn btn-primary btn-sm" id="btn-start-roll-vote" onclick="startRollVote()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M11.596 8.697l-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393z"/></svg>
+            Start Roll-call Vote
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="resetVotes()">Reset</button>
+          <span class="chip chip-gray" id="vote-progress-chip" style="margin-left:auto">0 / 0 voted</span>
+        </div>
+
+        <!-- Fullscreen voting display (hidden until started) -->
+        <div id="vote-fullscreen" style="display:none;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:14px">
+          <!-- Current delegate header -->
+          <div style="padding:20px 24px 16px;border-bottom:1px solid var(--border);text-align:center">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:8px" id="vote-delegate-label">DELEGATE</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:6px">
+              <img id="vote-delegate-flag" style="width:80px;height:56px;border-radius:4px;object-fit:cover;border:2px solid var(--border);box-shadow:0 4px 20px rgba(0,0,0,0.4)" src="" alt=""/>
             </div>
+            <div style="font-size:26px;font-weight:700;color:var(--text);letter-spacing:0.02em" id="vote-delegate-name">—</div>
+          </div>
+          <!-- Vote buttons -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0">
+            <button onclick="castVote('yes')" style="padding:28px 16px;background:rgba(63,185,80,0.12);border:none;border-right:1px solid var(--border);cursor:pointer;transition:background 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px" onmouseover="this.style.background='rgba(63,185,80,0.25)'" onmouseout="this.style.background='rgba(63,185,80,0.12)'">
+              <span style="font-size:32px">✅</span>
+              <span style="font-size:14px;font-weight:700;color:var(--green);letter-spacing:0.1em;text-transform:uppercase">Favor</span>
+            </button>
+            <button onclick="castVote('abstain')" style="padding:28px 16px;background:rgba(139,148,158,0.1);border:none;border-right:1px solid var(--border);cursor:pointer;transition:background 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px" onmouseover="this.style.background='rgba(139,148,158,0.2)'" onmouseout="this.style.background='rgba(139,148,158,0.1)'">
+              <span style="font-size:32px">🟡</span>
+              <span style="font-size:14px;font-weight:700;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase">Abstain</span>
+            </button>
+            <button onclick="castVote('no')" style="padding:28px 16px;background:rgba(248,81,73,0.1);border:none;cursor:pointer;transition:background 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px" onmouseover="this.style.background='rgba(248,81,73,0.22)'" onmouseout="this.style.background='rgba(248,81,73,0.1)'">
+              <span style="font-size:32px">❌</span>
+              <span style="font-size:14px;font-weight:700;color:var(--red);letter-spacing:0.1em;text-transform:uppercase">Objection</span>
+            </button>
+          </div>
+          <!-- Progress bar -->
+          <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px">
+            <span style="font-size:11px;color:var(--text3);flex-shrink:0" id="vote-roll-progress">0 / 0</span>
+            <div style="flex:1;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden">
+              <div id="vote-roll-bar" style="height:100%;background:var(--blue);border-radius:2px;width:0%;transition:width 0.3s"></div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="skipVote()">Skip →</button>
+          </div>
+        </div>
+
+        <!-- Voted list + live results -->
+        <div style="display:grid;grid-template-columns:1fr 240px;gap:14px;align-items:start">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Votes Cast</div></div>
             <div class="card-body" style="padding:8px">
-              <div id="vote-list" style="display:flex;flex-direction:column;gap:4px;max-height:420px;overflow-y:auto"></div>
+              <div id="vote-list" style="display:flex;flex-direction:column;gap:3px;max-height:320px;overflow-y:auto"></div>
             </div>
           </div>
-          <!-- Right: live results -->
-          <div>
-            <div class="card">
-              <div class="card-head"><div class="card-title">Live Results</div></div>
-              <div class="card-body" style="padding:16px">
-
-                <!-- Verdict big badge -->
-                <div id="vote-verdict" style="display:none;padding:12px;border-radius:var(--radius);text-align:center;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px"></div>
-
-                <!-- Pass threshold graph -->
-                <div style="margin-bottom:16px">
-                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-                    <span style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)">Yes votes</span>
-                    <span style="font-size:10px;color:var(--text3)">need <span id="vote-required" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue)">—</span></span>
-                  </div>
-                  <!-- stacked bar: yes / gap to threshold / over-threshold -->
-                  <div style="position:relative;height:28px;background:var(--bg4);border-radius:4px;overflow:hidden;margin-bottom:4px">
-                    <div id="vote-yes-bar" style="position:absolute;left:0;top:0;bottom:0;background:var(--green);border-radius:4px;width:0%;transition:width 0.4s"></div>
-                    <!-- threshold line -->
-                    <div id="vote-thresh-line" style="position:absolute;top:0;bottom:0;width:2px;background:var(--blue);opacity:0.8;transition:left 0.4s;z-index:2"></div>
-                    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text);z-index:3">
-                      <span id="vote-yes-num">0</span>
-                    </div>
-                  </div>
-                  <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
-                    <span>0</span>
-                    <span id="vote-thresh-label" style="color:var(--blue)">Threshold</span>
-                    <span id="vote-total-label">Total</span>
-                  </div>
-                </div>
-
-                <!-- No + Abstain -->
-                <div style="margin-bottom:8px">
-                  <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
-                    <span style="color:var(--red);font-weight:600">No</span>
-                    <span style="font-family:'JetBrains Mono',monospace;color:var(--red)" id="vote-no-num">0</span>
-                  </div>
-                  <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
-                    <div id="vote-no-bar" style="height:100%;background:var(--red);border-radius:3px;width:0%;transition:width 0.4s"></div>
-                  </div>
-                </div>
-                <div style="margin-bottom:16px">
-                  <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px">
-                    <span style="color:var(--text3);font-weight:600">Abstain</span>
-                    <span style="font-family:'JetBrains Mono',monospace;color:var(--text3)" id="vote-abs-num">0</span>
-                  </div>
-                  <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
-                    <div id="vote-abs-bar" style="height:100%;background:var(--border2);border-radius:3px;width:0%;transition:width 0.4s"></div>
-                  </div>
-                </div>
-
-                <!-- Summary row -->
-                <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px">
-                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                    <span style="font-size:11px;color:var(--text3)">Voted</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--text)" id="vote-progress-chip">0 / 0</span>
-                  </div>
-                  <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-                    <span style="font-size:11px;color:var(--text3)">Current Yes</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--green)" id="vote-yes-summary">0</span>
-                  </div>
-                  <div style="display:flex;justify-content:space-between">
-                    <span style="font-size:11px;color:var(--text3)">To pass needs</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue)" id="vote-need-summary">—</span>
-                  </div>
-                </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Result</div></div>
+            <div class="card-body" style="padding:14px">
+              <div id="vote-verdict" style="display:none;padding:10px;border-radius:var(--radius);text-align:center;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px"></div>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:var(--green);font-weight:600">Favor</span><span style="font-family:'JetBrains Mono',monospace;color:var(--green)" id="vote-yes-num">0</span></div>
+                <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden"><div id="vote-yes-bar" style="height:100%;background:var(--green);width:0%;transition:width 0.4s;border-radius:3px"></div></div>
               </div>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:var(--red);font-weight:600">Objection</span><span style="font-family:'JetBrains Mono',monospace;color:var(--red)" id="vote-no-num">0</span></div>
+                <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden"><div id="vote-no-bar" style="height:100%;background:var(--red);width:0%;transition:width 0.4s;border-radius:3px"></div></div>
+              </div>
+              <div style="margin-bottom:12px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px"><span style="color:var(--text3);font-weight:600">Abstain</span><span style="font-family:'JetBrains Mono',monospace;color:var(--text3)" id="vote-abs-num">0</span></div>
+                <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden"><div id="vote-abs-bar" style="height:100%;background:var(--border2);width:0%;transition:width 0.4s;border-radius:3px"></div></div>
+              </div>
+              <div style="font-size:10px;color:var(--text3);text-align:center">Needs <span id="vote-required" style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--blue)">—</span> to pass</div>
             </div>
           </div>
         </div>
@@ -1295,6 +1401,442 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ NOTES ═══ -->
+    <div id="page-notes" class="page" style="max-width:680px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Chair Notes</div>
+            <span style="font-size:11px;color:var(--text3)">Private scratchpad — not exported</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="document.getElementById('chair-notes-area').value='';chairNotes='';">Clear</button>
+        </div>
+        <div class="card-body">
+          <textarea id="chair-notes-area" placeholder="Type your notes here...&#10;&#10;• Delegate positions&#10;• Points to remember&#10;• Procedural reminders" style="width:100%;min-height:420px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.7;padding:12px;border-radius:var(--radius);resize:vertical;outline:none" oninput="chairNotes=this.value" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ AMENDMENTS ═══ -->
+    <div id="page-amendments" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">New Amendment</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">Type</label>
+              <select id="amd-type">
+                <option value="friendly">Friendly Amendment</option>
+                <option value="unfriendly">Unfriendly Amendment</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Sponsored by</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="amd-sponsor-search" placeholder="Search country..." autocomplete="off"
+                  oninput="filterAmdSponsor()" onfocus="filterAmdSponsor();document.getElementById('amd-sponsor-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('amd-sponsor-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="amd-sponsor-drop"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label class="field-label">Amendment Text</label>
+            <textarea id="amd-text" placeholder="Describe the proposed change to the resolution..." style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:var(--radius);resize:vertical;outline:none" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addAmendment()">Add Amendment</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Amendment Log</div>
+            <span class="chip chip-gray" id="amd-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearAmendments()">Clear All</button>
+        </div>
+        <div class="card-body">
+          <div id="amd-list"><div class="empty-state">No amendments submitted yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PROFILES ═══ -->
+    <div id="page-profiles" class="page" style="max-width:700px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">Delegate Profiles</div></div>
+        <div class="card-body" style="padding:8px">
+          <div class="csearch-wrap" style="margin-bottom:10px">
+            <svg class="csearch-icon" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="profile-filter" placeholder="Filter delegates..." oninput="renderProfiles()"/>
+          </div>
+          <div id="profile-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SUMMARY ═══ -->
+    <div id="page-summary" class="page" style="max-width:700px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Session Summary</div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-primary btn-sm" onclick="showAwardsCeremony()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5z"/></svg>
+              Proceed to Awards →
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="summary-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ NAMEPLATE ═══ -->
+    <div id="page-nameplate" class="page" style="max-width:700px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Print Nameplates</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="printAllNameplates()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/><path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zm4 7h2a1 1 0 0 1 0 2H9v1h2v1H8v-4h1v1zm-3 0v4H5v-1h1v-1H5v-1h1V8H4zm4-4a1 1 0 0 1 1 1H6a1 1 0 0 1 1-1h3z"/></svg>
+            Print All
+          </button>
+        </div>
+        <div class="card-body" style="padding:8px">
+          <div id="nameplate-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MODERATION LOG ═══ -->
+    <div id="page-modlog" class="page" style="max-width:640px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">Call to Order</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">Delegate</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="modlog-del-search" placeholder="Search delegate..." autocomplete="off"
+                  oninput="filterModLogSearch()" onfocus="filterModLogSearch();document.getElementById('modlog-del-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('modlog-del-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="modlog-del-drop"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Reason</label>
+              <select id="modlog-reason">
+                <option value="Out of order">Out of order</option>
+                <option value="Interrupting speaker">Interrupting speaker</option>
+                <option value="Irrelevant speech">Irrelevant speech</option>
+                <option value="Personal attack">Personal attack</option>
+                <option value="Procedural violation">Procedural violation</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label class="field-label">Notes (optional)</label>
+            <input type="text" id="modlog-notes" placeholder="Additional context..."/>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="addModLogEntry()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/></svg>
+            Call to Order
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Log</div>
+            <span class="chip chip-gray" id="modlog-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearModLog()">Clear</button>
+        </div>
+        <div class="card-body">
+          <div id="modlog-list"><div class="empty-state">No calls to order yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ GSL TIME BANK ═══ -->
+    <div id="page-gslbank" class="page" style="max-width:640px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">GSL Time Bank</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:14px">
+            <div class="field">
+              <label class="field-label">Total Speakers</label>
+              <input type="number" id="gsl-total-speakers" value="10" min="1" max="200" oninput="updateGslBank()"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Time per Speaker (sec)</label>
+              <input type="number" id="gsl-time-per" value="90" min="10" max="600" oninput="updateGslBank()"/>
+            </div>
+          </div>
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;text-align:center;margin-bottom:14px">
+            <div style="font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Total GSL Time Remaining</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:52px;font-weight:500;color:var(--blue);line-height:1;margin-bottom:8px" id="gsl-bank-display">--:--</div>
+            <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-bottom:8px">
+              <div id="gsl-bank-bar" style="height:100%;background:var(--blue);border-radius:3px;width:100%;transition:width 0.5s"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text3)" id="gsl-bank-sub">— speakers · — total</div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="gslBankDeduct()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 8a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 0 1H4a.5.5 0 0 1-.5-.5z"/></svg>
+              Deduct One Speech
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="resetGslBank()">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Speakers Used</div></div>
+        <div class="card-body" style="padding:8px">
+          <div id="gsl-used-list" style="max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
+            <div class="empty-state">No speeches deducted yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ WORKING PAPERS ═══ -->
+    <div id="page-workpapers" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">New Working Paper</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">WP Number</label>
+              <input type="text" id="wp-id" placeholder="e.g. WP 1.1"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Lead Author</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="wp-author-search" placeholder="Search lead author..." autocomplete="off"
+                  oninput="filterWpAuthorSearch()" onfocus="filterWpAuthorSearch();document.getElementById('wp-author-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('wp-author-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="wp-author-drop"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Title / Topic</label>
+            <input type="text" id="wp-title" placeholder="Brief description of the paper"/>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label class="field-label">Co-Authors</label>
+            <input type="text" id="wp-coauthors" placeholder="e.g. France, Germany, Brazil (comma-separated)"/>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addWorkPaper()">Add Working Paper</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Working Papers</div>
+            <span class="chip chip-gray" id="wp-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearWorkPapers()">Clear All</button>
+        </div>
+        <div class="card-body">
+          <div id="wp-list"><div class="empty-state">No working papers yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ BLOCS ═══ -->
+    <div id="page-blocs" class="page" style="max-width:780px">
+      <div class="grid2" style="margin-bottom:14px;align-items:start">
+        <!-- Create bloc -->
+        <div class="card">
+          <div class="card-head"><div class="card-title" id="t-create-bloc">Create Bloc</div></div>
+          <div class="card-body">
+            <div class="field" style="margin-bottom:10px">
+              <label class="field-label" id="t-bloc-name-lbl">Bloc Name</label>
+              <input type="text" id="bloc-name-input" placeholder="e.g. Western Group, Arab League, BRICS"/>
+            </div>
+            <div class="field" style="margin-bottom:10px">
+              <label class="field-label" id="t-bloc-color-lbl">Colour</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap" id="bloc-color-picker">
+                <div class="bloc-color-swatch" data-color="#388bfd" style="width:24px;height:24px;border-radius:50%;background:#388bfd;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#388bfd')"></div>
+                <div class="bloc-color-swatch" data-color="#3fb950" style="width:24px;height:24px;border-radius:50%;background:#3fb950;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#3fb950')"></div>
+                <div class="bloc-color-swatch" data-color="#f0883e" style="width:24px;height:24px;border-radius:50%;background:#f0883e;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#f0883e')"></div>
+                <div class="bloc-color-swatch" data-color="#e2434a" style="width:24px;height:24px;border-radius:50%;background:#e2434a;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#e2434a')"></div>
+                <div class="bloc-color-swatch" data-color="#d29922" style="width:24px;height:24px;border-radius:50%;background:#d29922;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#d29922')"></div>
+                <div class="bloc-color-swatch" data-color="#bc8cff" style="width:24px;height:24px;border-radius:50%;background:#bc8cff;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#bc8cff')"></div>
+                <div class="bloc-color-swatch" data-color="#39d9a8" style="width:24px;height:24px;border-radius:50%;background:#39d9a8;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#39d9a8')"></div>
+                <div class="bloc-color-swatch" data-color="#ff7eb6" style="width:24px;height:24px;border-radius:50%;background:#ff7eb6;cursor:pointer;border:2px solid transparent" onclick="selectBlocColor('#ff7eb6')"></div>
+              </div>
+            </div>
+            <div class="field" style="margin-bottom:12px">
+              <label class="field-label" id="t-bloc-add-del-lbl">Add Delegates</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="bloc-del-search" placeholder="Search delegate..." autocomplete="off"
+                  oninput="filterBlocDelSearch()" onfocus="filterBlocDelSearch();document.getElementById('bloc-del-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('bloc-del-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="bloc-del-drop"></div>
+              </div>
+              <div id="bloc-del-selected" style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px"></div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="createBloc()" id="t-create-bloc-btn">Create Bloc</button>
+          </div>
+        </div>
+        <!-- Voting summary -->
+        <div class="card">
+          <div class="card-head"><div class="card-title" id="t-bloc-vote-title">Bloc Voting Summary</div></div>
+          <div class="card-body" style="padding:8px">
+            <div id="bloc-vote-summary"><div class="empty-state" id="t-no-blocs-msg">No blocs created yet.</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Existing blocs -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title" id="t-blocs-title">Blocs</div>
+            <span class="chip chip-gray" id="blocs-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearBlocs()" id="t-clear-blocs">Clear All</button>
+        </div>
+        <div class="card-body" style="padding:8px">
+          <div id="blocs-list"><div class="empty-state" id="t-no-blocs-list">No blocs created yet.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CAUCUS LOG ═══ -->
+    <div id="page-caucuslog" class="page" style="max-width:640px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title" id="t-add-caucus">Log Caucus Manually</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label" id="t-topic-lbl">Topic</label>
+              <input type="text" id="cl-topic" placeholder="Caucus topic..."/>
+            </div>
+            <div class="field">
+              <label class="field-label" id="t-raised-by-lbl">Raised By</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="cl-raised-search" placeholder="Search..." autocomplete="off"
+                  oninput="filterClRaisedSearch()" onfocus="filterClRaisedSearch();document.getElementById('cl-raised-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('cl-raised-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="cl-raised-drop"></div>
+              </div>
+            </div>
+          </div>
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label" id="t-seconded-lbl">Seconded By</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="cl-second-search" placeholder="Search..." autocomplete="off"
+                  oninput="filterClSecondSearch()" onfocus="filterClSecondSearch();document.getElementById('cl-second-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('cl-second-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="cl-second-drop"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" id="t-outcome-lbl">Outcome</label>
+              <select id="cl-outcome">
+                <option value="passed">Passed</option>
+                <option value="failed">Failed</option>
+                <option value="withdrawn">Withdrawn</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addCaucusLogEntry()" id="t-log-caucus-btn">Log Caucus</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title" id="t-caucus-log-title">Caucus Log</div>
+            <span class="chip chip-gray" id="cl-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearCaucusLog()" id="t-clear-caucus">Clear</button>
+        </div>
+        <div class="card-body">
+          <div id="cl-list"><div class="empty-state" id="t-no-caucus">No caucuses logged yet. Motions are auto-logged when finished.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SPEAKER STATS ═══ -->
+    <div id="page-speakstats" class="page" style="max-width:700px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title" id="t-speaker-stats-title">Speaker Participation</div>
+        </div>
+        <div class="card-body">
+          <div id="speak-stats-content"><div class="empty-state" id="t-no-stats">No speech data yet. Start scoring speeches to see stats.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ POSITION PAPERS ═══ -->
+    <div id="page-postracker" class="page" style="max-width:640px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Position Paper Tracker</div>
+            <span class="chip chip-gray" id="pp-count-chip">0 submitted</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="ppMarkAll(true)">All Submitted</button>
+            <button class="btn btn-ghost btn-sm" onclick="ppMarkAll(false)">Clear All</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:8px">
+          <div style="font-size:11px;color:var(--text3);padding:6px 8px 10px">Mark submitted papers below. Award bonus points to delegates who submitted.</div>
+          <div id="pp-list" style="display:flex;flex-direction:column;gap:3px;max-height:420px;overflow-y:auto"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Bonus Points</div></div>
+        <div class="card-body">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label style="font-size:12px;color:var(--text)">Points per submitted paper:</label>
+            <input type="number" id="pp-bonus-pts" value="3" min="0" max="20" style="width:70px;text-align:center;font-family:'JetBrains Mono',monospace"/>
+            <button class="btn btn-success btn-sm" onclick="awardPaperBonus()">Award Bonus to All Submitted</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LOBBY ROOM ═══ -->
+    <div id="page-lobbyroom" class="page" style="max-width:500px">
+      <div class="card">
+        <div class="card-head"><div class="card-title">Lobby Room Timer</div></div>
+        <div class="card-body" style="text-align:center;padding:28px 20px">
+          <div style="font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:12px">INFORMAL SESSION</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:72px;font-weight:300;color:var(--text);line-height:1;margin-bottom:6px" id="lobby-clock">10:00</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:20px" id="lobby-sub">Ready</div>
+          <div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:24px;overflow:hidden">
+            <div id="lobby-bar" style="height:100%;background:var(--orange);border-radius:2px;width:100%;transition:width 0.6s linear"></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+            <button class="btn btn-primary" id="lobby-start-btn" onclick="lobbyStart()">▶ Start</button>
+            <button class="btn btn-secondary" id="lobby-pause-btn" onclick="lobbyPause()" style="display:none">⏸ Pause</button>
+            <button class="btn btn-ghost" onclick="lobbyReset()">↺ Reset</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap">
+            <label style="font-size:12px;color:var(--text3)">Duration:</label>
+            <button class="lobby-preset btn btn-ghost btn-sm" data-min="5" onclick="lobbySetMin(5)">5 min</button>
+            <button class="lobby-preset btn btn-ghost btn-sm" data-min="10" onclick="lobbySetMin(10)">10 min</button>
+            <button class="lobby-preset btn btn-ghost btn-sm" data-min="15" onclick="lobbySetMin(15)">15 min</button>
+            <button class="lobby-preset btn btn-ghost btn-sm" data-min="20" onclick="lobbySetMin(20)">20 min</button>
+            <input type="number" id="lobby-custom-min" placeholder="min" min="1" max="120" style="width:60px;text-align:center" onchange="lobbySetMin(parseInt(this.value)||10)"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -1310,6 +1852,18 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 
   </div>
 </div>
+</div>
+
+<!-- SUSPEND LOCKSCREEN -->
+<div id="suspend-overlay" style="display:none;position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0d1117 0%,#131d35 60%,#0a1628 100%);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+  <div style="font-size:48px;margin-bottom:8px">🔒</div>
+  <div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:0.04em" id="suspend-committee-label"></div>
+  <div style="font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:8px">Session suspended — enter password to resume</div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input type="password" id="suspend-pw-input" placeholder="Password..." style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;outline:none;width:220px" onkeydown="if(event.key==='Enter')resumeSession()"/>
+    <button onclick="resumeSession()" style="background:rgba(56,139,253,0.2);border:1px solid rgba(56,139,253,0.5);color:#388bfd;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif">Unlock</button>
+  </div>
+  <div id="suspend-pw-error" style="font-size:12px;color:#f85149;display:none">Incorrect password</div>
 </div>
 
 <script>
@@ -1397,6 +1951,15 @@ let session={committee:'',agenda:'',timers:{opening:120,gsl:90,motion:60,unmod:6
 let sessionHistory=[]; // [{type, delegate, detail, time, pts}]
 let placardQueue=[]; // [{ delegate }] — raised placards waiting to speak
 let sessionStartTime=null;
+let chairNotes='';
+let amendments=[]; // [{id,type,text,sponsor,status}]
+let blocs={}; // {blocName: {color, delegates:[code]}}
+let caucusLog=[]; // [{topic,raisedBy,speakers,totalSecs,spkSecs,outcome,time}]
+let currentLang='en';
+let positionPapers={}; // {countryCode: {submitted:bool,score:int,notes:''}}
+let customAwardTitles={best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
+let sessionSuspended=false;
+let suspendPassword='';
 const ARC_C = 2*Math.PI*85; // 534.07
 
 const PAGES_META = {
@@ -1411,6 +1974,19 @@ const PAGES_META = {
   resolutions:{title:'Resolutions',          crumb:'Draft and track resolution papers'},
   history:    {title:'Session History',       crumb:'Full log of events and PDF export'},
   placard:    {title:'Placard Queue',          crumb:'Delegates signalling to speak'},
+  notes:      {title:'Chair Notes',           crumb:'Private scratchpad for the chair'},
+  amendments: {title:'Amendments',             crumb:'Friendly and unfriendly amendments to the resolution'},
+  profiles:   {title:'Delegate Profiles',      crumb:'Stats, history and actions per delegate'},
+  summary:    {title:'Session Summary',        crumb:'Auto-generated session recap'},
+  nameplate:  {title:'Nameplates',             crumb:'Print desk nameplates for delegates'},
+  modlog:     {title:'Moderation Log',          crumb:'Calls to order and disciplinary events'},
+  gslbank:    {title:'GSL Time Bank',           crumb:'Total GSL time remaining across all speakers'},
+  workpapers: {title:'Working Papers',          crumb:'Draft papers before formal resolution'},
+  blocs:      {title:'Bloc Tracker',          crumb:'Group delegates into voting blocs'},
+  caucuslog:  {title:'Caucus Log',             crumb:'Auto-record of every moderated caucus'},
+  speakstats: {title:'Speaker Stats',          crumb:'Visual chart of delegate participation'},
+  postracker: {title:'Position Papers',        crumb:'Track submitted position papers'},
+  lobbyroom:  {title:'Lobby Room',             crumb:'Informal session timer'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -1429,6 +2005,19 @@ function showPage(id){
   if(id==='resolutions') renderResolutions();
   if(id==='history') renderHistory();
   if(id==='placard') renderPlacardPage();
+  if(id==='notes'){ const ta=document.getElementById('chair-notes-area');if(ta)ta.value=chairNotes; }
+  if(id==='amendments') renderAmendments();
+  if(id==='profiles') renderProfiles();
+  if(id==='modlog') renderModLog();
+  if(id==='gslbank') renderGslBank();
+  if(id==='workpapers') renderWorkPapers();
+  if(id==='blocs') renderBlocs();
+  if(id==='caucuslog') renderCaucusLog();
+  if(id==='speakstats') renderSpeakStats();
+  if(id==='postracker') renderPosTracker();
+  if(id==='lobbyroom') initLobbyRoom();
+  if(id==='summary') renderSummary();
+  if(id==='nameplate') renderNameplates();
 }
 
 // ═══ SETUP ═══
@@ -1550,11 +2139,15 @@ function beginSession(){
   document.getElementById('tb-del-chip').style.display='';
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
   sessionStartTime=Date.now();
-  scores={}; warnings={}; rollCallData={}; resolutions=[];
+  startSessionClock();
+  document.getElementById('session-clock-chip').style.display='';
+  document.getElementById('quorum-chip').style.display='';
+  updateQuorumCheck();
+  scores={}; warnings={}; rollCallData={}; resolutions=[]; modLog=[]; gslBankUsed=0; gslBankHistory=[]; workPapers=[]; amendments=[]; blocs={}; caucusLog=[]; _blocSelectedDelegates=[]; positionPapers={};
   updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
   showPage('timer');
@@ -1585,7 +2178,7 @@ function endSession(){
   document.getElementById('end-confirm-btn').onclick = () => {
     toast.remove();
     doEndSession();
-    showAwardsCeremony();
+    showPage('summary');
   };
 }
 
@@ -1604,6 +2197,9 @@ function doEndSession(){
   safe('status-dot',el => el.classList.remove('live'));
   safe('btn-end',   el => el.style.display='none');
   safe('btn-poo',    el => el.style.display='none');
+  safe('btn-save-session', el => el.style.display='none');
+  safe('btn-suspend', el => el.style.display='none');
+  safe('btn-end-meeting', el => el.style.display='none');
   safe('tb-del-chip',el=> el.style.display='none');
   safe('pill-committee', el => el.textContent='Not configured');
   safe('pill-agenda',    el => el.textContent='—');
@@ -1613,10 +2209,13 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
-  sessionStartTime=null; sessionHistory=[]; placardQueue=[];
+  sessionStartTime=null; sessionHistory=[]; placardQueue=[]; amendments=[];
+  stopSessionClock();
+  safe('session-clock-chip',el=>el.style.display='none');
+  safe('quorum-chip',el=>el.style.display='none');
   ['opening','gsl','motion','unmod'].forEach(m => {
     safe('mc-'+m, el => el.classList.remove('active'));
   });
@@ -2013,6 +2612,10 @@ function renderMotionSpeakers(){
 }
 
 function finishMotion(){
+  // Auto-log to caucus log
+  const topic=document.getElementById('mot-info-topic')?document.getElementById('mot-info-topic').textContent:'';
+  if(topic) caucusLog.push({topic,raisedBy:motionRaisedBy?{...motionRaisedBy}:null,secondedBy:null,speakers:motionSpeakers.length,outcome:'passed',time:new Date().toLocaleTimeString()});
+  const nb=document.getElementById('nav-caucus-count'); if(nb) nb.textContent=caucusLog.length;
   // Award points: motion raiser gets +5, +0.2 per speaker
   const spkCount = motionSpeakers.length;
   if(motionRaisedBy){
@@ -2073,6 +2676,7 @@ function tick(){
     document.getElementById('btn-resume').style.display='none';
     document.getElementById('arc-clock').className='arc-clock danger blink';
     document.getElementById('timer-wrap').classList.add('gong');
+    playGavel();
     return;
   }
   renderClock(); setArc(timerSecs/totalSecs); timerSecs--;
@@ -2247,7 +2851,9 @@ function computeAwardsFromScores() {
   const eligible = ranked.filter(({d}) => (warnings[d.c]||[]).length < 3);
   const ineligible = ranked.filter(({d}) => (warnings[d.c]||[]).length >= 3);
 
+  const titles=typeof customAwardTitles!=='undefined'?customAwardTitles:{best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
   return {
+    bestTitle: titles.best, outstandingTitle: titles.outstanding, verbalTitle: titles.verbal,
     best:        eligible.slice(0, 1),
     outstanding: eligible.slice(1, 3),
     verbal:      eligible.slice(3, 5),
@@ -2543,6 +3149,7 @@ function mcSpkTick(){
     document.getElementById('mc-spk-start').style.display='';
     document.getElementById('mc-spk-pause').style.display='none';
     document.getElementById('mc-spk-clock').style.color='var(--red)';
+    playGavel();
     // auto advance to next motion speaker
     if(motionCurrentIdx < motionSpeakers.length-1){
       motionCurrentIdx++;
@@ -2957,6 +3564,7 @@ function exportPDF(){
   html+=`</table></body></html>`;
 
   const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups for this page.','error');return;}
   w.document.write(html);
   w.document.close();
   setTimeout(()=>w.print(),500);
@@ -3184,6 +3792,1255 @@ function clearPlacards(){ placardQueue=[]; renderPlacardPage(); updatePlacardBad
 function updatePlacardBadge(){
   const b1=document.getElementById('nav-placard-count'); if(b1) b1.textContent=placardQueue.length;
   const b2=document.getElementById('placard-badge'); if(b2) b2.textContent=placardQueue.length?placardQueue.length:'';
+}
+
+
+// ═══ SESSION CLOCK ═══
+let sessionClockInterval=null;
+function startSessionClock(){
+  clearInterval(sessionClockInterval);
+  sessionClockInterval=setInterval(()=>{
+    if(!sessionStartTime) return;
+    const elapsed=Math.floor((Date.now()-sessionStartTime)/1000);
+    const h=Math.floor(elapsed/3600), m=Math.floor((elapsed%3600)/60), s=elapsed%60;
+    const chip=document.getElementById('session-clock-chip');
+    if(chip) chip.textContent=(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    updateQuorumCheck();
+  },1000);
+}
+function stopSessionClock(){ clearInterval(sessionClockInterval); }
+
+// ═══ QUORUM CHECK ═══
+function updateQuorumCheck(){
+  const chip=document.getElementById('quorum-chip');
+  if(!chip) return;
+  const total=delegates.length;
+  if(total===0){ chip.style.display='none'; return; }
+  const present=Object.values(rollCallData).filter(v=>v!=='absent').length;
+  const quorum=present>=Math.ceil(total/2);
+  chip.style.display='';
+  if(quorum){
+    chip.textContent=`Quorum ✓ (${present}/${total})`;
+    chip.style.background='var(--green-dim)';chip.style.borderColor='rgba(63,185,80,0.4)';chip.style.color='var(--green)';
+  } else {
+    chip.textContent=`⚠ No Quorum (${present}/${total})`;
+    chip.style.background='var(--red-dim)';chip.style.borderColor='rgba(248,81,73,0.4)';chip.style.color='var(--red)';
+  }
+}
+
+// ═══ GAVEL SOUND ═══
+function playGavel(){
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Three quick knocks
+    [0, 0.15, 0.3].forEach(t=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='square'; o.frequency.setValueAtTime(180,ctx.currentTime+t);
+      o.frequency.exponentialRampToValueAtTime(60,ctx.currentTime+t+0.12);
+      g.gain.setValueAtTime(0.4,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.13);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.13);
+    });
+  } catch(e){}
+}
+
+// ═══ AMENDMENTS ═══
+const AMD_STYLES={
+  friendly:  {bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Friendly'},
+  unfriendly:{bg:'var(--red-dim)',  border:'rgba(248,81,73,0.4)', color:'var(--red)',  label:'Unfriendly'},
+};
+const AMD_STATUS={
+  pending:  {bg:'var(--bg4)',border:'var(--border)',color:'var(--text2)',label:'Pending'},
+  accepted: {bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Accepted'},
+  rejected: {bg:'var(--red-dim)',border:'rgba(248,81,73,0.4)',color:'var(--red)',label:'Rejected'},
+  withdrawn:{bg:'var(--bg4)',border:'var(--border)',color:'var(--text3)',label:'Withdrawn'},
+};
+let _amdSponsor=null;
+function filterAmdSponsor(){
+  const q=document.getElementById('amd-sponsor-search').value.toLowerCase();
+  const dd=document.getElementById('amd-sponsor-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_amdSponsor=d;document.getElementById('amd-sponsor-search').value=d.n;document.getElementById('amd-sponsor-drop').classList.remove('open');}));
+  dd.classList.add('open');
+}
+function addAmendment(){
+  const type=document.getElementById('amd-type').value;
+  const text=document.getElementById('amd-text').value.trim();
+  if(!text){showToast('Enter amendment text.','error');return;}
+  amendments.push({id:`A${amendments.length+1}`,type,text,sponsor:_amdSponsor?{...{..._amdSponsor}}:null,status:'pending',created:new Date().toLocaleTimeString()});
+  document.getElementById('amd-text').value='';
+  document.getElementById('amd-sponsor-search').value=''; _amdSponsor=null;
+  renderAmendments();
+  const nb=document.getElementById('nav-amd-count'); if(nb) nb.textContent=amendments.length;
+}
+function setAmdStatus(idx,status){ if(amendments[idx]) amendments[idx].status=status; renderAmendments(); }
+function clearAmendments(){ amendments=[]; renderAmendments(); const nb=document.getElementById('nav-amd-count');if(nb)nb.textContent=0; }
+function renderAmendments(){
+  const list=document.getElementById('amd-list'); if(!list) return;
+  const chip=document.getElementById('amd-count-chip'); if(chip) chip.textContent=amendments.length;
+  const nb=document.getElementById('nav-amd-count'); if(nb) nb.textContent=amendments.length;
+  if(!amendments.length){list.innerHTML='<div class="empty-state">No amendments submitted yet.</div>';return;}
+  list.innerHTML=amendments.map((a,i)=>{
+    const ts=AMD_STYLES[a.type]||AMD_STYLES.friendly;
+    const ss=AMD_STATUS[a.status]||AMD_STATUS.pending;
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:5px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--text)">${a.id}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${ts.bg};border:1px solid ${ts.border};color:${ts.color}">${ts.label}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${ss.bg};border:1px solid ${ss.border};color:${ss.color}">${ss.label}</span>
+            ${a.sponsor?`<span style="font-size:11px;color:var(--text3)">${flagImg(a.sponsor.c,'flag-img-sm')} ${a.sponsor.n}</span>`:''}
+          </div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5">${a.text}</div>
+        </div>
+        <button data-idx="${i}" class="amd-rm" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:0;flex-shrink:0">×</button>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${Object.entries(AMD_STATUS).map(([val,s])=>`<button data-idx="${i}" data-val="${val}" class="amd-status-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.12s;background:${a.status===val?s.bg:'transparent'};border-color:${a.status===val?s.border:'var(--border)'};color:${a.status===val?s.color:'var(--text3)'}">${s.label}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.amd-rm').forEach(btn=>btn.addEventListener('click',()=>{amendments.splice(parseInt(btn.dataset.idx),1);renderAmendments();}));
+  list.querySelectorAll('.amd-status-btn').forEach(btn=>btn.addEventListener('click',()=>setAmdStatus(parseInt(btn.dataset.idx),btn.dataset.val)));
+}
+
+// ═══ IMMERSIVE ROLL-CALL VOTING ═══
+let voteRollPool=[]; // delegates yet to vote
+let voteRollIdx=0;
+
+function startRollVote(){
+  const pool=delegates.length?delegates:[];
+  if(!pool.length){showToast('No delegates to vote.','error');return;}
+  voteRollPool=[...pool]; voteRollIdx=0;
+  votes={};
+  document.getElementById('vote-fullscreen').style.display='';
+  document.getElementById('btn-start-roll-vote').style.display='none';
+  showVoteDelegate();
+  renderVoteList();
+  updateVoteStats();
+}
+
+function showVoteDelegate(){
+  if(voteRollIdx>=voteRollPool.length){ endRollVote(); return; }
+  const d=voteRollPool[voteRollIdx];
+  const flag=document.getElementById('vote-delegate-flag');
+  if(flag){ flag.src=flagUrl(d.c); flag.alt=d.n; }
+  document.getElementById('vote-delegate-name').textContent=d.n;
+  document.getElementById('vote-delegate-label').textContent=`${voteRollIdx+1} of ${voteRollPool.length}`;
+  const pct=Math.round(voteRollIdx/voteRollPool.length*100);
+  document.getElementById('vote-roll-progress').textContent=`${voteRollIdx} / ${voteRollPool.length} voted`;
+  document.getElementById('vote-roll-bar').style.width=pct+'%';
+}
+
+function castVote(val){
+  if(voteRollIdx>=voteRollPool.length) return;
+  const d=voteRollPool[voteRollIdx];
+  votes[d.c]=val;
+  voteRollIdx++;
+  renderVoteList(); updateVoteStats();
+  showVoteDelegate();
+}
+
+function skipVote(){ if(voteRollIdx<voteRollPool.length){ voteRollIdx++; showVoteDelegate(); } }
+
+function endRollVote(){
+  document.getElementById('vote-fullscreen').style.display='none';
+  document.getElementById('btn-start-roll-vote').style.display='';
+  document.getElementById('vote-roll-progress').textContent=`${voteRollPool.length} / ${voteRollPool.length} voted`;
+  document.getElementById('vote-roll-bar').style.width='100%';
+  updateVoteStats();
+  playGavel();
+}
+
+
+// ═══ KEYBOARD SHORTCUTS ═══
+document.addEventListener('keydown', e => {
+  // ignore if typing in an input/textarea
+  if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const key = e.key.toLowerCase();
+  if(key === ' ' || e.code === 'Space'){
+    e.preventDefault();
+    if(timerRunning) pauseTimer();
+    else if(curMode) startTimer();
+  }
+  if(key === 'n'){ const btn=document.getElementById('btn-next'); if(btn&&btn.style.display!=='none') nextSpeaker(); }
+  if(key === 'p'){ const btn=document.getElementById('btn-poo'); if(btn&&btn.style.display!=='none') raisePointOfOrder(); }
+  if(key === 'r'){ const btn=document.getElementById('btn-ror'); if(btn&&btn.style.display!=='none') openRightOfReply(); }
+  if(key === 'escape'){ document.querySelectorAll('[id$="-popup"],[id="score-popup"],[id="end-confirm-toast"],[id="poo-toast"]').forEach(el=>el.remove()); }
+});
+
+// ═══ DELEGATE PROFILES ═══
+function getDelegateStats(d){
+  const pts = scores[d.c]||0;
+  const warnCount = (warnings[d.c]||[]).length;
+  const speechCount = sessionHistory.filter(e=>e.delegate&&e.delegate.c===d.c&&e.type==='speech').length;
+  const vote = votes[d.c]||null;
+  const rc = rollCallData[d.c]||'absent';
+  return {pts,warnCount,speechCount,vote,rc};
+}
+
+function renderProfiles(){
+  const grid=document.getElementById('profile-grid'); if(!grid) return;
+  const q=(document.getElementById('profile-filter')||{}).value||'';
+  const pool=delegates.length?delegates:[];
+  const filtered=pool.filter(d=>d.n.toLowerCase().includes(q.toLowerCase()));
+  if(!filtered.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1">No delegates registered.</div>';return;}
+  grid.innerHTML=filtered.map(d=>{
+    const s=getDelegateStats(d);
+    const rcColors={present:'var(--green)',absent:'var(--text3)','present+voting':'var(--blue)'};
+    const rcLabel={present:'Present','present+voting':'P+V',absent:'Absent'};
+    const voteColors={yes:'var(--green)',no:'var(--red)',abstain:'var(--text3)'};
+    const voteLabel={yes:'Favor',no:'Objection',abstain:'Abstain'};
+    const disq=(warnings[d.c]||[]).length>=3;
+    return `<div style="background:var(--bg3);border:1px solid ${disq?'rgba(248,81,73,0.4)':'var(--border)'};border-radius:var(--radius-lg);padding:14px;cursor:pointer;transition:all 0.15s" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='${disq?'rgba(248,81,73,0.4)':'var(--border)'}'">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        ${flagImg(d.c,'flag-img-lg')}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.n}</div>
+          <div style="font-size:10px;color:${rcColors[s.rc]||'var(--text3)'};font-weight:600;text-transform:uppercase;letter-spacing:0.08em">${rcLabel[s.rc]||'Absent'} ${s.vote?'· '+voteLabel[s.vote]:''}</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:${s.pts>0?'var(--blue)':s.pts<0?'var(--red)':'var(--text3)'}">${s.pts>0?'+':''}${s.pts}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:7px;text-align:center">
+          <div style="font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)">${s.speechCount}</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)">Speeches</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:7px;text-align:center">
+          <div style="font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${s.warnCount>=3?'var(--red)':s.warnCount>0?'var(--orange)':'var(--text)'}">${s.warnCount}</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)">Warnings</div>
+        </div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:7px;text-align:center">
+          <div style="font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${s.pts>0?'var(--green)':s.pts<0?'var(--red)':'var(--text3)'}">${s.pts>0?'+':''}${s.pts}</div>
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)">Score</div>
+        </div>
+      </div>
+      ${disq?'<div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:0.1em;text-align:center">⚠ Disqualified from Awards</div>':''}
+    </div>`;
+  }).join('');
+}
+
+// ═══ SESSION SUMMARY ═══
+function renderSummary(){
+  const el=document.getElementById('summary-content'); if(!el) return;
+  const elapsed=sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600), m=Math.floor((elapsed%3600)/60), s=elapsed%60;
+  const durStr=(h?h+'h ':'')+m+'m '+s+'s';
+  const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const ranked=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]);
+  const top3=ranked.slice(0,3).map(([code,pts])=>{
+    const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    return d?{d,pts}:null;
+  }).filter(Boolean);
+  const medals=['🥇','🥈','🥉'];
+
+  el.innerHTML=`
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+      ${[['Duration',durStr,'var(--blue)'],['Delegates',delegates.length,'var(--text)'],['Speeches',totalSpeeches,'var(--green)'],['Warnings',totalWarnings,'var(--red)']].map(([l,v,c])=>`
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;text-align:center">
+          <div style="font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:${c}">${v}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3)">${l}</div>
+        </div>`).join('')}
+    </div>
+    <!-- Top performers -->
+    ${top3.length?`<div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Top Performers</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      ${top3.map(({d,pts},i)=>`<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">
+        <span style="font-size:20px">${medals[i]}</span>
+        ${flagImg(d.c,'flag-img')}
+        <span style="flex:1;font-size:13px;font-weight:500;color:var(--text)">${d.n}</span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--blue)">+${pts}</span>
+      </div>`).join('')}
+    </div>`:''  }
+    <!-- Resolution status -->
+    ${(()=>{ const r=typeof resolution!=='undefined'&&resolution?resolution:null; return r?`<div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Resolution</div>
+    <div style="padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:20px;display:flex;align-items:center;gap:10px">
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">${r.id}</span>
+      <span style="flex:1;font-size:13px;color:var(--text)">${r.title}</span>
+      <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:${r.status==='passed'?'var(--green-dim)':'var(--red-dim)'};color:${r.status==='passed'?'var(--green)':'var(--red)'}">${r.status||'Draft'}</span>
+    </div>`:''})()}
+    <!-- Certificates button -->
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" onclick="generateAllCertificates()">🏅 Generate All Certificates</button>
+      <button class="btn btn-ghost btn-sm" onclick="showAwardsCeremony()">View Awards →</button>
+    </div>
+  `;
+}
+
+// ═══ NAMEPLATES ═══
+function renderNameplates(){
+  const grid=document.getElementById('nameplate-grid'); if(!grid) return;
+  if(!delegates.length){grid.innerHTML='<div class="empty-state">No delegates registered.</div>';return;}
+  grid.innerHTML=delegates.map((d,i)=>`
+    <div style="background:var(--bg2);border:2px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden">
+      <!-- Preview -->
+      <div style="background:linear-gradient(135deg,#0d1117,#1c2333);padding:20px 16px;text-align:center;border-bottom:1px solid var(--border)">
+        <img src="${flagUrl(d.c)}" style="width:60px;height:42px;border-radius:3px;object-fit:cover;border:2px solid rgba(255,255,255,0.15);margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.4)" onerror="this.style.display='none'"/>
+        <div style="font-size:16px;font-weight:700;color:#fff;letter-spacing:0.04em">${d.n}</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.4);margin-top:4px;letter-spacing:0.1em;text-transform:uppercase">${session.committee||'Committee'}</div>
+      </div>
+      <div style="padding:8px;display:flex;justify-content:flex-end">
+        <button class="btn btn-ghost btn-sm" onclick="printNameplate('${d.c}','${d.n.replace(/'/g,"\\'")}')">Print</button>
+      </div>
+    </div>`).join('');
+}
+
+function printNameplate(code, name){
+  const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups for this page.','error');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nameplate — ${name}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500&display=swap');
+    @page{size:A4 landscape;margin:0}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{width:297mm;height:210mm;display:flex;align-items:center;justify-content:center;background:#fff}
+    .card{width:260mm;height:90mm;background:linear-gradient(135deg,#0a0f1e 0%,#131d35 60%,#0a1628 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.3)}
+    .card::before{content:'';position:absolute;top:-40px;left:-40px;width:120px;height:120px;background:rgba(56,139,253,0.12);border-radius:50%;filter:blur(40px)}
+    .card::after{content:'';position:absolute;bottom:-40px;right:-40px;width:140px;height:140px;background:rgba(56,139,253,0.08);border-radius:50%;filter:blur(50px)}
+    .flag{width:90px;height:63px;object-fit:cover;border-radius:4px;border:3px solid rgba(255,255,255,0.2);box-shadow:0 4px 16px rgba(0,0,0,0.4);position:relative;z-index:1}
+    .name{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
+    .committee{font-family:'Inter',sans-serif;font-size:14px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
+    .line{width:80px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:4px 0;position:relative;z-index:1}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>
+  <div class="card">
+    <img class="flag" src="https://flagcdn.com/w160/${code.toLowerCase()}.png" onerror="this.style.display='none'"/>
+    <div class="line"></div>
+    <div class="name">${name}</div>
+    <div class="committee">${session.committee||'Model United Nations'}</div>
+  </div>
+  <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+function printAllNameplates(){
+  const w=window.open('','_blank');
+  const cards=delegates.map(d=>`
+    <div class="card" style="page-break-after:always">
+      <img class="flag" src="https://flagcdn.com/w160/${d.c.toLowerCase()}.png" onerror="this.style.display='none'"/>
+      <div class="line"></div>
+      <div class="name">${d.n}</div>
+      <div class="committee">${session.committee||'Model United Nations'}</div>
+    </div>`).join('');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Nameplates</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Inter:wght@500&display=swap');
+    @page{size:A4 landscape;margin:0}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#fff}
+    .card{width:297mm;height:210mm;background:linear-gradient(135deg,#0a0f1e,#131d35,#0a1628);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+    .card::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;background:rgba(56,139,253,0.1);border-radius:50%;filter:blur(60px)}
+    .flag{width:120px;height:84px;object-fit:cover;border-radius:6px;border:3px solid rgba(255,255,255,0.2);box-shadow:0 4px 20px rgba(0,0,0,0.5);position:relative;z-index:1}
+    .name{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
+    .committee{font-family:'Inter',sans-serif;font-size:16px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
+    .line{width:100px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:6px 0;position:relative;z-index:1}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>${cards}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+// ═══ CERTIFICATES ═══
+function generateAllCertificates(){
+  const awards=computeAwardsFromScores();
+  if(!awards||!awards.all.length){showToast('No scores recorded yet.','error');return;}
+  const allAwardees=[];
+  awards.best.forEach(({d})=>allAwardees.push({d,award:'Best Delegate',color:'#c8a84b',sub:'#7a6530'}));
+  awards.outstanding.forEach(({d})=>allAwardees.push({d,award:'Outstanding Delegate',color:'#7b96b0',sub:'#4a6580'}));
+  awards.verbal.forEach(({d})=>allAwardees.push({d,award:'Verbal Commendation',color:'#a07850',sub:'#6a5030'}));
+
+  if(!allAwardees.length){showToast('Not enough scored delegates.','error');return;}
+
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const cards=allAwardees.map((a,i)=>`
+    <div class="cert" style="page-break-after:${i<allAwardees.length-1?'always':'auto'}">
+      <div class="cert-inner">
+        <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+        <div class="un-logo">🕊</div>
+        <div class="cert-title">Certificate of Achievement</div>
+        <div class="cert-line"></div>
+        <div class="cert-presented">This certificate is proudly presented to</div>
+        <div class="cert-name">${a.d.n}</div>
+        <img class="cert-flag" src="https://flagcdn.com/w160/${a.d.c.toLowerCase()}.png" onerror="this.style.display='none'"/>
+        <div class="cert-award" style="color:${a.color}">${a.award}</div>
+        <div class="cert-committee">${session.committee||'Model United Nations'}</div>
+        <div class="cert-agenda">${session.agenda||''}</div>
+        <div class="cert-line2"></div>
+        <div class="cert-date">${date}</div>
+        <div class="cert-sig">
+          <div class="sig-line"></div>
+          <div class="sig-label">Chair of the Committee</div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups for this page.','error');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificates</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
+    @page{size:A4 landscape;margin:0}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#f8f4ee}
+    .cert{width:297mm;height:210mm;display:flex;align-items:center;justify-content:center;background:#f8f4ee;position:relative}
+    .cert-inner{width:260mm;height:180mm;background:#fff;border:2px solid #c8a84b;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 40px;box-shadow:inset 0 0 0 6px #f8f4ee,inset 0 0 0 8px #c8a84b}
+    .corner{position:absolute;width:24px;height:24px;border-color:#c8a84b;border-style:solid}
+    .tl{top:12px;left:12px;border-width:2px 0 0 2px}.tr{top:12px;right:12px;border-width:2px 2px 0 0}
+    .bl{bottom:12px;left:12px;border-width:0 0 2px 2px}.br{bottom:12px;right:12px;border-width:0 2px 2px 0}
+    .un-logo{font-size:32px;margin-bottom:4px;opacity:0.6}
+    .cert-title{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:400;letter-spacing:0.3em;text-transform:uppercase;color:#888;margin-bottom:8px}
+    .cert-line{width:200px;height:1px;background:linear-gradient(90deg,transparent,#c8a84b,transparent);margin:0 auto 12px}
+    .cert-presented{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#666;margin-bottom:6px}
+    .cert-name{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#1a1a1a;margin-bottom:6px;text-align:center}
+    .cert-flag{width:52px;height:36px;object-fit:cover;border-radius:3px;border:1px solid #ddd;margin-bottom:8px}
+    .cert-award{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:0.08em;margin-bottom:6px}
+    .cert-committee{font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#555;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px}
+    .cert-agenda{font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#888;margin-bottom:8px;text-align:center}
+    .cert-line2{width:300px;height:1px;background:linear-gradient(90deg,transparent,#ddd,transparent);margin:0 auto 8px}
+    .cert-date{font-family:'Inter',sans-serif;font-size:11px;color:#999;letter-spacing:0.1em;margin-bottom:12px}
+    .cert-sig{text-align:center}
+    .sig-line{width:160px;height:1px;background:#333;margin:0 auto 4px}
+    .sig-label{font-family:'Inter',sans-serif;font-size:10px;color:#888;letter-spacing:0.1em;text-transform:uppercase}
+    @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>${cards}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+
+// ═══ THEME TOGGLE ═══
+function toggleTheme(){
+  const isLight=document.body.classList.toggle('light-theme');
+  document.getElementById('theme-toggle-btn').textContent=isLight?'☀️':'🌙';
+  try{localStorage.setItem('mun-theme',isLight?'light':'dark');}catch(e){}
+}
+// restore saved theme
+(function(){try{if(localStorage.getItem('mun-theme')==='light'){document.body.classList.add('light-theme');const btn=document.getElementById('theme-toggle-btn');if(btn)btn.textContent='☀️';}}catch(e){}})();
+
+// ═══ MODERATION LOG ═══
+let modLog=[]; // [{delegate,reason,notes,time}]
+let _modLogDelegate=null;
+
+function filterModLogSearch(){
+  const q=document.getElementById('modlog-del-search').value.toLowerCase();
+  const dd=document.getElementById('modlog-del-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_modLogDelegate=d;document.getElementById('modlog-del-search').value=d.n;document.getElementById('modlog-del-drop').classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function addModLogEntry(){
+  if(!_modLogDelegate){showToast('Select a delegate first.','error');return;}
+  const reason=document.getElementById('modlog-reason').value;
+  const notes=document.getElementById('modlog-notes').value.trim();
+  modLog.push({delegate:{..._modLogDelegate},reason,notes,time:new Date().toLocaleTimeString()});
+  logEvent('modlog',_modLogDelegate,reason+( notes?' — '+notes:''),0);
+  _modLogDelegate=null;
+  document.getElementById('modlog-del-search').value='';
+  document.getElementById('modlog-notes').value='';
+  renderModLog();
+  updateModLogBadge();
+  showToast(`Called to order: ${modLog[modLog.length-1].delegate.n} — ${reason}`,'error');
+}
+
+function renderModLog(){
+  const list=document.getElementById('modlog-list'); if(!list) return;
+  const chip=document.getElementById('modlog-count-chip'); if(chip) chip.textContent=modLog.length;
+  if(!modLog.length){list.innerHTML='<div class="empty-state">No calls to order yet.</div>';return;}
+  list.innerHTML=[...modLog].reverse().map((e,i)=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:rgba(248,81,73,0.06);border:1px solid rgba(248,81,73,0.2);border-radius:var(--radius);margin-bottom:4px">
+      <span style="font-size:14px;flex-shrink:0">⚠</span>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
+          ${flagImg(e.delegate.c,'flag-img-sm')}
+          <span style="font-size:12px;font-weight:600;color:var(--text)">${e.delegate.n}</span>
+          <span style="font-size:11px;color:var(--red);font-weight:600">${e.reason}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${e.time}</span>
+        </div>
+        ${e.notes?`<div style="font-size:11px;color:var(--text3)">${e.notes}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function clearModLog(){ modLog=[]; renderModLog(); updateModLogBadge(); }
+function updateModLogBadge(){ const b=document.getElementById('nav-modlog-count'); if(b) b.textContent=modLog.length; }
+
+// ═══ GSL TIME BANK ═══
+let gslBankUsed=0; // seconds used
+let gslBankHistory=[]; // [{delegate,time}]
+
+function updateGslBank(){
+  const n=parseInt(document.getElementById('gsl-total-speakers').value)||10;
+  const t=parseInt(document.getElementById('gsl-time-per').value)||90;
+  const total=n*t;
+  const remaining=Math.max(0,total-gslBankUsed);
+  const pct=total>0?remaining/total:1;
+  const m=Math.floor(remaining/60), s=remaining%60;
+  const disp=document.getElementById('gsl-bank-display');
+  const bar=document.getElementById('gsl-bank-bar');
+  const sub=document.getElementById('gsl-bank-sub');
+  if(disp) disp.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(disp) disp.style.color=pct<=0.1?'var(--red)':pct<=0.25?'var(--orange)':'var(--blue)';
+  if(bar){ bar.style.width=(pct*100)+'%'; bar.style.background=pct<=0.1?'var(--red)':pct<=0.25?'var(--orange)':'var(--blue)'; }
+  const speakersUsed=Math.floor(gslBankUsed/t);
+  const speakersLeft=Math.max(0,n-speakersUsed);
+  if(sub) sub.textContent=speakersLeft+' speakers remaining · '+n+' total ('+t+'s each)';
+}
+
+function gslBankDeduct(){
+  const t=parseInt(document.getElementById('gsl-time-per').value)||90;
+  gslBankUsed+=t;
+  // get current speaker from queue if available
+  const spk=currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  gslBankHistory.push({delegate:spk?{...spk}:null,time:new Date().toLocaleTimeString(),secs:t});
+  updateGslBank();
+  renderGslUsedList();
+}
+
+function resetGslBank(){
+  gslBankUsed=0; gslBankHistory=[];
+  updateGslBank(); renderGslUsedList();
+}
+
+function renderGslBank(){ updateGslBank(); renderGslUsedList(); }
+
+function renderGslUsedList(){
+  const list=document.getElementById('gsl-used-list'); if(!list) return;
+  if(!gslBankHistory.length){list.innerHTML='<div class="empty-state">No speeches deducted yet.</div>';return;}
+  list.innerHTML=[...gslBankHistory].reverse().map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius)">
+      ${e.delegate?flagImg(e.delegate.c,'flag-img-sm'):'<div style="width:20px;height:14px;background:var(--bg4);border-radius:2px"></div>'}
+      <span style="flex:1;font-size:12px;color:var(--text)">${e.delegate?e.delegate.n:'Unknown speaker'}</span>
+      <span style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">${e.time}</span>
+    </div>`).join('');
+}
+
+// ═══ WORKING PAPERS ═══
+let workPapers=[]; // [{id,title,leadAuthor,coAuthors,status}]
+let _wpAuthor=null;
+const WP_STATUS={
+  draft:    {bg:'var(--bg4)',border:'var(--border)',color:'var(--text2)',label:'Draft'},
+  merged:   {bg:'var(--blue-dim)',border:'rgba(56,139,253,0.4)',color:'var(--blue)',label:'Merged'},
+  resolution:{bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'→ Resolution'},
+  withdrawn:{bg:'var(--orange-dim)',border:'rgba(219,109,40,0.4)',color:'var(--orange)',label:'Withdrawn'},
+  tabled:   {bg:'var(--bg4)',border:'var(--border)',color:'var(--text3)',label:'Tabled'},
+};
+
+function filterWpAuthorSearch(){
+  const q=document.getElementById('wp-author-search').value.toLowerCase();
+  const dd=document.getElementById('wp-author-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_wpAuthor=d;document.getElementById('wp-author-search').value=d.n;document.getElementById('wp-author-drop').classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function addWorkPaper(){
+  const id=document.getElementById('wp-id').value.trim();
+  const title=document.getElementById('wp-title').value.trim();
+  const coAuthors=document.getElementById('wp-coauthors').value.trim();
+  if(!id&&!title){showToast('Enter a WP number or title.','error');return;}
+  workPapers.push({id:id||`WP ${workPapers.length+1}`,title:title||'Untitled',leadAuthor:_wpAuthor?{..._wpAuthor}:null,coAuthors,status:'draft',created:new Date().toLocaleTimeString()});
+  document.getElementById('wp-id').value='';
+  document.getElementById('wp-title').value='';
+  document.getElementById('wp-coauthors').value='';
+  document.getElementById('wp-author-search').value=''; _wpAuthor=null;
+  renderWorkPapers();
+  const nb=document.getElementById('nav-wp-count'); if(nb) nb.textContent=workPapers.length;
+}
+
+function setWpStatus(idx,val){ if(workPapers[idx]) workPapers[idx].status=val; renderWorkPapers(); }
+function removeWorkPaper(idx){ workPapers.splice(idx,1); renderWorkPapers(); }
+function clearWorkPapers(){ workPapers=[]; renderWorkPapers(); }
+
+function renderWorkPapers(){
+  const list=document.getElementById('wp-list'); if(!list) return;
+  const chip=document.getElementById('wp-count-chip'); if(chip) chip.textContent=workPapers.length;
+  const nb=document.getElementById('nav-wp-count'); if(nb) nb.textContent=workPapers.length;
+  if(!workPapers.length){list.innerHTML='<div class="empty-state">No working papers yet.</div>';return;}
+  list.innerHTML=workPapers.map((w,i)=>{
+    const ss=WP_STATUS[w.status]||WP_STATUS.draft;
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">${w.id}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${ss.bg};border:1px solid ${ss.border};color:${ss.color}">${ss.label}</span>
+            <span style="font-size:10px;color:var(--text3)">${w.created}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text);margin-bottom:4px">${w.title}</div>
+          ${w.leadAuthor?`<div style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px">${flagImg(w.leadAuthor.c,'flag-img-sm')} Lead: ${w.leadAuthor.n}${w.coAuthors?' · '+w.coAuthors:''}</div>`
+            :(w.coAuthors?`<div style="font-size:11px;color:var(--text3)">${w.coAuthors}</div>`:'')}
+        </div>
+        <button data-idx="${i}" class="wp-rm" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:0;flex-shrink:0">×</button>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${Object.entries(WP_STATUS).map(([val,s])=>`<button data-idx="${i}" data-val="${val}" class="wp-status-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.12s;background:${w.status===val?s.bg:'transparent'};border-color:${w.status===val?s.border:'var(--border)'};color:${w.status===val?s.color:'var(--text3)'}">${s.label}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.wp-rm').forEach(btn=>btn.addEventListener('click',()=>removeWorkPaper(parseInt(btn.dataset.idx))));
+  list.querySelectorAll('.wp-status-btn').forEach(btn=>btn.addEventListener('click',()=>setWpStatus(parseInt(btn.dataset.idx),btn.dataset.val)));
+}
+
+
+// ═══ LANGUAGE / TRANSLATIONS ═══
+const LANGS = {
+  en: {
+    'Setup':'Setup','Timer':'Timer','Speakers':'Speakers','Delegates':'Delegates',
+    'Awards':'Awards','Warnings':'Warnings','Roll Call':'Roll Call','Motion':'Motion',
+    'Resolutions':'Resolutions','History':'History','Placard':'Placard','Notes':'Notes',
+    'Amendments':'Amendments','Profiles':'Profiles','Summary':'Summary','Nameplates':'Nameplates',
+    'Mod Log':'Mod Log','GSL Bank':'GSL Bank','Working Papers':'Working Papers',
+    'Blocs':'Blocs','Caucus Log':'Caucus Log','Stats':'Stats',
+    'Committee & Agenda':'Committee & Agenda','Delegates':'Delegates','Timer Defaults':'Timer Defaults',
+    'Convene Session':'Convene Session','End Session':'End Session',
+    'Start':'Start','Pause':'Pause','Resume':'Resume','Reset':'Reset','Next':'Next',
+    'Point of Order':'Point of Order','End & Award 🏆':'End & Award 🏆',
+    'Session Setup':'Session Setup','Active session — select a mode to begin':'Active session — select a mode to begin',
+    'No mode selected':'No mode selected','Opening Speech':'Opening Speech',
+    'General Speakers List':'General Speakers List','Unmoderated Caucus':'Unmoderated Caucus',
+  },
+  tr: {
+    'Setup':'Kurulum','Timer':'Zamanlayıcı','Speakers':'Konuşmacılar','Delegates':'Delegeler',
+    'Awards':'Ödüller','Warnings':'Uyarılar','Roll Call':'Yoklama','Motion':'Önerge',
+    'Resolutions':'Kararlar','History':'Geçmiş','Placard':'Pankart','Notes':'Notlar',
+    'Amendments':'Değişiklikler','Profiles':'Profiller','Summary':'Özet','Nameplates':'İsim Plakaları',
+    'Mod Log':'Moderasyon','GSL Bank':'GSL Bankası','Working Papers':'Çalışma Kağıtları',
+    'Blocs':'Bloklar','Caucus Log':'Kaukus Günlüğü','Stats':'İstatistikler',
+    'Committee & Agenda':'Komite & Gündem','Delegates':'Delegeler','Timer Defaults':'Zamanlayıcı Ayarları',
+    'Convene Session':'Oturumu Başlat','End Session':'Oturumu Bitir',
+    'Start':'Başlat','Pause':'Duraklat','Resume':'Devam','Reset':'Sıfırla','Next':'Sonraki',
+    'Point of Order':'Usul Noktası','End & Award 🏆':'Bitir & Ödüllendir 🏆',
+    'Session Setup':'Oturum Kurulumu','Active session — select a mode to begin':'Aktif oturum — mod seçin',
+    'No mode selected':'Mod seçilmedi','Opening Speech':'Açılış Konuşması',
+    'General Speakers List':'Genel Konuşmacılar Listesi','Unmoderated Caucus':'Moderasyonsuz Kaukus',
+  }
+};
+
+function toggleLang(){
+  currentLang = currentLang==='en'?'tr':'en';
+  const btn=document.getElementById('lang-toggle-btn');
+  if(btn) btn.textContent=currentLang==='en'?'TR':'EN';
+  applyTranslations();
+  try{localStorage.setItem('mun-lang',currentLang);}catch(e){}
+}
+
+function applyTranslations(){
+  const T=LANGS[currentLang]||LANGS.en;
+  // Nav items
+  const navMap={
+    'nav-setup':'Setup','nav-timer':'Timer','nav-speakers':'Speakers',
+    'nav-delegates':'Delegates','nav-awards':'Awards','nav-warnings':'Warnings',
+    'nav-rollcall':'Roll Call','nav-modcaucus':'Motion','nav-resolutions':'Resolutions',
+    'nav-history':'History','nav-placard':'Placard','nav-notes':'Notes',
+    'nav-amendments':'Amendments','nav-profiles':'Profiles','nav-summary':'Summary',
+    'nav-nameplate':'Nameplates','nav-modlog':'Mod Log','nav-gslbank':'GSL Bank',
+    'nav-workpapers':'Working Papers','nav-blocs':'Blocs','nav-caucuslog':'Caucus Log',
+    'nav-speakstats':'Stats',
+  };
+  Object.entries(navMap).forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    if(!el) return;
+    // Replace first text node
+    const badge=el.querySelector('span');
+    const txt=T[key]||key;
+    el.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.trim()) n.textContent='\n      '+txt+'\n    ';});
+  });
+  // Buttons
+  const btnMap={
+    'btn-start':'Start','btn-pause':'Pause','btn-resume':'Resume',
+    'btn-end':'End Session','btn-poo':'⚡ '+(T['Point of Order']||'Point of Order'),
+    'btn-end-confirm-btn':'End & Award 🏆',
+  };
+  // Mode names
+  const modeMap={opening:T['Opening Speech']||'Opening Speech',gsl:T['General Speakers List']||'GSL',motion:T['Motion']||'Motion',unmod:T['Unmoderated Caucus']||'Unmod'};
+  // Update arc label if visible
+  const arcLabel=document.getElementById('arc-label');
+  if(arcLabel && curMode && modeMap[curMode]) arcLabel.textContent=modeMap[curMode];
+  // Logo sub
+  const logoSub=document.querySelector('.sb-logo-ver'); if(logoSub) logoSub.textContent=currentLang==='tr'?'Oturum Aracı':'Session Tool';
+}
+
+// Restore saved lang
+(function(){try{const l=localStorage.getItem('mun-lang');if(l&&l!=='en'){currentLang=l;document.getElementById('lang-toggle-btn').textContent='EN';applyTranslations();}}catch(e){}})();
+
+// ═══ BLOCS ═══
+let _blocColor='#388bfd';
+let _blocSelectedDelegates=[];
+
+function selectBlocColor(c){
+  _blocColor=c;
+  document.querySelectorAll('.bloc-color-swatch').forEach(s=>{
+    s.style.border=s.dataset.color===c?'2px solid var(--text)':'2px solid transparent';
+  });
+}
+
+function filterBlocDelSearch(){
+  const q=document.getElementById('bloc-del-search').value.toLowerCase();
+  const dd=document.getElementById('bloc-del-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)&&!_blocSelectedDelegates.find(x=>x.c===c.c)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_blocSelectedDelegates.push({...d});renderBlocSelectedDelegates();filterBlocDelSearch();}));
+  dd.classList.add('open');
+}
+
+function renderBlocSelectedDelegates(){
+  const el=document.getElementById('bloc-del-selected'); if(!el) return;
+  el.innerHTML=_blocSelectedDelegates.map(d=>`<div class="del-chip" style="padding:3px 8px 3px 5px;border-left:3px solid ${_blocColor}">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px">${d.n}</span><button data-code="${d.c}" class="del-remove">×</button></div>`).join('');
+  el.querySelectorAll('.del-remove').forEach(btn=>btn.addEventListener('click',()=>{_blocSelectedDelegates=_blocSelectedDelegates.filter(x=>x.c!==btn.dataset.code);renderBlocSelectedDelegates();}));
+}
+
+function createBloc(){
+  const name=document.getElementById('bloc-name-input').value.trim();
+  if(!name){showToast('Enter a bloc name.','error');return;}
+  blocs[name]={color:_blocColor,delegates:[..._blocSelectedDelegates]};
+  document.getElementById('bloc-name-input').value='';
+  _blocSelectedDelegates=[];
+  renderBlocSelectedDelegates();
+  renderBlocs();
+  const nb=document.getElementById('nav-blocs-count'); if(nb) nb.textContent=Object.keys(blocs).length;
+}
+
+function removeBloc(name){ delete blocs[name]; renderBlocs(); const nb=document.getElementById('nav-blocs-count'); if(nb) nb.textContent=Object.keys(blocs).length; }
+function clearBlocs(){ blocs={}; renderBlocs(); const nb=document.getElementById('nav-blocs-count'); if(nb) nb.textContent=0; }
+
+function renderBlocs(){
+  const list=document.getElementById('blocs-list'); if(!list) return;
+  const chip=document.getElementById('blocs-count-chip'); if(chip) chip.textContent=Object.keys(blocs).length;
+  const summary=document.getElementById('bloc-vote-summary'); 
+  
+  if(!Object.keys(blocs).length){
+    list.innerHTML='<div class="empty-state">No blocs created yet.</div>';
+    if(summary) summary.innerHTML='<div class="empty-state">No blocs created yet.</div>';
+    return;
+  }
+
+  // Blocs list
+  list.innerHTML=Object.entries(blocs).map(([name,b])=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-left:4px solid ${b.color};border-radius:var(--radius);padding:12px 14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:700;color:${b.color}">${name}</span>
+        <span style="font-size:10px;color:var(--text3)">${b.delegates.length} member${b.delegates.length!==1?'s':''}</span>
+        <button data-name="${name}" class="bloc-rm" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;margin-left:auto">×</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${b.delegates.map(d=>`<div class="del-chip" style="padding:2px 8px 2px 4px;border-left:2px solid ${b.color}">${flagImg(d.c,'flag-img-sm')}<span style="font-size:11px">${d.n}</span></div>`).join('')}
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.bloc-rm').forEach(btn=>btn.addEventListener('click',()=>removeBloc(btn.dataset.name)));
+
+  // Voting summary
+  if(summary){
+    summary.innerHTML=Object.entries(blocs).map(([name,b])=>{
+      const bVotes={yes:0,no:0,abstain:0,none:0};
+      b.delegates.forEach(d=>{ const v=votes[d.c]; if(v) bVotes[v]++; else bVotes.none++; });
+      const total=b.delegates.length;
+      return `<div style="padding:10px 12px;margin-bottom:6px;background:var(--bg3);border:1px solid var(--border);border-left:4px solid ${b.color};border-radius:var(--radius)">
+        <div style="font-size:12px;font-weight:600;color:${b.color};margin-bottom:6px">${name}</div>
+        <div style="display:flex;gap:8px;font-size:11px">
+          <span style="color:var(--green)">✓ ${bVotes.yes}</span>
+          <span style="color:var(--red)">✗ ${bVotes.no}</span>
+          <span style="color:var(--text3)">○ ${bVotes.abstain}</span>
+          ${bVotes.none?`<span style="color:var(--text4)">— ${bVotes.none} pending</span>`:''}
+        </div>
+        <div style="margin-top:6px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex">
+          <div style="height:100%;background:var(--green);width:${total?bVotes.yes/total*100:0}%;transition:width 0.3s"></div>
+          <div style="height:100%;background:var(--border2);width:${total?bVotes.abstain/total*100:0}%;transition:width 0.3s"></div>
+          <div style="height:100%;background:var(--red);width:${total?bVotes.no/total*100:0}%;transition:width 0.3s"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ═══ CAUCUS LOG ═══
+let _clRaisedBy=null, _clSecondedBy=null;
+
+function filterClRaisedSearch(){
+  const q=document.getElementById('cl-raised-search').value.toLowerCase();
+  const dd=document.getElementById('cl-raised-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,10);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_clRaisedBy=d;document.getElementById('cl-raised-search').value=d.n;dd.classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function filterClSecondSearch(){
+  const q=document.getElementById('cl-second-search').value.toLowerCase();
+  const dd=document.getElementById('cl-second-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,10);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_clSecondedBy=d;document.getElementById('cl-second-search').value=d.n;dd.classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function addCaucusLogEntry(){
+  const topic=document.getElementById('cl-topic').value.trim();
+  if(!topic){showToast('Enter a topic.','error');return;}
+  const outcome=document.getElementById('cl-outcome').value;
+  caucusLog.push({topic,raisedBy:_clRaisedBy?{..._clRaisedBy}:null,secondedBy:_clSecondedBy?{..._clSecondedBy}:null,speakers:0,outcome,time:new Date().toLocaleTimeString()});
+  document.getElementById('cl-topic').value='';
+  document.getElementById('cl-raised-search').value=''; _clRaisedBy=null;
+  document.getElementById('cl-second-search').value=''; _clSecondedBy=null;
+  renderCaucusLog();
+  const nb=document.getElementById('nav-caucus-count'); if(nb) nb.textContent=caucusLog.length;
+}
+
+function clearCaucusLog(){ caucusLog=[]; renderCaucusLog(); const nb=document.getElementById('nav-caucus-count');if(nb)nb.textContent=0; }
+
+function renderCaucusLog(){
+  const list=document.getElementById('cl-list'); if(!list) return;
+  const chip=document.getElementById('cl-count-chip'); if(chip) chip.textContent=caucusLog.length;
+  if(!caucusLog.length){list.innerHTML='<div class="empty-state">No caucuses logged yet.</div>';return;}
+  const outcomeStyle={passed:{bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Passed'},failed:{bg:'var(--red-dim)',border:'rgba(248,81,73,0.4)',color:'var(--red)',label:'Failed'},withdrawn:{bg:'var(--orange-dim)',border:'rgba(219,109,40,0.4)',color:'var(--orange)',label:'Withdrawn'}};
+  list.innerHTML=[...caucusLog].reverse().map((e,i)=>{
+    const os=outcomeStyle[e.outcome]||outcomeStyle.passed;
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:6px">
+      <div style="display:flex;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:600;color:var(--text);flex:1">${e.topic}</span>
+        <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${os.bg};border:1px solid ${os.border};color:${os.color}">${os.label}</span>
+        <span style="font-size:10px;color:var(--text3)">${e.time}</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text3)">
+        ${e.raisedBy?`<span>${flagImg(e.raisedBy.c,'flag-img-sm')} Raised: ${e.raisedBy.n}</span>`:''}
+        ${e.secondedBy?`<span>${flagImg(e.secondedBy.c,'flag-img-sm')} Seconded: ${e.secondedBy.n}</span>`:''}
+        ${e.speakers?`<span>👥 ${e.speakers} speaker${e.speakers!==1?'s':''}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ SPEAKER STATS ═══
+function renderSpeakStats(){
+  const el=document.getElementById('speak-stats-content'); if(!el) return;
+
+  // Count speeches per delegate from session history
+  const speechCounts={};
+  sessionHistory.filter(e=>e.type==='speech'&&e.delegate).forEach(e=>{
+    speechCounts[e.delegate.c]=(speechCounts[e.delegate.c]||{count:0,delegate:e.delegate});
+    speechCounts[e.delegate.c].count++;
+    speechCounts[e.delegate.c].delegate=e.delegate;
+  });
+
+  // Also add any scores-based data
+  const allCodes=new Set([...Object.keys(speechCounts),...Object.keys(scores).filter(c=>scores[c]!==0)]);
+  if(!allCodes.size){el.innerHTML='<div class="empty-state">No speech data yet.</div>';return;}
+
+  const entries=[...allCodes].map(code=>{
+    const sc=speechCounts[code];
+    const d=sc?sc.delegate:delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    return {code,d:d||{n:code,c:code},speeches:sc?sc.count:0,score:scores[code]||0};
+  }).sort((a,b)=>b.speeches-a.speeches||b.score-a.score);
+
+  const maxSpeeches=Math.max(1,...entries.map(e=>e.speeches));
+  const maxScore=Math.max(1,...entries.map(e=>Math.abs(e.score)));
+
+  el.innerHTML=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Speeches Given</div>
+      ${entries.map(e=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          ${flagImg(e.d.c,'flag-img-sm')}
+          <div style="font-size:12px;color:var(--text);min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.d.n}</div>
+          <div style="flex:1;height:14px;background:var(--bg4);border-radius:2px;overflow:hidden">
+            <div style="height:100%;background:var(--blue);border-radius:2px;width:${e.speeches/maxSpeeches*100}%;transition:width 0.5s;min-width:${e.speeches?2:0}px"></div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--blue);min-width:20px;text-align:right">${e.speeches}</span>
+        </div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">Score Distribution</div>
+      ${entries.sort((a,b)=>b.score-a.score).map(e=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          ${flagImg(e.d.c,'flag-img-sm')}
+          <div style="font-size:12px;color:var(--text);min-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.d.n}</div>
+          <div style="flex:1;height:14px;background:var(--bg4);border-radius:2px;overflow:hidden">
+            <div style="height:100%;background:${e.score>=0?'var(--green)':'var(--red)'};border-radius:2px;width:${Math.abs(e.score)/maxScore*100}%;transition:width 0.5s;min-width:${e.score?2:0}px"></div>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${e.score>0?'var(--green)':e.score<0?'var(--red)':'var(--text3)'};min-width:32px;text-align:right">${e.score>0?'+':''}${e.score}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+
+// ═══ SAVE / LOAD SESSION ═══
+function buildSessionSnapshot(){
+  return {
+    version:2,
+    savedAt:new Date().toISOString(),
+    session, delegates, scores, warnings, rollCallData,
+    speakers, currentSpkIdx, speechesDone, curMode,
+    sessionHistory, placardQueue, sessionStartTime,
+    chairNotes, amendments, blocs, caucusLog,
+    modLog, gslBankUsed, gslBankHistory, workPapers,
+    positionPapers, customAwardTitles,
+    resolution: typeof resolution!=='undefined'?resolution:null,
+    resSignatories: typeof resSignatories!=='undefined'?resSignatories:[],
+    coSponsors: typeof coSponsors!=='undefined'?coSponsors:[],
+    votes: typeof votes!=='undefined'?votes:{},
+    manualScoreLog: typeof manualScoreLog!=='undefined'?manualScoreLog:[],
+  };
+}
+
+function saveSession(){
+  const snap=buildSessionSnapshot();
+  const blob=new Blob([JSON.stringify(snap,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const safe=(session.committee||'session').replace(/[^a-z0-9]/gi,'_').toLowerCase();
+  a.href=url; a.download=`mun_${safe}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Session saved to file ✓');
+}
+
+function loadSession(evt){
+  const file=evt.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const snap=JSON.parse(e.target.result);
+      if(!snap.session) throw new Error('Invalid session file');
+      // Restore all state
+      delegates=snap.delegates||[];
+      scores=snap.scores||{};
+      warnings=snap.warnings||{};
+      rollCallData=snap.rollCallData||{};
+      speakers=snap.speakers||[];
+      currentSpkIdx=snap.currentSpkIdx||-1;
+      speechesDone=snap.speechesDone||0;
+      curMode=snap.curMode||null;
+      sessionHistory=snap.sessionHistory||[];
+      placardQueue=snap.placardQueue||[];
+      sessionStartTime=snap.sessionStartTime||Date.now();
+      chairNotes=snap.chairNotes||'';
+      amendments=snap.amendments||[];
+      blocs=snap.blocs||{};
+      caucusLog=snap.caucusLog||[];
+      modLog=snap.modLog||[];
+      gslBankUsed=snap.gslBankUsed||0;
+      gslBankHistory=snap.gslBankHistory||[];
+      workPapers=snap.workPapers||[];
+      positionPapers=snap.positionPapers||{};
+      customAwardTitles=snap.customAwardTitles||{best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
+      if(typeof resolution!=='undefined'&&snap.resolution) resolution=snap.resolution;
+      if(typeof resSignatories!=='undefined') resSignatories=snap.resSignatories||[];
+      if(typeof coSponsors!=='undefined') coSponsors=snap.coSponsors||[];
+      if(typeof votes!=='undefined') votes=snap.votes||{};
+      if(typeof manualScoreLog!=='undefined') manualScoreLog=snap.manualScoreLog||[];
+      // Restore session object
+      Object.assign(session,snap.session);
+      // Unlock UI exactly as beginSession does
+      document.getElementById('pill-committee').textContent=session.committee;
+      document.getElementById('pill-agenda').textContent=session.agenda;
+      document.getElementById('status-dot').classList.add('live');
+      document.getElementById('btn-end').style.display='';
+      document.getElementById('btn-poo').style.display='';
+      document.getElementById('btn-save-session').style.display='';
+      document.getElementById('btn-suspend').style.display='';
+      document.getElementById('tb-del-chip').style.display='';
+      document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
+      document.getElementById('session-clock-chip').style.display='';
+      document.getElementById('quorum-chip').style.display='';
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{
+        const el=document.getElementById(id); if(el) el.classList.remove('disabled');
+      });
+      startSessionClock();
+      updateQuorumCheck();
+      updateStats(); renderAllSpk();
+      // restore award inputs
+      const ab=document.getElementById('award-title-best'); if(ab) ab.value=customAwardTitles.best;
+      const ao=document.getElementById('award-title-outstanding'); if(ao) ao.value=customAwardTitles.outstanding;
+      const av=document.getElementById('award-title-verbal'); if(av) av.value=customAwardTitles.verbal;
+      showPage('timer');
+      showToast(`Session restored: ${session.committee} ✓`);
+    }catch(err){ showToast('Failed to load session: '+err.message,'error'); }
+  };
+  reader.readAsText(file);
+  evt.target.value=''; // reset so same file can be reloaded
+}
+
+// ═══ SUSPEND / LOCK ═══
+function openSuspendDialog(){
+  const existing=document.getElementById('suspend-setup-popup'); if(existing){existing.remove();return;}
+  const popup=document.createElement('div');
+  popup.id='suspend-setup-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:18px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:15px;font-weight:600;color:var(--text)">⏸ End Session (Suspend)</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:3px">Suspends the meeting with a password lock. Resume next session.</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+        <div class="field">
+          <label class="field-label">Password</label>
+          <input type="password" id="suspend-pw-set" placeholder="Enter a password..." style="width:100%"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Confirm Password</label>
+          <input type="password" id="suspend-pw-confirm" placeholder="Confirm password..." style="width:100%" onkeydown="if(event.key==='Enter')confirmSuspend()"/>
+        </div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('suspend-setup-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+        <button onclick="confirmSuspend()" class="btn btn-danger btn-sm">🔒 Suspend & Lock</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  setTimeout(()=>document.getElementById('suspend-pw-set').focus(),100);
+}
+
+function confirmSuspend(){
+  const pw=document.getElementById('suspend-pw-set').value;
+  const conf=document.getElementById('suspend-pw-confirm').value;
+  if(!pw){showToast('Enter a password.','error');return;}
+  if(pw!==conf){showToast('Passwords do not match.','error');return;}
+  suspendPassword=pw;
+  sessionSuspended=true;
+  document.getElementById('suspend-setup-popup').remove();
+  // Save session to localStorage automatically
+  try{localStorage.setItem('mun-suspended-session',JSON.stringify(buildSessionSnapshot()));}catch(e){}
+  // Show lock screen
+  const overlay=document.getElementById('suspend-overlay');
+  document.getElementById('suspend-committee-label').textContent=session.committee||'Session Suspended';
+  overlay.style.display='flex';
+  // Pause any running timers
+  if(timerRunning) pauseTimer();
+  stopSessionClock();
+}
+
+function resumeSession(){
+  const input=document.getElementById('suspend-pw-input');
+  if(input.value===suspendPassword){
+    document.getElementById('suspend-overlay').style.display='none';
+    input.value='';
+    document.getElementById('suspend-pw-error').style.display='none';
+    sessionSuspended=false;
+    startSessionClock();
+    showToast('Session resumed ✓');
+  } else {
+    document.getElementById('suspend-pw-error').style.display='';
+    input.value='';
+    input.focus();
+  }
+}
+
+// Restore suspended session on page load
+(function(){
+  try{
+    const snap=localStorage.getItem('mun-suspended-session');
+    if(snap){
+      // Show a banner offering to restore
+      const banner=document.createElement('div');
+      banner.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:900;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);white-space:nowrap';
+      banner.innerHTML=`<span style="font-size:12px;color:var(--text)">🔒 Suspended session found</span>
+        <button onclick="restoreSuspended()" class="btn btn-primary btn-sm">Restore & Unlock</button>
+        <button onclick="this.parentElement.remove();localStorage.removeItem('mun-suspended-session')" class="btn btn-ghost btn-sm">Dismiss</button>`;
+      document.body.appendChild(banner);
+    }
+  }catch(e){}
+})();
+
+function restoreSuspended(){
+  try{
+    const snap=JSON.parse(localStorage.getItem('mun-suspended-session'));
+    if(!snap) return;
+    // Prompt for password first
+    const pw=prompt('Enter session password to restore:');
+    if(pw===null) return;
+    if(snap._suspendPw&&pw!==snap._suspendPw){alert('Incorrect password.');return;}
+    // create fake event to reuse loadSession logic
+    const fakeEvt={target:{files:[new Blob([JSON.stringify(snap)],{type:'application/json'})],value:''}};
+    fakeEvt.target.files[0].name='suspended.json';
+    // Inline restore
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const input=document.createElement('input');input.type='file';
+      // just call the restore logic manually
+      delegates=snap.delegates||[]; scores=snap.scores||{}; warnings=snap.warnings||{};
+      rollCallData=snap.rollCallData||{}; speakers=snap.speakers||[];
+      currentSpkIdx=snap.currentSpkIdx||-1; speechesDone=snap.speechesDone||0;
+      curMode=snap.curMode||null; sessionHistory=snap.sessionHistory||[];
+      placardQueue=snap.placardQueue||[]; sessionStartTime=snap.sessionStartTime||Date.now();
+      chairNotes=snap.chairNotes||''; amendments=snap.amendments||[];
+      blocs=snap.blocs||{}; caucusLog=snap.caucusLog||[]; modLog=snap.modLog||[];
+      gslBankUsed=snap.gslBankUsed||0; gslBankHistory=snap.gslBankHistory||[];
+      workPapers=snap.workPapers||[]; positionPapers=snap.positionPapers||{};
+      customAwardTitles=snap.customAwardTitles||{best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
+      Object.assign(session,snap.session);
+      document.getElementById('pill-committee').textContent=session.committee;
+      document.getElementById('pill-agenda').textContent=session.agenda;
+      document.getElementById('status-dot').classList.add('live');
+      ['btn-end','btn-poo','btn-save-session','btn-suspend'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='';});
+      document.getElementById('tb-del-chip').style.display='';
+      document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
+      document.getElementById('session-clock-chip').style.display='';
+      document.getElementById('quorum-chip').style.display='';
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
+      startSessionClock(); updateQuorumCheck(); updateStats(); renderAllSpk();
+      localStorage.removeItem('mun-suspended-session');
+      document.querySelectorAll('[style*="Suspended session found"]').forEach(el=>el.remove());
+      showPage('timer');
+      showToast('Session restored ✓');
+    };
+    reader.readAsText(new Blob([JSON.stringify(snap)],{type:'application/json'}));
+  }catch(err){showToast('Restore failed: '+err.message,'error');}
+}
+
+// ═══ POSITION PAPERS ═══
+function renderPosTracker(){
+  const list=document.getElementById('pp-list'); if(!list) return;
+  const pool=delegates.length?delegates:[];
+  if(!pool.length){list.innerHTML='<div class="empty-state">No delegates registered.</div>';return;}
+  const submitted=Object.values(positionPapers).filter(p=>p.submitted).length;
+  const chip=document.getElementById('pp-count-chip'); if(chip) chip.textContent=`${submitted} / ${pool.length} submitted`;
+  const nb=document.getElementById('nav-pp-count'); if(nb) nb.textContent=submitted;
+  list.innerHTML=pool.map(d=>{
+    const pp=positionPapers[d.c]||{submitted:false,notes:''};
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);background:${pp.submitted?'var(--bg3)':'transparent'};border:1px solid ${pp.submitted?'rgba(63,185,80,0.3)':'transparent'};margin-bottom:2px;transition:all 0.15s">
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:var(--text)">${d.n}</span>
+      <input type="text" placeholder="notes..." data-code="${d.c}" class="pp-notes-input" value="${pp.notes||''}" style="width:140px;font-size:11px;padding:3px 8px;background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);color:var(--text3)" oninput="ppUpdateNotes('${d.c}',this.value)"/>
+      <button data-code="${d.c}" class="pp-toggle-btn" style="font-size:10px;font-weight:700;padding:4px 12px;border-radius:var(--radius);border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em;transition:all 0.12s;background:${pp.submitted?'var(--green-dim)':'transparent'};border-color:${pp.submitted?'rgba(63,185,80,0.5)':'var(--border)'};color:${pp.submitted?'var(--green)':'var(--text3)'}">
+        ${pp.submitted?'✓ Submitted':'Pending'}
+      </button>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.pp-toggle-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const code=btn.dataset.code;
+      if(!positionPapers[code]) positionPapers[code]={submitted:false,notes:''};
+      positionPapers[code].submitted=!positionPapers[code].submitted;
+      renderPosTracker();
+    });
+  });
+}
+
+function ppUpdateNotes(code,val){
+  if(!positionPapers[code]) positionPapers[code]={submitted:false,notes:''};
+  positionPapers[code].notes=val;
+}
+
+function ppMarkAll(val){
+  delegates.forEach(d=>{if(!positionPapers[d.c])positionPapers[d.c]={submitted:false,notes:''};positionPapers[d.c].submitted=val;});
+  renderPosTracker();
+}
+
+function awardPaperBonus(){
+  const pts=parseInt(document.getElementById('pp-bonus-pts').value)||3;
+  const submitted=delegates.filter(d=>positionPapers[d.c]&&positionPapers[d.c].submitted);
+  if(!submitted.length){showToast('No submitted papers found.','error');return;}
+  submitted.forEach(d=>{scores[d.c]=(scores[d.c]||0)+pts;});
+  showToast(`+${pts} pts awarded to ${submitted.length} delegate${submitted.length!==1?'s':''} who submitted papers`);
+  logEvent('score',null,`Position paper bonus: +${pts} to ${submitted.length} delegates`,0);
+}
+
+// ═══ LOBBY ROOM ═══
+let lobbyTotal=600, lobbyRemaining=600, lobbyRunning=false, lobbyInterval=null;
+
+function initLobbyRoom(){
+  const c=document.getElementById('lobby-clock'); if(c) c.textContent=fmtLobby(lobbyRemaining);
+}
+
+function fmtLobby(s){ const m=Math.floor(s/60); return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+function lobbySetMin(m){
+  if(lobbyRunning) return;
+  lobbyTotal=m*60; lobbyRemaining=lobbyTotal;
+  document.getElementById('lobby-clock').textContent=fmtLobby(lobbyRemaining);
+  document.getElementById('lobby-clock').style.color='var(--text)';
+  document.getElementById('lobby-bar').style.width='100%';
+  document.getElementById('lobby-sub').textContent='Ready';
+  document.querySelectorAll('.lobby-preset').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.min)===m));
+}
+
+function lobbyStart(){
+  if(lobbyRunning) return;
+  lobbyRunning=true;
+  document.getElementById('lobby-start-btn').style.display='none';
+  document.getElementById('lobby-pause-btn').style.display='';
+  lobbyInterval=setInterval(()=>{
+    if(lobbyRemaining<=0){
+      clearInterval(lobbyInterval); lobbyRunning=false;
+      document.getElementById('lobby-start-btn').style.display='';
+      document.getElementById('lobby-pause-btn').style.display='none';
+      document.getElementById('lobby-clock').style.color='var(--red)';
+      document.getElementById('lobby-sub').textContent='Time\'s up!';
+      document.getElementById('lobby-bar').style.width='0%';
+      playGavel(); return;
+    }
+    lobbyRemaining--;
+    const r=lobbyRemaining/lobbyTotal;
+    document.getElementById('lobby-clock').textContent=fmtLobby(lobbyRemaining);
+    document.getElementById('lobby-clock').style.color=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--text)';
+    document.getElementById('lobby-bar').style.width=(r*100)+'%';
+    document.getElementById('lobby-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--orange)';
+    const m=Math.floor(lobbyRemaining/60), s=lobbyRemaining%60;
+    document.getElementById('lobby-sub').textContent=fmtLobby(lobbyRemaining)+' remaining';
+  },1000);
+}
+
+function lobbyPause(){
+  clearInterval(lobbyInterval); lobbyRunning=false;
+  document.getElementById('lobby-pause-btn').style.display='none';
+  document.getElementById('lobby-start-btn').style.display='';
+}
+
+function lobbyReset(){
+  clearInterval(lobbyInterval); lobbyRunning=false;
+  lobbyRemaining=lobbyTotal;
+  document.getElementById('lobby-clock').textContent=fmtLobby(lobbyRemaining);
+  document.getElementById('lobby-clock').style.color='var(--text)';
+  document.getElementById('lobby-bar').style.width='100%';
+  document.getElementById('lobby-bar').style.background='var(--orange)';
+  document.getElementById('lobby-sub').textContent='Ready';
+  document.getElementById('lobby-start-btn').style.display='';
+  document.getElementById('lobby-pause-btn').style.display='none';
+}
+
+
+// ═══ END MEETING ═══
+function endMeeting(){
+  const existing=document.getElementById('end-meeting-toast');
+  if(existing){ existing.remove(); return; }
+  const toast=document.createElement('div');
+  toast.id='end-meeting-toast';
+  toast.style.cssText=`position:fixed;bottom:24px;right:24px;z-index:999;
+    background:var(--bg2);border:1px solid rgba(248,81,73,0.6);
+    border-radius:10px;padding:14px 16px;font-size:13px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);min-width:260px;animation:slideUp 0.2s ease`;
+  toast.innerHTML=`
+    <div style="font-weight:600;color:var(--red);margin-bottom:4px">End Meeting?</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px">This permanently ends the meeting with no awards. All data will be cleared.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="document.getElementById('end-meeting-toast').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+      <button id="end-meeting-confirm-btn" class="btn btn-danger btn-sm">Yes, End Meeting</button>
+    </div>`;
+  document.body.appendChild(toast);
+  document.getElementById('end-meeting-confirm-btn').onclick=()=>{
+    toast.remove();
+    doEndSession();
+    showPage('setup');
+    showToast('Meeting ended.');
+  };
 }
 
 // ═══ STATS ═══
