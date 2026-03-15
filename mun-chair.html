@@ -13,7 +13,7 @@
   --blue:#388bfd;--blue2:#1f6feb;--blue-dim:rgba(56,139,253,0.15);--blue-glow:rgba(56,139,253,0.08);
   --green:#3fb950;--green-dim:rgba(63,185,80,0.15);
   --orange:#db6d28;--orange-dim:rgba(219,109,40,0.12);
-  --red:#f85149;--red-dim:rgba(248,81,73,0.12);
+  --red:#f85149;--red-dim:rgba(248,81,73,0.12);--yellow:#d29922;--yellow-dim:rgba(210,153,34,0.12);
   --text:#e6edf3;--text2:#8d96a0;--text3:#656d76;--text4:#3d444d;
   --radius:6px;--radius-lg:10px;
   --sidebar:230px;
@@ -489,6 +489,20 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5zm.099 2.54a2 2 0 0 0 .72 3.935c-.333-1.05-.588-2.346-.72-3.935zm10.083 3.935a2 2 0 0 0 .72-3.935c-.133 1.59-.388 2.885-.72 3.935z"/></svg>
       Awards
     </button>
+    <button class="nav-item disabled" id="nav-rollcall" onclick="showPage('rollcall')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M5 10.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0-2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/><path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3z"/></svg>
+      Roll Call
+      <span class="nav-badge" id="nav-rc-badge">—</span>
+    </button>
+    <button class="nav-item disabled" id="nav-modcaucus" onclick="showPage('modcaucus')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+      Mod Caucus
+    </button>
+    <button class="nav-item disabled" id="nav-resolutions" onclick="showPage('resolutions')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/><path d="M3 5.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 8a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 8zm0 2.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5z"/></svg>
+      Resolutions
+      <span class="nav-badge" id="nav-res-badge">0</span>
+    </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
       Delegates
@@ -526,6 +540,9 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
     </div>
     <div class="topbar-right">
       <span class="chip chip-gray" id="tb-del-chip" style="display:none"></span>
+      <button class="btn btn-sm" id="btn-poo" onclick="raisePointOfOrder()" style="display:none;background:rgba(210,153,34,0.15);border-color:rgba(210,153,34,0.5);color:var(--yellow,#d29922);font-weight:700;letter-spacing:0.05em">
+        ⚡ Point of Order
+      </button>
       <button class="btn btn-danger btn-sm" id="btn-end" onclick="endSession()" style="display:none">
         <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
         End Session
@@ -907,6 +924,134 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ ROLL CALL ═══ -->
+    <div id="page-rollcall" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Roll Call</div>
+            <span class="chip chip-gray" id="rc-stats">0 present</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="rcMarkAll('present')">All Present</button>
+            <button class="btn btn-ghost btn-sm" onclick="rcMarkAll('absent')">All Absent</button>
+            <button class="btn btn-danger btn-sm" onclick="rcReset()">Reset</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:10px">
+          <div id="rc-grid" style="display:flex;flex-direction:column;gap:4px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MODERATED CAUCUS ═══ -->
+    <div id="page-modcaucus" class="page" style="max-width:680px">
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Per Speaker</div></div>
+          <div class="card-body" style="text-align:center;padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:500;color:var(--text);line-height:1;margin-bottom:16px" id="mc-spk-clock">01:30</div>
+            <div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:16px;overflow:hidden">
+              <div id="mc-spk-bar" style="height:100%;background:var(--blue);border-radius:2px;width:100%;transition:width 0.6s linear"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+              <button class="btn btn-primary btn-sm" id="mc-spk-start" onclick="mcSpkStart()">▶ Start</button>
+              <button class="btn btn-secondary btn-sm" id="mc-spk-pause" onclick="mcSpkPause()" style="display:none">⏸ Pause</button>
+              <button class="btn btn-ghost btn-sm" onclick="mcSpkReset()">↺ Reset</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+              <label style="font-size:11px;color:var(--text3)">Duration (sec)</label>
+              <input type="number" id="mc-spk-dur" value="90" min="10" max="600" style="width:70px;text-align:center;font-family:'JetBrains Mono',monospace"/>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Total Caucus</div></div>
+          <div class="card-body" style="text-align:center;padding:20px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:56px;font-weight:500;color:var(--orange);line-height:1;margin-bottom:16px" id="mc-total-clock">10:00</div>
+            <div style="height:4px;background:var(--bg4);border-radius:2px;margin-bottom:16px;overflow:hidden">
+              <div id="mc-total-bar" style="height:100%;background:var(--orange);border-radius:2px;width:100%;transition:width 0.6s linear"></div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+              <button class="btn btn-secondary btn-sm" id="mc-tot-start" onclick="mcTotStart()">▶ Start</button>
+              <button class="btn btn-secondary btn-sm" id="mc-tot-pause" onclick="mcTotPause()" style="display:none">⏸ Pause</button>
+              <button class="btn btn-ghost btn-sm" onclick="mcTotReset()">↺ Reset</button>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;justify-content:center">
+              <label style="font-size:11px;color:var(--text3)">Duration (sec)</label>
+              <input type="number" id="mc-tot-dur" value="600" min="30" max="7200" style="width:70px;text-align:center;font-family:'JetBrains Mono',monospace"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Current Speaker</div>
+          <div style="display:flex;gap:6px">
+            <div class="csearch-wrap" style="min-width:200px">
+              <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              <input type="text" id="mc-spk-search" placeholder="Set current speaker..." autocomplete="off"
+                oninput="filterMcSpkSearch()" onfocus="openMcSpkDrop()" onblur="setTimeout(closeMcSpkDrop,200)"/>
+              <div class="cdropdown" id="mc-spk-drop"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:14px 16px;display:flex;align-items:center;gap:12px;min-height:52px">
+          <div id="mc-cur-flag"></div>
+          <div id="mc-cur-name" style="font-size:14px;font-weight:500;color:var(--text3)">No speaker selected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ RESOLUTIONS ═══ -->
+    <div id="page-resolutions" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">New Resolution</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">Resolution ID</label>
+              <input type="text" id="res-id" placeholder="e.g. DR 1.1, WP 2"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Status</label>
+              <select id="res-status">
+                <option value="draft">Draft</option>
+                <option value="floor">On the Floor</option>
+                <option value="passed">Passed</option>
+                <option value="failed">Failed</option>
+                <option value="tabled">Tabled</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Title / Topic</label>
+            <input type="text" id="res-title" placeholder="e.g. Resolution on Climate Finance"/>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label class="field-label">Sponsors</label>
+            <input type="text" id="res-sponsors" placeholder="e.g. France, Germany, Brazil"/>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addResolution()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>
+            Add Resolution
+          </button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Resolution Tracker</div>
+            <span class="chip chip-gray" id="res-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearResolutions()">Clear All</button>
+        </div>
+        <div class="card-body">
+          <div id="res-list"><div class="empty-state">No resolutions added yet.</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -1000,6 +1145,11 @@ function flagImg(code, cls=''){
 let delegates=[], speakers=[], currentSpkIdx=-1, speechesDone=0;
 let curMode=null, timerSecs=0, totalSecs=0, timerRunning=false, timerInterval=null;
 let scores={}; // { countryCode: totalPoints }
+let rollCallData={}; // { countryCode: 'present'|'absent'|'present+voting' }
+let resolutions=[]; // [{id,title,sponsors,status}]
+let mcSpkSecs=90,mcSpkTotal=90,mcSpkRunning=false,mcSpkInterval=null;
+let mcTotSecs=600,mcTotTotal=600,mcTotRunning=false,mcTotInterval=null;
+let mcCurSpeaker=null;
 let session={committee:'',agenda:'',timers:{opening:120,gsl:90,motion:60,unmod:600}};
 const ARC_C = 2*Math.PI*85; // 534.07
 
@@ -1009,7 +1159,10 @@ const PAGES_META = {
   speakers:  {title:'Speakers List',    crumb:'Manage the speaker queue'},
   delegates: {title:'Delegates',        crumb:'Registered committee members'},
   awards:    {title:'Session Awards',     crumb:'End of session recognition'},
-  warnings:  {title:'Warnings',           crumb:'Delegate disciplinary record'},
+  warnings:    {title:'Warnings',           crumb:'Delegate disciplinary record'},
+  rollcall:   {title:'Roll Call',            crumb:'Mark attendance at session opening'},
+  modcaucus:  {title:'Moderated Caucus',     crumb:'Timed debate with total session clock'},
+  resolutions:{title:'Resolutions',          crumb:'Draft and track resolution papers'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -1024,6 +1177,8 @@ function showPage(id){
   document.getElementById('tb-crumb').textContent=m.crumb;
   if(id==='delegates') renderFullDelegates();
   if(id==='speakers'){ renderAllSpk(); renderDelegatePicker(); }
+  if(id==='rollcall') renderRollCall();
+  if(id==='resolutions') renderResolutions();
 }
 
 // ═══ SETUP ═══
@@ -1141,14 +1296,15 @@ function beginSession(){
   document.getElementById('pill-agenda').textContent=session.agenda;
   document.getElementById('status-dot').classList.add('live');
   document.getElementById('btn-end').style.display='';
+  document.getElementById('btn-poo').style.display='';
   document.getElementById('tb-del-chip').style.display='';
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
-  scores={}; warnings={};
-  updateStats();
+  scores={}; warnings={}; rollCallData={}; resolutions=[];
+  updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
   showPage('timer');
 }
@@ -1196,6 +1352,7 @@ function doEndSession(){
   safe('ts-sub',    el => el.textContent='');
   safe('status-dot',el => el.classList.remove('live'));
   safe('btn-end',   el => el.style.display='none');
+  safe('btn-poo',    el => el.style.display='none');
   safe('tb-del-chip',el=> el.style.display='none');
   safe('pill-committee', el => el.textContent='Not configured');
   safe('pill-agenda',    el => el.textContent='—');
@@ -1205,7 +1362,7 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
   ['opening','gsl','motion','unmod'].forEach(m => {
@@ -1853,6 +2010,227 @@ function filterWarnSearch() {
 }
 function openWarnDrop(){ filterWarnSearch(); document.getElementById('warn-drop').classList.add('open'); }
 function closeWarnDrop(){ document.getElementById('warn-drop').classList.remove('open'); }
+
+
+// ═══ ROLL CALL ═══
+function renderRollCall(){
+  const grid=document.getElementById('rc-grid');
+  if(!grid) return;
+  const pool = delegates.length ? delegates : [];
+  if(!pool.length){ grid.innerHTML='<div class="empty-state">No delegates registered.</div>'; return; }
+
+  grid.innerHTML = pool.map(d=>{
+    const status = rollCallData[d.c]||'absent';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);background:${status==='absent'?'transparent':'var(--bg3)'};border:1px solid ${status==='absent'?'transparent':'var(--border)'};transition:all 0.15s">
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:var(--text)">${d.n}</span>
+      <div style="display:flex;gap:4px">
+        <button data-code="${d.c}" data-val="present" class="rc-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.15s;background:${status==='present'?'var(--green-dim)':'transparent'};border-color:${status==='present'?'rgba(63,185,80,0.5)':'var(--border)'};color:${status==='present'?'var(--green)':'var(--text3)'}">Present</button>
+        <button data-code="${d.c}" data-val="present+voting" class="rc-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.15s;background:${status==='present+voting'?'var(--blue-dim)':'transparent'};border-color:${status==='present+voting'?'rgba(56,139,253,0.5)':'var(--border)'};color:${status==='present+voting'?'var(--blue)':'var(--text3)'}">P+V</button>
+        <button data-code="${d.c}" data-val="absent" class="rc-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase;transition:all 0.15s;background:${status==='absent'?'var(--red-dim)':'transparent'};border-color:${status==='absent'?'rgba(248,81,73,0.4)':'var(--border)'};color:${status==='absent'?'var(--red)':'var(--text3)'}">Absent</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('.rc-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      rollCallData[btn.dataset.code]=btn.dataset.val;
+      updateRcStats();
+      renderRollCall();
+    });
+  });
+  updateRcStats();
+}
+
+function updateRcStats(){
+  const present = Object.values(rollCallData).filter(v=>v!=='absent').length;
+  const total = delegates.length;
+  const badge = document.getElementById('rc-stats');
+  if(badge) badge.textContent = `${present} / ${total} present`;
+  const navBadge = document.getElementById('nav-rc-badge');
+  if(navBadge) navBadge.textContent = present+'/'+total;
+}
+
+function rcMarkAll(val){
+  delegates.forEach(d=>{ rollCallData[d.c]=val; });
+  renderRollCall();
+}
+function rcReset(){
+  rollCallData={};
+  renderRollCall();
+}
+
+// ═══ POINT OF ORDER ═══
+function raisePointOfOrder(){
+  const existing=document.getElementById('poo-toast');
+  if(existing){ existing.remove(); return; }
+  const toast=document.createElement('div');
+  toast.id='poo-toast';
+  toast.style.cssText=`
+    position:fixed;top:72px;left:50%;transform:translateX(-50%);
+    z-index:800;background:rgba(210,153,34,0.15);
+    border:2px solid rgba(210,153,34,0.7);border-radius:var(--radius-lg);
+    padding:14px 24px;text-align:center;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5);
+    animation:slideUp 0.3s ease;min-width:300px;
+  `;
+  toast.innerHTML=`
+    <div style="font-size:13px;font-weight:700;color:#d29922;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px">⚡ Point of Order</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:12px">Debate suspended — Chair ruling required</div>
+    <button onclick="document.getElementById('poo-toast').remove()" style="background:rgba(210,153,34,0.2);border:1px solid rgba(210,153,34,0.5);color:#d29922;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;padding:6px 20px;border-radius:var(--radius);cursor:pointer;letter-spacing:0.06em">Dismiss</button>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(()=>{ const el=document.getElementById('poo-toast'); if(el) el.remove(); },15000);
+}
+
+// ═══ MODERATED CAUCUS ═══
+function mcFmtTime(s){ return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+function mcSpkStart(){
+  if(mcSpkRunning) return;
+  mcSpkTotal = parseInt(document.getElementById('mc-spk-dur').value)||90;
+  if(mcSpkSecs<=0) mcSpkSecs=mcSpkTotal;
+  mcSpkRunning=true;
+  document.getElementById('mc-spk-start').style.display='none';
+  document.getElementById('mc-spk-pause').style.display='';
+  mcSpkInterval=setInterval(mcSpkTick,1000);
+}
+function mcSpkTick(){
+  if(mcSpkSecs<=0){
+    clearInterval(mcSpkInterval); mcSpkRunning=false; mcSpkSecs=0;
+    document.getElementById('mc-spk-start').style.display='';
+    document.getElementById('mc-spk-pause').style.display='none';
+    document.getElementById('mc-spk-clock').style.color='var(--red)';
+    return;
+  }
+  mcSpkSecs--;
+  const r=mcSpkSecs/mcSpkTotal;
+  document.getElementById('mc-spk-clock').textContent=mcFmtTime(mcSpkSecs);
+  document.getElementById('mc-spk-clock').style.color=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--text)';
+  document.getElementById('mc-spk-bar').style.width=(r*100)+'%';
+  document.getElementById('mc-spk-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--blue)';
+}
+function mcSpkPause(){ clearInterval(mcSpkInterval); mcSpkRunning=false; document.getElementById('mc-spk-pause').style.display='none'; document.getElementById('mc-spk-start').style.display=''; }
+function mcSpkReset(){ clearInterval(mcSpkInterval); mcSpkRunning=false; mcSpkSecs=parseInt(document.getElementById('mc-spk-dur').value)||90; mcSpkTotal=mcSpkSecs; document.getElementById('mc-spk-clock').textContent=mcFmtTime(mcSpkSecs); document.getElementById('mc-spk-clock').style.color='var(--text)'; document.getElementById('mc-spk-bar').style.width='100%'; document.getElementById('mc-spk-bar').style.background='var(--blue)'; document.getElementById('mc-spk-start').style.display=''; document.getElementById('mc-spk-pause').style.display='none'; }
+
+function mcTotStart(){
+  if(mcTotRunning) return;
+  mcTotTotal=parseInt(document.getElementById('mc-tot-dur').value)||600;
+  if(mcTotSecs<=0) mcTotSecs=mcTotTotal;
+  mcTotRunning=true;
+  document.getElementById('mc-tot-start').style.display='none';
+  document.getElementById('mc-tot-pause').style.display='';
+  mcTotInterval=setInterval(mcTotTick,1000);
+}
+function mcTotTick(){
+  if(mcTotSecs<=0){
+    clearInterval(mcTotInterval); mcTotRunning=false; mcTotSecs=0;
+    document.getElementById('mc-tot-start').style.display='';
+    document.getElementById('mc-tot-pause').style.display='none';
+    document.getElementById('mc-total-clock').style.color='var(--red)';
+    return;
+  }
+  mcTotSecs--;
+  const r=mcTotSecs/mcTotTotal;
+  document.getElementById('mc-total-clock').textContent=mcFmtTime(mcTotSecs);
+  document.getElementById('mc-total-clock').style.color=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--orange)';
+  document.getElementById('mc-total-bar').style.width=(r*100)+'%';
+  document.getElementById('mc-total-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'#e8a020':'var(--orange)';
+}
+function mcTotPause(){ clearInterval(mcTotInterval); mcTotRunning=false; document.getElementById('mc-tot-pause').style.display='none'; document.getElementById('mc-tot-start').style.display=''; }
+function mcTotReset(){ clearInterval(mcTotInterval); mcTotRunning=false; mcTotSecs=parseInt(document.getElementById('mc-tot-dur').value)||600; mcTotTotal=mcTotSecs; document.getElementById('mc-total-clock').textContent=mcFmtTime(mcTotSecs); document.getElementById('mc-total-clock').style.color='var(--orange)'; document.getElementById('mc-total-bar').style.width='100%'; document.getElementById('mc-total-bar').style.background='var(--orange)'; document.getElementById('mc-tot-start').style.display=''; document.getElementById('mc-tot-pause').style.display='none'; }
+
+function filterMcSpkSearch(){
+  const q=document.getElementById('mc-spk-search').value.toLowerCase();
+  const dd=document.getElementById('mc-spk-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const results=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!results.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=results.map(d=>{
+    const gidx=COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gidx}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      const d=COUNTRIES[parseInt(el.dataset.gidx)];
+      if(d){ mcCurSpeaker=d; document.getElementById('mc-cur-flag').innerHTML=flagImg(d.c,'flag-img-lg'); document.getElementById('mc-cur-name').textContent=d.n; document.getElementById('mc-cur-name').style.color='var(--text)'; document.getElementById('mc-spk-search').value=''; closeMcSpkDrop(); }
+    });
+  });
+}
+function openMcSpkDrop(){ filterMcSpkSearch(); document.getElementById('mc-spk-drop').classList.add('open'); }
+function closeMcSpkDrop(){ document.getElementById('mc-spk-drop').classList.remove('open'); }
+
+// ═══ RESOLUTIONS ═══
+const RES_STATUS_STYLES={
+  draft:    {bg:'var(--bg4)',border:'var(--border)',color:'var(--text2)',label:'Draft'},
+  floor:    {bg:'var(--blue-dim)',border:'rgba(56,139,253,0.4)',color:'var(--blue)',label:'On the Floor'},
+  passed:   {bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Passed'},
+  failed:   {bg:'var(--red-dim)',border:'rgba(248,81,73,0.4)',color:'var(--red)',label:'Failed'},
+  tabled:   {bg:'var(--orange-dim)',border:'rgba(219,109,40,0.4)',color:'var(--orange)',label:'Tabled'},
+};
+
+function addResolution(){
+  const id=document.getElementById('res-id').value.trim();
+  const title=document.getElementById('res-title').value.trim();
+  const sponsors=document.getElementById('res-sponsors').value.trim();
+  const status=document.getElementById('res-status').value;
+  if(!id&&!title){ showToast('Enter at least a Resolution ID or title.','error'); return; }
+  resolutions.push({ id:id||'—', title:title||'Untitled', sponsors, status, created:new Date().toLocaleTimeString() });
+  document.getElementById('res-id').value='';
+  document.getElementById('res-title').value='';
+  document.getElementById('res-sponsors').value='';
+  document.getElementById('res-status').value='draft';
+  renderResolutions();
+}
+
+function updateResStatus(idx, val){
+  if(resolutions[idx]) resolutions[idx].status=val;
+  renderResolutions();
+}
+
+function removeResolution(idx){
+  resolutions.splice(idx,1);
+  renderResolutions();
+}
+
+function clearResolutions(){
+  resolutions=[];
+  renderResolutions();
+}
+
+function renderResolutions(){
+  const list=document.getElementById('res-list');
+  if(!list) return;
+  const chip=document.getElementById('res-count-chip');
+  if(chip) chip.textContent=resolutions.length;
+  const navBadge=document.getElementById('nav-res-badge');
+  if(navBadge) navBadge.textContent=resolutions.length;
+  if(!resolutions.length){ list.innerHTML='<div class="empty-state">No resolutions added yet.</div>'; return; }
+  list.innerHTML=resolutions.map((r,i)=>{
+    const st=RES_STATUS_STYLES[r.status]||RES_STATUS_STYLES.draft;
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--text)">${r.id}</span>
+            <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 8px;border-radius:10px;background:${st.bg};border:1px solid ${st.border};color:${st.color}">${st.label}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text);margin-bottom:3px">${r.title}</div>
+          ${r.sponsors?`<div style="font-size:11px;color:var(--text3)">Sponsors: ${r.sponsors}</div>`:''}
+        </div>
+        <button data-idx="${i}" class="res-rm-btn" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:0;flex-shrink:0">×</button>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${Object.entries(RES_STATUS_STYLES).map(([val,s])=>`
+          <button data-idx="${i}" data-val="${val}" class="res-status-btn" style="font-size:10px;font-weight:600;padding:3px 10px;border-radius:var(--radius);border:1px solid;cursor:pointer;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.12s;background:${r.status===val?s.bg:'transparent'};border-color:${r.status===val?s.border:'var(--border)'};color:${r.status===val?s.color:'var(--text3)'}">${s.label}</button>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.res-rm-btn').forEach(btn=>btn.addEventListener('click',()=>removeResolution(parseInt(btn.dataset.idx))));
+  list.querySelectorAll('.res-status-btn').forEach(btn=>btn.addEventListener('click',()=>updateResStatus(parseInt(btn.dataset.idx),btn.dataset.val)));
+}
 
 // ═══ STATS ═══
 function updateStats(){
