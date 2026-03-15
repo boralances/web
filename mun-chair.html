@@ -15,14 +15,24 @@
   --orange:#db6d28;--orange-dim:rgba(219,109,40,0.12);
   --red:#f85149;--red-dim:rgba(248,81,73,0.12);--yellow:#d29922;--yellow-dim:rgba(210,153,34,0.12);
   --text:#e6edf3;--text2:#8d96a0;--text3:#656d76;--text4:#3d444d;
-  --radius:6px;--radius-lg:10px;
+  --radius:6px;--radius-lg:12px;
   --sidebar:230px;
   --transition:0.15s ease;
 }
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;overflow:hidden;-webkit-font-smoothing:antialiased}
 
 /* SCROLLBAR */
-::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar{width:4px;height:4px}
+
+/* SCORES HIDDEN MODE — hide scores everywhere except scoretab and score-popup */
+body.scores-hidden .score-val,
+body.scores-hidden .spk-score,
+body.scores-hidden .award-score,
+body.scores-hidden [data-score-display] {
+  filter:blur(4px);
+  pointer-events:none;
+  user-select:none;
+}
 
 /* LIGHT THEME */
 body.light-theme{
@@ -39,13 +49,14 @@ body.light-theme .cdrop-item:hover{background:#f0f4f8}
 body.light-theme .nav-item:hover{background:#f0f4f8}
 body.light-theme .nav-item.active{background:rgba(56,139,253,0.1)}
 body.light-theme .arc-container svg circle.track{stroke:#e4e8ef}
-body.light-theme .mode-card{background:#f4f6f9}
+body.light-theme .mode-card{transition:all 0.18s ease;background:#f4f6f9}
 body.light-theme .timer-wrap{background:#fff}
 body.light-theme .stat-card{background:#f4f6f9}
 body.light-theme .spk-row:hover{background:#eef1f5}
 body.light-theme .session-pill{background:#f4f6f9}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text4)}
 
 /* SHELL */
 .shell{display:flex;height:100vh;overflow:hidden}
@@ -64,11 +75,11 @@ body.light-theme .session-pill{background:#f4f6f9}
   border-bottom:1px solid var(--border);flex-shrink:0;
 }
 .sb-logo-mark{
-  width:32px;height:32px;border-radius:9px;
-  background:linear-gradient(135deg,#388bfd 0%,#1f6feb 100%);
+  width:34px;height:34px;border-radius:10px;
+  background:linear-gradient(135deg,#4d9fff 0%,#1f6feb 60%,#1558c8 100%);
   display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:800;color:#fff;flex-shrink:0;
-  letter-spacing:-0.5px;box-shadow:0 2px 8px rgba(56,139,253,0.35);
+  font-size:16px;font-weight:800;color:#fff;flex-shrink:0;
+  letter-spacing:-0.5px;box-shadow:0 2px 12px rgba(56,139,253,0.45),inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .sb-logo-text{font-size:14px;font-weight:600;color:var(--text)}
 .sb-logo-ver{font-size:10px;color:var(--text3);margin-top:1px}
@@ -114,10 +125,11 @@ body.light-theme .session-pill{background:#f4f6f9}
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{
-  height:56px;min-height:56px;
+  height:52px;min-height:52px;
   background:var(--bg2);border-bottom:1px solid var(--border);
   display:flex;align-items:center;padding:0 20px;gap:12px;
   justify-content:space-between;flex-shrink:0;
+  backdrop-filter:blur(12px);
 }
 .topbar-left{display:flex;align-items:center;gap:10px}
 .topbar-title{font-size:14px;font-weight:600;color:var(--text)}
@@ -129,11 +141,11 @@ body.light-theme .session-pill{background:#f4f6f9}
   font-size:11px;font-weight:500;padding:3px 9px;
   border-radius:12px;border:1px solid;
 }
-.chip-blue{background:var(--blue-dim);border-color:rgba(56,139,253,0.3);color:var(--blue)}
-.chip-green{background:var(--green-dim);border-color:rgba(63,185,80,0.3);color:var(--green)}
+.chip-blue{background:var(--blue-dim);border-color:rgba(56,139,253,0.4);color:var(--blue);font-weight:600}
+.chip-green{background:var(--green-dim);border-color:rgba(63,185,80,0.4);color:var(--green);font-weight:600}
 .chip-gray{background:var(--bg4);border-color:var(--border2);color:var(--text3)}
 
-.content{flex:1;overflow-y:auto;padding:20px 24px}
+.content{flex:1;overflow-y:auto;padding:22px 28px}
 .page{display:none;animation:fadeIn 0.15s ease}
 .page.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
@@ -141,10 +153,11 @@ body.light-theme .session-pill{background:#f4f6f9}
 /* CARDS */
 .card{
   background:var(--bg2);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:0;overflow:hidden;
-  margin-bottom:14px;transition:border-color 0.2s ease;
+  border-radius:12px;padding:0;overflow:hidden;
+  margin-bottom:14px;transition:border-color 0.2s ease,box-shadow 0.2s ease;
+  box-shadow:0 1px 3px rgba(0,0,0,0.2);
 }
-.card:hover{border-color:var(--border2)}
+.card:hover{border-color:var(--border2);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
 .card-head{
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px;border-bottom:1px solid var(--border);
@@ -175,7 +188,7 @@ input[type=text],input[type=number],select,textarea{
   transition:border-color var(--transition),box-shadow var(--transition);width:100%;
   -webkit-appearance:none;
 }
-input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow)}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow);outline:none}
 input::placeholder{color:var(--text3)}
 select{
   cursor:pointer;padding-right:30px;
@@ -196,8 +209,8 @@ select option{background:var(--bg2)}
   align-items:center;gap:6px;white-space:nowrap;
 }
 .btn:active{transform:scale(0.97)}
-.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff}
-.btn-primary:hover{background:var(--blue2);border-color:var(--blue2)}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 1px 4px rgba(56,139,253,0.3)}
+.btn-primary:hover{background:var(--blue2);border-color:var(--blue2);box-shadow:0 2px 8px rgba(56,139,253,0.4)}
 .btn-secondary{background:var(--bg4);border-color:var(--border2);color:var(--text)}
 .btn-secondary:hover{background:var(--bg5);border-color:var(--border3)}
 .btn-ghost{background:transparent;border-color:var(--border);color:var(--text2)}
@@ -264,7 +277,7 @@ select option{background:var(--bg2)}
 
 /* TIMER MODE CARDS */
 .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.mode-card{
+.mode-card{transition:all 0.18s ease;
   background:var(--bg3);border:1px solid var(--border);
   border-radius:var(--radius-lg);padding:13px 14px;
   cursor:pointer;transition:all var(--transition);
@@ -359,7 +372,7 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 }
 .spk-rm:hover{color:var(--red)}
 
-.empty-state{text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
+.empty-state{letter-spacing:0.01em;text-align:center;padding:32px 16px;color:var(--text3);font-size:12px}
 .empty-state svg{opacity:0.3;margin-bottom:10px}
 
 /* PICKER CHIPS */
@@ -622,6 +635,19 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm4.271 1.055a.5.5 0 0 0-.542.832l3.5 2.25a.5.5 0 0 0 .542 0l3.5-2.25a.5.5 0 1 0-.542-.832L8 8.522 4.271 6.055z"/></svg>
       Feedback
     </button>
+    <button class="nav-item disabled" id="nav-scoretab" onclick="showPage('scoretab')" style="border:1px solid rgba(56,139,253,0.25);background:rgba(56,139,253,0.06)">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/></svg>
+      🔒 Scores
+    </button>
+    <button class="nav-item disabled" id="nav-delnotes" onclick="showPage('delnotes')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5V2zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1H4z"/><path d="M8 4a.5.5 0 0 1 .5.5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1A.5.5 0 0 1 8 4z"/></svg>
+      Del. Notes
+    </button>
+    <button class="nav-item disabled" id="nav-appeals" onclick="showPage('appeals')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M7.068.727c.243-.97 1.62-.97 1.864 0l.071.286a.96.96 0 0 0 1.622.434l.205-.211c.695-.719 1.888-.03 1.613.931l-.08.284a.96.96 0 0 0 1.187 1.187l.283-.081c.96-.275 1.65.918.931 1.613l-.211.205a.96.96 0 0 0 .434 1.622l.286.071c.97.243.97 1.62 0 1.864l-.286.071a.96.96 0 0 0-.434 1.622l.211.205c.719.695.03 1.888-.931 1.613l-.284-.08a.96.96 0 0 0-1.187 1.187l.081.283c.275.96-.918 1.65-1.613.931l-.205-.211a.96.96 0 0 0-1.622.434l-.071.286c-.243.97-1.62.97-1.864 0l-.071-.286a.96.96 0 0 0-1.622-.434l-.205.211c-.695.719-1.888.03-1.613-.931l.08-.284a.96.96 0 0 0-1.187-1.187l-.283.081c-.96.275-1.65-.918-.931-1.613l.211-.205a.96.96 0 0 0-.434-1.622l-.286-.071c-.97-.243-.97-1.62 0-1.864l.286-.071a.96.96 0 0 0 .434-1.622l-.211-.205c-.719-.695-.03-1.888.931-1.613l.284.08a.96.96 0 0 0 1.187-1.187l-.081-.283c-.275-.96.918-1.65 1.613-.931l.205.211a.96.96 0 0 0 1.622-.434l.071-.286zM12.973 8.5H8.25l-2.834 3.779A4.998 4.998 0 0 0 12.973 8.5zm0-1a4.998 4.998 0 0 0-7.557-3.779l2.834 3.78h4.723zM5.048 3.967l-.087.065zm-.431.355A4.984 4.984 0 0 0 3.002 8c0 1.455.622 2.765 1.615 3.678L7.375 8 4.617 4.322zm.344 7.646.087.065z"/></svg>
+      Appeals
+      <span class="nav-badge" id="nav-appeals-count">0</span>
+    </button>
     <button class="nav-item disabled" id="nav-delegates" onclick="showPage('delegates')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2zM1 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V7zM1 12a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1v-2zm5 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1v-2z"/></svg>
       Delegates
@@ -638,6 +664,18 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 
     <!-- Session action buttons — shown only when session is active -->
     <div id="sb-session-actions" style="display:none;margin-top:10px;display:none;flex-direction:column;gap:5px">
+      <!-- Scoreboard -->
+      <button id="sb-scoreboard-action" onclick="openScoreboard()" style="
+        display:flex;align-items:center;gap:8px;width:100%;
+        padding:8px 10px;border-radius:var(--radius);border:1px solid var(--border);
+        background:none;color:var(--text3);font-size:11px;font-weight:500;
+        cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:0.04em;
+        transition:all var(--transition);text-align:left;
+      " onmouseover="this.style.background='rgba(56,139,253,0.08)';this.style.color='var(--blue)';this.style.borderColor='rgba(56,139,253,0.4)'"
+         onmouseout="this.style.background='';this.style.color='var(--text3)';this.style.borderColor='var(--border)'">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5z"/></svg>
+        🏆 Scoreboard
+      </button>
       <!-- Export All -->
       <button onclick="saveSession()" style="
         display:flex;align-items:center;gap:8px;width:100%;
@@ -705,6 +743,12 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </button>
       <button id="btn-suspend" onclick="openSuspendDialog()" class="btn btn-secondary btn-sm" style="display:none;font-size:11px;font-weight:600" title="Suspend session until next time">⏸ End Session</button>
       <button id="btn-save-session" onclick="saveSession()" class="btn btn-ghost btn-sm" style="display:none;font-size:11px;font-weight:600" title="Save session to file">💾 Save</button>
+      <button id="btn-hdmi" onclick="toggleHdmi()" class="btn btn-ghost btn-sm" title="HDMI mode — hides scores from display" style="display:none;font-size:11px;font-weight:600;letter-spacing:0.04em">
+        📺 HDMI: <span id="hdmi-status">OFF</span>
+      </button>
+      <button id="btn-scoreboard" onclick="openScoreboard()" class="btn btn-ghost btn-sm" style="display:none;font-size:11px;font-weight:600" title="Open fullscreen scoreboard">
+        🏆 Scoreboard
+      </button>
       <button id="lang-toggle-btn" onclick="toggleLang()" class="btn btn-ghost btn-sm" title="Dil / Language" style="padding:5px 10px;font-size:11px;font-weight:700;letter-spacing:0.06em">TR</button>
       <button id="theme-toggle-btn" onclick="toggleTheme()" class="btn btn-ghost btn-sm" title="Toggle theme" style="padding:5px 8px;font-size:14px">🌙</button>
       <span class="chip chip-gray" id="tb-del-chip" style="display:none"></span>
@@ -2032,6 +2076,140 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ DELEGATE NOTES ═══ -->
+    <div id="page-delnotes" class="page" style="max-width:720px">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Delegate Notes</div>
+            <span class="chip chip-gray" style="font-size:10px">Private — never exported</span>
+          </div>
+          <div class="csearch-wrap" style="min-width:200px">
+            <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+            <input type="text" id="delnotes-filter" placeholder="Filter delegates..." oninput="renderDelNotes()"/>
+          </div>
+        </div>
+        <div class="card-body" style="padding:8px">
+          <div id="delnotes-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ APPEALS ═══ -->
+    <div id="page-appeals" class="page" style="max-width:640px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head"><div class="card-title">New Appeal</div></div>
+        <div class="card-body">
+          <div class="grid2" style="margin-bottom:10px">
+            <div class="field">
+              <label class="field-label">Delegate</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="appeal-del-search" placeholder="Who appealed..." autocomplete="off"
+                  oninput="filterAppealSearch()" onfocus="filterAppealSearch();document.getElementById('appeal-del-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('appeal-del-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="appeal-del-drop"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">Type</label>
+              <select id="appeal-type">
+                <option value="procedural">Procedural ruling</option>
+                <option value="point_of_order">Point of Order</option>
+                <option value="speaking_time">Speaking time</option>
+                <option value="amendment">Amendment ruling</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Appeal</label>
+            <textarea id="appeal-text" placeholder="Describe the appeal..." style="min-height:60px;width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:var(--radius);resize:vertical;outline:none" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+          <div class="field" style="margin-bottom:12px">
+            <label class="field-label">Chair Ruling</label>
+            <div style="display:flex;gap:6px">
+              <button class="appeal-ruling-btn btn btn-ghost btn-sm" data-val="sustained" onclick="selectAppealRuling('sustained')">✓ Sustained</button>
+              <button class="appeal-ruling-btn btn btn-ghost btn-sm" data-val="overruled" onclick="selectAppealRuling('overruled')">✗ Overruled</button>
+              <button class="appeal-ruling-btn btn btn-ghost btn-sm" data-val="deferred" onclick="selectAppealRuling('deferred')">⏸ Deferred</button>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addAppeal()">Log Appeal</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Appeal Log</div>
+            <span class="chip chip-gray" id="appeals-count-chip">0</span>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="clearAppeals()">Clear</button>
+        </div>
+        <div class="card-body">
+          <div id="appeals-list"><div class="empty-state">No appeals logged.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SCORE TAB (CHAIR ONLY) ═══ -->
+    <div id="page-scoretab" class="page" style="max-width:780px">
+
+      <!-- Warning banner -->
+      <div style="background:rgba(56,139,253,0.1);border:1px solid rgba(56,139,253,0.35);border-radius:var(--radius-lg);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="color:var(--blue);flex-shrink:0"><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+        <div style="flex:1">
+          <div style="font-size:12px;font-weight:600;color:var(--blue);margin-bottom:2px">Chair-Only Scoring Panel</div>
+          <div style="font-size:11px;color:var(--text3)">Scores entered here are private. Use <strong style="color:var(--blue)">HDMI mode</strong> to hide points from the projector. Delegates cannot see this tab.</div>
+        </div>
+        <button onclick="toggleHdmi()" id="hdmi-toggle-score" class="btn btn-sm" style="background:rgba(56,139,253,0.12);border-color:rgba(56,139,253,0.4);color:var(--blue);font-size:11px;font-weight:600;white-space:nowrap">
+          📺 HDMI: <span id="hdmi-score-status">OFF</span>
+        </button>
+      </div>
+
+      <!-- Score table -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">Live Scores</div>
+            <span class="chip chip-gray" id="scoretab-count">0 scored</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="sortScoreTab('score')">Sort by Score</button>
+            <button class="btn btn-ghost btn-sm" onclick="sortScoreTab('name')">Sort by Name</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:6px">
+          <div id="scoretab-rows" style="display:flex;flex-direction:column;gap:3px"></div>
+        </div>
+      </div>
+
+      <!-- Quick manual score -->
+      <div class="card">
+        <div class="card-head"><div class="card-title">Quick Score Adjustment</div></div>
+        <div class="card-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+            <div class="field" style="margin:0;flex:1;min-width:160px">
+              <label class="field-label">Delegate</label>
+              <div class="csearch-wrap">
+                <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+                <input type="text" id="st-del-search" placeholder="Search..." autocomplete="off"
+                  oninput="filterStDelSearch()" onfocus="filterStDelSearch();document.getElementById('st-del-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('st-del-drop').classList.remove('open'),200)"/>
+                <div class="cdropdown" id="st-del-drop"></div>
+              </div>
+            </div>
+            <div class="field" style="margin:0;width:90px">
+              <label class="field-label">Points</label>
+              <input type="number" id="st-pts" placeholder="+5 / -3" style="text-align:center;font-family:'JetBrains Mono',monospace"/>
+            </div>
+            <div class="field" style="margin:0;flex:1;min-width:120px">
+              <label class="field-label">Reason</label>
+              <input type="text" id="st-reason" placeholder="Optional..."/>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="applyScoreTabEntry()" style="margin-bottom:1px">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -2152,6 +2330,11 @@ let blocs={}; // {blocName: {color, delegates:[code]}}
 let caucusLog=[]; // [{topic,raisedBy,speakers,totalSecs,spkSecs,outcome,time}]
 let currentLang='en';
 let positionPapers={}; // {countryCode: {submitted:bool,score:int,notes:''}}
+let delegateNotes={}; // {countryCode: string}
+let appeals=[]; // [{delegate,type,text,ruling,time}]
+let hdmiMode=false; // hides scores from HDMI display
+let scoreboardWin=null; // reference to scoreboard popup window
+let scoreboardBlobUrl=null;
 let customAwardTitles={best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
 let sessionSuspended=false;
 let suspendPassword='';
@@ -2186,6 +2369,9 @@ const PAGES_META = {
   comreport:  {title:'Committee Report',       crumb:'Auto-draft official committee report'},
   motionvotes:{title:'Motion Votes',           crumb:'Procedural motion voting tracker'},
   feedback:   {title:'Delegate Feedback',      crumb:'Generate per-delegate feedback PDFs'},
+  scoretab:   {title:'Scores — Chair Only',     crumb:'Private scoring panel — not visible on HDMI display'},
+  delnotes:   {title:'Delegate Notes',         crumb:'Private per-delegate notes for the chair'},
+  appeals:    {title:'Appeals',                crumb:'Formal appeals to the chair and rulings'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -2220,6 +2406,9 @@ function showPage(id){
   if(id==='motionvotes') renderMotionVotes();
   if(id==='feedback') renderFeedback();
   if(id==='summary') renderSummary();
+  if(id==='delnotes') renderDelNotes();
+  if(id==='appeals') renderAppeals();
+  if(id==='scoretab') renderScoreTab();
   if(id==='nameplate') renderNameplates();
 }
 
@@ -2346,8 +2535,10 @@ function beginSession(){
   document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
   const _sba=document.getElementById('sb-session-actions'); if(_sba) _sba.style.display='flex';
   const _sbex=document.getElementById('sb-export-btn'); if(_sbex) _sbex.style.display='flex';
+  const _bsc=document.getElementById('btn-scoreboard'); if(_bsc) _bsc.style.display='';
+  const _bhdmi=document.getElementById('btn-hdmi'); if(_bhdmi) _bhdmi.style.display='';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
   sessionStartTime=Date.now();
@@ -2355,7 +2546,7 @@ function beginSession(){
   document.getElementById('session-clock-chip').style.display='';
   document.getElementById('quorum-chip').style.display='';
   updateQuorumCheck();
-  scores={}; warnings={}; rollCallData={}; resolutions=[]; modLog=[]; gslBankUsed=0; gslBankHistory=[]; workPapers=[]; amendments=[]; blocs={}; caucusLog=[]; _blocSelectedDelegates=[]; positionPapers={};
+  scores={}; warnings={}; rollCallData={}; resolutions=[]; modLog=[]; gslBankUsed=0; gslBankHistory=[]; workPapers=[]; amendments=[]; blocs={}; caucusLog=[]; _blocSelectedDelegates=[]; positionPapers={}; delegateNotes={}; appeals=[]; motionVotes=[];
   updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
   showPage('timer');
@@ -2410,6 +2601,8 @@ function doEndSession(){
   safe('btn-end-meeting', el => el.style.display='none');
   safe('sb-session-actions', el => el.style.display='none');
   safe('sb-export-btn', el => el.style.display='none');
+  safe('btn-scoreboard', el=>el.style.display='none');
+  safe('btn-hdmi', el=>el.style.display='none');
   safe('tb-del-chip',el=> el.style.display='none');
   safe('pill-committee', el => el.textContent='Not configured');
   safe('pill-agenda',    el => el.textContent='—');
@@ -2419,7 +2612,7 @@ function doEndSession(){
   safe('btn-resume', el => el.style.display='none');
   safe('btn-next',   el => el.style.display='none');
 
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id => {
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab'].forEach(id => {
     safe(id, el => el.classList.add('disabled'));
   });
   sessionStartTime=null; sessionHistory=[]; placardQueue=[]; amendments=[];
@@ -2935,13 +3128,16 @@ function setArc(ratio){
 function showScorePopup(delegate, onDone) {
   const existing = document.getElementById('score-popup');
   if(existing) existing.remove();
+  // Score popup appears as a small panel at bottom-left — chair-side only
+  // Does NOT cover the main timer area visible on HDMI
 
   const warnCount = (warnings[delegate.c]||[]).length;
   const currentPts = scores[delegate.c]||0;
 
   const popup = document.createElement('div');
   popup.id = 'score-popup';
-  popup.style.cssText = `position:fixed;inset:0;z-index:600;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;`;
+  // Bottom-left panel — stays on chair's screen, does NOT overlay the timer visible on HDMI
+  popup.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:700;width:360px;animation:slideUp 0.2s ease;';
 
   const scoreOptions = [
     { pts:5, label:'Excellent',  color:'var(--green)',  sub:'Exceptional contribution' },
@@ -2952,57 +3148,46 @@ function showScorePopup(delegate, onDone) {
   ];
 
   popup.innerHTML = `
-    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);">
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.7);">
 
       <!-- Header -->
-      <div style="padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
-        ${flagImg(delegate.c,'flag-img-lg')}
+      <div style="padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        ${flagImg(delegate.c,'flag-img-sm')}
         <div style="flex:1">
-          <div style="font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Rate Speech</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text)">${delegate.n}</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--blue)">🔒 Chair — Rate Speech</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${delegate.n}</div>
         </div>
         <div style="text-align:right;font-size:11px;color:var(--text3)">
-          <div>Score: <span style="color:var(--blue);font-weight:700">${currentPts} pts</span></div>
-          ${warnCount>0?`<div style="color:var(--red);margin-top:2px">⚠ ${warnCount} warning${warnCount>1?'s':''}</div>`:''}
+          <span style="color:var(--blue);font-weight:700">${currentPts} pts</span>
+          ${warnCount>0?`<div style="color:var(--red);font-size:10px">⚠ ${warnCount} warn</div>`:''}
         </div>
       </div>
 
-      <!-- Improvisation + AI checkboxes -->
-      <div style="padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:12px">
-        <label style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;cursor:pointer;" id="improv-label">
-          <input type="checkbox" id="chk-improv" style="width:16px;height:16px;accent-color:var(--green);cursor:pointer"/>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--green)">🎤 Improvisation</div>
-            <div style="font-size:10px;color:var(--text3)">Spoke without notes → +2 pts</div>
-          </div>
+      <!-- Improvisation + AI checkboxes compact -->
+      <div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;gap:6px">
+        <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;cursor:pointer;" id="improv-label">
+          <input type="checkbox" id="chk-improv" style="accent-color:var(--green);cursor:pointer"/>
+          <span style="font-size:11px;font-weight:600;color:var(--green)">🎤 Improv +2</span>
         </label>
-        <label style="flex:1;display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;cursor:pointer;" id="ai-label">
-          <input type="checkbox" id="chk-ai" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer"/>
-          <div>
-            <div style="font-size:12px;font-weight:600;color:var(--red)">🤖 AI Detected</div>
-            <div style="font-size:10px;color:var(--text3)">AI-generated content → -5 pts</div>
-          </div>
+        <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;cursor:pointer;" id="ai-label">
+          <input type="checkbox" id="chk-ai" style="accent-color:var(--red);cursor:pointer"/>
+          <span style="font-size:11px;font-weight:600;color:var(--red)">🤖 AI −5</span>
         </label>
-      </div>
-
-      <!-- Score buttons -->
-      <div style="padding:14px 20px;display:flex;flex-direction:column;gap:7px">
+      <!-- Score buttons compact -->
+      <div style="padding:10px 12px;display:flex;gap:5px;flex-wrap:wrap">
         ${scoreOptions.map(o => `
-          <button data-pts="${o.pts}" style="display:flex;align-items:center;justify-content:space-between;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:9px 14px;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;color:var(--text);text-align:left;width:100%"
+          <button data-pts="${o.pts}" style="flex:1;min-width:52px;display:flex;flex-direction:column;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:7px 6px;cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif"
             onmouseover="this.style.borderColor='${o.color}';this.style.background='var(--bg4)'"
             onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--bg3)'">
-            <div>
-              <div style="font-size:12px;font-weight:600;color:${o.color}">${o.label}</div>
-              <div style="font-size:10px;color:var(--text3)">${o.sub}</div>
-            </div>
-            <div style="font-size:18px;font-weight:700;color:${o.color};font-family:'JetBrains Mono',monospace">+${o.pts}</div>
+            <div style="font-size:16px;font-weight:700;color:${o.color};font-family:'JetBrains Mono',monospace">+${o.pts}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:1px">${o.label}</div>
           </button>
         `).join('')}
       </div>
 
       <!-- Footer -->
-      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
-        <button id="score-skip-btn" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;padding:6px 14px;border-radius:var(--radius);cursor:pointer">Skip / No score</button>
+      <div style="padding:8px 12px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
+        <button id="score-skip-btn" style="background:transparent;border:1px solid var(--border);color:var(--text3);font-family:'Inter',sans-serif;font-size:11px;padding:5px 12px;border-radius:var(--radius);cursor:pointer">Skip →</button>
       </div>
     </div>
   `;
@@ -3020,6 +3205,7 @@ function showScorePopup(delegate, onDone) {
     popup.remove();
     const modStr = modifiers.length ? ' ('+modifiers.join(', ')+')' : '';
     showToast(`${delegate.n} → +${basePts}${modStr} = ${total} pts  |  Total: ${scores[delegate.c]}`, 'info');
+  if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
     onDone();
   }
 
@@ -4279,6 +4465,7 @@ function renderSummary(){
     <!-- Certificates button -->
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-primary btn-sm" onclick="generateAllCertificates()">🏅 Generate All Certificates</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportStatsPDF()">📊 Stats PDF</button>
       <button class="btn btn-ghost btn-sm" onclick="showAwardsCeremony()">View Awards →</button>
     </div>
   `;
@@ -4402,6 +4589,69 @@ function printAllNameplates(){
 }
 
 // ── OFFICIAL PLACARD PRINT ──
+function placardFrontHTML(code, name, committee, org){
+  return `
+    <div class="placard">
+      <div class="accent"></div>
+      <div class="body">
+        <div>
+          <div class="label">Delegate of</div>
+          <div class="country">${name}</div>
+        </div>
+        <div class="footer">
+          <div class="globe"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg></div>
+          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
+        </div>
+      </div>
+      <div class="flag-panel">
+        <img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/>
+      </div>
+    </div>`;
+}
+
+function placardBackHTML(code, name, committee, org){
+  return `
+    <div class="placard back">
+      <div class="flag-panel back-flag">
+        <img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/>
+      </div>
+      <div class="body back-body">
+        <div>
+          <div class="label back-label">Delegate of</div>
+          <div class="country back-country">${name}</div>
+        </div>
+        <div class="footer back-footer">
+          <div class="globe"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg></div>
+          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
+        </div>
+      </div>
+      <div class="accent back-accent"></div>
+    </div>`;
+}
+
+function placardCSS(fullPage){
+  const W = fullPage ? '297mm' : '270mm';
+  const H = fullPage ? '95mm' : '95mm';
+  const fontSize = fullPage ? '62pt' : '50pt';
+  const labelSize = fullPage ? '14pt' : '12pt';
+  return `
+    .placard{width:${W};height:${H};background:#fff;display:flex;align-items:stretch;overflow:hidden;${fullPage?'':'border-radius:6px;box-shadow:0 6px 30px rgba(0,0,0,0.18);'}}
+    .accent{width:14mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
+    .back-accent{background:linear-gradient(0deg,#003087 0%,#0052cc 100%)}
+    .body{flex:1;padding:${fullPage?'12mm 20mm':'10mm 16mm'};display:flex;flex-direction:column;justify-content:center;gap:4mm}
+    .back-body{flex-direction:column;justify-content:center}
+    .label{font-family:'Inter',sans-serif;font-size:${labelSize};font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
+    .country{font-family:'Inter',sans-serif;font-size:${fontSize};font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1}
+    .footer{display:flex;align-items:center;gap:10px;padding-top:4mm;border-top:2px solid #e0e8f5}
+    .globe{width:${fullPage?'30px':'26px'};height:${fullPage?'30px':'26px'};background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .committee{font-family:'Inter',sans-serif;font-size:${fullPage?'11pt':'9.5pt'};font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
+    .org{font-family:'Inter',sans-serif;font-size:${fullPage?'9pt':'8pt'};font-weight:500;color:#7a8fa6;letter-spacing:0.14em;text-transform:uppercase}
+    .flag-panel{width:${fullPage?'70mm':'62mm'};flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:${fullPage?'13mm':'10mm'}}
+    .back-flag{order:-1}
+    .flag{width:100%;object-fit:cover;border-radius:4px;border:2px solid #dde6f0;box-shadow:0 3px 12px rgba(0,0,0,0.1)}
+  `;
+}
+
 function printPlacard(code, name){
   const committee = session.committee||'Model United Nations';
   const org = session.agenda ? session.agenda.split('—')[0].trim() : 'UNITED NATIONS';
@@ -4412,36 +4662,15 @@ function printPlacard(code, name){
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
     @page{size:A4 landscape;margin:0}
     *{margin:0;padding:0;box-sizing:border-box}
-    body{width:297mm;height:210mm;display:flex;align-items:center;justify-content:center;background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .placard{width:270mm;height:95mm;background:#fff;display:flex;align-items:stretch;border-radius:6px;overflow:hidden;box-shadow:0 6px 30px rgba(0,0,0,0.18)}
-    .accent{width:14mm;background:linear-gradient(180deg,#003087 0%,#0052cc 100%);flex-shrink:0}
-    .body{flex:1;padding:12mm 18mm;display:flex;flex-direction:column;justify-content:center;gap:5mm}
-    .label{font-family:'Inter',sans-serif;font-size:12pt;font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
-    .country{font-family:'Inter',sans-serif;font-size:50pt;font-weight:900;color:#0d2352;letter-spacing:0.02em;text-transform:uppercase;line-height:1;margin-top:-1mm}
-    .footer{display:flex;align-items:center;gap:10px;padding-top:5mm;border-top:2px solid #e0e8f5}
-    .globe{width:28px;height:28px;background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .committee{font-family:'Inter',sans-serif;font-size:10pt;font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
-    .org{font-family:'Inter',sans-serif;font-size:8pt;font-weight:500;color:#7a8fa6;letter-spacing:0.14em;text-transform:uppercase}
-    .flag-panel{width:65mm;flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:12mm}
-    .flag{width:100%;object-fit:cover;border-radius:4px;border:2px solid #dde6f0;box-shadow:0 3px 12px rgba(0,0,0,0.1)}
-    @media print{body{background:#fff}}
+    body{width:297mm;height:210mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5mm;background:#f0f2f5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    ${placardCSS(false)}
+    .fold-line{width:270mm;border:none;border-top:1.5px dashed #b0b8cc;position:relative}
+    .fold-line::after{content:'— fold here —';position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:#f0f2f5;padding:0 8px;font-size:7pt;color:#a0a8b8;font-family:'Inter',sans-serif;letter-spacing:0.1em;white-space:nowrap}
+    @media print{body{background:#fff}.fold-line::after{background:#fff}}
   </style></head><body>
-  <div class="placard">
-    <div class="accent"></div>
-    <div class="body">
-      <div>
-        <div class="label">Delegate of</div>
-        <div class="country">${name}</div>
-      </div>
-      <div class="footer">
-        <div class="globe"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg></div>
-        <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
-      </div>
-    </div>
-    <div class="flag-panel">
-      <img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/>
-    </div>
-  </div>
+  ${placardFrontHTML(code, name, committee, org)}
+  <hr class="fold-line"/>
+  ${placardBackHTML(code, name, committee, org)}
   <script>window.onload=()=>window.print();<\/script>
   </body></html>`);
   w.document.close();
@@ -4451,22 +4680,12 @@ function printAllPlacards(){
   if(!delegates.length){showToast('No delegates registered.','error');return;}
   const committee = session.committee||'Model United Nations';
   const org = session.agenda ? session.agenda.split('—')[0].trim() : 'UNITED NATIONS';
-  const cards=delegates.map((d,i)=>`
-    <div class="placard" ${i<delegates.length-1?'style="page-break-after:always"':''}>
-      <div class="accent"></div>
-      <div class="body">
-        <div>
-          <div class="label">Delegate of</div>
-          <div class="country">${d.n}</div>
-        </div>
-        <div class="footer">
-          <div class="globe"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3c2 3 3 6 3 9s-1 6-3 9M12 3c-2 3-3 6-3 9s1 6 3 9"/></svg></div>
-          <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
-        </div>
-      </div>
-      <div class="flag-panel">
-        <img class="flag" src="https://flagcdn.com/w320/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.n}"/>
-      </div>
+  // Each page: front on top half + back on bottom half (fold line in middle)
+  const pages = delegates.map((d,i)=>`
+    <div class="page-wrap" ${i<delegates.length-1?'style="page-break-after:always"':''}>
+      ${placardFrontHTML(d.c, d.n, committee, org)}
+      <hr class="fold-line"/>
+      ${placardBackHTML(d.c, d.n, committee, org)}
     </div>`).join('');
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
@@ -4476,18 +4695,11 @@ function printAllPlacards(){
     @page{size:A4 landscape;margin:0}
     *{margin:0;padding:0;box-sizing:border-box}
     body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .placard{width:297mm;height:210mm;background:#fff;display:flex;align-items:stretch}
-    .accent{width:14mm;background:linear-gradient(180deg,#003087,#0052cc);flex-shrink:0}
-    .body{flex:1;padding:16mm 20mm;display:flex;flex-direction:column;justify-content:center;gap:6mm}
-    .label{font-family:'Inter',sans-serif;font-size:14pt;font-weight:700;color:#1a3a6b;letter-spacing:0.18em;text-transform:uppercase}
-    .country{font-family:'Inter',sans-serif;font-size:62pt;font-weight:900;color:#0d2352;text-transform:uppercase;line-height:1}
-    .footer{display:flex;align-items:center;gap:10px;padding-top:5mm;border-top:2px solid #dde6f0}
-    .globe{width:32px;height:32px;background:#0d2352;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .committee{font-family:'Inter',sans-serif;font-size:12pt;font-weight:700;color:#0d2352;text-transform:uppercase;letter-spacing:0.1em}
-    .org{font-family:'Inter',sans-serif;font-size:9pt;color:#7a8fa6;letter-spacing:0.14em;text-transform:uppercase}
-    .flag-panel{width:72mm;flex-shrink:0;background:#f4f7fc;display:flex;align-items:center;justify-content:center;padding:14mm}
-    .flag{width:100%;object-fit:cover;border-radius:5px;border:2px solid #dde6f0;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
-  </style></head><body>${cards}<script>window.onload=()=>window.print();<\/script></body></html>`);
+    .page-wrap{width:297mm;height:210mm;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4mm;background:#fff;padding:5mm 0}
+    ${placardCSS(true)}
+    .fold-line{width:287mm;border:none;border-top:1.5px dashed #c0c8d8;position:relative}
+    .fold-line::after{content:'— fold —';position:absolute;left:50%;transform:translateX(-50%) translateY(-50%);background:#fff;padding:0 6px;font-size:7pt;color:#b0b8cc;font-family:'Inter',sans-serif;letter-spacing:0.1em;white-space:nowrap}
+  </style></head><body>${pages}<script>window.onload=()=>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
@@ -5103,7 +5315,7 @@ function loadSession(evt){
       document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
       document.getElementById('session-clock-chip').style.display='';
       document.getElementById('quorum-chip').style.display='';
-      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab'].forEach(id=>{
         const el=document.getElementById(id); if(el) el.classList.remove('disabled');
       });
       startSessionClock();
@@ -5240,7 +5452,7 @@ function restoreSuspended(){
       document.getElementById('tb-del-chip').textContent=delegates.length+' delegates';
       document.getElementById('session-clock-chip').style.display='';
       document.getElementById('quorum-chip').style.display='';
-      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-seating','nav-comreport','nav-motionvotes','nav-feedback'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
+      ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
       startSessionClock(); updateQuorumCheck(); updateStats(); renderAllSpk();
       localStorage.removeItem('mun-suspended-session');
       document.querySelectorAll('[style*="Suspended session found"]').forEach(el=>el.remove());
@@ -5686,6 +5898,460 @@ function exportAllFeedback(){
   if(!delegates.length){showToast('No delegates registered.','error');return;}
   delegates.forEach((d,i)=>setTimeout(()=>exportFeedback(d.c),i*300));
 }
+
+
+// ═══ HDMI MODE ═══
+function toggleHdmi(){
+  hdmiMode = !hdmiMode;
+  document.getElementById('hdmi-status').textContent = hdmiMode ? 'ON' : 'OFF';
+  const btn = document.getElementById('btn-hdmi');
+  if(btn){
+    btn.style.background = hdmiMode ? 'rgba(63,185,80,0.12)' : '';
+    btn.style.borderColor = hdmiMode ? 'rgba(63,185,80,0.4)' : '';
+    btn.style.color = hdmiMode ? 'var(--green)' : '';
+  }
+  // Refresh scoreboard if open
+  if(scoreboardWin && !scoreboardWin.closed) updateScoreboard();
+  // Sync score tab HDMI badge
+  const _hs=document.getElementById('hdmi-score-status'); if(_hs) _hs.textContent=hdmiMode?'ON':'OFF';
+  const _hb=document.getElementById('hdmi-toggle-score');
+  if(_hb){ _hb.style.background=hdmiMode?'rgba(63,185,80,0.15)':'rgba(56,139,253,0.12)'; _hb.style.borderColor=hdmiMode?'rgba(63,185,80,0.5)':'rgba(56,139,253,0.4)'; _hb.style.color=hdmiMode?'var(--green)':'var(--blue)'; }
+  showToast(hdmiMode ? 'HDMI mode ON — scores hidden from scoreboard' : 'HDMI mode OFF — scores visible');
+}
+
+// ═══ SCOREBOARD OVERLAY ═══
+function buildScoreboardHTML(hideScores){
+  const ranked = Object.entries(scores)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([code,pts])=>{ const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code); return d?{d,pts}:null; })
+    .filter(Boolean);
+
+  const allDel = delegates.length ? [...delegates] : [];
+  // Add delegates with no score
+  allDel.forEach(d=>{ if(!ranked.find(r=>r.d.c===d.c)) ranked.push({d,pts:0}); });
+
+  const rows = ranked.map((r,i)=>{
+    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    const warn = (warnings[r.d.c]||[]).length;
+    const disq = warn >= 3;
+    return `<div style="display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06);${i===0?'background:rgba(210,153,34,0.08)':''}">
+      <span style="font-size:11px;color:rgba(255,255,255,0.3);font-family:'JetBrains Mono',monospace;min-width:24px">${String(i+1).padStart(2,'0')}</span>
+      <span style="font-size:22px;min-width:28px">${medal}</span>
+      <img src="https://flagcdn.com/w40/${r.d.c}.png" style="width:32px;height:22px;object-fit:cover;border-radius:3px;border:1px solid rgba(255,255,255,0.15)" onerror="this.style.display='none'"/>
+      <span style="flex:1;font-size:15px;font-weight:600;color:${disq?'rgba(248,81,73,0.7)':'#e6edf3'}">${r.d.n}${disq?' ⚠':''}</span>
+      ${hideScores
+        ? `<span style="font-size:13px;color:rgba(255,255,255,0.2)">—</span>`
+        : `<span style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:${r.pts>0?'#3fb950':r.pts<0?'#f85149':'rgba(255,255,255,0.3)'}">${r.pts>0?'+':''}${r.pts}</span>`
+      }
+    </div>`;
+  }).join('');
+
+  const spk = currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  const committee = session.committee||'Committee';
+  const elapsed = sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60),s=elapsed%60;
+  const clockStr=(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Scoreboard — ${committee}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0d1117;color:#e6edf3;font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column}
+    .header{padding:20px 32px;background:#161b22;border-bottom:1px solid #21262d;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .header-left{}
+    .title{font-size:13px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#388bfd;margin-bottom:3px}
+    .committee{font-size:22px;font-weight:700;color:#e6edf3}
+    .header-right{text-align:right}
+    .clock{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:500;color:#e6edf3}
+    .clock-label{font-size:10px;color:#656d76;text-transform:uppercase;letter-spacing:0.1em}
+    .cur-speaker{padding:16px 32px;background:#161b22;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:14px;flex-shrink:0}
+    .cur-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#656d76}
+    .cur-name{font-size:16px;font-weight:600;color:#e6edf3}
+    .scores{flex:1;overflow-y:auto}
+    .mode-chip{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:10px;background:rgba(56,139,253,0.15);border:1px solid rgba(56,139,253,0.3);color:#388bfd;margin-left:8px}
+    .footer{padding:12px 32px;background:#161b22;border-top:1px solid #21262d;font-size:10px;color:#3d444d;text-align:center;flex-shrink:0;letter-spacing:0.1em;text-transform:uppercase}
+  </style></head><body>
+  <div class="header">
+    <div class="header-left">
+      <div class="title">Model United Nations</div>
+      <div class="committee">${committee}${curMode?`<span class="mode-chip">${curMode.toUpperCase()}</span>`:''}</div>
+    </div>
+    <div class="header-right">
+      <div class="clock" id="sb-clock">${clockStr}</div>
+      <div class="clock-label">Session Time</div>
+    </div>
+  </div>
+  ${spk?`<div class="cur-speaker">
+    <img src="https://flagcdn.com/w40/${spk.c}.png" style="width:36px;height:25px;object-fit:cover;border-radius:3px;border:1px solid rgba(255,255,255,0.15)" onerror="this.style.display='none'"/>
+    <div><div class="cur-label">Current Speaker</div><div class="cur-name">${spk.n}</div></div>
+  </div>`:''}
+  <div class="scores">${rows||'<div style="padding:40px;text-align:center;color:#656d76">No delegates registered</div>'}</div>
+  <div class="footer">${session.agenda||'—'} &nbsp;·&nbsp; ${delegates.length} delegates &nbsp;·&nbsp; ${hideScores?'Scores hidden':'Live scores'}</div>
+  <script>
+    // Auto-refresh every 3 seconds
+    setInterval(()=>{ if(window.opener&&!window.opener.closed) window.opener.updateScoreboard(); },3000);
+    // Live session clock
+    const start=${sessionStartTime||Date.now()};
+    setInterval(()=>{
+      const e=Math.floor((Date.now()-start)/1000);
+      const h=Math.floor(e/3600),m=Math.floor((e%3600)/60),s=e%60;
+      const el=document.getElementById('sb-clock');
+      if(el) el.textContent=(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    },1000);
+  <\/script>
+  </body></html>`;
+}
+
+function openScoreboard(){
+  if(scoreboardBlobUrl) URL.revokeObjectURL(scoreboardBlobUrl);
+  const html = buildScoreboardHTML(hdmiMode);
+  const blob = new Blob([html], {type:'text/html'});
+  scoreboardBlobUrl = URL.createObjectURL(blob);
+  const screen_w = window.screen.availWidth;
+  const screen_h = window.screen.availHeight;
+  scoreboardWin = window.open(
+    scoreboardBlobUrl,
+    'MUN_Scoreboard',
+    `left=0,top=0,width=${screen_w},height=${screen_h},resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,status=no`
+  );
+  if(!scoreboardWin){showToast('Popup blocked — allow popups for this page.','error');return;}
+  showToast('Scoreboard window opened — drag it to your HDMI screen');
+}
+
+function updateScoreboard(){
+  if(!scoreboardWin||scoreboardWin.closed) return;
+  if(scoreboardBlobUrl) URL.revokeObjectURL(scoreboardBlobUrl);
+  const html = buildScoreboardHTML(hdmiMode);
+  const blob = new Blob([html], {type:'text/html'});
+  scoreboardBlobUrl = URL.createObjectURL(blob);
+  scoreboardWin.location.replace(scoreboardBlobUrl);
+}
+
+// Auto-update scoreboard when scores change
+// ═══ SESSION STATISTICS PDF ═══
+function exportStatsPDF(){
+  const date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  const elapsed=sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
+  const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
+  const dur=h?`${h}h ${m}m`:`${m}m`;
+
+  const speechCounts={};
+  sessionHistory.filter(e=>e.type==='speech'&&e.delegate).forEach(e=>{
+    speechCounts[e.delegate.c]=(speechCounts[e.delegate.c]||0)+1;
+  });
+
+  const ranked=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]);
+  const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const present=Object.values(rollCallData).filter(v=>v!=='absent').length;
+
+  const scoreRows=ranked.map(([code,pts],i)=>{
+    const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    const name=d?d.n:code;
+    const spk=speechCounts[code]||0;
+    const warn=(warnings[code]||[]).length;
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+    return `<tr>
+      <td>${medal} ${String(i+1).padStart(2,'0')}</td>
+      <td><strong>${name}</strong></td>
+      <td style="text-align:center">${spk}</td>
+      <td style="text-align:center;color:${warn>0?'#cf222e':'#1a7f37'}">${warn}</td>
+      <td style="text-align:right;font-weight:700;color:${pts>0?'#1a7f37':'#cf222e'}">${pts>0?'+':''}${pts}</td>
+    </tr>`;
+  }).join('');
+
+  const caucusRows=caucusLog.slice(0,10).map(c=>`<tr>
+    <td>${c.time}</td>
+    <td>${c.topic}</td>
+    <td>${c.raisedBy?c.raisedBy.n:'—'}</td>
+    <td style="color:${c.outcome==='passed'?'#1a7f37':'#cf222e'};font-weight:600;text-transform:capitalize">${c.outcome}</td>
+  </tr>`).join('');
+
+  const barMax=Math.max(1,...ranked.map(([,p])=>Math.abs(p)));
+  const bars=ranked.slice(0,10).map(([code,pts])=>{
+    const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+    const w=Math.round(Math.abs(pts)/barMax*180);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+      <div style="width:130px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#333">${d?d.n:code}</div>
+      <div style="width:${w}px;height:14px;background:${pts>0?'#1a7f37':'#cf222e'};border-radius:2px;min-width:2px"></div>
+      <div style="font-size:11px;font-weight:700;color:${pts>0?'#1a7f37':'#cf222e'}">${pts>0?'+':''}${pts}</div>
+    </div>`;
+  }).join('');
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Session Statistics</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    @page{size:A4;margin:20mm}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;color:#111;font-size:12px;background:#fff}
+    .header{border-bottom:3px solid #0d2352;padding-bottom:14px;margin-bottom:20px}
+    .header-title{font-size:22px;font-weight:700;color:#0d2352;margin-bottom:2px}
+    .header-sub{font-size:11px;color:#666;letter-spacing:0.06em}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+    .stat{background:#f5f7fa;border:1px solid #e0e4ea;border-radius:6px;padding:10px;text-align:center}
+    .stat-val{font-size:24px;font-weight:700;color:#0d2352;line-height:1}
+    .stat-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#888;margin-top:3px}
+    h2{font-size:13px;font-weight:700;color:#0d2352;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #e0e4ea;text-transform:uppercase;letter-spacing:0.08em}
+    table{width:100%;border-collapse:collapse;margin-bottom:14px;font-size:11px}
+    th{background:#f0f3f8;padding:6px 8px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:#555;border:1px solid #e0e4ea}
+    td{padding:6px 8px;border:1px solid #eee}
+    tr:nth-child(even) td{background:#fafbfc}
+    .bar-section{margin-bottom:16px}
+    .footer{margin-top:20px;padding-top:10px;border-top:1px solid #e0e4ea;font-size:10px;color:#aaa;display:flex;justify-content:space-between}
+    @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  </style></head><body>
+  <div class="header">
+    <div class="header-title">${session.committee||'Committee'} — Session Statistics</div>
+    <div class="header-sub">${session.agenda||''} &nbsp;·&nbsp; ${date}</div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">${dur}</div><div class="stat-label">Duration</div></div>
+    <div class="stat"><div class="stat-val">${delegates.length}</div><div class="stat-label">Delegates</div></div>
+    <div class="stat"><div class="stat-val">${totalSpeeches}</div><div class="stat-label">Speeches</div></div>
+    <div class="stat"><div class="stat-val">${totalWarnings}</div><div class="stat-label">Warnings</div></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-val">${present}</div><div class="stat-label">Present</div></div>
+    <div class="stat"><div class="stat-val">${caucusLog.length}</div><div class="stat-label">Caucuses</div></div>
+    <div class="stat"><div class="stat-val">${amendments.length}</div><div class="stat-label">Amendments</div></div>
+    <div class="stat"><div class="stat-val">${motionVotes.filter(v=>v.result==='passed').length}</div><div class="stat-label">Motions Passed</div></div>
+  </div>
+  <h2>Score Chart (Top 10)</h2>
+  <div class="bar-section">${bars}</div>
+  <h2>Full Delegate Scores</h2>
+  <table>
+    <tr><th>#</th><th>Delegate</th><th>Speeches</th><th>Warnings</th><th>Score</th></tr>
+    ${scoreRows}
+  </table>
+  ${caucusRows?`<h2>Caucus Log</h2><table><tr><th>Time</th><th>Topic</th><th>Raised By</th><th>Outcome</th></tr>${caucusRows}</table>`:''}
+  <div class="footer">
+    <span>MUN Chair — ${session.committee||'Committee'}</span>
+    <span>Generated ${new Date().toLocaleString()}</span>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`;
+
+  const w=window.open('','_blank');
+  if(!w){showToast('Popup blocked — allow popups.','error');return;}
+  w.document.write(html); w.document.close();
+}
+
+// ═══ DELEGATE NOTES ═══
+function renderDelNotes(){
+  const list=document.getElementById('delnotes-list'); if(!list) return;
+  const q=(document.getElementById('delnotes-filter')||{}).value||'';
+  const pool=delegates.length?delegates:[];
+  if(!pool.length){list.innerHTML='<div class="empty-state">No delegates registered.</div>';return;}
+  const filtered=pool.filter(d=>d.n.toLowerCase().includes(q.toLowerCase()));
+  list.innerHTML=filtered.map(d=>{
+    const note=delegateNotes[d.c]||'';
+    const hasNote=note.trim().length>0;
+    return `<div style="background:var(--bg3);border:1px solid ${hasNote?'rgba(56,139,253,0.3)':'var(--border)'};border-radius:var(--radius);padding:10px 12px;transition:border-color 0.15s">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <img src="${flagUrl(d.c)}" style="width:20px;height:14px;object-fit:cover;border-radius:2px;border:1px solid rgba(255,255,255,0.08);flex-shrink:0" onerror="this.style.display='none'"/>
+        <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">${d.n}</span>
+        ${hasNote?'<span style="font-size:9px;color:var(--blue);font-weight:600;letter-spacing:0.1em;text-transform:uppercase">Note saved</span>':''}
+      </div>
+      <textarea data-code="${d.c}" class="delnote-ta" placeholder="Private notes about this delegate..." style="width:100%;min-height:52px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:12px;padding:7px 10px;border-radius:var(--radius);resize:vertical;outline:none;transition:border-color 0.15s" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">${note}</textarea>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.delnote-ta').forEach(ta=>{
+    ta.addEventListener('input',()=>{
+      delegateNotes[ta.dataset.code]=ta.value;
+    });
+  });
+}
+
+// ═══ APPEALS ═══
+let _appealDelegate=null, _appealRuling=null;
+
+function filterAppealSearch(){
+  const q=document.getElementById('appeal-del-search').value.toLowerCase();
+  const dd=document.getElementById('appeal-del-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_appealDelegate=d;document.getElementById('appeal-del-search').value=d.n;dd.classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function selectAppealRuling(val){
+  _appealRuling=val;
+  document.querySelectorAll('.appeal-ruling-btn').forEach(btn=>{
+    const active=btn.dataset.val===val;
+    btn.style.background=active?(val==='sustained'?'var(--green-dim)':val==='overruled'?'var(--red-dim)':'var(--bg4)'):'';
+    btn.style.borderColor=active?(val==='sustained'?'rgba(63,185,80,0.5)':val==='overruled'?'rgba(248,81,73,0.5)':'var(--border2)'):'';
+    btn.style.color=active?(val==='sustained'?'var(--green)':val==='overruled'?'var(--red)':'var(--text)'):'';
+  });
+}
+
+function addAppeal(){
+  const text=document.getElementById('appeal-text').value.trim();
+  if(!text){showToast('Enter the appeal.','error');return;}
+  const type=document.getElementById('appeal-type').value;
+  appeals.push({delegate:_appealDelegate?{..._appealDelegate}:null,type,text,ruling:_appealRuling||'pending',time:new Date().toLocaleTimeString()});
+  document.getElementById('appeal-text').value='';
+  document.getElementById('appeal-del-search').value=''; _appealDelegate=null;
+  _appealRuling=null;
+  document.querySelectorAll('.appeal-ruling-btn').forEach(btn=>{ btn.style.background=''; btn.style.borderColor=''; btn.style.color=''; });
+  renderAppeals();
+  const nb=document.getElementById('nav-appeals-count'); if(nb) nb.textContent=appeals.length;
+}
+
+function clearAppeals(){ appeals=[]; renderAppeals(); const nb=document.getElementById('nav-appeals-count');if(nb)nb.textContent=0; }
+
+function renderAppeals(){
+  const list=document.getElementById('appeals-list'); if(!list) return;
+  const chip=document.getElementById('appeals-count-chip'); if(chip) chip.textContent=appeals.length;
+  const nb=document.getElementById('nav-appeals-count'); if(nb) nb.textContent=appeals.length;
+  if(!appeals.length){list.innerHTML='<div class="empty-state">No appeals logged.</div>';return;}
+  const RULING={sustained:{bg:'var(--green-dim)',border:'rgba(63,185,80,0.4)',color:'var(--green)',label:'Sustained'},overruled:{bg:'var(--red-dim)',border:'rgba(248,81,73,0.4)',color:'var(--red)',label:'Overruled'},deferred:{bg:'var(--bg4)',border:'var(--border2)',color:'var(--text3)',label:'Deferred'},pending:{bg:'var(--bg4)',border:'var(--border)',color:'var(--text3)',label:'Pending'}};
+  const TYPE_LABEL={procedural:'Procedural',point_of_order:'Point of Order',speaking_time:'Speaking Time',amendment:'Amendment',other:'Other'};
+  list.innerHTML=[...appeals].reverse().map((a,i)=>{
+    const r=RULING[a.ruling]||RULING.pending;
+    return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:6px">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">
+            ${a.delegate?flagImg(a.delegate.c,'flag-img-sm'):''}
+            ${a.delegate?`<span style="font-size:12px;font-weight:600;color:var(--text)">${a.delegate.n}</span>`:''}
+            <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;background:var(--bg4);border:1px solid var(--border2);color:var(--text3);text-transform:uppercase;letter-spacing:0.06em">${TYPE_LABEL[a.type]||a.type}</span>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:${r.bg};border:1px solid ${r.border};color:${r.color}">${r.label}</span>
+            <span style="font-size:10px;color:var(--text3);margin-left:auto">${a.time}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text);line-height:1.5">${a.text}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        ${Object.entries(RULING).map(([val,s])=>`<button data-idx="${i}" data-val="${val}" class="appeal-update-btn" style="font-size:10px;font-weight:600;padding:2px 9px;border-radius:var(--radius);border:1px solid;cursor:pointer;text-transform:uppercase;letter-spacing:0.05em;transition:all 0.12s;background:${a.ruling===val?s.bg:'transparent'};border-color:${a.ruling===val?s.border:'var(--border)'};color:${a.ruling===val?s.color:'var(--text3)'}">${s.label}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('.appeal-update-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const realIdx=appeals.length-1-parseInt(btn.dataset.idx);
+      if(appeals[realIdx]) appeals[realIdx].ruling=btn.dataset.val;
+      renderAppeals();
+    });
+  });
+}
+
+// Add stats PDF button to Summary page (auto-called)
+function addStatsPdfBtn(){
+  const el=document.getElementById('summary-content');
+  if(!el) return;
+  // find existing btn row and add stats btn
+  const btns=el.querySelector('[onclick="showAwardsCeremony()"]');
+  if(btns&&btns.parentElement&&!document.getElementById('stats-pdf-btn')){
+    const btn=document.createElement('button');
+    btn.id='stats-pdf-btn';
+    btn.className='btn btn-ghost btn-sm';
+    btn.textContent='📊 Stats PDF';
+    btn.onclick=exportStatsPDF;
+    btns.parentElement.insertBefore(btn,btns);
+  }
+}
+
+
+// ═══ SCORE TAB ═══
+let _stDelegate = null;
+let _scoreTabSort = 'score'; // 'score' | 'name'
+
+function sortScoreTab(by){ _scoreTabSort=by; renderScoreTab(); }
+
+function renderScoreTab(){
+  const el=document.getElementById('scoretab-rows'); if(!el) return;
+  const pool = delegates.length ? [...delegates] : [];
+  if(!pool.length){ el.innerHTML='<div class="empty-state" style="padding:20px">No delegates registered.</div>'; return; }
+
+  // sort
+  let sorted = [...pool];
+  if(_scoreTabSort==='score'){
+    sorted.sort((a,b)=>(scores[b.c]||0)-(scores[a.c]||0));
+  } else {
+    sorted.sort((a,b)=>a.n.localeCompare(b.n));
+  }
+
+  const scored = sorted.filter(d=>(scores[d.c]||0)!==0).length;
+  const chip=document.getElementById('scoretab-count'); if(chip) chip.textContent=scored+' scored';
+
+  // sync HDMI status badge
+  const hs=document.getElementById('hdmi-score-status'); if(hs) hs.textContent=hdmiMode?'ON':'OFF';
+  const hb=document.getElementById('hdmi-toggle-score');
+  if(hb){
+    hb.style.background=hdmiMode?'rgba(63,185,80,0.15)':'rgba(56,139,253,0.12)';
+    hb.style.borderColor=hdmiMode?'rgba(63,185,80,0.5)':'rgba(56,139,253,0.4)';
+    hb.style.color=hdmiMode?'var(--green)':'var(--blue)';
+  }
+
+  const maxPts = Math.max(1, ...sorted.map(d=>Math.abs(scores[d.c]||0)));
+
+  el.innerHTML = sorted.map((d,i)=>{
+    const pts = scores[d.c]||0;
+    const rank = _scoreTabSort==='score' ? i+1 : null;
+    const warn = (warnings[d.c]||[]).length;
+    const disq = warn >= 3;
+    const barW = Math.round(Math.abs(pts)/maxPts*120);
+    const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);background:${pts!==0?'var(--bg3)':'transparent'};border:1px solid ${pts!==0?'var(--border)':'transparent'};transition:all 0.15s">
+      ${rank?`<span style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;min-width:20px;text-align:right">${String(rank).padStart(2,'0')}</span>`:''}
+      <span style="font-size:14px;min-width:20px">${medal}</span>
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:13px;color:${disq?'var(--red)':'var(--text)'}">${d.n}${disq?' ⚠':''}</span>
+      <!-- mini bar -->
+      <div style="width:120px;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;flex-shrink:0">
+        <div style="height:100%;width:${barW}px;background:${pts>0?'var(--green)':'var(--red)'};border-radius:3px;transition:width 0.4s"></div>
+      </div>
+      <!-- score value — always visible to chair -->
+      <span style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;min-width:44px;text-align:right;color:${pts>0?'var(--green)':pts<0?'var(--red)':'var(--text3)'}">${pts>0?'+':''}${pts}</span>
+      <!-- inline ± buttons -->
+      <div style="display:flex;gap:3px;flex-shrink:0">
+        <button data-code="${d.c}" data-delta="1"  class="st-quick-btn" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--border);background:var(--bg4);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+        <button data-code="${d.c}" data-delta="-1" class="st-quick-btn" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--border);background:var(--bg4);color:var(--red);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.querySelectorAll('.st-quick-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const code=btn.dataset.code;
+      const delta=parseInt(btn.dataset.delta);
+      scores[code]=(scores[code]||0)+delta;
+      if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
+      renderScoreTab();
+    });
+  });
+}
+
+let _stDelegateObj=null;
+function filterStDelSearch(){
+  const q=document.getElementById('st-del-search').value.toLowerCase();
+  const dd=document.getElementById('st-del-drop');
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,12);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;_stDelegateObj=d;document.getElementById('st-del-search').value=d.n;dd.classList.remove('open');}));
+  dd.classList.add('open');
+}
+
+function applyScoreTabEntry(){
+  if(!_stDelegateObj){showToast('Select a delegate.','error');return;}
+  const pts=parseFloat(document.getElementById('st-pts').value);
+  const reason=document.getElementById('st-reason').value.trim();
+  if(isNaN(pts)){showToast('Enter points.','error');return;}
+  scores[_stDelegateObj.c]=(scores[_stDelegateObj.c]||0)+pts;
+  if(typeof manualScoreLog!=='undefined') manualScoreLog.unshift({name:_stDelegateObj.n,code:_stDelegateObj.c,pts,reason,time:new Date().toLocaleTimeString()});
+  document.getElementById('st-pts').value='';
+  document.getElementById('st-reason').value='';
+  document.getElementById('st-del-search').value=''; _stDelegateObj=null;
+  if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
+  showToast(`${_stDelegateObj&&_stDelegateObj.n||'Delegate'} → ${pts>0?'+':''}${pts} pts`);
+  renderScoreTab();
+}
+
+// HDMI sync with score tab handled inside renderScoreTab (called after toggle)
 
 // ═══ STATS ═══
 function updateStats(){
