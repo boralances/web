@@ -3184,6 +3184,7 @@ function beginSession(){
   const _bphoto=document.getElementById('btn-photo-mode'); if(_bphoto) _bphoto.style.display='';
   const _baqr=document.getElementById('btn-attend-qr'); if(_baqr) _baqr.style.display='';
   const _brelay=document.getElementById('btn-relay-setup'); if(_brelay) _brelay.style.display='';
+  const _bsic=document.getElementById('session-id-chip'); if(_bsic&&_fbSessionId){_bsic.style.display='';_bsic.textContent='ID: '+_fbSessionId;}
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
@@ -5796,7 +5797,8 @@ function placardSingleHTML(code, name, committee, org, isBack){
   // Her iki yüz de aynı layout: accent-left | body | flag-right
   // Arka yüz (isBack=true) → CSS .half-back ile rotate(180deg) uygulanır
   // → katlayınca her iki taraf da doğru yönde okunur
-  const portalQR = delegatePortalUrls&&delegatePortalUrls[code] ? `<img src="${makeQRUrl(delegatePortalUrls[code],80)}" style="width:28mm;height:28mm;background:#fff;border-radius:2px;padding:1px;flex-shrink:0" title="Delegate Portal"/>` : '';
+  const _pUrl = delegatePortalUrls&&delegatePortalUrls[code];
+  const portalQR = _pUrl ? `<img src="${makeQRUrl(_pUrl.dataUrl||_pUrl,80)}" style="width:28mm;height:28mm;background:#fff;border-radius:2px;padding:1px;flex-shrink:0" title="Delegate Portal — scan to check in & vote"/>` : '';
   return `<div class="half${isBack?' half-back':''}">
     <div class="accent"></div>
     <div class="body">
@@ -9215,8 +9217,9 @@ function renderQRDelegateGrid(){
 }
 
 function openDelegateVotePage(code){
-  const url=qrVoteUrls[code];
-  if(!url){showToast('QR oylama aktif değil.','error');return;}
+  const p=delegatePortalUrls[code];
+  const url=p?p.blobUrl:(qrVoteUrls[code]||'');
+  if(!url){showToast('Portal mevcut değil.','error');return;}
   window.open(url,'_blank');
 }
 
@@ -10018,7 +10021,8 @@ function openAttendanceQR(){
     const chip=document.getElementById('attend-count'); if(chip) chip.textContent=`${present} / ${delegates.length}`;
     grid.innerHTML=delegates.map(d=>{
       const isPresent=rollCallData[d.c]==='present'||rollCallData[d.c]==='present+voting';
-      const portalUrl=delegatePortalUrls[d.c]||'';
+      const _pu=delegatePortalUrls[d.c];
+      const portalUrl=_pu?(_pu.dataUrl||_pu):'';
       const qrSrc=portalUrl?makeQRUrl(portalUrl,100):'';
       return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${isPresent?'rgba(61,232,160,0.06)':'var(--bg3)'};border:1px solid ${isPresent?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:8px;transition:all 0.3s">
         ${isPresent
@@ -10071,267 +10075,100 @@ function renderMotionCounter(){
 
 
 
-// ═══ DELEGATE PORTAL — permanent per-delegate page ═══
-// Built at session start, QR printed on placard
-// Handles: check-in (roll call) + voting (when active)
 
-function buildDelegatePortal(code, name) {
-  return `<!DOCTYPE html>
-<html lang="en"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>${name} — MUN Portal</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:#060a12;color:#e8f0fe;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px 40px}
-.card{background:#0d1520;border:1px solid rgba(255,255,255,0.1);border-radius:20px;
-  padding:24px 20px;width:100%;max-width:360px;margin-top:16px}
-.flag{width:80px;height:56px;object-fit:cover;border-radius:8px;
-  border:2px solid rgba(255,255,255,0.15);display:block;margin:0 auto 12px}
-.del-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
-  color:rgba(255,255,255,0.3);text-align:center;margin-bottom:4px}
-.del-name{font-size:24px;font-weight:800;text-align:center;color:#e8f0fe;margin-bottom:4px;line-height:1.1}
-.committee{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:20px}
-.section{margin-bottom:16px}
-.section-title{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
-  color:rgba(255,255,255,0.25);margin-bottom:8px;padding-left:2px}
-.btn{width:100%;padding:16px;border-radius:14px;border:2px solid;font-size:16px;font-weight:700;
-  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;
-  gap:10px;letter-spacing:0.04em;font-family:inherit;margin-bottom:8px}
-.btn:active{transform:scale(0.97)}
-.btn-checkin{background:rgba(106,176,255,0.12);border-color:rgba(106,176,255,0.35);color:#6ab0ff}
-.btn-checkin:hover{background:rgba(106,176,255,0.22);border-color:rgba(106,176,255,0.6)}
-.btn-yes{background:rgba(61,232,160,0.1);border-color:rgba(61,232,160,0.3);color:#3de8a0}
-.btn-yes:hover{background:rgba(61,232,160,0.22);border-color:rgba(61,232,160,0.6)}
-.btn-abs{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45)}
-.btn-abs:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
-.btn-no{background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.3);color:#ff6b6b}
-.btn-no:hover{background:rgba(255,107,107,0.22);border-color:rgba(255,107,107,0.6)}
-.btn-done{background:rgba(61,232,160,0.06);border-color:rgba(61,232,160,0.2);color:rgba(61,232,160,0.6);cursor:default}
-.status-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
-  border-radius:10px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,0.4);text-align:center}
-.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:10px;
-  font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
-.badge-present{background:rgba(61,232,160,0.15);border:1px solid rgba(61,232,160,0.3);color:#3de8a0}
-.badge-absent{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
-.badge-voted{background:rgba(106,176,255,0.15);border:1px solid rgba(106,176,255,0.3);color:#6ab0ff}
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
-  background:#0d1520;border:1px solid rgba(255,255,255,0.15);border-radius:12px;
-  padding:10px 20px;font-size:13px;font-weight:600;color:#e8f0fe;
-  box-shadow:0 8px 32px rgba(0,0,0,0.6);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  white-space:nowrap;pointer-events:none}
-#toast.show{transform:translateX(-50%) translateY(0)}
-</style>
-</head><body>
+// ═══ DELEGATE PORTAL — QR-scannable version ═══
+// The QR encodes a data: URI of a tiny self-contained portal page
+// Works WITHOUT internet if Firebase not set up
+// With Firebase: also syncs cross-device
 
-<div class="card">
-  <img class="flag" src="https://flagcdn.com/w160/${code.toLowerCase()}.png" 
-       onerror="this.src='https://flagcdn.com/w80/${code.toLowerCase()}.png'" alt="${name}"/>
-  <div class="del-label">Delegate of</div>
-  <div class="del-name">${name}</div>
-  <div class="committee" id="committee-name">Model United Nations</div>
-
-  <!-- Check-in section -->
-  <div class="section">
-    <div class="section-title">📋 Attendance</div>
-    <div id="checkin-area">
-      <button class="btn btn-checkin" id="checkin-btn" onclick="doCheckin()">
-        <span>👋</span> Mark Myself Present
-      </button>
-    </div>
-  </div>
-
-  <!-- Voting section -->
-  <div class="section" id="vote-section" style="display:none">
-    <div class="section-title">🗳️ Vote on Resolution</div>
-    <div id="vote-area">
-      <div class="status-box" id="vote-question" style="margin-bottom:10px">Loading...</div>
-      <button class="btn btn-yes" onclick="doVote('yes')"><span>✅</span> In Favor</button>
-      <button class="btn btn-abs" onclick="doVote('abstain')"><span>🟡</span> Abstain</button>
-      <button class="btn btn-no" onclick="doVote('no')"><span>❌</span> Against</button>
-    </div>
-  </div>
-
-  <!-- Status -->
-  <div class="status-box" id="status-box">
-    <span id="checkin-status" class="badge badge-absent">⭕ Not checked in</span>
-    &nbsp;&nbsp;
-    <span id="vote-status" class="badge badge-absent" style="display:none">⭕ Not voted</span>
-  </div>
+function buildMinimalPortal(code, name) {
+  // Ultra-compact portal — must stay under ~1500 bytes to fit in QR
+  const fbUrl = _fbUrl || '';
+  const fbSid = _fbSessionId || '';
+  const lsKey = portalSessionKey || '';
+  
+  // Encode all config into the page
+  const html = `<!DOCTYPE html><html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>${name}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#060a12;color:#e8f0fe;font-family:system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center}
+img{width:80px;height:56px;object-fit:cover;border-radius:8px;border:2px solid rgba(255,255,255,.15);margin-bottom:12px}
+h1{font-size:22px;font-weight:800;margin-bottom:4px}p{font-size:12px;color:rgba(255,255,255,.3);margin-bottom:24px}
+.s{display:flex;flex-direction:column;gap:10px;width:100%;max-width:320px}
+button{padding:16px;border-radius:12px;border:2px solid;font-size:16px;font-weight:700;cursor:pointer;transition:.15s;width:100%}
+button:active{transform:scale(.97)}
+.p{background:rgba(106,176,255,.12);border-color:rgba(106,176,255,.35);color:#6ab0ff}
+.y{background:rgba(61,232,160,.1);border-color:rgba(61,232,160,.3);color:#3de8a0}
+.a{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.45)}
+.n{background:rgba(255,107,107,.1);border-color:rgba(255,107,107,.3);color:#ff6b6b}
+.ok{background:rgba(61,232,160,.06);border-color:rgba(61,232,160,.2);color:rgba(61,232,160,.5)}
+#vs{display:none}#msg{font-size:13px;color:#3de8a0;margin-top:16px;min-height:20px}
+</style></head><body>
+<img src="https://flagcdn.com/w160/${code.toLowerCase()}.png">
+<h1>${name}</h1><p>MUN Delegate Portal</p>
+<div class=s>
+<div id=cs><button class=p onclick=ci()>👋 Mark Myself Present</button></div>
+<div id=vs><div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:8px">🗳 VOTING OPEN</div>
+<button class=y onclick=vote('yes')>✅ In Favor</button>
+<button class=a onclick=vote('abstain')>🟡 Abstain</button>
+<button class=n onclick=vote('no')>❌ Against</button></div>
 </div>
-
-<div id="toast"></div>
-
-<scr\x69pt>
-const CODE = '${code}';
-const NAME = '${name}';
-const SESSION_KEY = '${portalSessionKey}';
-
-let checkedIn = false;
-let voted = false;
-let voteActive = false;
-
-function toast(msg, dur) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur || 2500);
+<div id=msg></div>
+<scr"+"ipt>
+const C='${code}',FB='${fbUrl}',FS='${fbSid}',LK='${lsKey}';
+let cid=0,vd=0,va=0;
+function msg(t,c){const e=document.getElementById('msg');e.textContent=t;e.style.color=c||'#3de8a0';}
+async function post(d){
+  if(FB&&FS){try{await fetch(FB+'/mun_'+FS+'/portal_'+C+'.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});}catch(e){}}
+  try{const k=LK,s=JSON.parse(localStorage.getItem(k)||'{}');Object.assign(s,d);localStorage.setItem(k,JSON.stringify(s));}catch(e){}
 }
-
-function doCheckin() {
-  if (checkedIn) return;
-  const data = getState();
-  data.attendance = data.attendance || {};
-  data.attendance[CODE] = 'present';
-  setState(data);
-  postData({attendance: {[CODE]: 'present'}});
-  checkedIn = true;
-  document.getElementById('checkin-btn').outerHTML = 
-    '<div class="btn btn-done"><span>✅</span> Checked In!</div>';
-  document.getElementById('checkin-status').className = 'badge badge-present';
-  document.getElementById('checkin-status').textContent = '✅ Present';
-  toast('✅ Marked as present!');
+async function ci(){
+  if(cid)return;cid=1;
+  await post({attendance:{[C]:'present'}});
+  document.getElementById('cs').innerHTML='<button class=ok>✅ Checked In!</button>';
+  msg('Marked as present!');
 }
-
-function doVote(val) {
-  if (voted || !voteActive) return;
-  const data = getState();
-  data.votes = data.votes || {};
-  data.votes[CODE] = val;
-  setState(data);
-  postData({votes: {[CODE]: val}});
-  voted = true;
-  const label = val==='yes'?'✅ In Favor':val==='no'?'❌ Against':'🟡 Abstain';
-  const color = val==='yes'?'#3de8a0':val==='no'?'#ff6b6b':'rgba(255,255,255,0.4)';
-  document.getElementById('vote-area').innerHTML = 
-    '<div class="btn btn-done" style="border-color:'+color+';color:'+color+'"><span>'
-    +(val==='yes'?'✅':val==='no'?'❌':'🟡')+'</span> '+label+' — Recorded</div>';
-  document.getElementById('vote-status').style.display = '';
-  document.getElementById('vote-status').className = 'badge badge-voted';
-  document.getElementById('vote-status').textContent = '🗳️ ' + label;
-  toast(label + ' recorded!');
+async function vote(v){
+  if(vd||!va)return;vd=1;
+  await post({votes:{[C]:v}});
+  document.getElementById('vs').innerHTML='<button class=ok>'+(v=='yes'?'✅ In Favor':v=='no'?'❌ Against':'🟡 Abstain')+' — Recorded</button>';
+  msg(v=='yes'?'Vote recorded: In Favor':v=='no'?'Vote recorded: Against':'Vote recorded: Abstain');
 }
-
-function getState() {
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || '{}'); } catch(e) { return {}; }
+async function poll(){
+  try{
+    let d={};
+    if(FB&&FS){const r=await fetch(FB+'/mun_'+FS+'.json');if(r.ok)d=await r.json()||{};}
+    else{try{d=JSON.parse(localStorage.getItem(LK)||'{}')}catch(e){}}
+    if(!cid&&d.attendance&&d.attendance[C]){cid=1;document.getElementById('cs').innerHTML='<button class=ok>✅ Checked In!</button>';}
+    const wasActive=va;va=!!(d.state&&d.state.voteActive);
+    if(va&&!wasActive)document.getElementById('vs').style.display='';
+    else if(!va&&wasActive&&!vd)document.getElementById('vs').style.display='none';
+    if(!vd&&d.votes&&d.votes[C]){vd=1;vote(d.votes[C]);}
+  }catch(e){}
 }
-function setState(d) {
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify(d)); } catch(e) {}
-}
-
-// Firebase DB URL and session
-const FB_URL = '${_fbUrl}';
-const FB_SID = '${_fbSessionId}';
-const RELAY  = '${_relayServerUrl||""}';
-
-async function postData(data) {
-  // Try Firebase first
-  if (FB_URL && FB_SID) {
-    try {
-      await fetch(FB_URL + '/mun_' + FB_SID + '/portal_' + CODE + '.json', {
-        method: 'PATCH',
-        body: JSON.stringify(data),
-        headers: {'Content-Type': 'application/json'}
-      });
-      return;
-    } catch(e) {}
-  }
-  // Fallback: localStorage
-  try {
-    const k = SESSION_KEY;
-    const s = JSON.parse(localStorage.getItem(k)||'{}');
-    Object.assign(s, data);
-    localStorage.setItem(k, JSON.stringify(s));
-  } catch(e) {}
-  // Also try relay if set
-  if (RELAY) {
-    try {
-      await fetch(RELAY + '/state', {
-        method:'POST', mode:'cors',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(data)
-      });
-    } catch(e) {}
-  }
-}
-
-async function getState() {
-  // Try Firebase
-  if (FB_URL && FB_SID) {
-    try {
-      const r = await fetch(FB_URL + '/mun_' + FB_SID + '.json');
-      if (r.ok) {
-        const d = await r.json();
-        return d || {};
-      }
-    } catch(e) {}
-  }
-  // Fallback localStorage
-  try { return JSON.parse(localStorage.getItem(SESSION_KEY)||'{}'); }
-  catch(e) { return {}; }
-}
-
-async function poll() {
-  const data = await getState();
-  // Update committee name
-  if (data.committee) document.getElementById('committee-name').textContent = data.committee;
-  // Sync check-in state
-  if (!checkedIn && data.attendance && data.attendance[CODE]) {
-    checkedIn = true;
-    document.getElementById('checkin-btn') && (document.getElementById('checkin-area').innerHTML = 
-      '<div class="btn btn-done"><span>✅</span> Checked In!</div>');
-    document.getElementById('checkin-status').className = 'badge badge-present';
-    document.getElementById('checkin-status').textContent = '✅ Present';
-  }
-  // Show/hide vote section
-  const wasActive = voteActive;
-  voteActive = !!data.voteActive;
-  if (voteActive && !wasActive) {
-    document.getElementById('vote-section').style.display = '';
-    document.getElementById('vote-status').style.display = '';
-    if (data.resolution) document.getElementById('vote-question').textContent = 
-      'Resolution: ' + data.resolution;
-    if (!voted) toast('🗳️ Voting is now open!', 3000);
-  } else if (!voteActive && wasActive) {
-    if (!voted) {
-      document.getElementById('vote-section').style.display = 'none';
-      toast('Voting has closed');
-    }
-  }
-  // Sync vote if done elsewhere
-  if (!voted && data.votes && data.votes[CODE]) {
-    voted = true;
-    doVote(data.votes[CODE]);
-  }
-}
-
-setInterval(poll, 1500);
-poll(); // immediate first poll
-
-// BroadcastChannel support
-try {
-  const bc = new BroadcastChannel('mun_portal_' + SESSION_KEY);
-  bc.onmessage = e => { if (e.data === 'poll') poll(); };
-} catch(e) {}
-<\/script>
-</body></html>`;
+setInterval(poll,2000);poll();
+try{new BroadcastChannel('mun_portal_'+FS).onmessage=()=>poll();}catch(e){}
+<\/script></body></html>`;
+  return html;
 }
 
 function generateDelegatePortals() {
-  // Called at session start and when printing placards
   portalSessionKey = 'mun_portal_' + (session.committee||'mun').replace(/[^a-z0-9]/gi,'').toLowerCase() + '_' + Math.floor(Date.now()/86400000);
   delegatePortalUrls = {};
   delegates.forEach(d => {
-    const html = buildDelegatePortal(d.c, d.n);
+    const html = buildMinimalPortal(d.c, d.n);
+    // Store as data: URI so QR encodes a self-contained page
+    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+    // Also keep blob URL for opening in new tab (chair use)
     const blob = new Blob([html], {type:'text/html'});
-    delegatePortalUrls[d.c] = URL.createObjectURL(blob);
+    delegatePortalUrls[d.c] = {
+      dataUrl,  // used for QR code — works on any device
+      blobUrl: URL.createObjectURL(blob),  // used for opening in new tab
+      html
+    };
   });
-  // Write initial state
   updatePortalState();
-  // Start polling for responses
   startPortalPoll();
 }
+
 
 function updatePortalState() {
   if (!portalSessionKey) return;
@@ -10346,6 +10183,10 @@ function updatePortalState() {
     localStorage.setItem(portalSessionKey, JSON.stringify(state));
     // Notify open portals
     try { new BroadcastChannel('mun_portal_'+portalSessionKey).postMessage('poll'); } catch(e) {}
+    // Also update Firebase
+    if(_fbAvailable&&_fbUrl&&_fbSessionId){
+      fetch(_fbUrl+'/mun_'+_fbSessionId+'/state.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({voteActive:!!window._votePortalActive,committee:session.committee||'',resolution:(typeof resolution!=='undefined'&&resolution)?(resolution.id||''):''})}).catch(()=>{});
+    }
     // Also sync voteActive to relay server
     if (_relayAvailable && _relayServerUrl) {
       fetch(_relayServerUrl+'/state', {method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},
@@ -10748,11 +10589,22 @@ function openNetworkSetupModal() {
         <!-- How delegates connect -->
         ${_fbAvailable ? `
         <div style="padding:14px;background:rgba(61,232,160,0.06);border:1px solid rgba(61,232,160,0.2);border-radius:12px">
-          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">✅ Aktif — Delegeler nasıl bağlanır?</div>
-          <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Placard'daki QR kodu okutun. Portal her tarayıcıda, her ağda çalışır.</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text);background:var(--bg);padding:8px 12px;border-radius:6px;text-align:center;letter-spacing:0.1em">
-            Session: ${_fbSessionId}
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px">✅ Aktif — Delegeler iki yoldan girebilir:</div>
+          
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Yol 1 — Portal URL (önerilen)</div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Delegeler tarayıcıdan şu siteye gider:</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);background:var(--bg);padding:7px 12px;border-radius:6px;word-break:break-all;margin-bottom:4px">
+            https://KULLANICIADIM.github.io/mun-portal
           </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px">
+            <div style="flex:1;background:var(--bg);border-radius:6px;padding:7px 12px">
+              <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px">Session ID</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--text);letter-spacing:0.15em">${_fbSessionId}</div>
+            </div>
+          </div>
+
+          <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Yol 2 — Placard QR</div>
+          <div style="font-size:12px;color:var(--text2)">Placard'daki QR kodu okutun — aynı portal açılır.</div>
         </div>` : ''}
       </div>
     </div>`;
@@ -11092,6 +10944,40 @@ setInterval(()=>{
   document.head.appendChild(s);
 })();
 
+
+// ─── Push session data to Firebase for delegate portal ───
+function pushSessionToFirebase() {
+  // Always push to localStorage with session ID as key (for no-Firebase mode)
+  if (_fbSessionId) {
+    try {
+      const lsKey = 'mun_portal_' + _fbSessionId.toLowerCase();
+      const existing = JSON.parse(localStorage.getItem(lsKey)||'{}');
+      localStorage.setItem(lsKey, JSON.stringify({
+        ...existing,
+        delegates: delegates.map(d=>({c:d.c,n:d.n})),
+        committee: session.committee||'',
+        voteActive: !!window._votePortalActive,
+        resolution: (typeof resolution!=='undefined'&&resolution)?(resolution.id+' — '+(resolution.title||'')):''
+      }));
+    } catch(e) {}
+  }
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  const sessionData = {
+    delegates: delegates.map(d => ({c: d.c, n: d.n})),
+    state: {
+      committee: session.committee || '',
+      agenda: session.agenda || '',
+      voteActive: !!window._votePortalActive,
+      resolution: (typeof resolution !== 'undefined' && resolution)
+        ? (resolution.id + ' — ' + (resolution.title || '')) : ''
+    }
+  };
+  fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sessionData)
+  }).catch(() => {});
+}
 // ═══ STATS ═══
 function updateStats(){
   document.getElementById('s-del').textContent=delegates.length;
