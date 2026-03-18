@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>MUN Chair — Delegate Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;
+  --blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;
+  --text:#ddeeff;--text2:#7a93ad;--text3:#46606e;
+  --radius:12px;
+}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;
+  justify-content:flex-start;padding:20px 16px 60px;
+}
+
+/* ── Logo ── */
+.logo{
+  margin:32px 0 24px;text-align:center;
+}
+.logo-mark{
+  width:56px;height:56px;border-radius:16px;
+  background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;font-weight:800;color:#fff;margin:0 auto 10px;
+  box-shadow:0 4px 20px rgba(59,143,238,0.5);
+}
+.logo-title{font-size:20px;font-weight:700;color:var(--text)}
+.logo-sub{font-size:12px;color:var(--text3);margin-top:3px}
+
+/* ── Card ── */
+.card{
+  background:var(--bg2);border:1px solid rgba(255,255,255,0.08);
+  border-radius:20px;width:100%;max-width:400px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.6);overflow:hidden;
+}
+.card-head{
+  padding:18px 20px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);
+}
+.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.card-sub{font-size:11px;color:var(--text3)}
+.card-body{padding:18px 20px}
+
+/* ── Join form ── */
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:10px;font-weight:700;
+  letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:6px;
+}
+input[type=text]{
+  width:100%;padding:12px 14px;border-radius:var(--radius);
+  background:rgba(6,10,16,0.8);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);font-size:14px;font-family:inherit;outline:none;
+  transition:all 0.18s;
+}
+input[type=text]:focus{
+  border-color:rgba(106,176,255,0.5);
+  box-shadow:0 0 0 3px rgba(106,176,255,0.1);
+}
+input.code-input{
+  font-family:'JetBrains Mono','SF Mono',monospace;
+  font-size:22px;font-weight:700;letter-spacing:0.2em;
+  text-transform:uppercase;text-align:center;
+}
+
+.btn{
+  width:100%;padding:14px;border-radius:var(--radius);border:none;
+  font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;
+  font-family:inherit;letter-spacing:0.02em;
+}
+.btn:active{transform:scale(0.98)}
+.btn-primary{
+  background:linear-gradient(135deg,#7ec8ff,#3b8fee,#1d6ed8);
+  color:#fff;box-shadow:0 3px 12px rgba(59,143,238,0.4);
+}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(59,143,238,0.6)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+.error-msg{
+  background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);
+  margin-top:12px;display:none;
+}
+
+/* ── Delegate selector ── */
+#select-delegate{display:none}
+.delegate-list{
+  display:flex;flex-direction:column;gap:6px;
+  max-height:320px;overflow-y:auto;margin-top:4px;
+}
+.del-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--bg3);border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;cursor:pointer;transition:all 0.15s;
+}
+.del-item:hover{border-color:rgba(106,176,255,0.3);background:rgba(106,176,255,0.06)}
+.del-flag{width:36px;height:25px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.1);flex-shrink:0}
+.del-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.del-arrow{color:var(--text3);font-size:14px}
+
+/* ── Portal (after joining) ── */
+#portal{display:none}
+.portal-header{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.portal-flag{
+  width:88px;height:62px;object-fit:cover;border-radius:10px;
+  border:2px solid rgba(255,255,255,0.15);margin-bottom:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+.portal-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.portal-name{font-size:24px;font-weight:800;color:var(--text);line-height:1.1}
+.portal-committee{font-size:11px;color:var(--text3);margin-top:4px}
+
+.portal-body{padding:18px 20px}
+
+.section-title{
+  font-size:9px;font-weight:700;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:8px;
+}
+
+.vote-btn{
+  width:100%;padding:16px;border-radius:14px;border:2px solid;
+  font-size:16px;font-weight:700;cursor:pointer;transition:all 0.15s;
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;font-family:inherit;margin-bottom:8px;
+}
+.vote-btn:active{transform:scale(0.97)}
+.vote-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-yes{background:rgba(61,232,160,0.1);border-color:rgba(61,232,160,0.3);color:var(--green)}
+.btn-abs{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45)}
+.btn-no{background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.3);color:var(--red)}
+.btn-done{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);color:var(--text3);cursor:default}
+.btn-checkin{background:rgba(106,176,255,0.1);border-color:rgba(106,176,255,0.3);color:var(--blue)}
+
+.status-bar{
+  display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;
+  padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);
+}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+}
+.badge-present{background:rgba(61,232,160,0.12);border:1px solid rgba(61,232,160,0.3);color:var(--green)}
+.badge-absent{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text3)}
+.badge-voted{background:rgba(106,176,255,0.12);border:1px solid rgba(106,176,255,0.3);color:var(--blue)}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--bg2);border:1px solid rgba(255,255,255,0.15);
+  border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;
+  color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.6);
+  transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space:nowrap;pointer-events:none;z-index:999;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+#vote-section{display:none}
+#loading{display:none;text-align:center;padding:20px;color:var(--text3);font-size:13px}
+
+.spinner{
+  width:24px;height:24px;border:2px solid rgba(255,255,255,0.1);
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin 0.8s linear infinite;margin:0 auto 8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <div class="logo-mark">M</div>
+  <div class="logo-title">MUN Chair</div>
+  <div class="logo-sub">Delegate Portal</div>
+</div>
+
+<!-- ── JOIN FORM ── -->
+<div class="card" id="join-card">
+  <div class="card-head">
+    <div class="card-title">Join Your Session</div>
+    <div class="card-sub">Enter the session ID shown on the chair's screen</div>
+  </div>
+  <div class="card-body">
+    <div class="field">
+      <label>Session ID <span style="color:var(--red)">*</span></label>
+      <input type="text" class="code-input" id="session-id" placeholder="MUN25A"
+        maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')joinSession()"/>
+    </div>
+
+    <!-- Advanced: Firebase URL (optional, collapsible) -->
+    <div style="margin-bottom:14px">
+      <button onclick="toggleAdvanced()" id="adv-toggle"
+        style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px">
+        <span id="adv-arrow">▶</span> Advanced (Firebase URL)
+      </button>
+      <div id="adv-section" style="display:none;margin-top:8px">
+        <input type="text" id="fb-url"
+          placeholder="https://your-project-default-rtdb.firebaseio.com (optional)"
+          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+          style="font-size:12px"/>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px">
+          Required for cross-device voting. Leave empty for same-browser use.
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="join-btn" onclick="joinSession()">
+      Enter Session →
+    </button>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+</div>
+
+<!-- ── DELEGATE SELECTOR ── -->
+<div class="card" id="select-delegate" style="margin-top:16px">
+  <div class="card-head">
+    <div class="card-title">Select Your Country</div>
+    <div class="card-sub" id="select-sub">Choose your delegation</div>
+  </div>
+  <div class="card-body" style="padding:12px">
+    <input type="text" id="del-search" placeholder="🔍  Search country..."
+      oninput="filterDelegates()" style="margin-bottom:10px"/>
+    <div class="delegate-list" id="delegate-list"></div>
+  </div>
+</div>
+
+<!-- ── PORTAL ── -->
+<div class="card" id="portal" style="margin-top:16px">
+  <div class="portal-header">
+    <img class="portal-flag" id="p-flag" src="" alt=""/>
+    <div class="portal-label">Delegate of</div>
+    <div class="portal-name" id="p-name">—</div>
+    <div class="portal-committee" id="p-committee">—</div>
+  </div>
+  <div class="portal-body">
+
+    <!-- Loading -->
+    <div id="loading">
+      <div class="spinner"></div>
+      Connecting...
+    </div>
+
+    <!-- Check-in -->
+    <div id="checkin-section">
+      <div class="section-title">📋 Attendance</div>
+      <div id="checkin-area">
+        <button class="vote-btn btn-checkin" onclick="doCheckin()">
+          <span>👋</span> Mark Myself Present
+        </button>
+      </div>
+    </div>
+
+    <!-- Voting -->
+    <div id="vote-section">
+      <div style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0"></div>
+      <div class="section-title">🗳️ Resolution Vote</div>
+      <div id="vote-resolution" style="font-size:11px;color:var(--text3);margin-bottom:10px;font-style:italic"></div>
+      <div id="vote-area">
+        <button class="vote-btn btn-yes" onclick="doVote('yes')"><span>✅</span> In Favor</button>
+        <button class="vote-btn btn-abs" onclick="doVote('abstain')"><span>🟡</span> Abstain</button>
+        <button class="vote-btn btn-no" onclick="doVote('no')"><span>❌</span> Against</button>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="status-bar">
+      <span class="badge badge-absent" id="checkin-badge">⭕ Not checked in</span>
+      <span class="badge badge-absent" id="vote-badge" style="display:none">⭕ Not voted</span>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let FB_URL = '';
+let SESSION_ID = '';
+let DELEGATE_CODE = '';
+let DELEGATE_NAME = '';
+let allDelegates = [];
+let checkedIn = false;
+let voted = false;
+let voteActive = false;
+let pollInterval = null;
+
+// ── Toast ──
+function toast(msg, dur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur || 2500);
+}
+
+// ── Restore saved session ──
+function toggleAdvanced() {
+  const sec = document.getElementById('adv-section');
+  const arr = document.getElementById('adv-arrow');
+  const open = sec.style.display === 'none';
+  sec.style.display = open ? '' : 'none';
+  arr.textContent = open ? '▼' : '▶';
+}
+
+(function restoreSaved() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('mun_portal_prefs') || '{}');
+    if (saved.fbUrl) {
+      document.getElementById('fb-url').value = saved.fbUrl;
+      // Auto-expand advanced if URL was saved
+      document.getElementById('adv-section').style.display = '';
+      document.getElementById('adv-arrow').textContent = '▼';
+    }
+    if (saved.sessionId) document.getElementById('session-id').value = saved.sessionId;
+  } catch(e) {}
+})();
+
+// ── Join session ──
+async function joinSession() {
+  const btn = document.getElementById('join-btn');
+  const err = document.getElementById('error-msg');
+
+  FB_URL = (document.getElementById('fb-url').value || '').trim().replace(/\/+$/, '');
+  SESSION_ID = document.getElementById('session-id').value.trim().toUpperCase();
+
+  if (!SESSION_ID) { showError('Please enter a Session ID.'); return; }
+  if (FB_URL && !FB_URL.startsWith('http')) FB_URL = 'https://' + FB_URL;
+
+  btn.disabled = true;
+  btn.textContent = 'Connecting...';
+  err.style.display = 'none';
+
+  // Save prefs
+  try { localStorage.setItem('mun_portal_prefs', JSON.stringify({fbUrl: FB_URL, sessionId: SESSION_ID})); } catch(e) {}
+
+  if (FB_URL) {
+    // Firebase mode — fetch real data
+    try {
+      const r = await fetch(`${FB_URL}/mun_${SESSION_ID}.json`);
+      if (!r.ok) throw new Error('Could not connect to Firebase. Check the URL.');
+      const data = await r.json();
+      if (!data) throw new Error(`Session "${SESSION_ID}" not found. Is the session active in MUN Chair?`);
+      allDelegates = data.delegates || [];
+      if (!allDelegates.length) throw new Error('No delegates in this session yet. Ask the chair to start the session.');
+      const committee = data.state?.committee || '';
+      showDelegateSelector(committee);
+    } catch(e) {
+      showError(e.message || 'Connection failed. Check URL and Session ID.');
+      btn.disabled = false;
+      btn.textContent = 'Enter Session →';
+      return;
+    }
+  } else {
+    // localStorage mode — try to read from shared storage
+    try {
+      const lsKey = 'mun_portal_' + SESSION_ID.toLowerCase();
+      const data = JSON.parse(localStorage.getItem(lsKey) || '{}');
+      allDelegates = data.delegates || [];
+      if (!allDelegates.length) {
+        // No data yet — show empty selector with manual entry option
+        showDelegateSelector('');
+      } else {
+        const committee = data.committee || '';
+        showDelegateSelector(committee);
+      }
+    } catch(e) {
+      showError('Could not find session. Try entering the Firebase URL in Advanced settings.');
+      btn.disabled = false;
+      btn.textContent = 'Enter Session →';
+      return;
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Enter Session →';
+}
+
+function showDelegateSelector(committee) {
+  document.getElementById('join-card').style.display = 'none';
+  document.getElementById('select-delegate').style.display = 'block';
+  document.getElementById('select-sub').textContent = committee || SESSION_ID;
+  if (allDelegates.length) {
+    renderDelegateList(allDelegates);
+  } else {
+    // No delegate list — show a text input to enter country name manually
+    document.getElementById('delegate-list').innerHTML = `
+      <div style="padding:12px 0">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">
+          No delegate list available. Enter your country name:
+        </div>
+        <input type="text" id="manual-country" placeholder="e.g. Turkey"
+          style="margin-bottom:8px"
+          onkeydown="if(event.key==='Enter')selectManualDelegate()"/>
+        <input type="text" id="manual-code" placeholder="Country code e.g. TR (2 letters)"
+          style="margin-bottom:8px;text-transform:uppercase"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter')selectManualDelegate()"/>
+        <button class="btn btn-primary" onclick="selectManualDelegate()">Continue →</button>
+      </div>`;
+  }
+}
+
+function selectManualDelegate() {
+  const name = document.getElementById('manual-country')?.value.trim();
+  const code = document.getElementById('manual-code')?.value.trim().toLowerCase();
+  if (!name || !code || code.length !== 2) {
+    toast('Enter your country name and 2-letter code');
+    return;
+  }
+  selectDelegate(code, name);
+}
+
+function showError(msg) {
+  const err = document.getElementById('error-msg');
+  err.textContent = msg;
+  err.style.display = 'block';
+}
+
+// ── Delegate list ──
+function renderDelegateList(list) {
+  const el = document.getElementById('delegate-list');
+  if (!list.length) { el.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:12px">No delegates found</div>'; return; }
+  el.innerHTML = list.map(d => `
+    <div class="del-item" onclick="selectDelegate('${d.c}','${d.n.replace(/'/g,"\\'")}')">
+      <img class="del-flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span class="del-name">${d.n}</span>
+      <span class="del-arrow">›</span>
+    </div>`).join('');
+}
+
+function filterDelegates() {
+  const q = document.getElementById('del-search').value.toLowerCase();
+  renderDelegateList(allDelegates.filter(d => d.n.toLowerCase().includes(q)));
+}
+
+// ── Select delegate ──
+function selectDelegate(code, name) {
+  DELEGATE_CODE = code;
+  DELEGATE_NAME = name;
+  
+  document.getElementById('select-delegate').style.display = 'none';
+  document.getElementById('portal').style.display = 'block';
+  
+  document.getElementById('p-flag').src = `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
+  document.getElementById('p-name').textContent = name;
+  document.getElementById('loading').style.display = 'block';
+  
+  // Start polling
+  startPolling();
+}
+
+// ── Firebase helpers ──
+async function fbGet(path) {
+  if (FB_URL) {
+    const r = await fetch(`${FB_URL}/mun_${SESSION_ID}/${path}.json`);
+    if (!r.ok) throw new Error('Firebase read failed');
+    return r.json();
+  }
+  // localStorage fallback
+  const key = 'mun_portal_' + SESSION_ID.toLowerCase();
+  const data = JSON.parse(localStorage.getItem(key) || '{}');
+  if (path === '..') return data;
+  return path.split('/').reduce((o, k) => o?.[k], data) ?? null;
+}
+
+async function fbPatch(path, data) {
+  if (FB_URL) {
+    await fetch(`${FB_URL}/mun_${SESSION_ID}/${path}.json`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return;
+  }
+  // localStorage fallback
+  try {
+    const key = 'mun_portal_' + SESSION_ID.toLowerCase();
+    const existing = JSON.parse(localStorage.getItem(key) || '{}');
+    // Deep merge at path
+    const keys = path.split('/');
+    let obj = existing;
+    for (let i = 0; i < keys.length - 1; i++) {
+      obj[keys[i]] = obj[keys[i]] || {};
+      obj = obj[keys[i]];
+    }
+    Object.assign(obj[keys[keys.length-1]] = obj[keys[keys.length-1]] || {}, data);
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch(e) {}
+}
+
+// ── Actions ──
+async function doCheckin() {
+  if (checkedIn) return;
+  try {
+    await fbPatch('attendance', { [DELEGATE_CODE]: 'present' });
+    checkedIn = true;
+    document.getElementById('checkin-area').innerHTML =
+      '<button class="vote-btn btn-done"><span>✅</span> Checked In!</button>';
+    document.getElementById('checkin-badge').className = 'badge badge-present';
+    document.getElementById('checkin-badge').textContent = '✅ Present';
+    toast('Marked as present!');
+  } catch(e) { toast('Error — try again', 2000); }
+}
+
+async function doVote(val) {
+  if (voted || !voteActive) return;
+  const btns = document.querySelectorAll('#vote-area .vote-btn');
+  btns.forEach(b => b.disabled = true);
+  try {
+    await fbPatch('votes', { [DELEGATE_CODE]: val });
+    voted = true;
+    const label = val==='yes' ? '✅ In Favor' : val==='no' ? '❌ Against' : '🟡 Abstain';
+    const color = val==='yes' ? 'var(--green)' : val==='no' ? 'var(--red)' : 'rgba(255,255,255,0.4)';
+    document.getElementById('vote-area').innerHTML =
+      `<button class="vote-btn btn-done" style="border-color:${color};color:${color}">${label} — Recorded</button>`;
+    document.getElementById('vote-badge').style.display = '';
+    document.getElementById('vote-badge').className = 'badge badge-voted';
+    document.getElementById('vote-badge').textContent = '🗳 ' + label;
+    toast(label + ' recorded!');
+  } catch(e) {
+    btns.forEach(b => b.disabled = false);
+    toast('Error — try again', 2000);
+  }
+}
+
+// ── Polling ──
+async function startPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  await doPoll();
+  pollInterval = setInterval(doPoll, 2000);
+}
+
+async function doPoll() {
+  try {
+    const data = await fbGet('..'); // get whole session node
+    
+    // Hide loading
+    document.getElementById('loading').style.display = 'none';
+    
+    // Committee name
+    const committee = data?.state?.committee || SESSION_ID;
+    document.getElementById('p-committee').textContent = committee;
+    
+    // Sync check-in
+    if (!checkedIn && data?.attendance?.[DELEGATE_CODE]) {
+      checkedIn = true;
+      document.getElementById('checkin-area').innerHTML =
+        '<button class="vote-btn btn-done"><span>✅</span> Checked In!</button>';
+      document.getElementById('checkin-badge').className = 'badge badge-present';
+      document.getElementById('checkin-badge').textContent = '✅ Present';
+    }
+    
+    // Voting
+    const wasActive = voteActive;
+    voteActive = !!(data?.state?.voteActive);
+    const voteSection = document.getElementById('vote-section');
+    const resEl = document.getElementById('vote-resolution');
+    
+    if (voteActive && !wasActive) {
+      voteSection.style.display = '';
+      document.getElementById('vote-badge').style.display = '';
+      if (data?.state?.resolution) resEl.textContent = data.state.resolution;
+      if (!voted) toast('🗳 Voting is now open!', 3000);
+    } else if (!voteActive && wasActive && !voted) {
+      voteSection.style.display = 'none';
+      toast('Voting closed');
+    }
+    
+    // Sync vote
+    if (!voted && data?.votes?.[DELEGATE_CODE]) {
+      const v = data.votes[DELEGATE_CODE];
+      if (['yes','no','abstain'].includes(v)) doVote(v);
+    }
+    
+  } catch(e) {
+    // Silently retry
+  }
+}
+
+// ── BroadcastChannel sync ──
+try {
+  const bc = new BroadcastChannel('mun_portal_' + SESSION_ID);
+  bc.onmessage = () => doPoll();
+} catch(e) {}
+</script>
+
+</body>
+</html>
