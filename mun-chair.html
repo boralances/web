@@ -134,6 +134,51 @@ body.light-theme .session-pill{background:#f4f6f9}
 .pill-sub{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text4);margin-right:6px;vertical-align:middle}
 .sb-session-actions-hidden{display:none!important}
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  :root { --sidebar: 0px; }
+  .shell { flex-direction: column; }
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 260px !important; min-width: 260px !important;
+    z-index: 500; transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+  .sidebar.mobile-open { transform: translateX(0); }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0; z-index: 499;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.active { display: block; }
+  .topbar { padding: 0 12px; }
+  .topbar-title { font-size: 13px; }
+  .content { padding: 12px; }
+  .page { max-width: 100% !important; }
+  .grid2 { grid-template-columns: 1fr !important; }
+  .mode-grid { grid-template-columns: 1fr 1fr !important; }
+  .timer-wrap { padding: 20px 12px 14px; }
+  .arc-clock { font-size: 44px !important; }
+  .arc-container { width: 160px !important; height: 160px !important; }
+  .card { border-radius: 10px; }
+  .btn-hamburger { display: flex !important; }
+  .topbar-right > .btn { padding: 4px 7px !important; font-size: 10px !important; }
+  .stat-card { padding: 10px 8px; }
+}
+@media (max-width: 480px) {
+  .topbar-crumb { display: none; }
+  .topbar-divider { display: none; }
+  .mode-grid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .arc-clock { font-size: 38px !important; }
+}
+.btn-hamburger {
+  display: none; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: var(--radius);
+  background: none; border: 1px solid var(--border);
+  color: var(--text2); cursor: pointer; flex-shrink: 0;
+  font-size: 18px; margin-right: 8px;
+}
+
 .theme-transitioning,.theme-transitioning *{transition:background-color 0.3s ease,border-color 0.3s ease,color 0.25s ease!important}
 /* Presentation mode */
 body.presentation-mode .sidebar{display:none!important}
@@ -539,6 +584,160 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
 
 .awards-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
 </style>
+
+
+<script>
+// ═══ MUN Chair — Inline QR Code Generator (MIT) ═══
+// Minimal QR Code v2 generator, pure JS, no dependencies
+// Generates data URI SVGs — works fully offline
+(function(){
+'use strict';
+
+// Reed-Solomon tables
+var EC={L:1,M:0,Q:3,H:2};
+var PATTERN_POS=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,132],[6,34,60,86,112,136],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]];
+
+function makeQR(text, ecl) {
+  ecl = ecl || EC.M;
+  // Try type numbers until one fits
+  for (var t = 1; t <= 10; t++) {
+    try {
+      return buildQR(text, t, ecl);
+    } catch(e) { continue; }
+  }
+  throw new Error('Data too long');
+}
+
+function buildQR(text, typeNum, ecl) {
+  var n = typeNum * 4 + 17;
+  var m = [];
+  for (var i = 0; i < n; i++) { m[i] = new Array(n).fill(null); }
+
+  function setBlock(r, c, dark) {
+    for (var dr = -1; dr <= 7; dr++) {
+      for (var dc = -1; dc <= 7; dc++) {
+        if (r+dr < 0 || n <= r+dr || c+dc < 0 || n <= c+dc) continue;
+        m[r+dr][c+dc] = (dr>=0&&dr<=6&&(dc==0||dc==6)) || (dc>=0&&dc<=6&&(dr==0||dr==6)) || (dr>=2&&dr<=4&&dc>=2&&dc<=4);
+      }
+    }
+  }
+  setBlock(0,0); setBlock(n-7,0); setBlock(0,n-7);
+
+  // Timing
+  for (var i = 8; i < n-8; i++) {
+    if (m[i][6] === null) m[i][6] = (i%2===0);
+    if (m[6][i] === null) m[6][i] = (i%2===0);
+  }
+
+  // Alignment patterns
+  var pos = PATTERN_POS[typeNum-1] || [];
+  for (var pi = 0; pi < pos.length; pi++) {
+    for (var pj = 0; pj < pos.length; pj++) {
+      var pr = pos[pi], pc = pos[pj];
+      if (m[pr][pc] !== null) continue;
+      for (var dr = -2; dr <= 2; dr++) for (var dc = -2; dc <= 2; dc++)
+        m[pr+dr][pc+dc] = (dr===-2||dr===2||dc===-2||dc===2||(dr===0&&dc===0));
+    }
+  }
+
+  // Format info placeholder
+  var fmtPos = [0,1,2,3,4,5,7,8,8,8,8,8,8,8,8];
+  var fmtPos2 = [8,8,8,8,8,8,8,8,7,5,4,3,2,1,0];
+  for (var i = 0; i < 15; i++) {
+    m[fmtPos[i]][8] = false;
+    m[8][fmtPos2[i]] = false;
+  }
+  m[n-8][8] = false;
+
+  // Encode data
+  var bytes = [];
+  for (var i = 0; i < text.length; i++) {
+    var c = text.charCodeAt(i);
+    if (c > 0xFF) bytes.push((c>>8)&0xFF);
+    bytes.push(c & 0xFF);
+  }
+
+  // Data capacity (simplified for M level, types 1-10)
+  var CAP = [0,19,34,55,80,108,136,156,194,232,274];
+  if (bytes.length + 3 > (CAP[typeNum] || 0)) throw new Error('overflow');
+
+  var buf = [], bi = 0;
+  function putBits(val, len) {
+    for (var i = len-1; i >= 0; i--) {
+      var idx = Math.floor(bi/8);
+      while (buf.length <= idx) buf.push(0);
+      if ((val>>i)&1) buf[idx] |= (1<<(7-(bi%8)));
+      bi++;
+    }
+  }
+
+  putBits(4, 4); // byte mode
+  putBits(bytes.length, 8);
+  for (var i = 0; i < bytes.length; i++) putBits(bytes[i], 8);
+  putBits(0, 4); // terminator
+  while (bi%8) putBits(0,1);
+  while (buf.length < CAP[typeNum]) { putBits(0xEC,8); if(buf.length<CAP[typeNum]) putBits(0x11,8); }
+
+  // Map data (simplified — skip EC for small codes)
+  var di = 0;
+  var col = n-1;
+  while (col > 0) {
+    if (col === 6) col--;
+    var upward = (Math.floor((n-1-col)/2) % 2 === 0);
+    for (var row2 = 0; row2 < n; row2++) {
+      var r2 = upward ? (n-1-row2) : row2;
+      for (var dc2 = 0; dc2 <= 1; dc2++) {
+        var c2 = col - dc2;
+        if (m[r2][c2] === null) {
+          var dark = di < buf.length*8 ? ((buf[Math.floor(di/8)]>>(7-(di%8)))&1)===1 : false;
+          // mask pattern 0: (r+c)%2==0
+          if ((r2+c2)%2===0) dark = !dark;
+          m[r2][c2] = dark;
+          di++;
+        }
+      }
+    }
+    col -= 2;
+  }
+
+  return m;
+}
+
+window.generateQRSVG = function(text, size) {
+  size = size || 120;
+  try {
+    var m = makeQR(text);
+    var n = m.length;
+    var cell = Math.max(1, Math.floor(size / (n + 4)));
+    var total = cell * (n + 4);
+    var margin = cell * 2;
+    var rects = '';
+    for (var r = 0; r < n; r++) {
+      for (var c = 0; c < n; c++) {
+        if (m[r][c]) {
+          rects += '<rect x="'+(margin+c*cell)+'" y="'+(margin+r*cell)+'" width="'+cell+'" height="'+cell+'" fill="#000"/>';
+        }
+      }
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+total+'" height="'+total+'">'
+      + '<rect width="'+total+'" height="'+total+'" fill="#fff"/>'
+      + rects + '</svg>';
+  } catch(e) {
+    // Fallback: simple placeholder
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="'+size+'" height="'+size+'">'
+      + '<rect width="'+size+'" height="'+size+'" fill="#fff"/>'
+      + '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="9" fill="#999">QR</text>'
+      + '</svg>';
+  }
+};
+
+window.makeQRUrl = function(data, size) {
+  var svg = window.generateQRSVG(String(data), size || 120);
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+};
+
+})();
+</script>
 </head>
 <body>
 <div class="shell">
@@ -717,6 +916,14 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/></svg>
       Score History
     </button>
+    <button class="nav-item" id="nav-tournament" onclick="showPage('tournament')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5z"/></svg>
+      Tournament
+    </button>
+    <button class="nav-item disabled" id="nav-aispeech" onclick="showPage('aispeech')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M9.752 6.193c.599.6 1.73.437 2.528-.362.798-.799.96-1.932.362-2.531-.599-.6-1.73-.438-2.528.361-.798.8-.96 1.933-.362 2.532zm-4.854-.612c-.799.8-.96 1.933-.362 2.532.598.6 1.73.437 2.528-.362.798-.8.96-1.932.362-2.531-.599-.6-1.73-.438-2.528.361zm4.752 7.886a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zm2.5-13.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-9 0a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg>
+      AI Analysis
+    </button>
     <button class="nav-item disabled" id="nav-timerlog" onclick="showPage('timerlog')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
       Timer Log
@@ -808,11 +1015,13 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
     </a>
   </div>
 </aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>
 
 <!-- ═══ MAIN ═══ -->
 <div class="main">
   <div class="topbar">
     <div class="topbar-left">
+      <button class="btn-hamburger" id="btn-hamburger" onclick="toggleMobileSidebar()" title="Menu">☰</button>
       <span class="topbar-title" id="tb-title">Session Setup</span>
       <div class="topbar-divider"></div>
       <span class="topbar-crumb" id="tb-crumb">Configure committee and delegates</span>
@@ -830,6 +1039,7 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       <button id="btn-scoreboard" onclick="openScoreboard()" class="btn btn-ghost btn-sm" style="display:none;font-size:11px;font-weight:600" title="Open fullscreen scoreboard">
         🏆 Scoreboard
       </button>
+      <button id="btn-relay-setup" onclick="openNetworkSetupModal()" class="btn btn-ghost btn-sm" title="Cross-network delegate portal (Firebase)" style="display:none;padding:5px 9px;font-size:13px">🌐</button>
       <button id="btn-attend-qr" onclick="openAttendanceQR()" class="btn btn-ghost btn-sm" title="QR Yoklama" style="display:none;padding:5px 9px;font-size:13px">📲</button>
       <button id="btn-replay" onclick="showSessionReplay()" class="btn btn-ghost btn-sm" title="Session replay" style="display:none;padding:5px 9px;font-size:13px">⏪</button>
       <button id="btn-photo-mode" onclick="togglePhotoMode()" class="btn btn-ghost btn-sm" title="Photo mode — clean view for screenshots" style="display:none;padding:5px 9px;font-size:13px">📷</button>
@@ -2535,6 +2745,83 @@ circle.fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-das
       </div>
     </div>
 
+    <!-- ═══ AI SPEECH ANALYSIS ═══ -->
+    <div id="page-aispeech" class="page" style="max-width:700px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">🤖 AI Speech Analysis</div>
+            <span class="chip chip-blue">Claude AI</span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:14px">
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Delegate</label>
+            <div class="csearch-wrap">
+              <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              <input type="text" id="ai-delegate-search" placeholder="Search delegate..." autocomplete="off"
+                oninput="filterAiDelegateSearch()" onfocus="filterAiDelegateSearch();document.getElementById('ai-delegate-drop').classList.add('open')"
+                onblur="setTimeout(()=>document.getElementById('ai-delegate-drop').classList.remove('open'),200)"/>
+              <div class="cdropdown" id="ai-delegate-drop"></div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label class="field-label">Speech Content <span style="color:var(--text3);font-weight:400">(type or paste)</span></label>
+            <textarea id="ai-speech-text" placeholder="Paste delegate's speech here, or type key points…&#10;&#10;The delegate can also speak and you can summarize the main arguments." style="width:100%;min-height:120px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;padding:10px 12px;border-radius:var(--radius);resize:vertical;outline:none" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <select id="ai-analysis-type" style="flex:1;min-width:180px">
+              <option value="full">Full Analysis</option>
+              <option value="score">Suggested Score (1-5)</option>
+              <option value="feedback">Constructive Feedback</option>
+              <option value="position">Position Analysis</option>
+              <option value="improve">Improvement Tips</option>
+            </select>
+            <button class="btn btn-primary" onclick="runAISpeechAnalysis()" id="ai-analyze-btn">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              Analyze with AI
+            </button>
+          </div>
+          <div id="ai-result" style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;font-size:13px;line-height:1.7;color:var(--text)"></div>
+          <div id="ai-loading" style="display:none;padding:20px;text-align:center;color:var(--text3)">
+            <div style="font-size:24px;margin-bottom:8px;animation:spin 1s linear infinite">⚙️</div>
+            Analyzing speech...
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Analysis History</div><button class="btn btn-danger btn-sm" onclick="aiSpeechHistory=[];renderAIHistory()">Clear</button></div>
+        <div class="card-body" style="padding:8px">
+          <div id="ai-history-list" style="max-height:300px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ TOURNAMENT MODE ═══ -->
+    <div id="page-tournament" class="page" style="max-width:800px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">🏟 Tournament Mode</div>
+            <span class="chip chip-gray" id="tournament-count">0 committees</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="addTournamentCommittee()">+ Add Committee</button>
+        </div>
+        <div class="card-body" style="padding:12px">
+          <div style="background:rgba(106,176,255,0.06);border:1px solid rgba(106,176,255,0.15);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--text3)">
+            Track multiple committees simultaneously. Each committee has its own session data. Switch between committees without losing data.
+          </div>
+          <div id="tournament-list" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Cross-Committee Leaderboard</div></div>
+        <div class="card-body" style="padding:12px">
+          <div id="tournament-leaderboard"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -2715,6 +3002,8 @@ const PAGES_META = {
   chairscript:{title:"Chair's Script",          crumb:'Procedural speech templates for the chair'},
   comrules:   {title:'Committee Rules',          crumb:'Custom rules of procedure for this committee'},
   timerlog:   {title:'Timer History',            crumb:'Log of all timer sessions this meeting'},
+  aispeech:   {title:'AI Speech Analysis',        crumb:'Analyze delegate speeches with Claude AI'},
+  tournament: {title:'Tournament Mode',           crumb:'Manage multiple committees simultaneously'},
 };
 const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Motion',unmod:'Unmoderated Caucus'};
 
@@ -2755,6 +3044,8 @@ function showPage(id){
   if(id==='delanalysis') renderDelegateAnalysis();
   if(id==='timerlog') renderTimerHistory();
   if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
+  if(id==='aispeech') renderAIHistory();
+  if(id==='tournament') renderTournament();
   if(id==='spktime') renderSpkTime();
   if(id==='scorehistory') renderScoreHistory();
   if(id==='chairscript') renderChairScript();
@@ -2892,10 +3183,11 @@ function beginSession(){
   const _bpres=document.getElementById('btn-presentation'); if(_bpres) _bpres.style.display='';
   const _bphoto=document.getElementById('btn-photo-mode'); if(_bphoto) _bphoto.style.display='';
   const _baqr=document.getElementById('btn-attend-qr'); if(_baqr) _baqr.style.display='';
+  const _brelay=document.getElementById('btn-relay-setup'); if(_brelay) _brelay.style.display='';
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
   sessionStartTime=Date.now();
@@ -3543,7 +3835,8 @@ function showScorePopup(delegate, onDone) {
     .skip-btn:hover{border-color:#484f58;color:#e6edf3}
     .chair-tag{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#388bfd;background:rgba(56,139,253,0.12);border:1px solid rgba(56,139,253,0.25);padding:3px 10px;border-radius:10px}
   </style>
-  </head><body>
+  
+</head><body>
 
   <div class="header">
     <img class="flag" src="${flagSrc}" onerror="this.style.display='none'"/>
@@ -3603,7 +3896,7 @@ function showScorePopup(delegate, onDone) {
     <button class="skip-btn" onclick="skip()">Skip / No Score →</button>
   </div>
 
-  <script>
+  <scr\x69pt>
     function getModifiers(){
       const improv = document.getElementById('chk-improv').checked;
       const ai = document.getElementById('chk-ai').checked;
@@ -4394,7 +4687,8 @@ function exportPDF(){
     th{background:#f0f0f0;padding:6px 10px;text-align:left;font-size:12px;border:1px solid #ddd}
     td{padding:6px 10px;border:1px solid #ddd;font-size:12px}
     .pts-pos{color:green;font-weight:bold} .pts-neg{color:red;font-weight:bold}
-  </style></head><body>
+  </style>
+</head><body>
   <h1>Session Report</h1>
   <div class="meta"><strong>${committee}</strong> &nbsp;·&nbsp; ${agenda} &nbsp;·&nbsp; ${date}</div>
   <h2>Score Leaderboard</h2>
@@ -4805,6 +5099,8 @@ let voteRollIdx=0;
 let voteSessionId=null; // unique ID for BroadcastChannel
 let voteChannel=null;   // BroadcastChannel instance
 let qrVoteUrls={};      // {countryCode: blobUrl}
+let delegatePortalUrls={}; // {countryCode: blobUrl} — permanent portal pages
+let portalSessionKey='';    // localStorage key for this session
 let _lsPollInterval=null;
 
 function startRollVote(){
@@ -4909,7 +5205,8 @@ function buildVoteWindowHTML(){
     .verdict-pass{background:rgba(52,211,153,0.15);border-top:2px solid #34d399;color:#34d399}
     .verdict-fail{background:rgba(248,113,113,0.15);border-top:2px solid #f87171;color:#f87171}
     .verdict-pending{background:rgba(91,156,246,0.08);border-top:1px solid #1e2a3d;color:#5b9cf6}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <div class="header-left">
       <div class="label">${committee} — Roll-call Vote</div>
@@ -4934,7 +5231,7 @@ function buildVoteWindowHTML(){
   </div>
   <div class="vote-list">${rows}</div>
   ${finished?`<div class="verdict-bar ${passed?'verdict-pass':'verdict-fail'}">${passed?'✅ PASSED':'❌ FAILED'} — ${yes} in favor, ${no} against, ${abs} abstain</div>`:'<div class="verdict-bar verdict-pending">⏳ Voting in progress…</div>'}
-  <script>setInterval(()=>{ if(window.opener&&!window.opener.closed) window.opener.updateVoteWindow(); },2000);<\/script>
+  <scr\x69pt>setInterval(()=>{ if(window.opener&&!window.opener.closed) window.opener.updateVoteWindow(); },2000);<\/script>
   </body></html>`;
 }
 
@@ -5076,7 +5373,7 @@ Committee: ${session.committee||'MUN'}
 Score: ${s.pts>0?'+':''}${s.pts}
 Speeches: ${s.speechCount}
 Warnings: ${s.warnCount}`);
-  const qrUrl=`https://chart.googleapis.com/chart?cht=qr&chs=140x140&chl=${qrData}&choe=UTF-8`;
+  const qrUrl=`${makeQRUrl(qrData,140)}`;
 
   inner.innerHTML=`
     <div style="padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg2);z-index:1">
@@ -5153,7 +5450,7 @@ Score: ${s.pts>0?'+':''}${s.pts}
 Speeches: ${s.speechCount}
 Warnings: ${s.warnCount}
 Speaking Time: ${spkTime?fmtTime(spkTime):'—'}`);
-  const qrUrl=`https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=${qrData}&choe=UTF-8`;
+  const qrUrl=`${makeQRUrl(qrData,200)}`;
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>QR — ${d.n}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
@@ -5171,7 +5468,8 @@ Speaking Time: ${spkTime?fmtTime(spkTime):'—'}`);
     .sv{font-size:14px;font-weight:700;color:#0d2352}
     .sl{font-size:7px;text-transform:uppercase;letter-spacing:0.1em;color:#666}
     .hint{font-size:8px;color:#999;text-align:center}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="card">
     <div class="top">
       <img class="flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'"/>
@@ -5187,7 +5485,7 @@ Speaking Time: ${spkTime?fmtTime(spkTime):'—'}`);
       <div class="hint">Scan QR for full delegate statistics</div>
     </div>
   </div>
-  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  <scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`;
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked.','error');return;}
   w.document.write(html); w.document.close();
@@ -5321,14 +5619,15 @@ function printNameplate(code, name){
     .name{font-family:'Playfair Display',serif;font-size:38px;font-weight:900;color:#fff;letter-spacing:0.02em;position:relative;z-index:1;text-align:center}
     .committee{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:rgba(255,255,255,0.45);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
     .line{width:60px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:3px 0;position:relative;z-index:1}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="card">
     <img class="flag" src="https://flagcdn.com/w160/${code.toLowerCase()}.png" onerror="this.style.display='none'"/>
     <div class="line"></div>
     <div class="name">${name}</div>
     <div class="committee">${session.committee||'Model United Nations'}</div>
   </div>
-  <script>window.onload=()=>{window.print();}<\/script>
+  <scr\x69pt>window.onload=()=>{window.print();}<\/script>
   </body></html>`);
   w.document.close();
 }
@@ -5355,7 +5654,8 @@ function printAllNameplates(){
     .committee{font-family:'Inter',sans-serif;font-size:16px;font-weight:500;color:rgba(255,255,255,0.4);letter-spacing:0.2em;text-transform:uppercase;position:relative;z-index:1}
     .line{width:100px;height:2px;background:linear-gradient(90deg,transparent,rgba(56,139,253,0.8),transparent);margin:6px 0;position:relative;z-index:1}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  </style></head><body>${cards}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  </style>
+</head><body>${cards}<scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
@@ -5496,6 +5796,7 @@ function placardSingleHTML(code, name, committee, org, isBack){
   // Her iki yüz de aynı layout: accent-left | body | flag-right
   // Arka yüz (isBack=true) → CSS .half-back ile rotate(180deg) uygulanır
   // → katlayınca her iki taraf da doğru yönde okunur
+  const portalQR = delegatePortalUrls&&delegatePortalUrls[code] ? `<img src="${makeQRUrl(delegatePortalUrls[code],80)}" style="width:28mm;height:28mm;background:#fff;border-radius:2px;padding:1px;flex-shrink:0" title="Delegate Portal"/>` : '';
   return `<div class="half${isBack?' half-back':''}">
     <div class="accent"></div>
     <div class="body">
@@ -5507,7 +5808,7 @@ function placardSingleHTML(code, name, committee, org, isBack){
         <div class="globe">${globeSvg}</div>
         <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
         ${logoRow}
-        ${qrVoteUrls&&qrVoteUrls[code]&&!isBack?`<img src="https://chart.googleapis.com/chart?cht=qr&chs=80x80&chl=${encodeURIComponent(qrVoteUrls[code])}&choe=UTF-8" style="height:30mm;width:30mm;background:#fff;border-radius:2px;padding:1px;margin-left:auto;flex-shrink:0"/>`:''}
+        ${portalQR}
       </div>
     </div>
     <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
@@ -5520,11 +5821,12 @@ function printPlacard(code, name){
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Placard — ${name}</title>
-  <style>${placardHalfCSS()}</style></head><body style="flex-direction:column">
+  <style>${placardHalfCSS()}</style>
+</head><body style="flex-direction:column">
   ${placardSingleHTML(code, name, committee, org, true)}
   <div class="fold-line"></div>
   ${placardSingleHTML(code, name, committee, org, false)}
-  <script>window.onload=()=>window.print();<\/script>
+  <scr\x69pt>window.onload=()=>window.print();<\/script>
   </body></html>`);
   w.document.close();
 }
@@ -5544,7 +5846,8 @@ function printAllPlacards(){
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>All Placards</title>
-  <style>${placardHalfCSS()}</style></head><body>${pages}<script>window.onload=()=>window.print();<\/script></body></html>`);
+  <style>${placardHalfCSS()}</style>
+</head><body>${pages}<scr\x69pt>window.onload=()=>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
@@ -5701,7 +6004,8 @@ function generateAllCertificates(){
     .sig-line{width:180px;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);margin:0 auto 4px}
     .sig-label{font-family:'Inter',sans-serif;font-size:8.5px;color:#aaa;letter-spacing:0.14em;text-transform:uppercase}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  </style></head><body>${cards}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  </style>
+</head><body>${cards}<scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
@@ -6699,7 +7003,8 @@ function exportComReport(){
   p{margin:4px 0;line-height:1.7}table{width:100%;border-collapse:collapse;margin-top:8px}
   td,th{padding:6px 10px;border:1px solid #ddd;font-size:13px}th{background:#f5f5f5}
   .sig{margin-top:40px;border-top:1px solid #333;padding-top:8px;font-size:12px;color:#555}
-  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style>
+</head><body>
   <h1>Official Committee Report</h1>
   <p style="color:#555;font-size:13px">${session.committee||'Committee'} &nbsp;·&nbsp; ${date}</p>
   <h2>Session Information</h2>
@@ -6837,7 +7142,8 @@ function exportFeedback(code){
     .feedback-note{font-size:13px;color:#444;line-height:1.7;padding:12px;background:#fafafa;border-left:3px solid #c8a84b;border-radius:0 4px 4px 0}
     .footer{margin-top:24px;padding-top:16px;border-top:1px solid #eee;display:flex;justify-content:space-between;font-size:11px;color:#aaa}
     @media print{body{background:#fff}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="sheet">
     <div class="header">
       <img class="flag" src="https://flagcdn.com/w160/${d.c}.png" onerror="this.style.display='none'"/>
@@ -6862,7 +7168,7 @@ function exportFeedback(code){
     </div>
     <div class="footer"><span>${session.agenda||''}</span><span>Chair of the Committee</span></div>
   </div>
-  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  <scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`;
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked — allow popups.','error');return;}
   w.document.write(html); w.document.close();
@@ -7003,7 +7309,8 @@ function _buildScoreboardHTMLThemed(hideScores, isLight){
       flex-shrink:0;letter-spacing:0.1em;text-transform:uppercase;
     }
     .theme-btn{position:fixed;bottom:20px;right:20px;background:${isLight?'#fff':'rgba(11,17,24,0.9)'};border:1px solid ${border};border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <div class="h-left">
       <div class="label">Model United Nations</div>
@@ -7026,7 +7333,7 @@ function _buildScoreboardHTMLThemed(hideScores, isLight){
     <span>${delegates.length} delegates · ${hideScores?'Scores hidden':'Live scores'}</span>
   </div>
   <button class="theme-btn" id="theme-btn" title="Toggle theme">🌓</button>
-  <script>
+  <scr\x69pt>
     // ── Animated ranking ──
     let prevRanks = {};
     let prevPts   = {};
@@ -7197,7 +7504,8 @@ function exportStatsPDF(){
     .bar-section{margin-bottom:16px}
     .footer{margin-top:20px;padding-top:10px;border-top:1px solid #e0e4ea;font-size:10px;color:#aaa;display:flex;justify-content:space-between}
     @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <div class="header-title">${session.committee||'Committee'} — Session Statistics</div>
     <div class="header-sub">${session.agenda||''} &nbsp;·&nbsp; ${date}</div>
@@ -7226,7 +7534,7 @@ function exportStatsPDF(){
     <span>MUN Chair — ${session.committee||'Committee'}</span>
     <span>Generated ${new Date().toLocaleString()}</span>
   </div>
-  <script>window.onload=()=>window.print();<\/script>
+  <scr\x69pt>window.onload=()=>window.print();<\/script>
   </body></html>`;
 
   const w=window.open('','_blank');
@@ -7716,12 +8024,13 @@ function openUnmodWindow(){
     .bar-wrap{width:80%;max-width:600px;height:6px;background:#21262d;border-radius:3px;margin-top:28px;overflow:hidden}
     .bar{height:100%;background:#388bfd;border-radius:3px;transition:width 1s linear}
     .committee{font-size:13px;color:#3d444d;margin-top:20px;letter-spacing:0.1em;text-transform:uppercase}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="label">⏳ Unmoderated Caucus</div>
   <div class="clock" id="uc-clock">${Math.floor(remaining/60).toString().padStart(2,'0')}:${(remaining%60).toString().padStart(2,'0')}</div>
   <div class="bar-wrap"><div class="bar" id="uc-bar" style="width:${Math.round(remaining/total*100)}%"></div></div>
   <div class="committee">${committee}</div>
-  <script>
+  <scr\x69pt>
     let secs=${remaining}, tot=${total};
     const cl=document.getElementById('uc-clock');
     const bar=document.getElementById('uc-bar');
@@ -7779,7 +8088,8 @@ function exportComReportDocx(){
     .stat-val{font-size:22pt;font-weight:bold;color:#0d2352}
     .stat-lbl{font-size:8pt;text-transform:uppercase;letter-spacing:0.1em;color:#666}
     .footer{margin-top:24pt;border-top:1px solid #ddd;padding-top:8pt;font-size:9pt;color:#888;display:flex;justify-content:space-between}
-  </style></head><body>
+  </style>
+</head><body>
   <h1>Official Committee Report</h1>
   <p><strong>Committee:</strong> ${session.committee||'—'} &nbsp;&nbsp; <strong>Date:</strong> ${date}</p>
   <p><strong>Agenda:</strong> ${session.agenda||'—'}</p>
@@ -8005,11 +8315,12 @@ function printSeatingChart(){
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Seating Chart</title>
   <style>body{font-family:Arial,sans-serif;padding:20px}h2{margin-bottom:16px;color:#0d2352}
   .chair{text-align:center;margin-bottom:12px;padding:8px;background:#e8f0fe;border-radius:6px;font-weight:700;color:#1a3a6b;letter-spacing:0.1em}
-  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style>
+</head><body>
   <h2>Seating Chart — ${session.committee||'Committee'}</h2>
   <div class="chair">▲ CHAIR ▲</div>
   ${tableHtml}
-  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  <scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
@@ -8087,7 +8398,8 @@ function generateAttendanceCertificates(){
     .cert-date{font-family:'Inter',sans-serif;font-size:9px;color:#b0a080;letter-spacing:0.12em;margin-bottom:10px;text-transform:uppercase}
     .cert-sig{text-align:center}.sig-line{width:180px;height:1px;background:linear-gradient(90deg,transparent,#888,transparent);margin:0 auto 4px}.sig-label{font-family:'Inter',sans-serif;font-size:8px;color:#aaa;letter-spacing:0.14em;text-transform:uppercase}
     @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-  </style></head><body>${cards}<script>window.onload=()=>window.print()<\/script></body></html>`);
+  </style>
+</head><body>${cards}<scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
@@ -8131,7 +8443,8 @@ function exportSessionTranscript(){
     tr:nth-child(even) td{background:#fafafa}
     .footer{margin-top:16px;padding-top:8px;border-top:1px solid #e0e4ea;font-size:9px;color:#aaa;display:flex;justify-content:space-between}
     @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <div><div class="title">${session.committee||'Committee'} — Session Transcript</div><div class="sub">${session.agenda||''}</div></div>
     <div class="meta">${date}<br/>Duration: ${dur}</div>
@@ -8149,7 +8462,7 @@ function exportSessionTranscript(){
     ${eventRows||'<tr><td colspan="5" style="text-align:center;color:#999;padding:12px">No events recorded</td></tr>'}
   </table>
   <div class="footer"><span>${session.committee||''}</span><span>Generated ${new Date().toLocaleString()}</span></div>
-  <script>window.onload=()=>window.print()<\/script>
+  <scr\x69pt>window.onload=()=>window.print()<\/script>
   </body></html>`;
 
   const w=window.open('','_blank');
@@ -8223,7 +8536,8 @@ function updateVoteHdmi(){
     .bar-fill{height:100%;border-radius:7px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1)}
     .bar-info{display:flex;justify-content:space-between;font-size:11px;color:#656d76}
     .progress{font-size:11px;color:#656d76;text-align:center;margin-top:4px}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="left">
     <div class="header">
       <div class="res-label">Roll-Call Vote</div>
@@ -8251,7 +8565,7 @@ function updateVoteHdmi(){
       <div class="progress">Requires ${required} votes to pass</div>
     </div>
   </div>
-  <script>setInterval(()=>{if(window.opener&&!window.opener.closed)window.opener.updateVoteHdmi();},2000);<\/script>
+  <scr\x69pt>setInterval(()=>{if(window.opener&&!window.opener.closed)window.opener.updateVoteHdmi();},2000);<\/script>
   </body></html>`;
 
   voteHdmiWin.document.open();
@@ -8342,7 +8656,8 @@ function generateChairScript(){
     .brackets{color:#c8a030;font-weight:600}
     .footer{margin-top:20px;padding-top:8px;border-top:1px solid #e0e4ea;font-size:9px;color:#aaa;display:flex;justify-content:space-between}
     @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <h1>Chair's Script — ${committee}</h1>
     <p>${agenda} &nbsp;·&nbsp; ${date} &nbsp;·&nbsp; ${present} delegates present</p>
@@ -8356,7 +8671,7 @@ function generateChairScript(){
     </div>
   `).join('')}
   <div class="footer"><span>MUN Chair — ${committee}</span><span>Generated ${new Date().toLocaleString()}</span></div>
-  <script>window.onload=()=>window.print();<\/script>
+  <scr\x69pt>window.onload=()=>window.print();<\/script>
   </body></html>`;
 
   const w = window.open('','_blank');
@@ -8488,13 +8803,14 @@ function printChairScript(){
     .sub{font-family:'Inter',sans-serif;font-size:11px;color:#666;margin-top:2px}
     p{margin-bottom:10px}strong{color:#0d2352}em{color:#666}
     @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="header">
     <div class="title">${session.committee||'Committee'} — Chair's Script</div>
     <div class="sub">${phaseNames[phase]||phase} &nbsp;·&nbsp; ${session.agenda||''}</div>
   </div>
   ${el.innerHTML}
-  <script>window.onload=()=>window.print()<\/script></body></html>`);
+  <scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`);
   w.document.close();
 }
 
@@ -8633,11 +8949,12 @@ function printComRules(){
   <style>body{font-family:'Georgia',serif;margin:40px;color:#111;max-width:700px}
   h1{font-size:22px;color:#0d2352;border-bottom:3px solid #0d2352;padding-bottom:8px;margin-bottom:4px}
   .sub{font-size:11px;color:#888;margin-bottom:24px}
-  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style></head><body>
+  @media print{-webkit-print-color-adjust:exact;print-color-adjust:exact}</style>
+</head><body>
   <h1>Rules of Procedure</h1>
   <div class="sub">${session.committee||'Committee'} · ${session.agenda||''} · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
   ${sections}
-  <script>window.onload=()=>window.print()<\/script></body></html>`;
+  <scr\x69pt>window.onload=()=>window.print()<\/script></body></html>`;
   const w=window.open('','_blank');
   if(!w){showToast('Popup blocked.','error');return;}
   w.document.write(html); w.document.close();
@@ -8691,7 +9008,8 @@ function buildDelegateVotePage(code, name, channelId, flagUrl){
     .done-text{font-size:18px;font-weight:700;color:#3de8a0}
     .done-sub{font-size:12px;color:rgba(255,255,255,0.4);margin-top:6px}
     .committee-name{font-size:11px;color:rgba(255,255,255,0.2);margin-top:20px;letter-spacing:0.1em}
-  </style></head><body>
+  </style>
+</head><body>
   <div class="card">
     <img class="flag" src="${flagUrl}" onerror="this.style.display='none'"/>
     <div class="label">Delegate of</div>
@@ -8719,7 +9037,7 @@ function buildDelegateVotePage(code, name, channelId, flagUrl){
     <div class="committee-name" id="committee-lbl"></div>
   </div>
 
-  <script>
+  <scr\x69pt>
     const CODE = '${code}';
     const NAME = '${name}';
     const CHANNEL_ID = '${channelId}';
@@ -8877,7 +9195,7 @@ function renderQRDelegateGrid(){
     const url=qrVoteUrls[d.c]||'';
     // QR code via Google Charts
     const qrData=encodeURIComponent(url);
-    const qrSrc=`https://chart.googleapis.com/chart?cht=qr&chs=120x120&chl=${qrData}&choe=UTF-8`;
+    const qrSrc=`${makeQRUrl(qrData,120)}`;
 
     return `<div style="background:var(--bg3);border:1px solid ${voted?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:var(--radius);padding:10px;display:flex;align-items:center;gap:10px;transition:border-color 0.2s">
       ${voted
@@ -8906,7 +9224,7 @@ function openDelegateVotePage(code){
 function getVoteQRForPlacard(code){
   if(!qrVoteUrls[code]) return '';
   const qrData = encodeURIComponent(qrVoteUrls[code]);
-  return `<img src="https://chart.googleapis.com/chart?cht=qr&chs=80x80&chl=${qrData}&choe=UTF-8" style="width:36px;height:36px;background:#fff;border-radius:3px;padding:2px;margin-left:auto;flex-shrink:0" title="Oylama QR"/>`;
+  return `<img src="${makeQRUrl(qrData,80)}" style="width:36px;height:36px;background:#fff;border-radius:3px;padding:2px;margin-left:auto;flex-shrink:0" title="Oylama QR"/>`;
 }
 
 
@@ -9666,75 +9984,11 @@ function replayReset(){
 let _attendanceChannel=null, _attendanceSessionId=null;
 
 function openAttendanceQR(){
+  if(!delegates.length){showToast('Delege kayıtlı değil.','error');return;}
+  if(!Object.keys(delegatePortalUrls).length) generateDelegatePortals();
+
   const existing=document.getElementById('attendance-qr-modal');
   if(existing){existing.remove();return;}
-  if(!delegates.length){showToast('Delege kayıtlı değil.','error');return;}
-
-  _attendanceSessionId=Date.now().toString(36);
-  try{
-    _attendanceChannel=new BroadcastChannel('mun_attend_'+_attendanceSessionId);
-    _attendanceChannel.onmessage=e=>{
-      if(e.data.type==='ATTEND'&&e.data.code){
-        const code=e.data.code;
-        if(delegates.find(d=>d.c===code)&&rollCallData[code]!=='present'){
-          rollCallData[code]='present';
-          renderRollCall();
-          updateQuorumCheck();
-          const d=delegates.find(d=>d.c===code);
-          showToast(`${d?.n||code} ✓ Present`);
-          renderAttendanceGrid();
-        }
-      }
-    };
-  }catch(e){}
-
-  // Build attendance pages
-  const attendPages={};
-  delegates.forEach(d=>{
-    const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Check-in — ${d.n}</title>
-    <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#060a12;color:#e8f0fe;font-family:'Inter',sans-serif;height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .card{background:#0d1520;border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:28px 24px;width:100%;max-width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
-    .flag{width:72px;height:50px;object-fit:cover;border-radius:6px;border:2px solid rgba(255,255,255,0.15);margin-bottom:12px}
-    .name{font-size:22px;font-weight:800;margin-bottom:6px}.sub{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:24px}
-    .btn{padding:16px;border-radius:12px;border:2px solid rgba(61,232,160,0.4);background:rgba(61,232,160,0.1);color:#3de8a0;font-size:16px;font-weight:700;cursor:pointer;width:100%;transition:all 0.15s}
-    .btn:active{transform:scale(0.97)}.btn:hover{background:rgba(61,232,160,0.2)}
-    .done{display:none;font-size:64px;margin-bottom:12px}.done-t{font-size:18px;font-weight:700;color:#3de8a0}</style></head><body>
-    <div class="card">
-      <img class="flag" src="https://flagcdn.com/w160/${d.c.toLowerCase()}.png" onerror="this.style.display='none'"/>
-      <div class="name">${d.n}</div>
-      <div class="sub" id="sub">Tap to mark attendance</div>
-      <button class="btn" id="btn" onclick="checkin()">✓ Mark Present</button>
-      <div class="done" id="done">✅</div>
-      <div class="done-t" id="done-t" style="display:none">Marked Present!</div>
-    </div>
-    <script>
-    function checkin(){
-      try{new BroadcastChannel('mun_attend_${_attendanceSessionId}').postMessage({type:'ATTEND',code:'${d.c}'});}catch(e){}
-      try{const k='mun_attend_${_attendanceSessionId}';const r=JSON.parse(localStorage.getItem(k)||'{}');r['${d.c}']=1;localStorage.setItem(k,JSON.stringify(r));}catch(e){}
-      document.getElementById('btn').style.display='none';
-      document.getElementById('sub').style.display='none';
-      document.getElementById('done').style.display='block';
-      document.getElementById('done-t').style.display='block';
-    }
-    <\/script></body></html>`;
-    const blob=new Blob([html],{type:'text/html'});
-    attendPages[d.c]=URL.createObjectURL(blob);
-  });
-
-  // Poll localStorage too
-  const lsPoll=setInterval(()=>{
-    if(!document.getElementById('attendance-qr-modal')){clearInterval(lsPoll);return;}
-    try{
-      const k='mun_attend_'+_attendanceSessionId;
-      const r=JSON.parse(localStorage.getItem(k)||'{}');
-      Object.keys(r).forEach(code=>{
-        if(delegates.find(d=>d.c===code)&&rollCallData[code]!=='present'){
-          rollCallData[code]='present';renderRollCall();updateQuorumCheck();renderAttendanceGrid();
-        }
-      });
-    }catch(e){}
-  },1500);
 
   const modal=document.createElement('div');
   modal.id='attendance-qr-modal';
@@ -9744,11 +9998,11 @@ function openAttendanceQR(){
       <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0">
         <div>
           <div style="font-size:14px;font-weight:700;color:var(--text)">📲 QR Yoklama</div>
-          <div style="font-size:11px;color:var(--text3)">Delegeler kendi QR kodunu okutarak yoklamaya katılır</div>
+          <div style="font-size:11px;color:var(--text3)">Delegeler placard'larındaki QR kodu okutarak katılımı işaretler</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center">
           <span class="chip chip-green" id="attend-count">0 / ${delegates.length}</span>
-          <button onclick="this.closest('#attendance-qr-modal').remove();clearInterval(lsPoll)" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+          <button onclick="document.getElementById('attendance-qr-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
         </div>
       </div>
       <div style="flex:1;overflow-y:auto;padding:12px 14px">
@@ -9756,34 +10010,33 @@ function openAttendanceQR(){
       </div>
     </div>`;
   document.body.appendChild(modal);
-  modal.onclick=e=>{if(e.target===modal){modal.remove();clearInterval(lsPoll);}};
+  modal.onclick=e=>{if(e.target===modal) modal.remove();};
 
-  function renderAttendanceGrid(){
+  function refreshAttendGrid(){
     const grid=document.getElementById('attend-grid'); if(!grid) return;
     const present=Object.values(rollCallData).filter(v=>v==='present'||v==='present+voting').length;
     const chip=document.getElementById('attend-count'); if(chip) chip.textContent=`${present} / ${delegates.length}`;
     grid.innerHTML=delegates.map(d=>{
       const isPresent=rollCallData[d.c]==='present'||rollCallData[d.c]==='present+voting';
-      const qrData=encodeURIComponent(attendPages[d.c]||'');
-      const qrSrc=`https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=${qrData}&choe=UTF-8`;
-      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${isPresent?'rgba(61,232,160,0.06)':'var(--bg3)'};border:1px solid ${isPresent?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:8px">
+      const portalUrl=delegatePortalUrls[d.c]||'';
+      const qrSrc=portalUrl?makeQRUrl(portalUrl,100):'';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${isPresent?'rgba(61,232,160,0.06)':'var(--bg3)'};border:1px solid ${isPresent?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:8px;transition:all 0.3s">
         ${isPresent
-          ? `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px">✅</div>`
-          : `<img src="${qrSrc}" style="width:44px;height:44px;border-radius:4px;background:#fff;flex-shrink:0"/>`}
-        <div>
-          <div style="display:flex;align-items:center;gap:5px">${flagImg(d.c,'flag-img-sm')}<span style="font-size:12px;font-weight:600;color:var(--text)">${d.n}</span></div>
-          <div style="font-size:10px;color:${isPresent?'var(--green)':'var(--text4)'};margin-top:2px">${isPresent?'✓ Present':'Scan QR to check in'}</div>
+          ? `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">✅</div>`
+          : qrSrc?`<img src="${qrSrc}" style="width:44px;height:44px;border-radius:4px;background:#fff;flex-shrink:0" title="Scan to check in"/>`
+          :`<div style="width:44px;height:44px;background:var(--bg4);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px">📲</div>`}
+        <div style="min-width:0;flex:1">
+          <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${flagImg(d.c,'flag-img-sm')}<span style="font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.n}</span></div>
+          <div style="font-size:10px;color:${isPresent?'var(--green)':'var(--text4)'};margin-top:2px">${isPresent?'✅ Present — checked in':'📱 Scan QR to check in'}</div>
         </div>
       </div>`;
     }).join('');
   }
-  window.renderAttendanceGrid=renderAttendanceGrid;
-  renderAttendanceGrid();
 
-  // Poll interval for grid updates
-  const gridPoll=setInterval(()=>{
-    if(!document.getElementById('attendance-qr-modal')){clearInterval(gridPoll);return;}
-    renderAttendanceGrid();
+  refreshAttendGrid();
+  const iv=setInterval(()=>{
+    if(!document.getElementById('attendance-qr-modal')){clearInterval(iv);return;}
+    refreshAttendGrid();
   },1000);
 }
 
@@ -9813,6 +10066,1031 @@ function renderMotionCounter(){
       <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:3px">${l}</div>
     </div>`).join('');
 }
+
+
+
+
+
+// ═══ DELEGATE PORTAL — permanent per-delegate page ═══
+// Built at session start, QR printed on placard
+// Handles: check-in (roll call) + voting (when active)
+
+function buildDelegatePortal(code, name) {
+  return `<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>${name} — MUN Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#060a12;color:#e8f0fe;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:20px 16px 40px}
+.card{background:#0d1520;border:1px solid rgba(255,255,255,0.1);border-radius:20px;
+  padding:24px 20px;width:100%;max-width:360px;margin-top:16px}
+.flag{width:80px;height:56px;object-fit:cover;border-radius:8px;
+  border:2px solid rgba(255,255,255,0.15);display:block;margin:0 auto 12px}
+.del-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.3);text-align:center;margin-bottom:4px}
+.del-name{font-size:24px;font-weight:800;text-align:center;color:#e8f0fe;margin-bottom:4px;line-height:1.1}
+.committee{font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-bottom:20px}
+.section{margin-bottom:16px}
+.section-title{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:rgba(255,255,255,0.25);margin-bottom:8px;padding-left:2px}
+.btn{width:100%;padding:16px;border-radius:14px;border:2px solid;font-size:16px;font-weight:700;
+  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;
+  gap:10px;letter-spacing:0.04em;font-family:inherit;margin-bottom:8px}
+.btn:active{transform:scale(0.97)}
+.btn-checkin{background:rgba(106,176,255,0.12);border-color:rgba(106,176,255,0.35);color:#6ab0ff}
+.btn-checkin:hover{background:rgba(106,176,255,0.22);border-color:rgba(106,176,255,0.6)}
+.btn-yes{background:rgba(61,232,160,0.1);border-color:rgba(61,232,160,0.3);color:#3de8a0}
+.btn-yes:hover{background:rgba(61,232,160,0.22);border-color:rgba(61,232,160,0.6)}
+.btn-abs{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45)}
+.btn-abs:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.25)}
+.btn-no{background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.3);color:#ff6b6b}
+.btn-no:hover{background:rgba(255,107,107,0.22);border-color:rgba(255,107,107,0.6)}
+.btn-done{background:rgba(61,232,160,0.06);border-color:rgba(61,232,160,0.2);color:rgba(61,232,160,0.6);cursor:default}
+.status-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;padding:12px 14px;font-size:12px;color:rgba(255,255,255,0.4);text-align:center}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:10px;
+  font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+.badge-present{background:rgba(61,232,160,0.15);border:1px solid rgba(61,232,160,0.3);color:#3de8a0}
+.badge-absent{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3)}
+.badge-voted{background:rgba(106,176,255,0.15);border:1px solid rgba(106,176,255,0.3);color:#6ab0ff}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:#0d1520;border:1px solid rgba(255,255,255,0.15);border-radius:12px;
+  padding:10px 20px;font-size:13px;font-weight:600;color:#e8f0fe;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6);transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  white-space:nowrap;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head><body>
+
+<div class="card">
+  <img class="flag" src="https://flagcdn.com/w160/${code.toLowerCase()}.png" 
+       onerror="this.src='https://flagcdn.com/w80/${code.toLowerCase()}.png'" alt="${name}"/>
+  <div class="del-label">Delegate of</div>
+  <div class="del-name">${name}</div>
+  <div class="committee" id="committee-name">Model United Nations</div>
+
+  <!-- Check-in section -->
+  <div class="section">
+    <div class="section-title">📋 Attendance</div>
+    <div id="checkin-area">
+      <button class="btn btn-checkin" id="checkin-btn" onclick="doCheckin()">
+        <span>👋</span> Mark Myself Present
+      </button>
+    </div>
+  </div>
+
+  <!-- Voting section -->
+  <div class="section" id="vote-section" style="display:none">
+    <div class="section-title">🗳️ Vote on Resolution</div>
+    <div id="vote-area">
+      <div class="status-box" id="vote-question" style="margin-bottom:10px">Loading...</div>
+      <button class="btn btn-yes" onclick="doVote('yes')"><span>✅</span> In Favor</button>
+      <button class="btn btn-abs" onclick="doVote('abstain')"><span>🟡</span> Abstain</button>
+      <button class="btn btn-no" onclick="doVote('no')"><span>❌</span> Against</button>
+    </div>
+  </div>
+
+  <!-- Status -->
+  <div class="status-box" id="status-box">
+    <span id="checkin-status" class="badge badge-absent">⭕ Not checked in</span>
+    &nbsp;&nbsp;
+    <span id="vote-status" class="badge badge-absent" style="display:none">⭕ Not voted</span>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<scr\x69pt>
+const CODE = '${code}';
+const NAME = '${name}';
+const SESSION_KEY = '${portalSessionKey}';
+
+let checkedIn = false;
+let voted = false;
+let voteActive = false;
+
+function toast(msg, dur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur || 2500);
+}
+
+function doCheckin() {
+  if (checkedIn) return;
+  const data = getState();
+  data.attendance = data.attendance || {};
+  data.attendance[CODE] = 'present';
+  setState(data);
+  postData({attendance: {[CODE]: 'present'}});
+  checkedIn = true;
+  document.getElementById('checkin-btn').outerHTML = 
+    '<div class="btn btn-done"><span>✅</span> Checked In!</div>';
+  document.getElementById('checkin-status').className = 'badge badge-present';
+  document.getElementById('checkin-status').textContent = '✅ Present';
+  toast('✅ Marked as present!');
+}
+
+function doVote(val) {
+  if (voted || !voteActive) return;
+  const data = getState();
+  data.votes = data.votes || {};
+  data.votes[CODE] = val;
+  setState(data);
+  postData({votes: {[CODE]: val}});
+  voted = true;
+  const label = val==='yes'?'✅ In Favor':val==='no'?'❌ Against':'🟡 Abstain';
+  const color = val==='yes'?'#3de8a0':val==='no'?'#ff6b6b':'rgba(255,255,255,0.4)';
+  document.getElementById('vote-area').innerHTML = 
+    '<div class="btn btn-done" style="border-color:'+color+';color:'+color+'"><span>'
+    +(val==='yes'?'✅':val==='no'?'❌':'🟡')+'</span> '+label+' — Recorded</div>';
+  document.getElementById('vote-status').style.display = '';
+  document.getElementById('vote-status').className = 'badge badge-voted';
+  document.getElementById('vote-status').textContent = '🗳️ ' + label;
+  toast(label + ' recorded!');
+}
+
+function getState() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || '{}'); } catch(e) { return {}; }
+}
+function setState(d) {
+  try { localStorage.setItem(SESSION_KEY, JSON.stringify(d)); } catch(e) {}
+}
+
+// Firebase DB URL and session
+const FB_URL = '${_fbUrl}';
+const FB_SID = '${_fbSessionId}';
+const RELAY  = '${_relayServerUrl||""}';
+
+async function postData(data) {
+  // Try Firebase first
+  if (FB_URL && FB_SID) {
+    try {
+      await fetch(FB_URL + '/mun_' + FB_SID + '/portal_' + CODE + '.json', {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+        headers: {'Content-Type': 'application/json'}
+      });
+      return;
+    } catch(e) {}
+  }
+  // Fallback: localStorage
+  try {
+    const k = SESSION_KEY;
+    const s = JSON.parse(localStorage.getItem(k)||'{}');
+    Object.assign(s, data);
+    localStorage.setItem(k, JSON.stringify(s));
+  } catch(e) {}
+  // Also try relay if set
+  if (RELAY) {
+    try {
+      await fetch(RELAY + '/state', {
+        method:'POST', mode:'cors',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+    } catch(e) {}
+  }
+}
+
+async function getState() {
+  // Try Firebase
+  if (FB_URL && FB_SID) {
+    try {
+      const r = await fetch(FB_URL + '/mun_' + FB_SID + '.json');
+      if (r.ok) {
+        const d = await r.json();
+        return d || {};
+      }
+    } catch(e) {}
+  }
+  // Fallback localStorage
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY)||'{}'); }
+  catch(e) { return {}; }
+}
+
+async function poll() {
+  const data = await getState();
+  // Update committee name
+  if (data.committee) document.getElementById('committee-name').textContent = data.committee;
+  // Sync check-in state
+  if (!checkedIn && data.attendance && data.attendance[CODE]) {
+    checkedIn = true;
+    document.getElementById('checkin-btn') && (document.getElementById('checkin-area').innerHTML = 
+      '<div class="btn btn-done"><span>✅</span> Checked In!</div>');
+    document.getElementById('checkin-status').className = 'badge badge-present';
+    document.getElementById('checkin-status').textContent = '✅ Present';
+  }
+  // Show/hide vote section
+  const wasActive = voteActive;
+  voteActive = !!data.voteActive;
+  if (voteActive && !wasActive) {
+    document.getElementById('vote-section').style.display = '';
+    document.getElementById('vote-status').style.display = '';
+    if (data.resolution) document.getElementById('vote-question').textContent = 
+      'Resolution: ' + data.resolution;
+    if (!voted) toast('🗳️ Voting is now open!', 3000);
+  } else if (!voteActive && wasActive) {
+    if (!voted) {
+      document.getElementById('vote-section').style.display = 'none';
+      toast('Voting has closed');
+    }
+  }
+  // Sync vote if done elsewhere
+  if (!voted && data.votes && data.votes[CODE]) {
+    voted = true;
+    doVote(data.votes[CODE]);
+  }
+}
+
+setInterval(poll, 1500);
+poll(); // immediate first poll
+
+// BroadcastChannel support
+try {
+  const bc = new BroadcastChannel('mun_portal_' + SESSION_KEY);
+  bc.onmessage = e => { if (e.data === 'poll') poll(); };
+} catch(e) {}
+<\/script>
+</body></html>`;
+}
+
+function generateDelegatePortals() {
+  // Called at session start and when printing placards
+  portalSessionKey = 'mun_portal_' + (session.committee||'mun').replace(/[^a-z0-9]/gi,'').toLowerCase() + '_' + Math.floor(Date.now()/86400000);
+  delegatePortalUrls = {};
+  delegates.forEach(d => {
+    const html = buildDelegatePortal(d.c, d.n);
+    const blob = new Blob([html], {type:'text/html'});
+    delegatePortalUrls[d.c] = URL.createObjectURL(blob);
+  });
+  // Write initial state
+  updatePortalState();
+  // Start polling for responses
+  startPortalPoll();
+}
+
+function updatePortalState() {
+  if (!portalSessionKey) return;
+  try {
+    const existing = JSON.parse(localStorage.getItem(portalSessionKey)||'{}');
+    const state = {
+      ...existing,
+      committee: session.committee||'Committee',
+      voteActive: !!window._votePortalActive,
+      resolution: (typeof resolution!=='undefined'&&resolution) ? (resolution.id+' — '+(resolution.title||'')) : ''
+    };
+    localStorage.setItem(portalSessionKey, JSON.stringify(state));
+    // Notify open portals
+    try { new BroadcastChannel('mun_portal_'+portalSessionKey).postMessage('poll'); } catch(e) {}
+    // Also sync voteActive to relay server
+    if (_relayAvailable && _relayServerUrl) {
+      fetch(_relayServerUrl+'/state', {method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({voteActive:!!window._votePortalActive,resolution:state.resolution||''})}).catch(()=>{});
+    }
+  } catch(e) {}
+}
+
+let _portalPollIv = null;
+function startPortalPoll() {
+  clearInterval(_portalPollIv);
+  _portalPollIv = setInterval(() => {
+    if (!portalSessionKey) return;
+    try {
+      const data = JSON.parse(localStorage.getItem(portalSessionKey)||'{}');
+      let changed = false;
+      // Sync attendance
+      if (data.attendance) {
+        Object.entries(data.attendance).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && rollCallData[code] !== val) {
+            rollCallData[code] = val;
+            changed = true;
+          }
+        });
+        if (changed) { renderRollCall(); updateQuorumCheck(); }
+      }
+      // Sync votes
+      if (data.votes) {
+        let voteChanged = false;
+        Object.entries(data.votes).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && !votes[code]) {
+            votes[code] = val; voteChanged = true;
+            const d = delegates.find(x=>x.c===code);
+            showToast((d?d.n:code)+' → '+(val==='yes'?'✅ Favor':val==='no'?'❌ Against':'🟡 Abstain'));
+          }
+        });
+        if (voteChanged) { renderVoteList(); updateVoteStats(); if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
+      }
+    } catch(e) {}
+  }, 1500);
+}
+
+// Hook: activate voting through portal
+let _votePortalActive = false;
+
+
+// ═══ CROSS-BROWSER DELEGATE PORTAL RELAY ═══
+// Uses a local Python server on the chair's machine
+// All delegates connect via WiFi to chair's IP
+
+let _relayServerUrl = '';  // e.g. http://192.168.1.5:7474
+let _relayPollIv = null;
+let _relayAvailable = false;
+
+function setRelayServer(url) {
+  _relayServerUrl = url.replace(/\/$/, '');
+  _relayAvailable = true;
+  testRelayServer();
+}
+
+async function testRelayServer() {
+  try {
+    const r = await fetch(_relayServerUrl + '/ping', {mode:'cors'});
+    if (r.ok) {
+      _relayAvailable = true;
+      showToast('✅ Relay server bağlandı!');
+      startRelayPoll();
+      generateDelegatePortals(); // regenerate with server URL
+    }
+  } catch(e) {
+    _relayAvailable = false;
+    showToast('❌ Sunucuya bağlanılamadı', 'error');
+  }
+}
+
+function startRelayPoll() {
+  clearInterval(_relayPollIv);
+  _relayPollIv = setInterval(async () => {
+    if (!_relayAvailable || !_relayServerUrl) return;
+    try {
+      const r = await fetch(_relayServerUrl + '/state', {mode:'cors'});
+      if (!r.ok) return;
+      const data = await r.json();
+      let changed = false;
+      // Sync attendance
+      if (data.attendance) {
+        Object.entries(data.attendance).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && rollCallData[code] !== val) {
+            rollCallData[code] = val; changed = true;
+            const d = delegates.find(x=>x.c===code);
+            showToast((d?d.n:code) + ' ✅ Present');
+          }
+        });
+        if (changed) { renderRollCall(); updateQuorumCheck(); }
+      }
+      // Sync votes
+      if (data.votes) {
+        let voteChanged = false;
+        Object.entries(data.votes).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && !votes[code] && ['yes','no','abstain'].includes(val)) {
+            votes[code] = val; voteChanged = true;
+            const d = delegates.find(x=>x.c===code);
+            showToast((d?d.n:code)+' → '+(val==='yes'?'✅ Favor':val==='no'?'❌ Against':'🟡 Abstain'));
+          }
+        });
+        if (voteChanged) { renderVoteList(); updateVoteStats(); if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
+      }
+    } catch(e) {}
+  }, 1500);
+}
+
+function openRelaySetupModal() {
+  const existing = document.getElementById('relay-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'relay-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.8);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
+
+  // Python server script content
+  const pyScript = `#!/usr/bin/env python3
+"""MUN Chair Relay Server — çalıştır: python mun_server.py"""
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import json, socket
+
+state = {"attendance": {}, "votes": {}, "voteActive": False, "resolution": ""}
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = s.getsockname()[0]
+    s.close()
+    return ip
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, *a): pass  # sessiz mod
+    def send_cors(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_cors()
+        self.end_headers()
+    def do_GET(self):
+        self.send_response(200)
+        self.send_cors()
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps(state).encode())
+    def do_POST(self):
+        length = int(self.headers.get("Content-Length", 0))
+        body = json.loads(self.rfile.read(length) or b"{}")
+        if "attendance" in body:
+            state["attendance"].update(body["attendance"])
+        if "votes" in body:
+            state["votes"].update(body["votes"])
+        if "voteActive" in body:
+            state["voteActive"] = body["voteActive"]
+        if "resolution" in body:
+            state["resolution"] = body["resolution"]
+        self.send_response(200)
+        self.send_cors()
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(b'{"ok":true}')
+
+ip = get_ip()
+port = 7474
+print(f"\\n🏛  MUN Chair Relay Server")
+print(f"   Sunucu IP: http://{ip}:{port}")
+print(f"   Delegeler bu adresi kullanacak.")
+print(f"   Durdurmak için: Ctrl+C\\n")
+HTTPServer(("0.0.0.0", port), Handler).serve_forever()
+`.trim();
+
+  const encoded = encodeURIComponent(pyScript);
+  const pyBlob = 'data:text/plain;charset=utf-8,' + encoded;
+
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">🌐 Cross-Browser Delegate Portal</div>
+          <div style="font-size:11px;color:var(--text3)">Opera, Edge, Chrome, Safari — hepsi birden</div>
+        </div>
+        <button onclick="document.getElementById('relay-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="padding:16px 20px">
+
+        <!-- Step 1 -->
+        <div style="margin-bottom:16px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">① Python Sunucusunu İndir ve Çalıştır</div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:10px">Chair bilgisayarında Python yüklü olmalı. Bir kez çalıştır, oturum boyunca açık tut.</div>
+          <a href="${pyBlob}" download="mun_server.py" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;margin-bottom:8px">
+            ⬇️ mun_server.py İndir
+          </a>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">
+            python mun_server.py
+          </div>
+          <div style="font-size:11px;color:var(--text3);margin-top:6px">Çalışınca terminalde IP adresi görünür (örn: 192.168.1.5)</div>
+        </div>
+
+        <!-- Step 2 -->
+        <div style="margin-bottom:16px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px">② Sunucu Adresini Gir</div>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="relay-url-input" placeholder="http://192.168.1.5:7474"
+              style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px"
+              value="${_relayServerUrl||'http://192.168.1.5:7474'}"
+              onkeydown="if(event.key==='Enter')connectRelay()"/>
+            <button onclick="connectRelay()" class="btn btn-primary btn-sm">Bağlan</button>
+          </div>
+          <div id="relay-status" style="font-size:11px;color:var(--text3);margin-top:6px">Bağlanmadı</div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">③ Delegeler QR Okutarak Girer</div>
+          <div style="font-size:12px;color:var(--text2)">Sunucu bağlandıktan sonra placard'ları bas. Her placard'daki QR kodu delegate portal'ına götürür — tüm tarayıcılar desteklenir.</div>
+        </div>
+
+        <!-- LocalStorage fallback note -->
+        <div style="margin-top:12px;padding:10px 14px;background:rgba(106,176,255,0.06);border:1px solid rgba(106,176,255,0.15);border-radius:8px;font-size:11px;color:var(--text3)">
+          💡 <strong style="color:var(--text2)">Sunucusuz mod:</strong> Sunucu olmadan da çalışır — sadece <strong>aynı tarayıcı</strong> üzerindeki sekmeler birbirleriyle haberleşebilir (localStorage).
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.onclick = e => { if(e.target===modal) modal.remove(); };
+}
+
+function connectRelay() {
+  const input = document.getElementById('relay-url-input');
+  const status = document.getElementById('relay-status');
+  if (!input || !input.value.trim()) return;
+  let url = input.value.trim();
+  if (!url.startsWith('http')) url = 'http://' + url;
+  if (status) status.textContent = 'Bağlanıyor...';
+  setRelayServer(url);
+  // Update status after test
+  setTimeout(() => {
+    if (status) status.innerHTML = _relayAvailable
+      ? '<span style="color:var(--green)">✅ Bağlandı! Delegeler QR okutabilir.</span>'
+      : '<span style="color:var(--red)">❌ Bağlanamadı — Python sunucusu çalışıyor mu?</span>';
+  }, 2000);
+}
+
+
+// ═══ FIREBASE REALTIME DB — cross-network delegate portal ═══
+// Free tier: unlimited connections, no auth needed for this use case
+// Works on any network, any browser, any device
+
+let _fbUrl = '';  // Firebase Realtime DB URL
+let _fbSessionId = '';
+let _fbPollIv = null;
+let _fbAvailable = false;
+
+function initFirebase(dbUrl, sessionId) {
+  _fbUrl = dbUrl.replace(/\/$/, '');
+  _fbSessionId = sessionId || Math.random().toString(36).slice(2, 8).toUpperCase();
+  _fbAvailable = true;
+  // Test connection
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/ping.json`, {
+    method: 'PUT',
+    body: JSON.stringify({t: Date.now()}),
+    headers: {'Content-Type': 'application/json'}
+  }).then(r => {
+    if (r.ok) {
+      showToast('🔥 Firebase bağlandı! Session: ' + _fbSessionId);
+      startFbPoll();
+      generateDelegatePortals();
+    } else {
+      _fbAvailable = false;
+      showToast('❌ Firebase bağlanamadı', 'error');
+    }
+  }).catch(() => {
+    _fbAvailable = false;
+    showToast('❌ Firebase bağlanamadı', 'error');
+  });
+}
+
+function fbPost(path, data) {
+  if (!_fbAvailable || !_fbUrl) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/${path}.json`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+    headers: {'Content-Type': 'application/json'}
+  }).catch(() => {});
+}
+
+function startFbPoll() {
+  clearInterval(_fbPollIv);
+  _fbPollIv = setInterval(async () => {
+    if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+    try {
+      const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}.json`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (!data) return;
+      // Sync attendance
+      if (data.attendance) {
+        let changed = false;
+        Object.entries(data.attendance).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && rollCallData[code] !== val) {
+            rollCallData[code] = val; changed = true;
+            const d = delegates.find(x=>x.c===code);
+            showToast((d?d.n:code) + ' ✅ Present');
+          }
+        });
+        if (changed) { renderRollCall(); updateQuorumCheck(); }
+      }
+      // Sync votes
+      if (data.votes) {
+        let voteChanged = false;
+        Object.entries(data.votes).forEach(([code, val]) => {
+          if (delegates.find(d=>d.c===code) && !votes[code] && ['yes','no','abstain'].includes(val)) {
+            votes[code] = val; voteChanged = true;
+            const d = delegates.find(x=>x.c===code);
+            showToast((d?d.n:code)+' → '+(val==='yes'?'✅ Favor':val==='no'?'❌ Against':'🟡 Abstain'));
+          }
+        });
+        if (voteChanged) { renderVoteList(); updateVoteStats(); if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
+      }
+    } catch(e) {}
+  }, 2000);
+}
+
+// Update vote active state in Firebase
+function fbUpdateVoteState(active) {
+  if (!_fbAvailable) return;
+  fbPost('state', {
+    voteActive: active,
+    resolution: (typeof resolution!=='undefined'&&resolution) ? (resolution.id+' — '+(resolution.title||'')) : '',
+    committee: session.committee||''
+  });
+}
+
+function openNetworkSetupModal() {
+  const existing = document.getElementById('network-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'network-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
+
+  const sessionCode = _fbSessionId || Math.random().toString(36).slice(2,8).toUpperCase();
+
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)">🌐 Cross-Network Delegate Portal</div>
+          <div style="font-size:11px;color:var(--text3)">Opera · Edge · Chrome · Safari — farklı ağlardan bile</div>
+        </div>
+        <button onclick="document.getElementById('network-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+
+        <!-- Option A: Firebase -->
+        <div style="padding:14px;background:var(--bg3);border:1px solid rgba(255,166,0,0.3);border-radius:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <span style="font-size:20px">🔥</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text)">Firebase Realtime Database</div>
+              <div style="font-size:10px;color:var(--text3)">Ücretsiz · İnternet üzerinden · Tüm tarayıcılar · Farklı ağlar</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:10px">
+            1. <a href="https://console.firebase.google.com" target="_blank" style="color:var(--blue)">console.firebase.google.com</a> → Proje oluştur → Realtime Database → Test mode<br/>
+            2. DB URL'ini kopyala (https://proje-adı-default-rtdb.firebaseio.com)<br/>
+            3. Aşağıya yapıştır
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <input type="text" id="fb-url-input" placeholder="https://proje-adı-default-rtdb.firebaseio.com"
+              style="flex:1;font-size:11px;font-family:'JetBrains Mono',monospace"
+              value="${_fbUrl}"/>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="text" id="fb-session-input" placeholder="Session kodu (ör: MUN2025)"
+              style="width:160px;font-size:12px;font-family:'JetBrains Mono',monospace;font-weight:700;text-transform:uppercase"
+              value="${sessionCode}" maxlength="8"/>
+            <button onclick="connectFirebase()" class="btn btn-primary btn-sm">🔥 Bağlan</button>
+          </div>
+          <div id="fb-status" style="font-size:11px;color:var(--text3);margin-top:6px">${_fbAvailable?'<span style="color:var(--green)">✅ Bağlı — Session: '+_fbSessionId+'</span>':'Bağlanmadı'}</div>
+        </div>
+
+        <!-- Option B: Same WiFi -->
+        <div style="padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:20px">📡</span>
+            <div>
+              <div style="font-size:13px;font-weight:700;color:var(--text)">Aynı WiFi (LocalStorage)</div>
+              <div style="font-size:10px;color:var(--text3)">Sunucu gerekmez · Sadece aynı tarayıcı</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2)">Portal sayfaları blob URL olarak çalışır. Sadece chair bilgisayarında aynı tarayıcıda açılan sekmeler iletişim kurabilir.</div>
+        </div>
+
+        <!-- How delegates connect -->
+        ${_fbAvailable ? `
+        <div style="padding:14px;background:rgba(61,232,160,0.06);border:1px solid rgba(61,232,160,0.2);border-radius:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">✅ Aktif — Delegeler nasıl bağlanır?</div>
+          <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Placard'daki QR kodu okutun. Portal her tarayıcıda, her ağda çalışır.</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text);background:var(--bg);padding:8px 12px;border-radius:6px;text-align:center;letter-spacing:0.1em">
+            Session: ${_fbSessionId}
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  modal.onclick = e => { if(e.target===modal) modal.remove(); };
+}
+
+function connectFirebase() {
+  const url = (document.getElementById('fb-url-input')?.value || '').trim();
+  const sid = (document.getElementById('fb-session-input')?.value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const status = document.getElementById('fb-status');
+  if (!url) { if(status) status.innerHTML='<span style="color:var(--red)">URL gerekli</span>'; return; }
+  if (status) status.textContent = 'Bağlanıyor...';
+  _fbSessionId = sid || Math.random().toString(36).slice(2,8).toUpperCase();
+  initFirebase(url, _fbSessionId);
+  setTimeout(() => {
+    if (status) status.innerHTML = _fbAvailable
+      ? `<span style="color:var(--green)">✅ Bağlandı! Session: ${_fbSessionId}</span>`
+      : '<span style="color:var(--red)">❌ Bağlanamadı</span>';
+  }, 3000);
+}
+
+
+// ─── Mobile sidebar ───
+function toggleMobileSidebar(){
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  if(!sb) return;
+  const open = sb.classList.toggle('mobile-open');
+  if(ov) ov.classList.toggle('active', open);
+}
+function closeMobileSidebar(){
+  const sb = document.querySelector('.sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  if(sb) sb.classList.remove('mobile-open');
+  if(ov) ov.classList.remove('active');
+}
+// Close sidebar on nav click (mobile)
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if(window.innerWidth <= 768) closeMobileSidebar();
+    });
+  });
+});
+
+// ─── AI Speech Analysis ───
+let aiSpeechHistory = [];
+let _aiDelegate = null;
+
+function filterAiDelegateSearch(){
+  const q = document.getElementById('ai-delegate-search')?.value?.toLowerCase()||'';
+  const dd = document.getElementById('ai-delegate-drop');
+  const pool = delegates.length ? delegates : COUNTRIES;
+  const res = pool.filter(c=>c.n.toLowerCase().includes(q)).slice(0,10);
+  if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
+  dd.innerHTML = res.map(d=>{
+    const gi = COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('');
+  dd.querySelectorAll('.cdrop-item').forEach(el=>el.addEventListener('mousedown', e=>{
+    e.preventDefault();
+    const d = COUNTRIES[parseInt(el.dataset.gidx)];
+    if(!d) return;
+    _aiDelegate = d;
+    document.getElementById('ai-delegate-search').value = d.n;
+    document.getElementById('ai-delegate-drop').classList.remove('open');
+  }));
+  dd.classList.add('open');
+}
+
+async function runAISpeechAnalysis(){
+  const text = document.getElementById('ai-speech-text')?.value?.trim();
+  const type = document.getElementById('ai-analysis-type')?.value || 'full';
+  const btn  = document.getElementById('ai-analyze-btn');
+  const result = document.getElementById('ai-result');
+  const loading = document.getElementById('ai-loading');
+
+  if(!text){ showToast('Konuşma metni girin.','error'); return; }
+
+  const delegateName = _aiDelegate?.n || 'Unknown Delegate';
+  const committee = session.committee || 'Committee';
+  const agenda = session.agenda || '';
+  const s = _aiDelegate ? getDelegateStats(_aiDelegate) : null;
+
+  const typePrompts = {
+    full: `Analyze this MUN delegate speech comprehensively. Evaluate: argumentation quality, use of evidence, policy positions, diplomatic language, and overall effectiveness.`,
+    score: `Score this MUN delegate speech from 1-5 stars. Be specific about why. Format: "Score: X/5 — [reason]" then brief explanation.`,
+    feedback: `Give constructive feedback for this MUN delegate speech. Focus on 3 strengths and 3 areas for improvement. Be encouraging but honest.`,
+    position: `Analyze the policy position in this speech. What is the delegate's stance? What solutions do they propose? Are they bloc-aligned?`,
+    improve: `Give 5 specific tips to improve this delegate's speaking style and argumentation based on this speech sample.`
+  };
+
+  const prompt = `You are an experienced MUN (Model United Nations) chair evaluating a delegate's speech.
+
+Committee: ${committee}
+Agenda: ${agenda}
+Delegate: ${delegateName}
+${s ? `Previous score: ${s.pts}, Speeches: ${s.speechCount}, Warnings: ${s.warnCount}` : ''}
+
+${typePrompts[type]}
+
+Speech:
+"${text}"
+
+Keep response concise (150-200 words). Use clear formatting.`;
+
+  if(btn) btn.disabled = true;
+  if(result) result.style.display = 'none';
+  if(loading) loading.style.display = 'block';
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 400,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await resp.json();
+    const analysis = data.content?.[0]?.text || 'Analysis failed.';
+
+    if(loading) loading.style.display = 'none';
+    if(result){
+      result.style.display = 'block';
+      result.innerHTML = analysis.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br/>');
+    }
+
+    // Save to history
+    aiSpeechHistory.unshift({
+      delegate: delegateName,
+      code: _aiDelegate?.c || '',
+      type, analysis,
+      speech: text.slice(0,100)+(text.length>100?'…':''),
+      time: new Date().toLocaleTimeString()
+    });
+    if(aiSpeechHistory.length > 20) aiSpeechHistory.pop();
+    renderAIHistory();
+
+    // Offer to apply score
+    if(type==='score' && _aiDelegate) {
+      const scoreMatch = analysis.match(/Score:\s*(\d)/);
+      if(scoreMatch) {
+        const suggested = parseInt(scoreMatch[1]);
+        const pts = [0,1,2,3,4,5][suggested] || 0;
+        if(result) result.innerHTML += `<br/><br/><button onclick="applyAIScore('${_aiDelegate.c}',${pts})" class="btn btn-primary btn-sm">Apply ${suggested}★ → +${pts} pts</button>`;
+      }
+    }
+  } catch(e) {
+    if(loading) loading.style.display = 'none';
+    if(result){
+      result.style.display = 'block';
+      result.innerHTML = '<span style="color:var(--red)">API Error: '+e.message+'</span>';
+    }
+  }
+  if(btn) btn.disabled = false;
+}
+
+function applyAIScore(code, pts){
+  scores[code] = (scores[code]||0) + pts;
+  if(!scoreHistory[code]) scoreHistory[code] = [];
+  scoreHistory[code].push({pts, type:'ai-analysis', time:new Date().toLocaleTimeString()});
+  renderScoreTab(); showToast(`+${pts} applied from AI analysis`);
+}
+
+function renderAIHistory(){
+  const el = document.getElementById('ai-history-list'); if(!el) return;
+  if(!aiSpeechHistory.length){ el.innerHTML='<div class="empty-state">No analyses yet.</div>'; return; }
+  el.innerHTML = aiSpeechHistory.map(h=>`
+    <div style="padding:10px 12px;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        ${h.code?flagImg(h.code,'flag-img-sm'):''}
+        <span style="font-size:12px;font-weight:600;color:var(--text)">${h.delegate}</span>
+        <span style="font-size:10px;padding:1px 7px;border-radius:8px;background:var(--blue-dim);color:var(--blue);border:1px solid rgba(106,176,255,0.2)">${h.type}</span>
+        <span style="font-size:10px;color:var(--text4);margin-left:auto">${h.time}</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-style:italic">"${h.speech}"</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.5">${h.analysis.slice(0,200)}${h.analysis.length>200?'…':''}</div>
+    </div>`).join('');
+}
+
+// ─── Tournament Mode ───
+let tournamentData = JSON.parse(localStorage.getItem('mun-tournament')||'[]');
+// [{id, name, committee, agenda, scores:{}, delegates:[], startTime}]
+
+function saveTournament(){
+  try{ localStorage.setItem('mun-tournament', JSON.stringify(tournamentData)); }catch(e){}
+}
+
+function addTournamentCommittee(){
+  const name = prompt('Committee name:');
+  if(!name) return;
+  const t = {
+    id: Date.now().toString(36),
+    name: name.trim(),
+    committee: name.trim(),
+    agenda: '',
+    scores: {},
+    delegates: [],
+    notes: '',
+    startTime: null,
+    active: false
+  };
+  tournamentData.push(t);
+  saveTournament();
+  renderTournament();
+}
+
+function deleteTournamentCommittee(id){
+  if(!confirm('Delete this committee?')) return;
+  tournamentData = tournamentData.filter(t=>t.id!==id);
+  saveTournament();
+  renderTournament();
+}
+
+function loadTournamentSession(id){
+  // Save current session into tournament slot
+  const t = tournamentData.find(x=>x.id===id);
+  if(!t) return;
+  if(!confirm(`Load "${t.name}"? Current session will be backed up.`)) return;
+
+  // Backup current
+  const curIdx = tournamentData.findIndex(x=>x.active);
+  if(curIdx>=0){
+    tournamentData[curIdx].scores = {...scores};
+    tournamentData[curIdx].delegates = [...delegates];
+    tournamentData[curIdx].active = false;
+  }
+
+  // Load selected
+  if(t.delegates.length) delegates = [...t.delegates];
+  if(Object.keys(t.scores).length) Object.assign(scores, t.scores);
+  session.committee = t.committee;
+  session.agenda = t.agenda || '';
+  t.active = true;
+  saveTournament();
+
+  document.getElementById('pill-committee').textContent = session.committee;
+  document.getElementById('pill-agenda').textContent = session.agenda;
+  updateStats(); renderAllSpk(); renderRollCall();
+  showToast(`Loaded: ${t.name}`);
+  renderTournament();
+}
+
+function saveCurrentToTournament(id){
+  const t = tournamentData.find(x=>x.id===id);
+  if(!t) return;
+  t.scores = {...scores};
+  t.delegates = [...delegates];
+  t.committee = session.committee || t.name;
+  t.agenda = session.agenda || '';
+  t.active = true;
+  saveTournament();
+  showToast(`Saved to: ${t.name}`);
+  renderTournament();
+}
+
+function renderTournament(){
+  const list = document.getElementById('tournament-list'); if(!list) return;
+  const chip = document.getElementById('tournament-count'); if(chip) chip.textContent = tournamentData.length+' committees';
+
+  if(!tournamentData.length){
+    list.innerHTML = '<div class="empty-state">No committees added yet. Click "+ Add Committee" to start.</div>';
+    document.getElementById('tournament-leaderboard').innerHTML = '';
+    return;
+  }
+
+  list.innerHTML = tournamentData.map(t=>{
+    const topDel = Object.entries(t.scores).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([code,pts])=>{
+      const d=t.delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+      return d?`<span title="${d.n}">${flagImg(code,'flag-img-sm')}</span>`:'';
+    }).join('');
+    const totalDel = t.delegates.length;
+    const scored = Object.keys(t.scores).length;
+    return `<div style="background:var(--bg3);border:1px solid ${t.active?'rgba(106,176,255,0.4)':'var(--border)'};border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span style="font-size:13px;font-weight:700;color:var(--text)">${t.name}</span>
+          ${t.active?'<span class="chip chip-blue" style="font-size:9px">ACTIVE</span>':''}
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">${t.agenda||'No agenda set'} · ${totalDel} delegates · ${scored} scored</div>
+        <div style="display:flex;align-items:center;gap:4px">${topDel}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end">
+        <button onclick="saveCurrentToTournament('${t.id}')" class="btn btn-ghost btn-sm" title="Save current session here">💾</button>
+        <button onclick="loadTournamentSession('${t.id}')" class="btn btn-ghost btn-sm" title="Load this committee">📂</button>
+        <button onclick="deleteTournamentCommittee('${t.id}')" class="btn btn-ghost btn-sm" style="color:var(--red)" title="Delete">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cross-committee leaderboard
+  const lb = document.getElementById('tournament-leaderboard');
+  const allScores = [];
+  tournamentData.forEach(t => {
+    Object.entries(t.scores).forEach(([code, pts]) => {
+      const d = t.delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
+      if(d) allScores.push({d, pts, committee:t.name});
+    });
+  });
+  allScores.sort((a,b)=>b.pts-a.pts);
+  if(!allScores.length){ lb.innerHTML='<div class="empty-state">No scores across committees yet.</div>'; return; }
+  const maxPts = Math.max(1, allScores[0].pts);
+  lb.innerHTML = allScores.slice(0,20).map((e,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:16px;min-width:22px">${i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1)+'.'}</span>
+      ${flagImg(e.d.c,'flag-img-sm')}
+      <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">${e.d.n}</span>
+      <span style="font-size:10px;color:var(--text3)">${e.committee}</span>
+      <div style="width:80px;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${Math.round(e.pts/maxPts*100)}%;background:var(--green);border-radius:3px"></div>
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--green);min-width:36px;text-align:right">${e.pts>0?'+':''}${e.pts}</span>
+    </div>`).join('');
+}
+
+// Save current session to active tournament slot automatically
+const _origCastVote2 = typeof castVote==='function'?null:null; // just a hook marker
+setInterval(()=>{
+  const active = tournamentData.find(t=>t.active);
+  if(active && Object.keys(scores).length){
+    active.scores = {...scores};
+    active.delegates = [...delegates];
+    saveTournament();
+  }
+},30000);
+
+// ─── CSS spin keyframe for AI loading ───
+(function(){
+  if(document.getElementById('spin-style')) return;
+  const s=document.createElement('style');
+  s.id='spin-style';
+  s.textContent='@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}';
+  document.head.appendChild(s);
+})();
 
 // ═══ STATS ═══
 function updateStats(){
