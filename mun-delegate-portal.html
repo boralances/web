@@ -2,53 +2,52 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>MUN Chair — Delegate Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>MUN Delegate Portal</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;
-  --blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;
-  --text:#ddeeff;--text2:#7a93ad;--text3:#46606e;
-  --radius:12px;
+  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;--bg4:#1a2535;
+  --blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;--orange:#ff9f43;
+  --text:#ddeeff;--text2:#7a93ad;--text3:#46606e;--text4:#2a3d4d;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --radius:12px;--shadow:0 8px 40px rgba(0,0,0,0.6);
 }
 body{
   background:var(--bg);color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;
-  min-height:100vh;display:flex;flex-direction:column;align-items:center;
-  justify-content:flex-start;padding:20px 16px 60px;
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;padding:16px 16px 60px;
 }
 
 /* ── Logo ── */
-.logo{
-  margin:32px 0 24px;text-align:center;
-}
+.logo{margin:24px 0 20px;text-align:center}
 .logo-mark{
-  width:56px;height:56px;border-radius:16px;
+  width:52px;height:52px;border-radius:14px;
   background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);
   display:flex;align-items:center;justify-content:center;
-  font-size:24px;font-weight:800;color:#fff;margin:0 auto 10px;
-  box-shadow:0 4px 20px rgba(59,143,238,0.5);
+  font-size:22px;font-weight:800;color:#fff;margin:0 auto 8px;
+  box-shadow:0 4px 20px rgba(59,143,238,0.45);
 }
-.logo-title{font-size:20px;font-weight:700;color:var(--text)}
-.logo-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.logo-title{font-size:18px;font-weight:700;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
 
 /* ── Card ── */
 .card{
-  background:var(--bg2);border:1px solid rgba(255,255,255,0.08);
+  background:var(--bg2);border:1px solid var(--border2);
   border-radius:20px;width:100%;max-width:400px;
-  box-shadow:0 8px 40px rgba(0,0,0,0.6);overflow:hidden;
+  box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;
 }
 .card-head{
-  padding:18px 20px 14px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:16px 20px 12px;
+  border-bottom:1px solid var(--border);
   background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent);
 }
-.card-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.card-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
 .card-sub{font-size:11px;color:var(--text3)}
-.card-body{padding:18px 20px}
+.card-body{padding:16px 20px}
 
-/* ── Join form ── */
+/* ── Join Form ── */
 .field{margin-bottom:14px}
 .field label{
   display:block;font-size:10px;font-weight:700;
@@ -57,124 +56,165 @@ body{
 }
 input[type=text]{
   width:100%;padding:12px 14px;border-radius:var(--radius);
-  background:rgba(6,10,16,0.8);border:1px solid rgba(255,255,255,0.1);
+  background:rgba(6,10,18,0.8);border:1px solid var(--border2);
   color:var(--text);font-size:14px;font-family:inherit;outline:none;
   transition:all 0.18s;
 }
 input[type=text]:focus{
   border-color:rgba(106,176,255,0.5);
-  box-shadow:0 0 0 3px rgba(106,176,255,0.1);
+  box-shadow:0 0 0 3px rgba(106,176,255,0.08);
 }
-input.code-input{
-  font-family:'JetBrains Mono','SF Mono',monospace;
-  font-size:22px;font-weight:700;letter-spacing:0.2em;
-  text-transform:uppercase;text-align:center;
+.code-input{
+  font-family:'SF Mono','JetBrains Mono',monospace;
+  font-size:24px;font-weight:700;letter-spacing:0.18em;text-align:center;
 }
 
 .btn{
   width:100%;padding:14px;border-radius:var(--radius);border:none;
-  font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;
-  font-family:inherit;letter-spacing:0.02em;
+  font-size:15px;font-weight:700;cursor:pointer;
+  font-family:inherit;letter-spacing:0.02em;transition:all 0.15s;
 }
 .btn:active{transform:scale(0.98)}
 .btn-primary{
   background:linear-gradient(135deg,#7ec8ff,#3b8fee,#1d6ed8);
-  color:#fff;box-shadow:0 3px 12px rgba(59,143,238,0.4);
+  color:#fff;box-shadow:0 3px 14px rgba(59,143,238,0.4);
 }
-.btn-primary:hover{box-shadow:0 4px 20px rgba(59,143,238,0.6)}
-.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-primary:hover{box-shadow:0 4px 22px rgba(59,143,238,0.6)}
+.btn-primary:disabled{opacity:0.45;cursor:not-allowed;transform:none}
 
 .error-msg{
-  background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);
-  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);
-  margin-top:12px;display:none;
+  background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);
+  border-radius:8px;padding:9px 14px;font-size:12px;color:var(--red);
+  margin-top:10px;display:none;
 }
 
-/* ── Delegate selector ── */
+/* ── Delegate List ── */
 #select-delegate{display:none}
-.delegate-list{
-  display:flex;flex-direction:column;gap:6px;
-  max-height:320px;overflow-y:auto;margin-top:4px;
-}
+.del-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;padding:2px}
 .del-item{
   display:flex;align-items:center;gap:10px;padding:10px 12px;
-  background:var(--bg3);border:1px solid rgba(255,255,255,0.07);
+  background:var(--bg3);border:1px solid var(--border);
   border-radius:10px;cursor:pointer;transition:all 0.15s;
 }
 .del-item:hover{border-color:rgba(106,176,255,0.3);background:rgba(106,176,255,0.06)}
-.del-flag{width:36px;height:25px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,0.1);flex-shrink:0}
+.del-item:active{transform:scale(0.98)}
+.del-flag{width:38px;height:27px;object-fit:cover;border-radius:4px;border:1px solid var(--border2);flex-shrink:0}
 .del-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
-.del-arrow{color:var(--text3);font-size:14px}
+.del-arrow{color:var(--text4);font-size:16px}
+.del-search{margin-bottom:10px}
 
-/* ── Portal (after joining) ── */
+/* ── Portal header ── */
 #portal{display:none}
-.portal-header{
-  background:linear-gradient(135deg,var(--bg2),var(--bg3));
-  padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.06);
+.portal-top{
+  background:linear-gradient(160deg,var(--bg2),var(--bg3));
+  padding:22px 20px 18px;text-align:center;
+  border-bottom:1px solid var(--border);
 }
-.portal-flag{
-  width:88px;height:62px;object-fit:cover;border-radius:10px;
-  border:2px solid rgba(255,255,255,0.15);margin-bottom:10px;
+.p-flag{
+  width:90px;height:64px;object-fit:cover;border-radius:10px;
+  border:2px solid var(--border2);margin-bottom:10px;
   box-shadow:0 4px 20px rgba(0,0,0,0.5);
 }
-.portal-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
-.portal-name{font-size:24px;font-weight:800;color:var(--text);line-height:1.1}
-.portal-committee{font-size:11px;color:var(--text3);margin-top:4px}
+.p-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.p-name{font-size:26px;font-weight:800;color:var(--text);line-height:1.1}
+.p-committee{font-size:11px;color:var(--text3);margin-top:4px}
 
 .portal-body{padding:18px 20px}
 
-.section-title{
+/* ── Sections ── */
+.sec-title{
   font-size:9px;font-weight:700;letter-spacing:0.16em;
   text-transform:uppercase;color:var(--text3);margin-bottom:8px;
 }
+.sec{margin-bottom:16px}
 
-.vote-btn{
+/* ── Action buttons ── */
+.action-btn{
   width:100%;padding:16px;border-radius:14px;border:2px solid;
-  font-size:16px;font-weight:700;cursor:pointer;transition:all 0.15s;
-  display:flex;align-items:center;justify-content:center;
-  gap:10px;font-family:inherit;margin-bottom:8px;
+  font-size:16px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:inherit;margin-bottom:8px;transition:all 0.15s;
+  background:transparent;
 }
-.vote-btn:active{transform:scale(0.97)}
-.vote-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-.btn-yes{background:rgba(61,232,160,0.1);border-color:rgba(61,232,160,0.3);color:var(--green)}
-.btn-abs{background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);color:rgba(255,255,255,0.45)}
-.btn-no{background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.3);color:var(--red)}
-.btn-done{background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.08);color:var(--text3);cursor:default}
-.btn-checkin{background:rgba(106,176,255,0.1);border-color:rgba(106,176,255,0.3);color:var(--blue)}
+.action-btn:active{transform:scale(0.97)}
+.action-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.btn-checkin{border-color:rgba(106,176,255,0.35);color:var(--blue)}
+.btn-checkin:hover{background:rgba(106,176,255,0.08)}
+.btn-yes{border-color:rgba(61,232,160,0.35);color:var(--green)}
+.btn-yes:hover{background:rgba(61,232,160,0.08)}
+.btn-abs{border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.45)}
+.btn-abs:hover{background:rgba(255,255,255,0.04)}
+.btn-no{border-color:rgba(255,107,107,0.35);color:var(--red)}
+.btn-no:hover{background:rgba(255,107,107,0.08)}
+.btn-done{border-color:rgba(255,255,255,0.08);color:var(--text3);cursor:default}
 
-.status-bar{
+/* ── Status badges ── */
+.badges{
   display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;
-  padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);
+  padding-top:14px;border-top:1px solid var(--border);
 }
 .badge{
   display:inline-flex;align-items:center;gap:4px;
-  padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;
-  letter-spacing:0.1em;text-transform:uppercase;
+  padding:3px 10px;border-radius:10px;font-size:10px;
+  font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
 }
-.badge-present{background:rgba(61,232,160,0.12);border:1px solid rgba(61,232,160,0.3);color:var(--green)}
-.badge-absent{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text3)}
-.badge-voted{background:rgba(106,176,255,0.12);border:1px solid rgba(106,176,255,0.3);color:var(--blue)}
+.badge-ok{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.25);color:var(--green)}
+.badge-pending{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text3)}
+.badge-voted{background:rgba(106,176,255,0.1);border:1px solid rgba(106,176,255,0.25);color:var(--blue)}
 
-.toast{
-  position:fixed;bottom:24px;left:50%;
+/* ── Divider ── */
+.divider{height:1px;background:var(--border);margin:14px 0}
+
+/* ── Vote resolution label ── */
+.vote-res{
+  font-size:11px;color:var(--text3);margin-bottom:10px;
+  padding:8px 12px;background:var(--bg3);border-radius:8px;
+  border:1px solid var(--border);font-style:italic;line-height:1.5;
+}
+
+/* ── Spinner ── */
+#loading{text-align:center;padding:24px;color:var(--text3);font-size:13px;display:none}
+.spinner{
+  width:22px;height:22px;border:2px solid rgba(255,255,255,0.08);
+  border-top-color:var(--blue);border-radius:50%;
+  animation:spin 0.75s linear infinite;margin:0 auto 8px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Live vote indicator ── */
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);
+  border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;
+  color:var(--green);margin-bottom:10px;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);animation:pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+
+/* ── Toast ── */
+#toast{
+  position:fixed;bottom:20px;left:50%;
   transform:translateX(-50%) translateY(80px);
-  background:var(--bg2);border:1px solid rgba(255,255,255,0.15);
+  background:var(--bg2);border:1px solid var(--border2);
   border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;
   color:var(--text);box-shadow:0 8px 32px rgba(0,0,0,0.6);
   transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
   white-space:nowrap;pointer-events:none;z-index:999;
 }
-.toast.show{transform:translateX(-50%) translateY(0)}
+#toast.show{transform:translateX(-50%) translateY(0)}
 
-#vote-section{display:none}
-#loading{display:none;text-align:center;padding:20px;color:var(--text3);font-size:13px}
-
-.spinner{
-  width:24px;height:24px;border:2px solid rgba(255,255,255,0.1);
-  border-top-color:var(--blue);border-radius:50%;
-  animation:spin 0.8s linear infinite;margin:0 auto 8px;
+/* ── Connection status ── */
+.conn-bar{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;color:var(--text3);padding:6px 10px;
+  background:var(--bg3);border-radius:6px;margin-bottom:10px;
 }
-@keyframes spin{to{transform:rotate(360deg)}}
+.conn-dot{width:6px;height:6px;border-radius:50%;background:var(--text4)}
+.conn-dot.ok{background:var(--green)}
+.conn-dot.err{background:var(--red)}
 </style>
 </head>
 <body>
@@ -182,41 +222,25 @@ input.code-input{
 <div class="logo">
   <div class="logo-mark">M</div>
   <div class="logo-title">MUN Chair</div>
-  <div class="logo-sub">Delegate Portal</div>
+  <div class="logo-sub">Delegate Portal — boralances.github.io</div>
 </div>
 
 <!-- ── JOIN FORM ── -->
 <div class="card" id="join-card">
   <div class="card-head">
     <div class="card-title">Join Your Session</div>
-    <div class="card-sub">Enter the session ID shown on the chair's screen</div>
+    <div class="card-sub">Enter the 9-digit session code shown on the chair's screen</div>
   </div>
   <div class="card-body">
     <div class="field">
-      <label>Session ID <span style="color:var(--red)">*</span></label>
-      <input type="text" class="code-input" id="session-id" placeholder="MUN25A"
-        maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters"
-        oninput="this.value=this.value.toUpperCase()"
+      <label>Session Code</label>
+      <input type="text" class="code-input" id="session-id"
+        placeholder="000000000" maxlength="9"
+        inputmode="numeric" pattern="[0-9]*"
+        autocomplete="off"
+        oninput="this.value=this.value.replace(/\D/g,'')"
         onkeydown="if(event.key==='Enter')joinSession()"/>
     </div>
-
-    <!-- Advanced: Firebase URL (optional, collapsible) -->
-    <div style="margin-bottom:14px">
-      <button onclick="toggleAdvanced()" id="adv-toggle"
-        style="background:none;border:none;color:var(--text3);font-size:11px;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px">
-        <span id="adv-arrow">▶</span> Advanced (Firebase URL)
-      </button>
-      <div id="adv-section" style="display:none;margin-top:8px">
-        <input type="text" id="fb-url"
-          placeholder="https://your-project-default-rtdb.firebaseio.com (optional)"
-          autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-          style="font-size:12px"/>
-        <div style="font-size:10px;color:var(--text3);margin-top:4px">
-          Required for cross-device voting. Leave empty for same-browser use.
-        </div>
-      </div>
-    </div>
-
     <button class="btn btn-primary" id="join-btn" onclick="joinSession()">
       Enter Session →
     </button>
@@ -225,376 +249,351 @@ input.code-input{
 </div>
 
 <!-- ── DELEGATE SELECTOR ── -->
-<div class="card" id="select-delegate" style="margin-top:16px">
+<div class="card" id="select-delegate">
   <div class="card-head">
-    <div class="card-title">Select Your Country</div>
-    <div class="card-sub" id="select-sub">Choose your delegation</div>
+    <div class="card-title" id="sel-title">Select Your Country</div>
+    <div class="card-sub" id="sel-sub">Choose your delegation from the list</div>
   </div>
   <div class="card-body" style="padding:12px">
-    <input type="text" id="del-search" placeholder="🔍  Search country..."
-      oninput="filterDelegates()" style="margin-bottom:10px"/>
-    <div class="delegate-list" id="delegate-list"></div>
+    <input type="text" class="del-search" id="del-search"
+      placeholder="🔍  Search country..."
+      oninput="filterDelegates()"/>
+    <div class="del-list" id="del-list"></div>
   </div>
 </div>
 
 <!-- ── PORTAL ── -->
-<div class="card" id="portal" style="margin-top:16px">
-  <div class="portal-header">
-    <img class="portal-flag" id="p-flag" src="" alt=""/>
-    <div class="portal-label">Delegate of</div>
-    <div class="portal-name" id="p-name">—</div>
-    <div class="portal-committee" id="p-committee">—</div>
+<div class="card" id="portal">
+  <div class="portal-top">
+    <img class="p-flag" id="p-flag" src="" alt=""/>
+    <div class="p-label">Delegate of</div>
+    <div class="p-name" id="p-name">—</div>
+    <div class="p-committee" id="p-committee">—</div>
   </div>
   <div class="portal-body">
 
-    <!-- Loading -->
-    <div id="loading">
-      <div class="spinner"></div>
-      Connecting...
-    </div>
+    <div id="loading"><div class="spinner"></div>Connecting to session...</div>
 
-    <!-- Check-in -->
-    <div id="checkin-section">
-      <div class="section-title">📋 Attendance</div>
-      <div id="checkin-area">
-        <button class="vote-btn btn-checkin" onclick="doCheckin()">
-          <span>👋</span> Mark Myself Present
-        </button>
+    <div id="portal-content" style="display:none">
+      <!-- Connection bar -->
+      <div class="conn-bar" id="conn-bar">
+        <div class="conn-dot" id="conn-dot"></div>
+        <span id="conn-text">Connecting...</span>
       </div>
-    </div>
 
-    <!-- Voting -->
-    <div id="vote-section">
-      <div style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0"></div>
-      <div class="section-title">🗳️ Resolution Vote</div>
-      <div id="vote-resolution" style="font-size:11px;color:var(--text3);margin-bottom:10px;font-style:italic"></div>
-      <div id="vote-area">
-        <button class="vote-btn btn-yes" onclick="doVote('yes')"><span>✅</span> In Favor</button>
-        <button class="vote-btn btn-abs" onclick="doVote('abstain')"><span>🟡</span> Abstain</button>
-        <button class="vote-btn btn-no" onclick="doVote('no')"><span>❌</span> Against</button>
+      <!-- Check-in -->
+      <div class="sec">
+        <div class="sec-title">📋 Attendance</div>
+        <div id="checkin-area">
+          <button class="action-btn btn-checkin" onclick="doCheckin()">
+            <span>👋</span> Mark Myself Present
+          </button>
+        </div>
       </div>
-    </div>
 
-    <!-- Status -->
-    <div class="status-bar">
-      <span class="badge badge-absent" id="checkin-badge">⭕ Not checked in</span>
-      <span class="badge badge-absent" id="vote-badge" style="display:none">⭕ Not voted</span>
+      <!-- Voting -->
+      <div id="vote-section" style="display:none">
+        <div class="divider"></div>
+        <div class="sec">
+          <div class="live-badge"><div class="live-dot"></div> VOTING OPEN</div>
+          <div class="sec-title">🗳️ Cast Your Vote</div>
+          <div class="vote-res" id="vote-res">Loading resolution...</div>
+          <div id="vote-area">
+            <button class="action-btn btn-yes" onclick="doVote('yes')">✅ In Favor</button>
+            <button class="action-btn btn-abs" onclick="doVote('abstain')">🟡 Abstain</button>
+            <button class="action-btn btn-no" onclick="doVote('no')">❌ Against</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="badges">
+        <span class="badge badge-pending" id="checkin-badge">⭕ Not checked in</span>
+        <span class="badge badge-pending" id="vote-badge" style="display:none">⭕ Not voted</span>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
 <script>
-// ── State ──
-let FB_URL = '';
-let SESSION_ID = '';
-let DELEGATE_CODE = '';
-let DELEGATE_NAME = '';
-let allDelegates = [];
-let checkedIn = false;
-let voted = false;
-let voteActive = false;
-let pollInterval = null;
+// ═══ CONFIG ═══
+const FB_URL  = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+const PORTAL_ORIGIN = 'https://boralances.github.io';
 
-// ── Toast ──
+// ═══ STATE ═══
+let SESSION_ID = '';
+let DEL_CODE   = '';
+let DEL_NAME   = '';
+let allDelegates = [];
+let checkedIn  = false;
+let voted      = false;
+let voteActive = false;
+let pollIv     = null;
+let lastPollOk = false;
+
+// ═══ TOAST ═══
 function toast(msg, dur) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur || 2500);
+  clearTimeout(t._iv);
+  t._iv = setTimeout(() => t.classList.remove('show'), dur || 2500);
 }
 
-// ── Restore saved session ──
-function toggleAdvanced() {
-  const sec = document.getElementById('adv-section');
-  const arr = document.getElementById('adv-arrow');
-  const open = sec.style.display === 'none';
-  sec.style.display = open ? '' : 'none';
-  arr.textContent = open ? '▼' : '▶';
-}
-
-(function restoreSaved() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('mun_portal_prefs') || '{}');
-    if (saved.fbUrl) {
-      document.getElementById('fb-url').value = saved.fbUrl;
-      // Auto-expand advanced if URL was saved
-      document.getElementById('adv-section').style.display = '';
-      document.getElementById('adv-arrow').textContent = '▼';
-    }
-    if (saved.sessionId) document.getElementById('session-id').value = saved.sessionId;
-  } catch(e) {}
+// ═══ URL PARAMS — auto-join if ?s=SESSION&c=CODE&n=NAME ═══
+(function autoJoin() {
+  const p = new URLSearchParams(location.search);
+  const s = p.get('s'), c = p.get('c'), n = p.get('n');
+  if (s && c && n) {
+    SESSION_ID = s;
+    DEL_CODE   = c;
+    DEL_NAME   = decodeURIComponent(n);
+    // Skip join form and delegate selector, go straight to portal
+    document.getElementById('join-card').style.display = 'none';
+    openPortalView();
+  } else if (s) {
+    // Have session, need delegate selection
+    SESSION_ID = s;
+    document.getElementById('session-id').value = s;
+    joinSession();
+  }
+  // Restore saved session code
+  if (!s) {
+    try {
+      const saved = JSON.parse(localStorage.getItem('mun_portal_prefs') || '{}');
+      if (saved.sessionId) document.getElementById('session-id').value = saved.sessionId;
+    } catch(e) {}
+  }
 })();
 
-// ── Join session ──
+// ═══ JOIN SESSION ═══
 async function joinSession() {
   const btn = document.getElementById('join-btn');
   const err = document.getElementById('error-msg');
 
-  FB_URL = (document.getElementById('fb-url').value || '').trim().replace(/\/+$/, '');
-  SESSION_ID = document.getElementById('session-id').value.trim().toUpperCase();
-
-  if (!SESSION_ID) { showError('Please enter a Session ID.'); return; }
-  if (FB_URL && !FB_URL.startsWith('http')) FB_URL = 'https://' + FB_URL;
+  SESSION_ID = (document.getElementById('session-id')?.value || '').trim().replace(/\D/g,'');
+  if (SESSION_ID.length !== 9) { showError('Please enter the 9-digit session code.'); return; }
 
   btn.disabled = true;
   btn.textContent = 'Connecting...';
   err.style.display = 'none';
 
-  // Save prefs
-  try { localStorage.setItem('mun_portal_prefs', JSON.stringify({fbUrl: FB_URL, sessionId: SESSION_ID})); } catch(e) {}
+  try {
+    const r = await fetch(`${FB_URL}/mun_${SESSION_ID}.json`);
+    if (!r.ok) throw new Error('Could not reach session.');
+    const data = await r.json();
+    if (!data) throw new Error(`Session ${SESSION_ID} not found. Is the session active?`);
 
-  if (FB_URL) {
-    // Firebase mode — fetch real data
-    try {
-      const r = await fetch(`${FB_URL}/mun_${SESSION_ID}.json`);
-      if (!r.ok) throw new Error('Could not connect to Firebase. Check the URL.');
-      const data = await r.json();
-      if (!data) throw new Error(`Session "${SESSION_ID}" not found. Is the session active in MUN Chair?`);
-      allDelegates = data.delegates || [];
-      if (!allDelegates.length) throw new Error('No delegates in this session yet. Ask the chair to start the session.');
-      const committee = data.state?.committee || '';
-      showDelegateSelector(committee);
-    } catch(e) {
-      showError(e.message || 'Connection failed. Check URL and Session ID.');
-      btn.disabled = false;
-      btn.textContent = 'Enter Session →';
-      return;
-    }
-  } else {
-    // localStorage mode — try to read from shared storage
-    try {
-      const lsKey = 'mun_portal_' + SESSION_ID.toLowerCase();
-      const data = JSON.parse(localStorage.getItem(lsKey) || '{}');
-      allDelegates = data.delegates || [];
-      if (!allDelegates.length) {
-        // No data yet — show empty selector with manual entry option
-        showDelegateSelector('');
-      } else {
-        const committee = data.committee || '';
-        showDelegateSelector(committee);
-      }
-    } catch(e) {
-      showError('Could not find session. Try entering the Firebase URL in Advanced settings.');
-      btn.disabled = false;
-      btn.textContent = 'Enter Session →';
-      return;
-    }
+    // Save pref
+    try { localStorage.setItem('mun_portal_prefs', JSON.stringify({sessionId: SESSION_ID})); } catch(e) {}
+
+    allDelegates = data.delegates || [];
+    const committee = data.state?.committee || '';
+
+    if (!allDelegates.length) throw new Error('No delegates in this session yet. Ask the chair to start the session first.');
+
+    // Show delegate selector
+    document.getElementById('join-card').style.display = 'none';
+    document.getElementById('select-delegate').style.display = 'block';
+    document.getElementById('sel-sub').textContent = committee || ('Session ' + SESSION_ID);
+    renderDelegates(allDelegates);
+
+  } catch(e) {
+    showError(e.message || 'Connection failed. Check the session code.');
   }
-
   btn.disabled = false;
   btn.textContent = 'Enter Session →';
 }
 
-function showDelegateSelector(committee) {
-  document.getElementById('join-card').style.display = 'none';
-  document.getElementById('select-delegate').style.display = 'block';
-  document.getElementById('select-sub').textContent = committee || SESSION_ID;
-  if (allDelegates.length) {
-    renderDelegateList(allDelegates);
-  } else {
-    // No delegate list — show a text input to enter country name manually
-    document.getElementById('delegate-list').innerHTML = `
-      <div style="padding:12px 0">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">
-          No delegate list available. Enter your country name:
-        </div>
-        <input type="text" id="manual-country" placeholder="e.g. Turkey"
-          style="margin-bottom:8px"
-          onkeydown="if(event.key==='Enter')selectManualDelegate()"/>
-        <input type="text" id="manual-code" placeholder="Country code e.g. TR (2 letters)"
-          style="margin-bottom:8px;text-transform:uppercase"
-          oninput="this.value=this.value.toUpperCase()"
-          onkeydown="if(event.key==='Enter')selectManualDelegate()"/>
-        <button class="btn btn-primary" onclick="selectManualDelegate()">Continue →</button>
-      </div>`;
-  }
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 
-function selectManualDelegate() {
-  const name = document.getElementById('manual-country')?.value.trim();
-  const code = document.getElementById('manual-code')?.value.trim().toLowerCase();
-  if (!name || !code || code.length !== 2) {
-    toast('Enter your country name and 2-letter code');
+// ═══ DELEGATE LIST ═══
+function renderDelegates(list) {
+  const el = document.getElementById('del-list');
+  if (!list.length) {
+    el.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:12px">No delegates found</div>';
     return;
   }
-  selectDelegate(code, name);
-}
-
-function showError(msg) {
-  const err = document.getElementById('error-msg');
-  err.textContent = msg;
-  err.style.display = 'block';
-}
-
-// ── Delegate list ──
-function renderDelegateList(list) {
-  const el = document.getElementById('delegate-list');
-  if (!list.length) { el.innerHTML = '<div style="color:var(--text3);text-align:center;padding:20px;font-size:12px">No delegates found</div>'; return; }
   el.innerHTML = list.map(d => `
-    <div class="del-item" onclick="selectDelegate('${d.c}','${d.n.replace(/'/g,"\\'")}')">
-      <img class="del-flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.c}"/>
+    <div class="del-item" onclick="selectDelegate('${d.c}','${d.n.replace(/'/g,"\\'").replace(/"/g,'&quot;')}')">
+      <img class="del-flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png"
+           onerror="this.style.display='none'" alt="${d.c}"/>
       <span class="del-name">${d.n}</span>
       <span class="del-arrow">›</span>
     </div>`).join('');
 }
 
 function filterDelegates() {
-  const q = document.getElementById('del-search').value.toLowerCase();
-  renderDelegateList(allDelegates.filter(d => d.n.toLowerCase().includes(q)));
+  const q = (document.getElementById('del-search')?.value || '').toLowerCase();
+  renderDelegates(allDelegates.filter(d => d.n.toLowerCase().includes(q)));
 }
 
-// ── Select delegate ──
+// ═══ SELECT DELEGATE ═══
 function selectDelegate(code, name) {
-  DELEGATE_CODE = code;
-  DELEGATE_NAME = name;
-  
+  DEL_CODE = code;
+  DEL_NAME = name;
   document.getElementById('select-delegate').style.display = 'none';
-  document.getElementById('portal').style.display = 'block';
-  
-  document.getElementById('p-flag').src = `https://flagcdn.com/w160/${code.toLowerCase()}.png`;
-  document.getElementById('p-name').textContent = name;
-  document.getElementById('loading').style.display = 'block';
-  
-  // Start polling
-  startPolling();
+  openPortalView();
 }
 
-// ── Firebase helpers ──
-async function fbGet(path) {
-  if (FB_URL) {
-    const r = await fetch(`${FB_URL}/mun_${SESSION_ID}/${path}.json`);
-    if (!r.ok) throw new Error('Firebase read failed');
-    return r.json();
-  }
-  // localStorage fallback
-  const key = 'mun_portal_' + SESSION_ID.toLowerCase();
-  const data = JSON.parse(localStorage.getItem(key) || '{}');
-  if (path === '..') return data;
-  return path.split('/').reduce((o, k) => o?.[k], data) ?? null;
+// ═══ PORTAL VIEW ═══
+function openPortalView() {
+  document.getElementById('portal').style.display = 'block';
+  document.getElementById('p-flag').src = `https://flagcdn.com/w160/${DEL_CODE.toLowerCase()}.png`;
+  document.getElementById('p-name').textContent = DEL_NAME;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('portal-content').style.display = 'none';
+
+  // Start polling
+  doPoll().then(() => {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('portal-content').style.display = 'block';
+  });
+  pollIv = setInterval(doPoll, 2000);
+}
+
+// ═══ FIREBASE HELPERS ═══
+async function fbGet() {
+  const r = await fetch(`${FB_URL}/mun_${SESSION_ID}.json`);
+  if (!r.ok) throw new Error('FB read failed');
+  return r.json();
 }
 
 async function fbPatch(path, data) {
-  if (FB_URL) {
-    await fetch(`${FB_URL}/mun_${SESSION_ID}/${path}.json`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return;
-  }
-  // localStorage fallback
-  try {
-    const key = 'mun_portal_' + SESSION_ID.toLowerCase();
-    const existing = JSON.parse(localStorage.getItem(key) || '{}');
-    // Deep merge at path
-    const keys = path.split('/');
-    let obj = existing;
-    for (let i = 0; i < keys.length - 1; i++) {
-      obj[keys[i]] = obj[keys[i]] || {};
-      obj = obj[keys[i]];
-    }
-    Object.assign(obj[keys[keys.length-1]] = obj[keys[keys.length-1]] || {}, data);
-    localStorage.setItem(key, JSON.stringify(existing));
-  } catch(e) {}
+  await fetch(`${FB_URL}/mun_${SESSION_ID}/${path}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
 }
 
-// ── Actions ──
+// ═══ ACTIONS ═══
 async function doCheckin() {
   if (checkedIn) return;
   try {
-    await fbPatch('attendance', { [DELEGATE_CODE]: 'present' });
-    checkedIn = true;
-    document.getElementById('checkin-area').innerHTML =
-      '<button class="vote-btn btn-done"><span>✅</span> Checked In!</button>';
-    document.getElementById('checkin-badge').className = 'badge badge-present';
-    document.getElementById('checkin-badge').textContent = '✅ Present';
-    toast('Marked as present!');
-  } catch(e) { toast('Error — try again', 2000); }
+    await fbPatch('attendance', { [DEL_CODE]: 'present' });
+    setCheckedIn();
+    toast('✅ Marked as present!');
+  } catch(e) {
+    toast('Connection error — try again', 2000);
+  }
+}
+
+function setCheckedIn() {
+  checkedIn = true;
+  document.getElementById('checkin-area').innerHTML =
+    '<button class="action-btn btn-done"><span>✅</span> Checked In!</button>';
+  const b = document.getElementById('checkin-badge');
+  b.className = 'badge badge-ok';
+  b.textContent = '✅ Present';
 }
 
 async function doVote(val) {
   if (voted || !voteActive) return;
-  const btns = document.querySelectorAll('#vote-area .vote-btn');
+  const btns = document.querySelectorAll('#vote-area .action-btn');
   btns.forEach(b => b.disabled = true);
   try {
-    await fbPatch('votes', { [DELEGATE_CODE]: val });
-    voted = true;
-    const label = val==='yes' ? '✅ In Favor' : val==='no' ? '❌ Against' : '🟡 Abstain';
-    const color = val==='yes' ? 'var(--green)' : val==='no' ? 'var(--red)' : 'rgba(255,255,255,0.4)';
-    document.getElementById('vote-area').innerHTML =
-      `<button class="vote-btn btn-done" style="border-color:${color};color:${color}">${label} — Recorded</button>`;
-    document.getElementById('vote-badge').style.display = '';
-    document.getElementById('vote-badge').className = 'badge badge-voted';
-    document.getElementById('vote-badge').textContent = '🗳 ' + label;
-    toast(label + ' recorded!');
+    await fbPatch('votes', { [DEL_CODE]: val });
+    setVoted(val);
   } catch(e) {
     btns.forEach(b => b.disabled = false);
-    toast('Error — try again', 2000);
+    toast('Connection error — try again', 2000);
   }
 }
 
-// ── Polling ──
-async function startPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  await doPoll();
-  pollInterval = setInterval(doPoll, 2000);
+function setVoted(val) {
+  voted = true;
+  const label = val==='yes' ? '✅ In Favor' : val==='no' ? '❌ Against' : '🟡 Abstain';
+  const color = val==='yes' ? 'var(--green)' : val==='no' ? 'var(--red)' : 'rgba(255,255,255,0.3)';
+  document.getElementById('vote-area').innerHTML =
+    `<button class="action-btn btn-done" style="border-color:${color};color:${color}">${label} — Recorded</button>`;
+  const b = document.getElementById('vote-badge');
+  b.style.display = '';
+  b.className = 'badge badge-voted';
+  b.textContent = '🗳 ' + label;
+  toast(label + ' recorded!');
 }
 
+// ═══ POLL ═══
 async function doPoll() {
   try {
-    const data = await fbGet('..'); // get whole session node
-    
-    // Hide loading
-    document.getElementById('loading').style.display = 'none';
-    
+    const data = await fbGet();
+    if (!data) return;
+
+    // Connection indicator
+    const dot = document.getElementById('conn-dot');
+    const txt = document.getElementById('conn-text');
+    if (dot) dot.className = 'conn-dot ok';
+    if (txt) txt.textContent = 'Connected to session ' + SESSION_ID;
+    lastPollOk = true;
+
     // Committee name
-    const committee = data?.state?.committee || SESSION_ID;
-    document.getElementById('p-committee').textContent = committee;
-    
+    const committee = data.state?.committee || '';
+    if (committee) document.getElementById('p-committee').textContent = committee;
+
+    // Sync delegates list (in case it changed)
+    if (data.delegates?.length && !allDelegates.length) {
+      allDelegates = data.delegates;
+    }
+
     // Sync check-in
-    if (!checkedIn && data?.attendance?.[DELEGATE_CODE]) {
-      checkedIn = true;
-      document.getElementById('checkin-area').innerHTML =
-        '<button class="vote-btn btn-done"><span>✅</span> Checked In!</button>';
-      document.getElementById('checkin-badge').className = 'badge badge-present';
-      document.getElementById('checkin-badge').textContent = '✅ Present';
+    if (!checkedIn && data.attendance?.[DEL_CODE]) {
+      setCheckedIn();
     }
-    
-    // Voting
+
+    // Voting state
     const wasActive = voteActive;
-    voteActive = !!(data?.state?.voteActive);
+    voteActive = !!(data.state?.voteActive);
     const voteSection = document.getElementById('vote-section');
-    const resEl = document.getElementById('vote-resolution');
-    
+    const voteBadge = document.getElementById('vote-badge');
+
     if (voteActive && !wasActive) {
+      // Voting just opened!
       voteSection.style.display = '';
-      document.getElementById('vote-badge').style.display = '';
-      if (data?.state?.resolution) resEl.textContent = data.state.resolution;
-      if (!voted) toast('🗳 Voting is now open!', 3000);
-    } else if (!voteActive && wasActive && !voted) {
-      voteSection.style.display = 'none';
-      toast('Voting closed');
+      if (voteBadge) voteBadge.style.display = '';
+      const resEl = document.getElementById('vote-res');
+      if (resEl && data.state?.resolution) resEl.textContent = data.state.resolution;
+      if (!voted) toast('🗳 Voting is now open! Cast your vote.', 4000);
+    } else if (!voteActive && wasActive) {
+      if (!voted) voteSection.style.display = 'none';
+      if (!voted) toast('Voting has closed.');
+    } else if (voteActive) {
+      // Still active, keep showing — update resolution text if changed
+      voteSection.style.display = '';
+      if (voteBadge) voteBadge.style.display = '';
+      const resEl = document.getElementById('vote-res');
+      if (resEl && data.state?.resolution) resEl.textContent = data.state.resolution;
     }
-    
-    // Sync vote
-    if (!voted && data?.votes?.[DELEGATE_CODE]) {
-      const v = data.votes[DELEGATE_CODE];
-      if (['yes','no','abstain'].includes(v)) doVote(v);
+
+    // Sync vote from Firebase (in case submitted elsewhere)
+    if (!voted && data.votes?.[DEL_CODE]) {
+      const v = data.votes[DEL_CODE];
+      if (['yes','no','abstain'].includes(v)) {
+        setVoted(v);
+      }
     }
-    
+
   } catch(e) {
-    // Silently retry
+    // Connection issue
+    const dot = document.getElementById('conn-dot');
+    const txt = document.getElementById('conn-text');
+    if (dot) dot.className = 'conn-dot err';
+    if (txt) txt.textContent = 'Connection lost — retrying...';
+    lastPollOk = false;
   }
 }
 
-// ── BroadcastChannel sync ──
+// ═══ BROADCASTCHANNEL (same-browser sync) ═══
 try {
   const bc = new BroadcastChannel('mun_portal_' + SESSION_ID);
   bc.onmessage = () => doPoll();
 } catch(e) {}
 </script>
-
 </body>
 </html>
