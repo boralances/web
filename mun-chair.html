@@ -3098,19 +3098,22 @@ function addDelegateByIdx(idx){
   renderDelegates(); renderDelegatePicker(); updateNav();
   document.getElementById('del-search').value='';
   closeDelDrop();
+  if(typeof pushSessionToFirebase==='function') setTimeout(pushSessionToFirebase,300);
 }
 function removeDelegate(code){
   delegates=delegates.filter(d=>d.c!==code);
   pickerSelected.delete(code);
   renderDelegates(); renderDelegatePicker(); updateNav();
+  if(typeof pushSessionToFirebase==='function') setTimeout(pushSessionToFirebase,300);
 }
-function clearDelegates(){ delegates=[]; pickerSelected.clear(); renderDelegates(); renderDelegatePicker(); updateNav(); }
+function clearDelegates(){ delegates=[]; pickerSelected.clear(); renderDelegates(); renderDelegatePicker(); updateNav(); if(typeof pushSessionToFirebase==='function') setTimeout(pushSessionToFirebase,300); }
 function addPreset(key){
   (PRESETS[key]||[]).forEach(name=>{
     const c=COUNTRIES.find(x=>x.n===name);
     if(c&&!delegates.find(d=>d.c===c.c)) delegates.push(c);
   });
   renderDelegates(); renderDelegatePicker(); updateNav();
+  if(typeof pushSessionToFirebase==='function') setTimeout(pushSessionToFirebase,300);
 }
 
 function renderDelegates(){
@@ -3184,7 +3187,7 @@ function beginSession(){
   const _bphoto=document.getElementById('btn-photo-mode'); if(_bphoto) _bphoto.style.display='';
   const _baqr=document.getElementById('btn-attend-qr'); if(_baqr) _baqr.style.display='';
   const _brelay=document.getElementById('btn-relay-setup'); if(_brelay) _brelay.style.display='';
-  const _bsic=document.getElementById('session-id-chip'); if(_bsic&&_fbSessionId){_bsic.style.display='';_bsic.textContent='ID: '+_fbSessionId;}
+  const _bsic=document.getElementById('session-id-chip'); if(_bsic){_bsic.style.display='';_bsic.textContent='ID: '+_fbSessionId;}
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
@@ -3200,6 +3203,15 @@ function beginSession(){
   scores={}; warnings={}; rollCallData={}; resolutions=[]; modLog=[]; gslBankUsed=0; gslBankHistory=[]; workPapers=[]; amendments=[]; blocs={}; caucusLog=[]; _blocSelectedDelegates=[]; positionPapers={}; delegateNotes={}; appeals=[]; motionVotes=[]; scoreHistory={}; speakerTimeLog={};
   updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
+  // Auto-connect Firebase with 9-digit code
+  if (!_fbSessionId) {
+    _fbSessionId = String(Math.floor(100000000 + Math.random() * 900000000)); // 9-digit
+    _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+    _fbAvailable = true;
+    startFbPoll();
+  }
+  generateDelegatePortals();
+  setTimeout(pushSessionToFirebase, 500); // slight delay so Firebase connection is ready
   showPage('timer');
 }
 
@@ -5114,6 +5126,12 @@ function startRollVote(){
   showVoteDelegate();
   renderVoteList();
   updateVoteStats();
+  // Notify Firebase — hosted portal pages will show voting UI
+  window._votePortalActive = true;
+  const resTitle = (typeof resolution!=='undefined'&&resolution) ? (resolution.id+' — '+(resolution.title||'')) : 'Resolution Vote';
+  if(_fbAvailable&&_fbUrl&&_fbSessionId){
+    fetch(_fbUrl+'/mun_'+_fbSessionId+'/state.json',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({voteActive:true,resolution:resTitle,committee:session.committee||''})}).catch(()=>{});
+  }
 }
 
 function showVoteDelegate(){
@@ -10022,7 +10040,7 @@ function openAttendanceQR(){
     grid.innerHTML=delegates.map(d=>{
       const isPresent=rollCallData[d.c]==='present'||rollCallData[d.c]==='present+voting';
       const _pu=delegatePortalUrls[d.c];
-      const portalUrl=_pu?(_pu.dataUrl||_pu):'';
+      const portalUrl=_pu?(_pu.portalUrl||_pu.dataUrl||_pu):'';
       const qrSrc=portalUrl?makeQRUrl(portalUrl,100):'';
       return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${isPresent?'rgba(61,232,160,0.06)':'var(--bg3)'};border:1px solid ${isPresent?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:8px;transition:all 0.3s">
         ${isPresent
@@ -10151,17 +10169,18 @@ try{new BroadcastChannel('mun_portal_'+FS).onmessage=()=>poll();}catch(e){}
 }
 
 function generateDelegatePortals() {
-  portalSessionKey = 'mun_portal_' + (session.committee||'mun').replace(/[^a-z0-9]/gi,'').toLowerCase() + '_' + Math.floor(Date.now()/86400000);
+  portalSessionKey = 'mun_' + _fbSessionId;
   delegatePortalUrls = {};
   delegates.forEach(d => {
+    // Real hosted URL — works on any device, any network
+    const portalUrl = 'https://boralances.github.io/mun-delegate-portal?s=' + _fbSessionId + '&c=' + d.c + '&n=' + encodeURIComponent(d.n);
+    // Also keep blob URL for opening in new tab from chair computer
     const html = buildMinimalPortal(d.c, d.n);
-    // Store as data: URI so QR encodes a self-contained page
-    const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-    // Also keep blob URL for opening in new tab (chair use)
     const blob = new Blob([html], {type:'text/html'});
     delegatePortalUrls[d.c] = {
-      dataUrl,  // used for QR code — works on any device
-      blobUrl: URL.createObjectURL(blob),  // used for opening in new tab
+      dataUrl: portalUrl,   // real URL for QR — phone can open it
+      blobUrl: URL.createObjectURL(blob),
+      portalUrl,
       html
     };
   });
@@ -10440,14 +10459,14 @@ function connectRelay() {
 // Free tier: unlimited connections, no auth needed for this use case
 // Works on any network, any browser, any device
 
-let _fbUrl = '';  // Firebase Realtime DB URL
+let _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';  // Hardcoded Firebase URL
 let _fbSessionId = '';
 let _fbPollIv = null;
 let _fbAvailable = false;
 
 function initFirebase(dbUrl, sessionId) {
   _fbUrl = dbUrl.replace(/\/$/, '');
-  _fbSessionId = sessionId || Math.random().toString(36).slice(2, 8).toUpperCase();
+  _fbSessionId = sessionId || String(Math.floor(100000000 + Math.random() * 900000000));
   _fbAvailable = true;
   // Test connection
   fetch(`${_fbUrl}/mun_${_fbSessionId}/ping.json`, {
@@ -10533,7 +10552,7 @@ function openNetworkSetupModal() {
   modal.id = 'network-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
 
-  const sessionCode = _fbSessionId || Math.random().toString(36).slice(2,8).toUpperCase();
+  const sessionCode = _fbSessionId || String(Math.floor(100000000 + Math.random() * 900000000));
 
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
@@ -10563,7 +10582,7 @@ function openNetworkSetupModal() {
           <div style="display:flex;gap:6px;margin-bottom:6px">
             <input type="text" id="fb-url-input" placeholder="https://proje-adı-default-rtdb.firebaseio.com"
               style="flex:1;font-size:11px;font-family:'JetBrains Mono',monospace"
-              value="${_fbUrl}"/>
+              value="${_fbUrl||"https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app"}" placeholder="https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app"/>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <input type="text" id="fb-session-input" placeholder="Session kodu (ör: MUN2025)"
@@ -10589,7 +10608,7 @@ function openNetworkSetupModal() {
         <!-- How delegates connect -->
         ${_fbAvailable ? `
         <div style="padding:14px;background:rgba(61,232,160,0.06);border:1px solid rgba(61,232,160,0.2);border-radius:12px">
-          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px">✅ Aktif — Delegeler iki yoldan girebilir:</div>
+          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px">✅ Aktif — Delegelere şunu söyle:</div>
           
           <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px">Yol 1 — Portal URL (önerilen)</div>
           <div style="font-size:12px;color:var(--text2);margin-bottom:6px">Delegeler tarayıcıdan şu siteye gider:</div>
@@ -10972,10 +10991,16 @@ function pushSessionToFirebase() {
         ? (resolution.id + ' — ' + (resolution.title || '')) : ''
     }
   };
-  fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
+  // Use PUT for delegates (array) + PATCH for state separately
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/delegates.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sessionData.delegates)
+  }).catch(() => {});
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/state.json`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(sessionData)
+    body: JSON.stringify(sessionData.state)
   }).catch(() => {});
 }
 // ═══ STATS ═══
