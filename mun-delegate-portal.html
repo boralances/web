@@ -3,627 +3,866 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#060a12">
 <title>MUN Delegate Portal</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{--bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;--bg4:#1c2840;--blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;--text:#ddeeff;--text2:#8aaccc;--text3:#4a6580;--text4:#2a3d52;--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);--r:14px;--sh:0 8px 40px rgba(0,0,0,0.65)}
-html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;overflow-x:hidden}
-body{display:flex;flex-direction:column;align-items:center;padding:0 0 80px}
-.screen{display:none;width:100%;max-width:420px;padding:20px 16px;flex-direction:column;align-items:center}
-.screen.active{display:flex}
-.logo{text-align:center;margin:28px 0 22px}
-.lm{width:52px;height:52px;border-radius:14px;background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 9px;box-shadow:0 4px 22px rgba(59,143,238,0.5)}
-.lt{font-size:18px;font-weight:700;color:var(--text)}.ls{font-size:11px;color:var(--text3);margin-top:2px}
-.card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
-.ch{padding:15px 20px 11px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent)}
-.ct{font-size:14px;font-weight:700;color:var(--text)}.cs{font-size:11px;color:var(--text3);margin-top:2px}
-.cb{padding:16px 20px}
-.field{margin-bottom:13px}
-.field label{display:block;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
-input[type=text],input[type=password]{width:100%;padding:13px 14px;border-radius:var(--r);background:rgba(6,10,18,0.7);border:1px solid var(--border2);color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color 0.18s}
-input:focus{border-color:rgba(106,176,255,0.5);box-shadow:0 0 0 3px rgba(106,176,255,0.08)}
-.ci{font-family:'SF Mono',monospace;font-size:22px;font-weight:700;letter-spacing:0.16em;text-align:center}
-.pi{font-family:'SF Mono',monospace;font-size:28px;font-weight:800;letter-spacing:0.25em;text-align:center}
-.btn{width:100%;padding:14px;border-radius:var(--r);border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
-.btn:active{transform:scale(0.98)}
-.bp{background:linear-gradient(135deg,#7ec8ff,#3b8fee,#1d6ed8);color:#fff;box-shadow:0 3px 16px rgba(59,143,238,0.4)}
-.bp:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-.bg2b{background:rgba(255,255,255,0.04);border:1px solid var(--border2);color:var(--text2);margin-top:8px}
-.ab{width:100%;padding:16px;border-radius:16px;border:2px solid;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit;margin-bottom:8px;transition:all 0.15s;background:transparent}
-.ab:active{transform:scale(0.97)}.ab:disabled{opacity:0.3;cursor:not-allowed;transform:none}
-.bci{border-color:rgba(106,176,255,0.35);color:var(--blue)}.by{border-color:rgba(61,232,160,0.35);color:var(--green)}.babs{border-color:rgba(255,255,255,0.12);color:rgba(255,255,255,0.4)}.bno{border-color:rgba(255,107,107,0.35);color:var(--red)}.bdn{border-color:rgba(255,255,255,0.07);color:var(--text3);cursor:default}
-.err{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:10px;display:none}
-.dl{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto;padding:2px}
-.di{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all 0.15s}
-.di:active{transform:scale(0.98);background:rgba(106,176,255,0.06)}
-.df{width:38px;height:27px;object-fit:cover;border-radius:4px;border:1px solid var(--border2);flex-shrink:0}
-.dn{font-size:13px;font-weight:600;color:var(--text);flex:1}
-/* Portal */
-#sc-portal{padding:0;max-width:420px}
-.pt{position:relative;background:linear-gradient(160deg,rgba(56,139,253,0.1),transparent),var(--bg2);padding:22px 20px 16px;text-align:center;border-bottom:1px solid var(--border)}
-.pf{width:90px;height:64px;object-fit:cover;border-radius:12px;border:2px solid var(--border2);margin-bottom:10px;box-shadow:0 6px 24px rgba(0,0,0,0.5)}
-.pl{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
-.pn{font-size:24px;font-weight:800;color:var(--text);line-height:1.1}
-.pc{font-size:11px;color:var(--text3);margin-top:3px}
-/* Tabs */
-.tabs{display:flex;gap:2px;padding:7px;background:var(--bg3);border-bottom:1px solid var(--border);width:100%}
-.tb{flex:1;padding:8px 4px;border-radius:10px;border:none;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text3);background:transparent;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;gap:2px}
-.tb span{font-size:15px}.tb.active{background:var(--bg2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
-.tp{display:none;padding:16px 20px;width:100%}.tp.active{display:block}
-.st{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
-.lb2{display:inline-flex;align-items:center;gap:6px;background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px}
-.ld{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pls 1.2s ease-in-out infinite}
-@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.75)}}
-.vr{font-size:12px;color:var(--text3);margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);line-height:1.5;font-style:italic}
-.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
-.bok{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.25);color:var(--green)}
-.bpend{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text3)}
-.bvoted{background:rgba(106,176,255,0.1);border:1px solid rgba(106,176,255,0.25);color:var(--blue)}
-/* Stats */
-.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.sc2{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.sv{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--text)}.sl{font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-top:3px}
-.lbr{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
-.lbrank{font-size:15px;min-width:24px}.lbflag{width:30px;height:21px;object-fit:cover;border-radius:3px;border:1px solid var(--border2);flex-shrink:0}
-.lbname{flex:1;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lbbw{width:55px;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
-.lbb{height:100%;border-radius:3px;background:var(--green)}
-.lbpts{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);min-width:38px;text-align:right}
-/* Cert */
-.cc{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:18px;text-align:center;margin-bottom:10px}
-.cicon{font-size:44px;margin-bottom:7px}.ctype{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:5px}
-.cname{font-size:19px;font-weight:800;color:var(--text);margin-bottom:3px}.ccom{font-size:12px;color:var(--text3)}
-.cdl{margin-top:10px;padding:10px 18px;background:linear-gradient(135deg,rgba(255,208,96,0.15),rgba(255,159,67,0.1));border:1px solid rgba(255,208,96,0.4);border-radius:10px;color:var(--yellow);font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:inherit}
-/* Ended banner */
-.eb{background:linear-gradient(135deg,rgba(255,208,96,0.08),rgba(255,159,67,0.06));border:1px solid rgba(255,208,96,0.25);border-radius:12px;padding:12px 16px;margin-bottom:14px;text-align:center}
-.et{font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:2px}.es{font-size:11px;color:var(--text3)}
-/* Award banner */
-.aw{padding:18px;border-radius:16px;text-align:center;margin-bottom:12px;background:linear-gradient(135deg,rgba(255,208,96,0.1),rgba(255,159,67,0.05));border:2px solid rgba(255,208,96,0.3)}
-.awicon{font-size:48px;margin-bottom:5px}.awtype{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--yellow)}.awname{font-size:20px;font-weight:800;color:var(--text);margin-top:3px}
-/* Conn */
-.cb2{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text3);margin-bottom:12px}
-.cd{width:6px;height:6px;border-radius:50%;background:var(--text4);flex-shrink:0}.cdok{background:var(--green)}.cderr{background:var(--red)}
-.div{height:1px;background:var(--border);margin:14px 0}
-/* Spinner */
-#spn{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:900;flex-direction:column;gap:10px}
-.sp{width:26px;height:26px;border:2px solid rgba(255,255,255,0.07);border-top-color:var(--blue);border-radius:50%;animation:rot 0.75s linear infinite}
+:root{
+  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;--bg4:#1c2840;--bg5:#222f45;
+  --blue:#6ab0ff;--blue-dim:rgba(106,176,255,0.12);
+  --green:#3de8a0;--green-dim:rgba(61,232,160,0.12);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.12);
+  --yellow:#ffd060;--yellow-dim:rgba(255,208,96,0.1);
+  --orange:#ff9f43;--purple:#c792ff;
+  --text:#ddeeff;--text2:#8aaccc;--text3:#4a6580;--text4:#2a3d52;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --r:14px;--sh:0 8px 40px rgba(0,0,0,0.6);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ── LOADING SCREEN ── */
+#splash{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity 0.4s}
+#splash.hidden{opacity:0;pointer-events:none}
+.spin{width:28px;height:28px;border:2px solid rgba(255,255,255,0.08);border-top-color:var(--blue);border-radius:50%;animation:rot .75s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
-/* Toast */
-#toast{position:fixed;bottom:20px;left:50%;z-index:999;transform:translateX(-50%) translateY(80px);background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:11px 22px;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--sh);white-space:nowrap;pointer-events:none;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
-#toast.show{transform:translateX(-50%) translateY(0)}
-.cnt{background:var(--cc,transparent);padding:0;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;color:var(--yellow);margin-top:4px}
+.splash-lm{width:60px;height:60px;border-radius:18px;background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;box-shadow:0 6px 28px rgba(59,143,238,0.5)}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;width:100%;flex-direction:column;align-items:center;padding:0 0 100px}
+.screen.active{display:flex}
+
+/* ── JOIN SCREEN ── */
+.join-wrap{width:100%;max-width:420px;padding:20px 16px;display:flex;flex-direction:column;align-items:center}
+.logo{text-align:center;margin:32px 0 24px}
+.logo-mark{width:58px;height:58px;border-radius:18px;background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 10px;box-shadow:0 6px 28px rgba(59,143,238,0.5)}
+.logo-title{font-size:20px;font-weight:800;color:var(--text)}.logo-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.card-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,0.025),transparent)}
+.card-title{font-size:14px;font-weight:700;color:var(--text)}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.card-body{padding:16px 20px}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+input{width:100%;padding:13px 14px;border-radius:var(--r);background:rgba(6,10,18,.75);border:1px solid var(--border2);color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+input:focus{border-color:rgba(106,176,255,.5);box-shadow:0 0 0 3px rgba(106,176,255,.08)}
+.mono{font-family:'SF Mono','JetBrains Mono',monospace;letter-spacing:.14em;text-align:center;font-size:20px;font-weight:700}
+.pin-inp{font-size:28px;font-weight:800;letter-spacing:.28em;text-align:center}
+
+.btn-primary{width:100%;padding:14px;border-radius:var(--r);border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#7ec8ff,#3b8fee,#1d6ed8);color:#fff;box-shadow:0 3px 16px rgba(59,143,238,.4);transition:all .15s}
+.btn-primary:active{transform:scale(.98)}.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{width:100%;padding:12px;border-radius:var(--r);border:1px solid var(--border2);background:rgba(255,255,255,.04);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px}
+.btn-ghost:active{transform:scale(.98)}
+
+.err-box{background:var(--red-dim);border:1px solid rgba(255,107,107,.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:10px;display:none}
+
+/* ── COUNTRY LIST ── */
+.del-list{display:flex;flex-direction:column;gap:5px;max-height:350px;overflow-y:auto;padding:2px}
+.del-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+.del-row:active{transform:scale(.98)}.del-row:hover{border-color:rgba(106,176,255,.3);background:rgba(106,176,255,.05)}
+.del-flag{width:38px;height:27px;object-fit:cover;border-radius:4px;border:1px solid var(--border2);flex-shrink:0}
+.del-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+
+/* ── PORTAL ── */
+#sc-portal{padding:0}
+.portal-header{
+  background:linear-gradient(160deg,rgba(56,139,253,.1),transparent),var(--bg2);
+  padding:22px 20px 16px;text-align:center;
+  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+}
+.portal-header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(56,139,253,.08),transparent 70%);pointer-events:none}
+.p-flag{width:88px;height:62px;object-fit:cover;border-radius:10px;border:2px solid var(--border2);margin-bottom:10px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.p-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.p-name{font-size:25px;font-weight:800;color:var(--text);line-height:1.1}
+.p-committee{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(13,21,32,.95);border-top:1px solid var(--border2);
+  backdrop-filter:blur(16px);
+  display:flex;padding:8px 0 env(safe-area-inset-bottom,0);
+}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;transition:color .15s;position:relative}
+.bn span{font-size:18px;line-height:1}.bn.active{color:var(--blue)}
+.bn-dot{position:absolute;top:5px;right:20%;width:6px;height:6px;border-radius:50%;background:var(--green);display:none}
+.bn-dot.show{display:block}
+
+/* ── TAB PANELS ── */
+.panel{display:none;width:100%;max-width:480px;padding:16px 16px 20px;margin:0 auto}
+.panel.active{display:block}
+
+/* ── SECTION TITLES ── */
+.sec-title{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── CONN BAR ── */
+.conn-bar{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-radius:10px;margin-bottom:14px;border:1px solid var(--border)}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--text4);flex-shrink:0;transition:background .3s}
+.conn-dot.ok{background:var(--green)}.conn-dot.err{background:var(--red)}
+.conn-sid{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--blue);margin-left:auto}
+
+/* ── STATUS CARDS ── */
+.status-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.status-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+.status-icon{font-size:22px;flex-shrink:0}
+.status-info{min-width:0}
+.status-label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:2px}
+.status-val{font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── ACTION BUTTONS ── */
+.act-btn{
+  width:100%;padding:16px;border-radius:16px;border:2px solid;
+  font-size:16px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:inherit;margin-bottom:8px;transition:all .15s;background:transparent;
+}
+.act-btn:active{transform:scale(.97)}.act-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-checkin{border-color:rgba(106,176,255,.35);color:var(--blue)}.btn-checkin:hover{background:var(--blue-dim)}
+.btn-yes{border-color:rgba(61,232,160,.35);color:var(--green)}.btn-yes:hover{background:var(--green-dim)}
+.btn-abs{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}.btn-abs:hover{background:rgba(255,255,255,.04)}
+.btn-no{border-color:rgba(255,107,107,.35);color:var(--red)}.btn-no:hover{background:var(--red-dim)}
+.btn-done{border-color:rgba(255,255,255,.07);color:var(--text3);cursor:default}
+
+/* ── LIVE BADGE ── */
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid rgba(61,232,160,.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pls 1.2s ease-in-out infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+
+/* ── VOTE RES ── */
+.vote-res{font-size:12px;color:var(--text3);margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);line-height:1.5;font-style:italic}
+
+/* ── BADGES ── */
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.b-ok{background:var(--green-dim);border:1px solid rgba(61,232,160,.25);color:var(--green)}
+.b-pend{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text3)}
+.b-voted{background:var(--blue-dim);border:1px solid rgba(106,176,255,.25);color:var(--blue)}
+.b-warn{background:var(--red-dim);border:1px solid rgba(255,107,107,.25);color:var(--red)}
+
+/* ── STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:var(--text)}
+.stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-top:3px}
+
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-rank{font-size:14px;min-width:22px}.lb-flag{width:30px;height:21px;object-fit:cover;border-radius:3px;border:1px solid var(--border2);flex-shrink:0}
+.lb-name{flex:1;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-bw{width:52px;height:5px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.lb-b{height:100%;border-radius:2px;background:var(--green)}
+.lb-pts{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);min-width:38px;text-align:right}
+
+/* ── VOTE CARDS ── */
+.vote-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.vote-card.pass{border-color:rgba(61,232,160,.2)}.vote-card.fail{border-color:rgba(255,107,107,.2)}
+.vote-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.vote-verdict{font-size:13px;font-weight:800}.pass .vote-verdict{color:var(--green)}.fail .vote-verdict{color:var(--red)}
+.vote-title{font-size:12px;font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vote-date{font-size:10px;color:var(--text3)}
+.vote-tally{display:flex;gap:10px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.vote-my{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--blue-dim);color:var(--blue);margin-left:auto}
+.vote-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex}
+.vb-yes{height:100%;background:var(--green)}.vb-no{height:100%;background:var(--red)}.vb-abs{height:100%;background:rgba(255,255,255,.15)}
+
+/* ── RESOLUTION CARDS ── */
+.res-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.res-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);font-weight:700;margin-bottom:3px}
+.res-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px}
+.res-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;padding:2px 8px;border-radius:6px}
+.rs-passed{background:var(--green-dim);color:var(--green)}.rs-failed{background:var(--red-dim);color:var(--red)}.rs-draft{background:rgba(255,255,255,.05);color:var(--text3)}
+.res-sponsors{font-size:11px;color:var(--text3);margin-top:5px}
+
+/* ── CERT CARDS ── */
+.cert-card{background:linear-gradient(135deg,rgba(255,208,96,.08),rgba(255,159,67,.04)),var(--bg3);border:1px solid rgba(255,208,96,.2);border-radius:16px;padding:20px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
+.cert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+.cert-icon{font-size:48px;margin-bottom:8px}.cert-type{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.cert-name{font-size:20px;font-weight:800;color:var(--text)}.cert-committee{font-size:12px;color:var(--text3);margin-top:3px}
+.cert-meta{font-size:11px;color:var(--text4);margin-top:6px}
+.cert-btn{margin-top:12px;padding:12px 20px;background:linear-gradient(135deg,rgba(255,208,96,.2),rgba(255,159,67,.12));border:1px solid rgba(255,208,96,.4);border-radius:10px;color:var(--yellow);font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;transition:all .15s}
+.cert-btn:active{transform:scale(.98)}.cert-btn.blue{background:var(--blue-dim);border-color:rgba(106,176,255,.4);color:var(--blue)}
+.cert-lock{font-size:13px;color:var(--text3);font-style:italic;margin-top:8px}
+.cert-countdown{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--yellow);margin-top:4px}
+
+/* ── AWARD BANNER ── */
+.award-banner{background:linear-gradient(135deg,rgba(255,208,96,.12),rgba(255,159,67,.06));border:2px solid rgba(255,208,96,.35);border-radius:18px;padding:20px;text-align:center;margin-bottom:14px}
+.award-icon{font-size:52px;margin-bottom:6px}.award-type{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow)}
+.award-name{font-size:18px;font-weight:800;color:var(--text);margin-top:4px}
+
+/* ── ENDED BANNER ── */
+.ended-banner{background:linear-gradient(135deg,rgba(255,208,96,.07),rgba(255,159,67,.04));border:1px solid rgba(255,208,96,.22);border-radius:12px;padding:12px 16px;margin-bottom:14px;text-align:center}
+.eb-title{font-size:14px;font-weight:700;color:var(--yellow)}.eb-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── INFO ROWS ── */
+.info-table{background:var(--bg3);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.info-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+.info-key{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.1em;min-width:76px}
+.info-val{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--border);margin:14px 0}
+.rank-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:12px;font-size:13px;font-weight:700;background:var(--yellow-dim);border:1px solid rgba(255,208,96,.3);color:var(--yellow);margin-bottom:14px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:80px;left:50%;z-index:1000;transform:translateX(-50%) translateY(40px);background:var(--bg2);border:1px solid var(--border3);border-radius:14px;padding:11px 22px;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--sh);white-space:nowrap;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── EMPTY STATES ── */
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);font-size:13px}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* ── AGENDA ── */
+.agenda-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:12px}
+.agenda-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.agenda-item{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.agenda-item:last-child{border-bottom:none}
 </style>
 </head>
 <body>
-<div id="spn"><div class="sp"></div><span style="font-size:12px;color:var(--text3)">Loading...</span></div>
 
-<!-- S1: JOIN -->
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-lm">M</div>
+  <div class="spin"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — JOIN (Session ID)
+══════════════════════════════════════ -->
 <div class="screen" id="sc-join">
-  <div class="logo"><div class="lm">M</div><div class="lt">MUN Delegate Portal</div><div class="ls">boralances.github.io</div></div>
-  <div class="card">
-    <div class="ch"><div class="ct">Join Session</div><div class="cs">Enter the code shown on the chair's screen</div></div>
-    <div class="cb">
-      <div class="field"><label>Session Code (8 characters)</label>
-        <input type="text" class="ci" id="inp-sid" placeholder="ABC12DEF" maxlength="8"
-          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
-          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
-          onkeydown="if(event.key==='Enter')doJoin()"/>
+  <div class="join-wrap">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-title">MUN Delegate Portal</div>
+      <div class="logo-sub">boralances.github.io/mun-delegate-portal</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Join Session</div>
+        <div class="card-sub">Enter the 8-character code shown on the chair's screen</div>
       </div>
-      <button class="btn bp" id="btn-join" onclick="doJoin()">Continue →</button>
-      <div class="err" id="err-join"></div>
+      <div class="card-body">
+        <div class="field">
+          <label>Session Code</label>
+          <input type="text" class="mono" id="inp-sid" placeholder="ABC1 2DEF"
+            maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+            onkeydown="if(event.key==='Enter')doJoin()"/>
+        </div>
+        <button class="btn-primary" id="btn-join" onclick="doJoin()">Continue →</button>
+        <div class="err-box" id="err-join"></div>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- S2: SELECT COUNTRY -->
+<!-- ══════════════════════════════════════
+     SCREEN 2 — SELECT COUNTRY
+══════════════════════════════════════ -->
 <div class="screen" id="sc-select">
-  <div class="logo" style="margin-top:16px"><div class="lm">🌍</div><div class="lt">Select Country</div><div class="ls" id="sel-sub">Choose your delegation</div></div>
-  <div class="card">
-    <div class="cb" style="padding:12px">
-      <input type="text" id="inp-srch" placeholder="🔍  Search country..." oninput="filterC()" style="margin-bottom:10px"/>
-      <div class="dl" id="clist"></div>
+  <div class="join-wrap">
+    <div class="logo" style="margin-top:16px">
+      <div class="logo-mark">🌍</div>
+      <div class="logo-title">Select Your Country</div>
+      <div class="logo-sub" id="sel-committee">—</div>
     </div>
+    <div class="card">
+      <div class="card-body" style="padding:12px">
+        <input type="text" id="inp-search" placeholder="🔍  Search country..."
+          oninput="filterCountries()" style="margin-bottom:10px"/>
+        <div class="del-list" id="country-list"></div>
+      </div>
+    </div>
+    <button class="btn-ghost" style="width:100%" onclick="goTo('sc-join')">← Back</button>
   </div>
-  <button class="btn bg2b" style="width:100%;max-width:420px" onclick="show('sc-join')">← Back</button>
 </div>
 
-<!-- S3: PIN -->
+<!-- ══════════════════════════════════════
+     SCREEN 3 — PIN
+══════════════════════════════════════ -->
 <div class="screen" id="sc-pin">
-  <div class="logo"><div class="lm">🔑</div><div class="lt" id="pin-title">Enter PIN</div><div class="ls" id="pin-sub">4-digit PIN from your chair</div></div>
-  <div class="card">
-    <div class="ch"><div class="ct" id="pin-ct">Delegate PIN</div><div class="cs" id="pin-cs">4-digit PIN</div></div>
-    <div class="cb">
-      <div class="field"><label>4-Digit PIN</label>
-        <input type="password" class="pi" id="inp-pin" placeholder="••••" maxlength="4"
-          inputmode="numeric" pattern="[0-9]*" autocomplete="off"
-          oninput="this.value=this.value.replace(/\D/g,'')"
-          onkeydown="if(event.key==='Enter')doPin()"/>
+  <div class="join-wrap">
+    <div class="logo">
+      <div class="logo-mark">🔑</div>
+      <div class="logo-title" id="pin-heading">Enter PIN</div>
+      <div class="logo-sub" id="pin-sub">4-digit PIN from your chair</div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="field">
+          <label>4-Digit PIN</label>
+          <input type="password" class="mono pin-inp" id="inp-pin"
+            placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+            onkeydown="if(event.key==='Enter')doPin()"/>
+        </div>
+        <button class="btn-primary" onclick="doPin()">Unlock Portal →</button>
+        <button class="btn-ghost" onclick="backFromPin()">← Back</button>
+        <div class="err-box" id="err-pin"></div>
       </div>
-      <button class="btn bp" onclick="doPin()">Unlock Portal →</button>
-      <button class="btn bg2b" onclick="backFromPin()">← Back</button>
-      <div class="err" id="err-pin"></div>
     </div>
   </div>
 </div>
 
-<!-- S4: PORTAL -->
+<!-- ══════════════════════════════════════
+     SCREEN 4 — PORTAL
+══════════════════════════════════════ -->
 <div class="screen" id="sc-portal">
-  <div class="pt" style="width:100%">
-    <img class="pf" id="p-flag" src="" alt=""/>
-    <div class="pl">Delegate of</div>
-    <div class="pn" id="p-name">—</div>
-    <div class="pc" id="p-com">—</div>
-  </div>
-  <div class="tabs" style="width:100%">
-    <button class="tb active" id="t-home" onclick="tab('home')"><span>🏠</span>Home</button>
-    <button class="tb" id="t-vote" onclick="tab('vote')"><span>🗳</span>Vote</button>
-    <button class="tb" id="t-stats" onclick="tab('stats')"><span>📊</span>Stats</button>
-    <button class="tb" id="t-cert" onclick="tab('cert')"><span>🏅</span>Cert</button>
-    <button class="tb" id="t-votes" onclick="tab('votes')"><span>📜</span>Votes</button>
-    <button class="tb" id="t-info" onclick="tab('info')"><span>ℹ</span>Info</button>
+  <!-- Header -->
+  <div class="portal-header" style="width:100%">
+    <img class="p-flag" id="p-flag" src="" alt=""/>
+    <div class="p-label">Delegate of</div>
+    <div class="p-name" id="p-name">—</div>
+    <div class="p-committee" id="p-committee">—</div>
   </div>
 
-  <!-- HOME -->
-  <div class="tp active" id="p-home" style="width:100%">
-    <div class="cb2"><div class="cd" id="cnd"></div><span id="cnt-txt">Connecting...</span></div>
-    <div class="eb" id="eb" style="display:none"><div class="et">🏁 Meeting Ended</div><div class="es" id="eb-sub">Check Stats & Cert tabs.</div></div>
-    <div id="aw-sec" style="display:none"><div class="aw"><div class="awicon" id="aw-icon">🏆</div><div class="awtype" id="aw-type">Award</div><div class="awname" id="aw-name">Congratulations!</div></div></div>
-    <div class="st">📋 Attendance</div>
-    <div id="ci-area"><button class="ab bci" onclick="doCheckin()"><span>👋</span> Mark Myself Present</button></div>
-    <div class="badges">
-      <span class="badge bpend" id="bdg-ci">⭕ Not checked in</span>
-      <span class="badge bpend" id="bdg-v" style="display:none">⭕ Not voted</span>
-    </div>
-  </div>
+  <!-- Tab Panels -->
+  <div class="panel active" id="p-home"></div>
+  <div class="panel" id="p-vote"></div>
+  <div class="panel" id="p-stats"></div>
+  <div class="panel" id="p-agenda"></div>
+  <div class="panel" id="p-cert"></div>
+  <div class="panel" id="p-info"></div>
 
-  <!-- VOTE -->
-  <div class="tp" id="p-vote" style="width:100%">
-    <div id="vote-waiting" style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px">
-      <div style="font-size:40px;margin-bottom:10px">⏳</div>
-      Waiting for the chair to open voting...
-    </div>
-    <div id="vote-live" style="display:none">
-      <div class="lb2"><div class="ld"></div>VOTING OPEN</div>
-      <div class="st">🗳 Cast Your Vote</div>
-      <div class="vr" id="v-res">Loading resolution...</div>
-      <div id="v-area">
-        <button class="ab by" onclick="doVote('yes')">✅ In Favor</button>
-        <button class="ab babs" onclick="doVote('abstain')">🟡 Abstain</button>
-        <button class="ab bno" onclick="doVote('no')">❌ Against</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- STATS -->
-  <div class="tp" id="p-stats" style="width:100%">
-    <div id="st-wait" style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px">
-      <div style="font-size:36px;margin-bottom:10px">📊</div>
-      Stats will be available after the meeting ends.
-    </div>
-    <div id="st-content" style="display:none"></div>
-  </div>
-
-  <!-- CERT -->
-  <div class="tp" id="p-cert" style="width:100%">
-    <div id="cert-content">
-      <div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px">
-        <div style="font-size:36px;margin-bottom:10px">🏅</div>
-        Certificates will be available after the meeting ends.
-      </div>
-    </div>
-  </div>
-
-  <!-- VOTES HISTORY -->
-  <div class="tp" id="p-votes" style="width:100%">
-    <div id="votes-content"></div>
-  </div>
-
-  <!-- INFO -->
-  <div class="tp" id="p-info" style="width:100%">
-    <div class="st">Session Info</div>
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px" id="info-rows"></div>
-    <button class="btn bg2b" onclick="logout()">🚪 Leave Session</button>
-  </div>
+  <!-- Bottom Nav -->
+  <nav class="bnav">
+    <button class="bn active" id="bn-home" onclick="tab('home')"><span>🏠</span>Home</button>
+    <button class="bn" id="bn-vote" onclick="tab('vote')"><span>🗳</span>Vote<div class="bn-dot" id="dot-vote"></div></button>
+    <button class="bn" id="bn-stats" onclick="tab('stats')"><span>📊</span>Stats</button>
+    <button class="bn" id="bn-agenda" onclick="tab('agenda')"><span>📋</span>Agenda</button>
+    <button class="bn" id="bn-cert" onclick="tab('cert')"><span>🏅</span>Cert</button>
+    <button class="bn" id="bn-info" onclick="tab('info')"><span>ℹ</span>Info</button>
+  </nav>
 </div>
 
 <div id="toast"></div>
 
 <script>
-const FB='https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
-let SID='',CODE='',NAME='',data={},checkedIn=false,voted=false,voteActive=false,ended=false,iv=null,civIv=null;
+// ═══ CONFIG ═══
+const FB = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
 
-// ── INIT ──
+// ═══ STATE ═══
+let SID='', CODE='', NAME='';
+let D={}; // full Firebase data snapshot
+let checkedIn=false, voted=false, voteActive=false, ended=false;
+let iv=null, certIv=null;
+
+// ═══ INIT ═══
 (function(){
-  setTimeout(()=>document.getElementById('spn').style.display='none',200);
+  setTimeout(()=>{
+    const sp=document.getElementById('splash');
+    sp.classList.add('hidden');
+    setTimeout(()=>sp.style.display='none',400);
+  },600);
+  // URL params
   const p=new URLSearchParams(location.search);
   const s=p.get('s'),c=p.get('c'),n=p.get('n');
   try{const sv=JSON.parse(localStorage.getItem('mun_p')||'{}');if(sv.sid)document.getElementById('inp-sid').value=sv.sid;}catch(e){}
-  if(s){document.getElementById('inp-sid').value=s;SID=s;}
-  if(s&&c&&n){SID=s;CODE=c;NAME=decodeURIComponent(n);show('sc-pin');setPinLabels(NAME);}
-  else show('sc-join');
+  if(s) document.getElementById('inp-sid').value=s;
+  if(s&&c&&n){SID=s;CODE=c;NAME=decodeURIComponent(n);goTo('sc-pin');setPinLabels();}
+  else goTo('sc-join');
 })();
 
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id)?.classList.add('active');window.scrollTo(0,0);}
-function err(id,msg){const e=document.getElementById(id);if(e){e.textContent=msg;e.style.display='block';}}
-function toast(msg,d){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),d||2600);}
-function setPinLabels(n){['pin-title','pin-ct'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='PIN for '+n;});const s=document.getElementById('pin-cs');if(s)s.textContent='4-digit PIN assigned by your chair';}
-function backFromPin(){if(CODE&&(new URLSearchParams(location.search)).get('c')){CODE='';show('sc-select');}else show(data.delegates?.length?'sc-select':'sc-join');}
+// ═══ SCREENS ═══
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');window.scrollTo(0,0);}
+function showErr(id,msg){const e=document.getElementById(id);if(e){e.textContent=msg;e.style.display='block';}}
+function hideErr(id){const e=document.getElementById(id);if(e)e.style.display='none';}
 
-// ── JOIN ──
+// ═══ TOAST ═══
+function toast(msg,dur){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur||2600);}
+
+// ═══ FIREBASE ═══
+async function fbGet(path){
+  const url=path?`${FB}/mun_${SID}/${path}.json`:`${FB}/mun_${SID}.json`;
+  const r=await fetch(url);if(!r.ok)throw new Error('Firebase error '+r.status);
+  return r.json();
+}
+async function fbPatch(path,data){
+  const r=await fetch(`${FB}/mun_${SID}/${path}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error('Firebase write error');
+}
+
+// ═══ JOIN ═══
 async function doJoin(){
   const btn=document.getElementById('btn-join');
-  SID=(document.getElementById('inp-sid').value||'').trim().toUpperCase();
-  if(SID.length<6){err('err-join','Enter a valid session code.');return;}
-  btn.disabled=true;btn.textContent='Connecting...';document.getElementById('err-join').style.display='none';
+  SID=(document.getElementById('inp-sid').value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(SID.length<6){showErr('err-join','Enter a valid 8-character session code.');return;}
+  btn.disabled=true;btn.textContent='Connecting...';hideErr('err-join');
   try{
-    const r=await fetch(`${FB}/mun_${SID}.json`);
-    if(!r.ok)throw new Error('Cannot reach Firebase.');
-    data=await r.json();
-    if(!data)throw new Error(`Session "${SID}" not found. Is the chair's session active?`);
-    if(data.meta?.expiresAt&&Date.now()>data.meta.expiresAt)throw new Error('This session has expired.');
+    D=await fbGet();
+    if(!D) throw new Error(`Session "${SID}" not found. Is the session active?`);
+    if(D.meta?.expiresAt&&Date.now()>D.meta.expiresAt) throw new Error('This session has expired.');
     try{localStorage.setItem('mun_p',JSON.stringify({sid:SID}));}catch(e){}
-    const dels=data.delegates||[];
-    const pins=data.delegatePins||{};
-    document.getElementById('sel-sub').textContent=data.state?.committee||data.meta?.committee||SID;
-    renderCountries(dels);
-    show('sc-select');
-  }catch(e){err('err-join',e.message||'Connection failed.');}
+    const committee=D.state?.committee||D.meta?.committee||'';
+    const el=document.getElementById('sel-committee');if(el)el.textContent=committee;
+    renderCountries(D.delegates||[]);
+    goTo('sc-select');
+  }catch(e){showErr('err-join',e.message||'Could not connect. Check the session code.');}
   btn.disabled=false;btn.textContent='Continue →';
 }
 
-// ── COUNTRIES ──
+// ═══ COUNTRY SELECT ═══
 function renderCountries(dels){
-  document.getElementById('clist').innerHTML=dels.map(d=>`
-    <div class="di" onclick="selectDel('${d.c}','${d.n.replace(/'/g,"\\'")}')">
-      <img class="df" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.c}"/>
-      <span class="dn">${d.n}</span><span style="color:var(--text4)">›</span>
+  const list=document.getElementById('country-list');
+  if(!dels.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🌍</div>No delegates yet.</div>';return;}
+  list.innerHTML=dels.map(d=>`
+    <div class="del-row" onclick="selectCountry('${d.c}','${d.n.replace(/'/g,"\\'")}')">
+      <img class="del-flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span class="del-name">${d.n}</span>
+      <span style="color:var(--text4);font-size:16px">›</span>
     </div>`).join('');
 }
-function filterC(){
-  const q=(document.getElementById('inp-srch')?.value||'').toLowerCase();
-  const dels=(data.delegates||[]).filter(d=>d.n.toLowerCase().includes(q));
-  renderCountries(dels);
+function filterCountries(){
+  const q=(document.getElementById('inp-search')?.value||'').toLowerCase();
+  renderCountries((D.delegates||[]).filter(d=>d.n.toLowerCase().includes(q)));
 }
-function selectDel(code,name){
+function selectCountry(code,name){
   CODE=code;NAME=name;
-  const pins=data.delegatePins||{};
-  if(pins[code]){show('sc-pin');setPinLabels(name);}
+  const pins=D.delegatePins||{};
+  if(pins[code]){goTo('sc-pin');setPinLabels();}
   else openPortal();
 }
 
-// ── PIN ──
+// ═══ PIN ═══
+function setPinLabels(){
+  const h=document.getElementById('pin-heading');if(h)h.textContent=NAME?'PIN for '+NAME:'Enter PIN';
+  const s=document.getElementById('pin-sub');if(s)s.textContent=NAME?`4-digit PIN for ${NAME}`:'Enter the 4-digit PIN given by your chair';
+}
+function backFromPin(){goTo(D.delegates?.length?'sc-select':'sc-join');}
 async function doPin(){
-  const pin=(document.getElementById('inp-pin').value||'').trim();
-  if(pin.length!==4){err('err-pin','Enter the 4-digit PIN.');return;}
-  // If no CODE yet, find by PIN
-  if(!CODE){
-    const pins=data.delegatePins||{};
-    const m=Object.entries(pins).find(([c,p])=>p===pin);
-    if(m){
-      CODE=m[0];
-      const d=(data.delegates||[]).find(x=>x.c===CODE);
-      NAME=d?d.n:CODE;
-      openPortal();
-    }else{err('err-pin','Incorrect PIN. Ask your chair.');document.getElementById('inp-pin').value='';}
-    return;
+  const pin=(document.getElementById('inp-pin')?.value||'').trim();
+  if(pin.length!==4){showErr('err-pin','Enter the 4-digit PIN.');return;}
+  // Refresh data if needed
+  if(!D||!D.delegatePins){try{D=await fbGet();}catch(e){}}
+  const pins=D.delegatePins||{};
+  if(CODE){
+    if(!pins[CODE]||pins[CODE]===pin){openPortal();}
+    else{showErr('err-pin','Incorrect PIN. Check with your chair.');document.getElementById('inp-pin').value='';}
+  }else{
+    const match=Object.entries(pins).find(([c,p])=>p===pin);
+    if(match){CODE=match[0];const d=(D.delegates||[]).find(x=>x.c===CODE);NAME=d?d.n:CODE;openPortal();}
+    else{showErr('err-pin','Incorrect PIN.');document.getElementById('inp-pin').value='';}
   }
-  // Verify PIN for known country
-  // Need fresh data if we came via QR
-  if(!data||!data.delegatePins){
-    try{const r=await fetch(`${FB}/mun_${SID}.json`);data=await r.json()||{};}catch(e){}
-  }
-  const pins=data.delegatePins||{};
-  if(!pins[CODE]||pins[CODE]===pin){openPortal();}
-  else{err('err-pin','Incorrect PIN. Ask your chair.');document.getElementById('inp-pin').value='';}
 }
 
-// ── PORTAL ──
+// ═══ OPEN PORTAL ═══
 function openPortal(){
   document.getElementById('p-flag').src=`https://flagcdn.com/w160/${CODE.toLowerCase()}.png`;
   document.getElementById('p-name').textContent=NAME;
-  show('sc-portal');
-  renderInfo();
+  goTo('sc-portal');
+  tab('home');
   poll();
   iv=setInterval(poll,2500);
 }
 
+// ═══ TABS ═══
+const TABS=['home','vote','stats','agenda','cert','info'];
 function tab(t){
-  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
-  document.getElementById('t-'+t)?.classList.add('active');
-  document.getElementById('p-'+t)?.classList.add('active');
-  if(t==='stats')renderStats();
-  if(t==='cert')renderCert();
-  if(t==='votes')renderVotesHistory();
-  if(t==='info')renderInfo();
+  TABS.forEach(x=>{
+    document.getElementById('p-'+x)?.classList.toggle('active',x===t);
+    document.getElementById('bn-'+x)?.classList.toggle('active',x===t);
+  });
+  if(t==='home')renderHome();
+  else if(t==='vote')renderVotePanel();
+  else if(t==='stats')renderStats();
+  else if(t==='agenda')renderAgenda();
+  else if(t==='cert')renderCert();
+  else if(t==='info')renderInfo();
 }
 
-// ── ACTIONS ──
-async function doCheckin(){
+// ═══ ACTIONS ═══
+async function doCheckin(val){
+  val=val||'present';
   if(checkedIn||ended)return;
   try{
-    await fetch(`${FB}/mun_${SID}/attendance.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({[CODE]:'present'})});
-    setCI();toast('✅ Marked as present!');
+    await fbPatch('attendance',{[CODE]:val});
+    setCheckedIn(val);
+    toast(val==='present+voting'?'✋ Present & Voting!':'✅ Present recorded!');
   }catch(e){toast('Error — try again',2000);}
 }
-function setCI(){
+function setCheckedIn(val){
+  val=val||'present';
   checkedIn=true;
-  document.getElementById('ci-area').innerHTML='<button class="ab bdn">✅ Checked In!</button>';
-  const b=document.getElementById('bdg-ci');if(b){b.className='badge bok';b.textContent='✅ Present';}
+  const isPV=val==='present+voting';
+  const a=document.getElementById('ci-area');
+  if(a)a.innerHTML=`<button class="act-btn btn-done" style="${isPV?'border-color:rgba(106,176,255,0.4);color:#88c8ff':''}">${isPV?'✋ Present & Voting':'✅ Present'} — Recorded</button>`;
+  document.querySelectorAll('.bdg-ci').forEach(b=>{b.className='badge b-ok';b.style.background=isPV?'rgba(106,176,255,0.1)':'';b.textContent=isPV?'✋ P+V':'✅ Present';});
 }
-
 async function doVote(v){
   if(voted||!voteActive)return;
-  document.querySelectorAll('#v-area .ab').forEach(b=>b.disabled=true);
+  document.querySelectorAll('#vote-buttons .act-btn').forEach(b=>b.disabled=true);
   try{
-    await fetch(`${FB}/mun_${SID}/votes.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({[CODE]:v})});
+    await fbPatch('votes',{[CODE]:v});
     setVoted(v);
-  }catch(e){document.querySelectorAll('#v-area .ab').forEach(b=>b.disabled=false);toast('Error — try again',2000);}
+  }catch(e){document.querySelectorAll('#vote-buttons .act-btn').forEach(b=>b.disabled=false);toast('Error — try again',2000);}
 }
 function setVoted(v){
   voted=true;
   const lbl=v==='yes'?'✅ In Favor':v==='no'?'❌ Against':'🟡 Abstain';
-  const clr=v==='yes'?'var(--green)':v==='no'?'var(--red)':'rgba(255,255,255,0.3)';
-  document.getElementById('v-area').innerHTML=`<button class="ab bdn" style="border-color:${clr};color:${clr}">${lbl} — Recorded</button>`;
-  document.getElementById('vote-waiting').style.display='none';
-  const b=document.getElementById('bdg-v');if(b){b.style.display='';b.className='badge bvoted';b.textContent='🗳 '+lbl;}
+  const clr=v==='yes'?'var(--green)':v==='no'?'var(--red)':'rgba(255,255,255,.3)';
+  const va=document.getElementById('vote-buttons');
+  if(va)va.innerHTML=`<button class="act-btn btn-done" style="border-color:${clr};color:${clr}">${lbl} — Vote Recorded</button>`;
+  document.querySelectorAll('.bdg-v').forEach(b=>{b.style.display='';b.className='badge b-voted';b.textContent='🗳 '+lbl;});
+  // Update vote dot
+  const dot=document.getElementById('dot-vote');if(dot)dot.classList.remove('show');
   toast(lbl+' recorded!');
 }
 
-// ── POLL ──
+// ═══ POLL ═══
 async function poll(){
   try{
-    const r=await fetch(`${FB}/mun_${SID}.json`);
-    if(!r.ok)return;
-    data=await r.json()||{};
+    D=await fbGet();if(!D)return;
+    // Conn
     const dot=document.getElementById('cnd'),txt=document.getElementById('cnt-txt');
-    if(dot)dot.className='cd cdok';if(txt)txt.textContent='Connected · '+SID;
-    // committee
-    const com=data.state?.committee||data.meta?.committee||SID;
-    const pc=document.getElementById('p-com');if(pc)pc.textContent=com;
-    // check-in
-    if(!checkedIn&&data.attendance?.[CODE])setCI();
-    // ended
+    if(dot)dot.className='conn-dot ok';
+    if(txt)txt.textContent='Live · Session '+SID;
+    // Committee
+    const com=D.state?.committee||D.meta?.committee||SID;
+    const pc=document.getElementById('p-committee');if(pc)pc.textContent=com;
+    // Check-in sync
+    if(!checkedIn&&D.attendance?.[CODE])setCheckedIn(D.attendance[CODE]);
+    // Meeting ended
     const wasEnded=ended;
-    ended=!!(data.state?.meetingEnded||data.meta?.endTime);
-    if(ended){
-      const eb=document.getElementById('eb');if(eb)eb.style.display='';
-      const ebs=document.getElementById('eb-sub');
-      if(ebs&&data.meta?.date)ebs.textContent='Meeting ended '+data.meta.date+' · See Stats & Cert tabs.';
-      document.getElementById('vote-live').style.display='none';
-      document.getElementById('vote-waiting').textContent='Meeting has ended.';
-      if(!wasEnded)renderAward(data);
-    }
-    // voting
+    ended=!!(D.state?.meetingEnded||D.meta?.endTime);
+    if(ended&&!wasEnded){renderHome();renderCert();}
+    // Vote
     const wasActive=voteActive;
-    voteActive=!!(data.state?.voteActive)&&!ended;
-    const vl=document.getElementById('vote-live'),vw=document.getElementById('vote-waiting');
+    voteActive=!!(D.state?.voteActive)&&!ended;
     if(voteActive&&!wasActive){
-      if(vl)vl.style.display='';if(vw)vw.style.display='none';
-      const vres=document.getElementById('v-res');if(vres&&data.state?.resolution)vres.textContent=data.state.resolution;
-      // Also update vote tab
-      const vtres=document.getElementById('v-res');if(vtres&&data.state?.resolution)vtres.textContent=data.state.resolution;
-      if(!voted)toast('🗳 Voting is now open!',4000);
-      // Dot on vote tab
-      const tvote=document.getElementById('t-vote');if(tvote&&!voted)tvote.innerHTML='<span>🗳</span>Vote 🔴';
-    }else if(!voteActive&&wasActive&&!voted){
-      if(vl)vl.style.display='none';if(vw){vw.style.display='';vw.textContent='Voting has closed.';}
-    }else if(voteActive){
-      if(vl)vl.style.display='';if(vw)vw.style.display='none';
-      const vres=document.getElementById('v-res');if(vres&&data.state?.resolution)vres.textContent=data.state.resolution;
+      if(!voted){
+        const dot=document.getElementById('dot-vote');if(dot)dot.classList.add('show');
+        toast('🗳 Voting is now open!',4000);
+      }
+      renderVotePanel();
+    }else if(!voteActive&&wasActive){
+      const dot=document.getElementById('dot-vote');if(dot)dot.classList.remove('show');
+      renderVotePanel();
     }
-    if(!voted&&data.votes?.[CODE]){const v=data.votes[CODE];if(['yes','no','abstain'].includes(v))setVoted(v);}
-    // Refresh active tab
-    const activeTab=document.querySelector('.tb.active')?.id?.replace('t-','');
-    if(activeTab==='stats')renderStats();
-    if(activeTab==='cert')renderCert();
+    // Sync vote from Firebase
+    if(!voted&&D.votes?.[CODE]){const v=D.votes[CODE];if(['yes','no','abstain'].includes(v))setVoted(v);}
+    // Refresh current tab
+    const activeTab=document.querySelector('.bn.active')?.id?.replace('bn-','');
+    if(activeTab==='home')renderHome();
+    else if(activeTab==='vote')renderVotePanel();
+    else if(activeTab==='stats')renderStats();
+    else if(activeTab==='agenda')renderAgenda();
+    else if(activeTab==='cert')renderCert();
   }catch(e){
     const dot=document.getElementById('cnd'),txt=document.getElementById('cnt-txt');
-    if(dot)dot.className='cd cderr';if(txt)txt.textContent='Connection lost — retrying...';
+    if(dot)dot.className='conn-dot err';if(txt)txt.textContent='Reconnecting...';
   }
 }
 
-function renderAward(d){
-  const me=d.delegateResults?.[CODE];if(!me?.award)return;
-  const titles=d.awards?.customTitles||{};
-  const map={best:{icon:'🥇',lbl:titles.best||'Best Delegate'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation'}};
-  const aw=map[me.award];if(!aw)return;
-  const sec=document.getElementById('aw-sec'),icon=document.getElementById('aw-icon'),type=document.getElementById('aw-type'),name=document.getElementById('aw-name');
-  if(icon)icon.textContent=aw.icon;if(type)type.textContent=aw.lbl;if(name)name.textContent='Congratulations, '+NAME+'!';if(sec)sec.style.display='';
+// ═══ HOME PANEL ═══
+function renderHome(){
+  const el=document.getElementById('p-home');if(!el)return;
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const awards=D.awards||{},titles=awards.customTitles||{};
+  const amap={best:{icon:'🥇',lbl:titles.best||'Best Delegate'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation'}};
+  let html='';
+  // Conn bar
+  html+=`<div class="conn-bar"><div class="conn-dot" id="cnd"></div><span id="cnt-txt">Connecting...</span><span class="conn-sid">${SID}</span></div>`;
+  // Ended banner
+  if(ended){html+=`<div class="ended-banner"><div class="eb-title">🏁 Meeting Has Ended</div><div class="eb-sub">${meta.date||''} ${meta.duration?'· '+meta.duration:''}</div></div>`;}
+  // Award
+  if(me.award&&amap[me.award]){
+    const aw=amap[me.award];
+    html+=`<div class="award-banner"><div class="award-icon">${aw.icon}</div><div class="award-type">${aw.lbl}</div><div class="award-name">Congratulations, ${NAME}!</div></div>`;
+  }
+  // Status cards
+  html+=`<div class="status-row">
+    <div class="status-card">
+      <div class="status-icon">${checkedIn?'✅':'⭕'}</div>
+      <div class="status-info"><div class="status-label">Attendance</div><div class="status-val" style="color:${checkedIn?'var(--green)':'var(--text3)'}">${checkedIn?'Present':'Not checked in'}</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-icon">${voted?'🗳':'⏳'}</div>
+      <div class="status-info"><div class="status-label">Last Vote</div><div class="status-val" style="color:${voted?'var(--blue)':'var(--text3)'}">${voted?'Voted':'No active vote'}</div></div>
+    </div>
+  </div>`;
+  // Check-in button
+  if(!ended){
+    html+=`<div class="sec-title">📋 Attendance</div>
+    <div id="ci-area">${checkedIn?'<button class="act-btn btn-done">✅ Checked In!</button>':'<button class="act-btn btn-checkin" onclick="doCheckin(\'present\')"><span>👋</span> Present</button><button class="act-btn" style="margin-top:6px;border:2px solid rgba(106,176,255,0.45);color:#88c8ff;background:transparent;padding:13px;border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit" onclick="doCheckin(\'present+voting\')"><span>✋</span> Present &amp; Voting</button><div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">P&amp;V delegates cannot abstain</div>'}</div>`;
+  }
+  // Active vote hint
+  if(voteActive&&!voted&&!ended){
+    html+=`<div class="sec-title" style="margin-top:14px">🗳 Active Vote</div>
+    <div class="vote-res">${D.state?.resolution||'Resolution Vote'}</div>
+    <button class="act-btn btn-yes" onclick="tab('vote')">Go to Voting →</button>`;
+  }
+  // Quick stats if ended
+  if(ended&&me.pts!==undefined){
+    html+=`<div class="sec-title" style="margin-top:14px">📊 Your Results</div>
+    <div class="status-row">
+      <div class="status-card"><div class="status-icon">⭐</div><div class="status-info"><div class="status-label">Score</div><div class="status-val" style="color:${me.pts>0?'var(--green)':me.pts<0?'var(--red)':'var(--text)'}">${me.pts>0?'+':''}${me.pts}</div></div></div>
+      <div class="status-card"><div class="status-icon">🎤</div><div class="status-info"><div class="status-label">Speeches</div><div class="status-val">${me.speeches||0}</div></div></div>
+    </div>`;
+  }
+  // Badges
+  html+=`<div class="badge-row">
+    <span class="badge bdg-ci ${checkedIn?'b-ok':'b-pend'}">${checkedIn?'✅ Present':'⭕ Not checked in'}</span>
+    <span class="badge bdg-v b-pend" style="${voted?'':'display:none'}">${voted?'🗳 Voted':''}</span>
+    ${(me.warnings||0)>0?`<span class="badge b-warn">⚠ ${me.warnings} warning${me.warnings>1?'s':''}</span>`:''}
+  </div>`;
+  el.innerHTML=html;
 }
 
-// ── STATS ──
+// ═══ VOTE PANEL ═══
+function renderVotePanel(){
+  const el=document.getElementById('p-vote');if(!el)return;
+  let html='';
+  if(ended){
+    html=`<div class="sec-title">🗳 Vote History</div>`;
+    const vh=D.voteHistory||[];
+    if(!vh.length){html+='<div class="empty-state"><div class="empty-icon">🗳</div>No votes recorded.</div>';}
+    else vh.forEach((v,i)=>{
+      const myV=v.votes?.[CODE];
+      const myLbl=myV==='yes'?'In Favor':myV==='no'?'Against':myV==='abstain'?'Abstain':'—';
+      const t=v.tally||{};const tot=Math.max(1,t.total||1);
+      const fp=Math.round((t.favor||0)/tot*100),ap=Math.round((t.against||0)/tot*100),absp=Math.round((t.abstain||0)/tot*100);
+      html+=`<div class="vote-card ${v.passed?'pass':'fail'}">
+        <div class="vote-meta">
+          <span class="vote-verdict">${v.passed?'PASSED':'FAILED'}</span>
+          <span class="vote-title">${v.resolution||'Vote #'+(i+1)}</span>
+          <span class="vote-date">${v.date||''}</span>
+        </div>
+        <div style="display:flex;align-items:center;margin-bottom:6px">
+          <div class="vote-tally"><span style="color:var(--green)">✅ ${t.favor||0}</span><span>·</span><span style="color:var(--red)">❌ ${t.against||0}</span><span>·</span><span>🟡 ${t.abstain||0}</span></div>
+          ${myV?`<span class="vote-my">${myLbl}</span>`:''}
+        </div>
+        <div class="vote-bar"><div class="vb-yes" style="width:${fp}%"></div><div class="vb-no" style="width:${ap}%"></div><div class="vb-abs" style="width:${absp}%"></div></div>
+      </div>`;
+    });
+  }else if(!voteActive){
+    html=`<div class="empty-state"><div class="empty-icon">⏳</div>Waiting for the chair to open voting...</div>`;
+  }else if(voted){
+    html=`<div class="sec-title">🗳 Current Vote</div>
+    <div class="vote-res">${D.state?.resolution||'Resolution'}</div>
+    <div id="vote-buttons"><button class="act-btn btn-done" style="border-color:var(--blue);color:var(--blue)">✓ Your vote has been recorded</button></div>`;
+  }else{
+    html=`<div class="live-badge"><div class="live-dot"></div>VOTING OPEN</div>
+    <div class="sec-title">🗳 Cast Your Vote</div>
+    <div class="vote-res" id="vr-res">${D.state?.resolution||'Resolution Vote'}</div>
+    <div id="vote-buttons">
+      <button class="act-btn btn-yes" onclick="doVote('yes')">✅ In Favor</button>
+      <button class="act-btn btn-abs" onclick="doVote('abstain')">🟡 Abstain</button>
+      <button class="act-btn btn-no" onclick="doVote('no')">❌ Against</button>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ═══ STATS ═══
 function renderStats(){
-  const sw=document.getElementById('st-wait'),sc2=document.getElementById('st-content');
-  if(!ended){if(sw)sw.style.display='';if(sc2)sc2.style.display='none';return;}
-  if(sw)sw.style.display='none';if(sc2)sc2.style.display='';
-  const dr=data.delegateResults||{},me=dr[CODE]||{},ranked=data.ranked||[];
+  const el=document.getElementById('p-stats');if(!el)return;
+  if(!ended){el.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div>Stats will be available after the meeting ends.</div>';return;}
+  const dr=D.delegateResults||{},me=dr[CODE]||{},ranked=D.ranked||[];
   const maxPts=ranked.length?Math.max(1,...ranked.map(r=>Math.abs(r.pts))):1;
   const myRank=me.rank||ranked.findIndex(r=>r.c===CODE)+1||0;
-  sc2.innerHTML=`
-    <div class="st">📊 Your Performance</div>
-    <div class="sg">
-      ${[['Score',(me.pts>0?'+':'')+me.pts,me.pts>0?'var(--green)':me.pts<0?'var(--red)':'var(--text)'],['Speeches',me.speeches||0,'var(--blue)'],['Warnings',me.warnings||0,me.warnings>0?'var(--red)':'var(--text)'],['Rank',myRank?'#'+myRank:'—','var(--yellow)']].map(([l,v,c])=>`<div class="sc2"><div class="sv" style="color:${c}">${v}</div><div class="sl">${l}</div></div>`).join('')}
-    </div>
-    ${myRank?`<div style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:12px;font-size:13px;font-weight:700;background:rgba(255,208,96,0.1);border:1px solid rgba(255,208,96,0.3);color:var(--yellow);margin-bottom:14px">${myRank===1?'🥇':myRank===2?'🥈':myRank===3?'🥉':''}  #${myRank} of ${ranked.length} delegates</div>`:''}
-    <div class="div"></div>
-    <div class="st">🏆 Leaderboard</div>
-    ${ranked.slice(0,20).map((r,i)=>{
-      const mine=r.c===CODE;
-      const pct=Math.max(0,Math.round(r.pts/maxPts*100));
-      const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
-      return `<div class="lbr" style="${mine?'background:rgba(106,176,255,0.06);border-radius:8px;padding:9px 8px;margin:-1px':''}">
-        <span class="lbrank">${medal}</span>
-        <img class="lbflag" src="https://flagcdn.com/w80/${r.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${r.c}"/>
-        <span class="lbname" style="${mine?'color:var(--blue);font-weight:700':''}">${r.n}${mine?' ✦':''}</span>
-        <div class="lbbw"><div class="lbb" style="width:${pct}%"></div></div>
-        <span class="lbpts">${r.pts>0?'+':''}${r.pts}</span>
-      </div>`;
-    }).join('')}`;
+  let html=`<div class="sec-title">📊 Your Performance</div>
+  <div class="stat-grid">
+    ${[['Score',(me.pts>0?'+':'')+me.pts,me.pts>0?'var(--green)':me.pts<0?'var(--red)':'var(--text)'],['Speeches',me.speeches||0,'var(--blue)'],['Warnings',me.warnings||0,me.warnings>0?'var(--red)':'var(--text)'],['Rank',myRank?'#'+myRank:'—','var(--yellow)']].map(([l,v,c])=>`<div class="stat-card"><div class="stat-val" style="color:${c}">${v}</div><div class="stat-lbl">${l}</div></div>`).join('')}
+  </div>`;
+  if(myRank){const m=myRank===1?'🥇':myRank===2?'🥈':myRank===3?'🥉':'';html+=`<div class="rank-badge">${m} #${myRank} of ${ranked.length} delegates</div>`;}
+  html+=`<div class="div"></div><div class="sec-title">🏆 Leaderboard</div>`;
+  html+=ranked.slice(0,20).map((r,i)=>{
+    const mine=r.c===CODE;
+    const pct=Math.max(0,Math.round(r.pts/maxPts*100));
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return `<div class="lb-row" style="${mine?'background:rgba(106,176,255,.06);border-radius:8px;padding:9px 8px;margin:-1px':''}">
+      <span class="lb-rank">${medal}</span>
+      <img class="lb-flag" src="https://flagcdn.com/w80/${r.c.toLowerCase()}.png" onerror="this.style.display='none'" alt=""/>
+      <span class="lb-name" style="${mine?'color:var(--blue);font-weight:800':''}">${r.n}${mine?' ✦':''}</span>
+      <div class="lb-bw"><div class="lb-b" style="width:${pct}%"></div></div>
+      <span class="lb-pts">${r.pts>0?'+':''}${r.pts}</span>
+    </div>`;
+  }).join('');
+  el.innerHTML=html;
 }
 
-// ── CERT ──
+// ═══ AGENDA ═══
+function renderAgenda(){
+  const el=document.getElementById('p-agenda');if(!el)return;
+  const meta=D.meta||{},state=D.state||{};
+  const agenda=meta.agenda||state.agenda||'';
+  const agendaItems=state.agendaItems||[];
+  const res=D.resolutions||[];
+  const vh=D.voteHistory||[];
+  let html='';
+  // Agenda
+  if(agenda){
+    html+=`<div class="sec-title">📋 Agenda</div>
+    <div class="agenda-card"><div class="agenda-title">${agenda}</div>
+    ${agendaItems.map(i=>`<div class="agenda-item">📌 ${i}</div>`).join('')}
+    </div>`;
+  }
+  // Resolutions
+  if(res.length){
+    html+=`<div class="sec-title">📄 Resolutions (${res.length})</div>`;
+    res.forEach(r=>{
+      const st=r.status||'draft';
+      html+=`<div class="res-card">
+        <div class="res-id">${r.id||'—'}</div>
+        <div class="res-title">${r.title||'—'}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="res-status rs-${st}">${st}</span>
+          ${r.sponsors?.length?`<span class="res-sponsors">Sponsors: ${r.sponsors.slice(0,5).join(', ')}</span>`:''}
+        </div>
+      </div>`;
+    });
+  }
+  // Vote summary
+  if(vh.length){
+    html+=`<div class="sec-title" style="margin-top:4px">🗳 Vote Summary</div>`;
+    vh.forEach((v,i)=>{
+      const t=v.tally||{},tot=Math.max(1,t.total||1);
+      const fp=Math.round((t.favor||0)/tot*100),ap=Math.round((t.against||0)/tot*100),absp=Math.round((t.abstain||0)/tot*100);
+      html+=`<div class="vote-card ${v.passed?'pass':'fail'}" style="margin-bottom:8px">
+        <div class="vote-meta">
+          <span class="vote-verdict">${v.passed?'✅ PASSED':'❌ FAILED'}</span>
+          <span class="vote-title">${v.resolution||'Vote #'+(i+1)}</span>
+        </div>
+        <div class="vote-tally"><span style="color:var(--green)">✅ ${t.favor||0}</span><span>·</span><span style="color:var(--red)">❌ ${t.against||0}</span><span>·</span><span>🟡 ${t.abstain||0}</span><span>·</span><span>${tot} delegates</span></div>
+        <div class="vote-bar"><div class="vb-yes" style="width:${fp}%"></div><div class="vb-no" style="width:${ap}%"></div><div class="vb-abs" style="width:${absp}%"></div></div>
+      </div>`;
+    });
+  }
+  if(!html){el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Agenda details will appear here once the chair sets them.</div>';return;}
+  el.innerHTML=html;
+}
+
+// ═══ CERT ═══
 function renderCert(){
-  const cc=document.getElementById('cert-content');if(!cc)return;
-  if(!ended){cc.innerHTML='<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px"><div style="font-size:36px;margin-bottom:10px">🏅</div>Certificates available after meeting ends.</div>';return;}
-  const now=Date.now(),certsAt=data.meta?.certsAvailableAt||0,me=data.delegateResults?.[CODE]||{},meta=data.meta||{},awards=data.awards||{},titles=awards.customTitles||{};
-  const amap={best:{icon:'🥇',lbl:titles.best||'Best Delegate',clr:'var(--yellow)'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate',clr:'#c0c0c0'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation',clr:'#cd7f32'}};
+  const el=document.getElementById('p-cert');if(!el)return;
+  if(!ended){el.innerHTML='<div class="empty-state"><div class="empty-icon">🏅</div>Certificates will be available after the meeting ends.</div>';return;}
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const awards=D.awards||{},titles=awards.customTitles||{};
+  const now=Date.now(),certsAt=meta.certsAvailableAt||0;
+  const amap={best:{icon:'🥇',lbl:titles.best||'Best Delegate',clr:'var(--yellow)'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate',clr:'#b0b8c8'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation',clr:'#c8966a'}};
   let html='';
   if(me.award&&amap[me.award]){
     const aw=amap[me.award];
     if(certsAt>now){
-      // Countdown
-      html+=`<div class="cc"><div class="cicon">${aw.icon}</div><div class="ctype" style="color:${aw.clr}">${aw.lbl}</div><div class="cname">${NAME}</div><div class="ccom">${meta.committee||''}</div><div style="font-size:12px;color:var(--text3);margin-top:6px;font-style:italic">Certificate unlocks in</div><div class="cnt" id="cntdwn"></div></div>`;
-      if(civIv)clearInterval(civIv);
-      civIv=setInterval(()=>{
-        const left=certsAt-Date.now(),el=document.getElementById('cntdwn');
-        if(!el){clearInterval(civIv);return;}
-        if(left<=0){clearInterval(civIv);renderCert();return;}
+      html+=`<div class="cert-card">
+        <div class="cert-icon">${aw.icon}</div>
+        <div class="cert-type" style="color:${aw.clr}">${aw.lbl}</div>
+        <div class="cert-name">${NAME}</div>
+        <div class="cert-committee">${meta.committee||''}</div>
+        <div class="cert-lock">🔒 Certificate unlocks in</div>
+        <div class="cert-countdown" id="cert-cd">calculating...</div>
+      </div>`;
+      if(certIv)clearInterval(certIv);
+      certIv=setInterval(()=>{
+        const e2=document.getElementById('cert-cd');if(!e2){clearInterval(certIv);return;}
+        const left=certsAt-Date.now();
+        if(left<=0){clearInterval(certIv);renderCert();return;}
         const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);
-        el.textContent=(h?h+'h ':'')+m+'m '+s+'s';
+        e2.textContent=(h?h+'h ':'')+m+'m '+s+'s';
       },1000);
     }else{
-      html+=`<div class="cc"><div class="cicon">${aw.icon}</div><div class="ctype" style="color:${aw.clr}">${aw.lbl}</div><div class="cname">${NAME}</div><div class="ccom">${meta.committee||''}</div><div style="font-size:11px;color:var(--text3);margin:5px 0">${meta.date||''} · ${me.pts>0?'+':''}${me.pts||0} pts</div><button class="cdl" onclick="printCert('award')">📄 View / Print Certificate</button></div>`;
+      html+=`<div class="cert-card">
+        <div class="cert-icon">${aw.icon}</div>
+        <div class="cert-type" style="color:${aw.clr}">${aw.lbl}</div>
+        <div class="cert-name">${NAME}</div>
+        <div class="cert-committee">${meta.committee||''}</div>
+        <div class="cert-meta">${meta.date||''} · Score: ${me.pts>0?'+':''}${me.pts||0}</div>
+        <button class="cert-btn" onclick="printCert('award')">📄 View / Print Certificate</button>
+      </div>`;
     }
   }
-  html+=`<div class="cc" style="margin-top:8px"><div class="cicon">📜</div><div class="ctype" style="color:var(--blue)">Certificate of Participation</div><div class="cname">${NAME}</div><div class="ccom">${meta.committee||''}</div><div style="font-size:11px;color:var(--text3);margin:5px 0">${meta.date||''} · ${me.speeches||0} speeches</div><button class="cdl" style="background:linear-gradient(135deg,rgba(106,176,255,0.15),rgba(106,176,255,0.08));border-color:rgba(106,176,255,0.4);color:var(--blue)" onclick="printCert('attendance')">📄 View / Print Certificate</button></div>`;
-  cc.innerHTML=html;
+  html+=`<div class="cert-card" style="margin-top:4px">
+    <div class="cert-icon">📜</div>
+    <div class="cert-type" style="color:var(--blue)">Certificate of Participation</div>
+    <div class="cert-name">${NAME}</div>
+    <div class="cert-committee">${meta.committee||''}</div>
+    <div class="cert-meta">${meta.date||''} · ${me.speeches||0} speeches</div>
+    <button class="cert-btn blue" onclick="printCert('attendance')">📄 View / Print Certificate</button>
+  </div>`;
+  el.innerHTML=html;
 }
 
 function printCert(type){
-  const meta=data.meta||{},dr=data.delegateResults||{},me=dr[CODE]||{},awards=data.awards||{},titles=awards.customTitles||{};
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{},awards=D.awards||{},titles=awards.customTitles||{};
   const amap={best:titles.best||'Best Delegate',outstanding:titles.outstanding||'Outstanding Delegate',verbal:titles.verbal||'Verbal Commendation'};
   const certTitle=type==='award'?(amap[me.award]||'Award'):'Certificate of Participation';
   const logo1=meta.logoLeft||'',logo2=meta.logoRight||'';
-  const w=window.open('','_blank');
-  if(!w)return;
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${certTitle} — ${NAME}</title>
+  const w=window.open('','_blank');if(!w){toast('Allow popups to print',3000);return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${certTitle}</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
   <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#f8f6f0;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;font-family:'Cormorant Garamond',serif}
-  .c{width:100%;max-width:297mm;background:#fff;padding:16mm 18mm;position:relative;overflow:hidden;border:8px solid #8b6914;box-shadow:0 0 0 3px #c8a84b,0 0 0 6px #8b6914}
-  .bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(212,175,55,0.07) 0%,transparent 60%);pointer-events:none}
-  .logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .li{height:60px;object-fit:contain;max-width:130px}
-  .org{font-size:11px;color:#8b6914;letter-spacing:0.18em;text-transform:uppercase;text-align:center}
-  .line{width:100%;height:1px;background:linear-gradient(to right,transparent,#c8a84b,transparent);margin:9px 0}
-  .lbl{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:#8b6914;text-align:center;margin:16px 0 5px}
-  h1{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:#1a1200;text-align:center;letter-spacing:2px;margin-bottom:6px}
-  .pre{font-size:13px;color:#666;text-align:center;letter-spacing:0.1em;margin-bottom:8px}
-  .del{font-family:'Playfair Display',serif;font-size:36px;font-style:italic;color:#8b6914;text-align:center;margin-bottom:5px}
-  .for{font-size:12px;color:#888;text-align:center;letter-spacing:0.08em;margin-bottom:5px}
-  .com{font-size:15px;font-weight:600;color:#1a1200;text-align:center;letter-spacing:0.08em}
-  .meta{font-size:11px;color:#aaa;text-align:center;margin-top:10px}
-  .sc3{text-align:center;font-size:13px;color:#888;margin:8px 0}.sc3 span{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#8b6914}
+  .c{width:100%;max-width:297mm;background:#fff;padding:14mm 16mm;position:relative;border:8px solid #8b6914;box-shadow:0 0 0 3px #c8a84b,0 0 0 6px #8b6914;overflow:hidden}
+  .bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(212,175,55,.07),transparent 60%);pointer-events:none}
+  .logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .li{height:56px;object-fit:contain;max-width:120px}
+  .org{font-size:10px;color:#8b6914;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+  .line{width:100%;height:1px;background:linear-gradient(to right,transparent,#c8a84b,transparent);margin:8px 0}
+  .lbl{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#8b6914;text-align:center;margin:14px 0 4px}
+  h1{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#1a1200;text-align:center;letter-spacing:2px;margin-bottom:5px}
+  .pre{font-size:12px;color:#666;text-align:center;letter-spacing:.1em;margin-bottom:7px}
+  .del{font-family:'Playfair Display',serif;font-size:34px;font-style:italic;color:#8b6914;text-align:center;margin-bottom:4px}
+  .for{font-size:11px;color:#888;text-align:center;letter-spacing:.08em;margin-bottom:4px}
+  .com{font-size:14px;font-weight:600;color:#1a1200;text-align:center;letter-spacing:.06em}
+  .score{text-align:center;font-size:12px;color:#888;margin:8px 0}.score span{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#8b6914}
+  .meta{font-size:10px;color:#bbb;text-align:center;margin-top:8px}
   @media print{body{padding:0;background:#fff}@page{size:A4 landscape;margin:8mm}}
   </style></head><body><div class="c"><div class="bg"></div>
   <div class="logos">${logo1?`<img class="li" src="${logo1}" alt=""/>`:'<div></div>'}<div class="org">🌍 Model United Nations</div>${logo2?`<img class="li" src="${logo2}" alt=""/>`:'<div></div>'}</div>
   <div class="line"></div>
   <div class="lbl">Certificate of ${type==='award'?'Achievement':'Participation'}</div>
-  <h1>${certTitle}</h1>
-  <div class="pre">is hereby presented to</div>
+  <h1>${certTitle}</h1><div class="pre">is hereby presented to</div>
   <div class="del">${NAME}</div>
   <div class="for">representing</div>
   <div class="com">${meta.committee||'Committee'}</div>
-  ${type==='award'?`<div class="sc3">Score: <span>${me.pts>0?'+':''}${me.pts||0}</span></div>`:''}
+  ${type==='award'?`<div class="score">Score: <span>${me.pts>0?'+':''}${me.pts||0}</span></div>`:''}
   <div class="line"></div>
   <div class="meta">${meta.date||''} · Session ${SID}</div>
   </div><scr`+`ipt>window.print();<\/scr`+`ipt></body></html>`);
   w.document.close();
 }
 
-// ── INFO ──
+// ═══ INFO ═══
 function renderInfo(){
-  const el=document.getElementById('info-rows');if(!el)return;
-  const meta=data.meta||{},state=data.state||{};
-  const totalVotes=(data.voteHistory||[]).length;
-  const myVoteCount=(data.voteHistory||[]).filter(v=>v.votes&&v.votes[CODE]).length;
-  [['🏛','Committee',meta.committee||state.committee||SID],['📋','Agenda',meta.agenda||meta.agenda||'—'],['📅','Date',meta.date||'—'],['⏱','Duration',meta.duration||'—'],['🗳','Votes',totalVotes+' votes (you voted in '+myVoteCount+')'],['🔑','Session ID',SID],['🌍','Delegate',NAME+' ('+CODE.toUpperCase()+')'],['📡','Status',ended?'🏁 Meeting Ended':'🟢 Active']].forEach(([icon,lbl,val])=>{
-    el.innerHTML+='<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)"><span style="font-size:16px;flex-shrink:0">'+icon+'</span><span style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;min-width:70px">'+lbl+'</span><span style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+val+'</span></div>';
-  });
+  const el=document.getElementById('p-info');if(!el)return;
+  const meta=D.meta||{},state=D.state||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const vh=D.voteHistory||[];
+  const myVoteCount=vh.filter(v=>v.votes&&v.votes[CODE]).length;
+  const passedCount=vh.filter(v=>v.passed).length;
+  const rows=[
+    ['🏛','Committee',meta.committee||state.committee||SID],
+    ['📋','Agenda',meta.agenda||state.agenda||'—'],
+    ['📅','Date',meta.date||'—'],
+    ['⏱','Duration',meta.duration||'—'],
+    ['👥','Delegates',(D.delegates?.length||0)+' registered'],
+    ['🗳','Votes',vh.length+' total · '+passedCount+' passed · you voted in '+myVoteCount],
+    ['🔑','Session ID',SID],
+    ['🌍','Your Country',NAME+' ('+CODE.toUpperCase()+')'],
+    ['📡','Status',ended?'🏁 Meeting Ended':'🟢 Active'],
+    ['⏳','Expires',meta.expiresAt?new Date(meta.expiresAt).toLocaleDateString():'—'],
+  ];
+  el.innerHTML=`
+    <div class="sec-title">ℹ Session Information</div>
+    <div class="info-table">
+      ${rows.map(([i,k,v])=>`<div class="info-row"><div class="info-icon">${i}</div><div class="info-key">${k}</div><div class="info-val">${v}</div></div>`).join('')}
+    </div>
+    <button class="btn-ghost" onclick="logout()">🚪 Leave Session</button>`;
 }
 
-// ── VOTE HISTORY ──
-function renderVotesHistory(){
-  const el=document.getElementById('votes-content');if(!el)return;
-  const vh=data.voteHistory||[];
-  const res=data.resolutions||[];
-  const agenda=data.state?.agenda||data.meta?.agenda||'';
-  const agendaItems=data.state?.agendaItems||[];
-  let html='';
-  // Agenda section
-  if(agenda||agendaItems.length){
-    html+=`<div class="st">📋 Agenda</div>
-    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.6">
-      ${agenda?`<div style="font-weight:600;color:var(--text);margin-bottom:6px">${agenda}</div>`:''}
-      ${agendaItems.map(i=>`<div style="font-size:12px;color:var(--text3);padding:3px 0;border-bottom:1px solid var(--border)">📌 ${i}</div>`).join('')}
-    </div>`;
-  }
-  // Resolutions
-  if(res.length){
-    html+=`<div class="st">📄 Resolutions</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
-      ${res.map(r=>{
-        const st=r.status||'draft';
-        const stColor=st==='passed'?'var(--green)':st==='failed'?'var(--red)':'var(--text3)';
-        const stBg=st==='passed'?'rgba(61,232,160,0.1)':st==='failed'?'rgba(255,107,107,0.1)':'var(--bg3)';
-        return `<div style="background:${stBg};border:1px solid var(--border);border-radius:10px;padding:10px 12px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text3)">${r.id}</span>
-            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:${stColor}">${st}</span>
-          </div>
-          <div style="font-size:13px;font-weight:600;color:var(--text)">${r.title||'—'}</div>
-          ${r.sponsors?.length?`<div style="font-size:10px;color:var(--text3);margin-top:3px">Sponsors: ${r.sponsors.slice(0,4).join(', ')}${r.sponsors.length>4?' +more':''}</div>`:''}
-        </div>`;
-      }).join('')}
-    </div>`;
-  }
-  // Vote history
-  if(!vh.length){
-    html+=`<div class="st">🗳 Vote Results</div>
-    <div style="text-align:center;padding:24px 16px;color:var(--text3);font-size:13px">${ended?'No votes recorded.':'Voting results will appear here.'}</div>`;
-  } else {
-    html+=`<div class="st">🗳 Vote Results (${vh.length})</div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      ${vh.map((v,i)=>{
-        const myVote=v.votes?.[CODE];
-        const myVoteLabel=myVote==='yes'?'✅ Favor':myVote==='no'?'❌ Against':myVote==='abstain'?'🟡 Abstain':'—';
-        const t=v.tally||{};
-        const total=Math.max(1,t.total||1);
-        const fPct=Math.round((t.favor||0)/total*100);
-        const aPct=Math.round((t.against||0)/total*100);
-        return `<div style="background:var(--bg3);border:1px solid ${v.passed?'rgba(61,232,160,0.25)':'rgba(255,107,107,0.2)'};border-radius:12px;padding:12px 14px">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-            <span style="font-size:16px">${v.passed?'✅':'❌'}</span>
-            <div style="flex:1;min-width:0">
-              <div style="font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.resolution||'Vote #'+(i+1)}</div>
-              <div style="font-size:10px;color:var(--text3)">${v.date||''} · ${v.passed?'<span style="color:var(--green)">PASSED</span>':'<span style="color:var(--red)">FAILED</span>'}</div>
-            </div>
-            <div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:${myVote?'rgba(106,176,255,0.1)':'var(--bg4)'};color:${myVote?'var(--blue)':'var(--text4)'}">${myVoteLabel}</div>
-          </div>
-          <div style="display:flex;gap:6px;font-size:11px;color:var(--text3)">
-            <span style="color:var(--green)">✅ ${t.favor||0}</span>
-            <span>·</span>
-            <span style="color:var(--red)">❌ ${t.against||0}</span>
-            <span>·</span>
-            <span>🟡 ${t.abstain||0}</span>
-            <span>·</span>
-            <span>${total} total</span>
-          </div>
-          <div style="margin-top:6px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex">
-            <div style="height:100%;background:var(--green);width:${fPct}%"></div>
-            <div style="height:100%;background:var(--red);width:${aPct}%"></div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  }
-  el.innerHTML=html||'<div style="text-align:center;padding:24px;color:var(--text3)">No data yet.</div>';
+// ═══ LOGOUT ═══
+function logout(){
+  clearInterval(iv);clearInterval(certIv);
+  SID='';CODE='';NAME='';D={};checkedIn=voted=voteActive=ended=false;
+  try{localStorage.removeItem('mun_p');}catch(e){}
+  document.getElementById('inp-sid').value='';
+  document.getElementById('inp-pin').value='';
+  goTo('sc-join');
 }
 
-// ── LOGOUT ──
-function logout(){clearInterval(iv);clearInterval(civIv);SID='';CODE='';NAME='';data={};checkedIn=voted=voteActive=ended=false;try{localStorage.removeItem('mun_p');}catch(e){}document.getElementById('inp-sid').value='';document.getElementById('inp-pin').value='';document.getElementById('info-rows').innerHTML='';show('sc-join');}
-
+// ═══ BROADCAST CHANNEL ═══
 try{const bc=new BroadcastChannel('mun_portal_'+SID);bc.onmessage=()=>poll();}catch(e){}
 </script>
 </body>
