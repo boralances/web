@@ -808,6 +808,10 @@ window.makeQRUrl = function(data, size) {
       Placard
       <span class="nav-badge" id="nav-placard-count">0</span>
     </button>
+    <button class="nav-item disabled" id="nav-pins" onclick="showPage('pins')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3A2.5 2.5 0 0 1 11.5 0a2.5 2.5 0 0 1 .5 4.95V7.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H12v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V9.5H9.5a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5h.05V4.95A2.5 2.5 0 0 1 9.05 3zM2 13a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/></svg>
+      PINs
+    </button>
     <button class="nav-item disabled" id="nav-history" onclick="showPage('history')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501zm-.952 2.379c.184-.29.346-.594.486-.908l.914.405c-.16.36-.345.706-.555 1.038l-.845-.535zm-.964 1.205c.122-.122.239-.248.35-.378l.758.653a8.073 8.073 0 0 1-.401.432l-.707-.707z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/></svg>
       History
@@ -915,10 +919,6 @@ window.makeQRUrl = function(data, size) {
     <button class="nav-item disabled" id="nav-scorehistory" onclick="showPage('scorehistory')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8.515 1.019A7 7 0 0 0 8 1V0a8 8 0 0 1 .589.022l-.074.997zm2.004.45a7.003 7.003 0 0 0-.985-.299l.219-.976c.383.086.76.2 1.126.342l-.36.933zm1.37.71a7.01 7.01 0 0 0-.439-.27l.493-.87a8.025 8.025 0 0 1 .979.654l-.615.789a6.996 6.996 0 0 0-.418-.302zm1.834 1.79a6.99 6.99 0 0 0-.653-.796l.724-.69c.27.285.52.59.747.91l-.818.576zm.744 1.352a7.08 7.08 0 0 0-.214-.468l.893-.45a7.976 7.976 0 0 1 .45 1.088l-.95.313a7.023 7.023 0 0 0-.179-.483zm.53 2.507a6.991 6.991 0 0 0-.1-1.025l.985-.17c.067.386.106.778.116 1.17l-1 .025zm-.131 1.538c.033-.17.06-.339.081-.51l.993.123a7.957 7.957 0 0 1-.23 1.155l-.964-.267c.046-.165.086-.332.12-.501z"/><path d="M8 1a7 7 0 1 0 4.95 11.95l.707.707A8.001 8.001 0 1 1 8 0v1z"/><path d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5z"/></svg>
       Score History
-    </button>
-    <button class="nav-item disabled" id="nav-pins" onclick="showPage('pins')">
-      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3A2.5 2.5 0 0 1 11.5 0a2.5 2.5 0 0 1 .5 4.95V7.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H12v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V9.5H9.5a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5h.05V4.95A2.5 2.5 0 0 1 9.05 3zM2 13a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/></svg>
-      PINs
     </button>
     <button class="nav-item" id="nav-tournament" onclick="showPage('tournament')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M2.5.5A.5.5 0 0 1 3 0h10a.5.5 0 0 1 .5.5c0 .538-.012 1.05-.034 1.536a3 3 0 1 1-1.133 5.89c-.79 1.865-1.878 2.777-2.833 3.011v2.173l1.425.356c.194.048.377.135.537.255L13.3 15.1a.5.5 0 0 1-.3.9H3a.5.5 0 0 1-.3-.9l1.838-1.379c.16-.12.343-.207.537-.255L6.5 13.11v-2.173c-.955-.234-2.043-1.146-2.833-3.012a3 3 0 1 1-1.132-5.89A33.076 33.076 0 0 1 2.5.5z"/></svg>
@@ -3263,13 +3263,11 @@ function beginSession(){
   scores={}; warnings={}; rollCallData={}; resolutions=[]; modLog=[]; gslBankUsed=0; gslBankHistory=[]; workPapers=[]; amendments=[]; blocs={}; caucusLog=[]; _blocSelectedDelegates=[]; positionPapers={}; delegateNotes={}; appeals=[]; motionVotes=[]; scoreHistory={}; speakerTimeLog={};
   updateStats(); renderRollCall(); renderResolutions();
   renderAllSpk();
-  // Auto-connect Firebase with 9-digit code
-  if (!_fbSessionId) {
-    _fbSessionId = _genSessionId(); // 8-char alphanumeric
-    _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
-    _fbAvailable = true;
-    startFbPoll();
-  }
+  // Always generate a fresh random session ID for each new session
+  _fbSessionId = _genSessionId(); // fresh 8-char alphanumeric every time
+  _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+  _fbAvailable = true;
+  startFbPoll();
   // Auto-generate PINs for all delegates
   delegates.forEach(d=>{if(!delegatePins[d.c])delegatePins[d.c]=String(Math.floor(1000+Math.random()*9000));});
   generateDelegatePortals();
@@ -3823,8 +3821,8 @@ function tick(){
     return;
   }
   renderClock(); setArc(timerSecs/totalSecs); timerSecs--;
-  // Log speaking time
-  if((curMode==='opening'||curMode==='gsl')&&currentSpkIdx>=0&&currentSpkIdx<speakers.length){
+  // Log speaking time for all modes with a current speaker
+  if((curMode==='opening'||curMode==='gsl'||curMode==='motion')&&currentSpkIdx>=0&&currentSpkIdx<speakers.length){
     const _spk=speakers[currentSpkIdx];
     speakerTimeLog[_spk.c]=(speakerTimeLog[_spk.c]||0)+1;
   }
@@ -5886,9 +5884,7 @@ function placardSingleHTML(code, name, committee, org, isBack){
 
   // Front face shows flag + name + QR
   // Back face (isBack=true) shows session ID + PIN + portal URL → rotated 180deg
-  const _pUrl = delegatePortalUrls&&delegatePortalUrls[code];
-  const portalUrl = _pUrl ? (_pUrl.portalUrl||_pUrl.dataUrl||'') : '';
-  const portalQR = portalUrl ? `<img src="${makeQRUrl(portalUrl,88)}" style="width:30mm;height:30mm;background:#fff;border-radius:2px;padding:1px;flex-shrink:0"/>` : '';
+  // No QR on placard — delegates use Session ID + PIN
   const pin = typeof delegatePins!=='undefined' ? (delegatePins[code]||'') : '';
   const sid = typeof _fbSessionId!=='undefined' ? _fbSessionId : '';
 
@@ -5910,14 +5906,13 @@ function placardSingleHTML(code, name, committee, org, isBack){
               <div style="font-family:monospace;font-size:22pt;font-weight:900;color:#1a3a6e;letter-spacing:0.2em">${pin}</div>
             </div>`:''}
           </div>
-          <div style="font-size:7pt;color:#aaa;margin-top:2mm">Scan QR → enter Session ID → select your country → enter PIN</div>
+          <div style="font-size:7pt;color:#aaa;margin-top:2mm">Go to portal → enter Session ID → select country → enter PIN</div>
         </div>
         <div class="footer">
           <div class="globe">${globeSvg}</div>
           <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
           ${logoRow}
-          ${portalQR}
-        </div>
+          </div>
       </div>
       <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}" style="opacity:0.25"/></div>
     </div>`;
@@ -5934,7 +5929,6 @@ function placardSingleHTML(code, name, committee, org, isBack){
         <div class="globe">${globeSvg}</div>
         <div><div class="committee">${committee}</div><div class="org">${org}</div></div>
         ${logoRow}
-        ${portalQR}
       </div>
     </div>
     <div class="flag-panel"><img class="flag" src="https://flagcdn.com/w320/${code.toLowerCase()}.png" onerror="this.style.display='none'" alt="${name}"/></div>
@@ -10147,9 +10141,7 @@ function openAttendanceQR(){
     const chip=document.getElementById('attend-count'); if(chip) chip.textContent=`${present} / ${delegates.length}`;
     grid.innerHTML=delegates.map(d=>{
       const isPresent=rollCallData[d.c]==='present'||rollCallData[d.c]==='present+voting';
-      const _pu=delegatePortalUrls[d.c];
-      const portalUrl=_pu?(_pu.portalUrl||_pu.dataUrl||_pu):'';
-      const qrSrc=portalUrl?makeQRUrl(portalUrl,100):'';
+      const pin=typeof delegatePins!=='undefined'?(delegatePins[d.c]||''):'';
       return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:${isPresent?'rgba(61,232,160,0.06)':'var(--bg3)'};border:1px solid ${isPresent?'rgba(61,232,160,0.3)':'var(--border)'};border-radius:8px;transition:all 0.3s">
         ${isPresent
           ? `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">✅</div>`
@@ -10845,15 +10837,23 @@ Keep response concise (150-200 words). Use clear formatting.`;
   if(loading) loading.style.display = 'block';
 
   try {
+    // Use the Anthropic API via proxy (no CORS issue)
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 400,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+    if(!resp.ok){
+      const errText = await resp.text().catch(()=>'');
+      throw new Error('API returned '+resp.status+'. '+errText.slice(0,100));
+    }
     const data = await resp.json();
     const analysis = data.content?.[0]?.text || 'Analysis failed.';
 
