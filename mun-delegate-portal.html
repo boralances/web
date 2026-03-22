@@ -160,6 +160,7 @@ input:focus{border-color:rgba(106,176,255,0.5);box-shadow:0 0 0 3px rgba(106,176
     <button class="tb" id="t-vote" onclick="tab('vote')"><span>🗳</span>Vote</button>
     <button class="tb" id="t-stats" onclick="tab('stats')"><span>📊</span>Stats</button>
     <button class="tb" id="t-cert" onclick="tab('cert')"><span>🏅</span>Cert</button>
+    <button class="tb" id="t-votes" onclick="tab('votes')"><span>📜</span>Votes</button>
     <button class="tb" id="t-info" onclick="tab('info')"><span>ℹ</span>Info</button>
   </div>
 
@@ -211,6 +212,11 @@ input:focus{border-color:rgba(106,176,255,0.5);box-shadow:0 0 0 3px rgba(106,176
         Certificates will be available after the meeting ends.
       </div>
     </div>
+  </div>
+
+  <!-- VOTES HISTORY -->
+  <div class="tp" id="p-votes" style="width:100%">
+    <div id="votes-content"></div>
   </div>
 
   <!-- INFO -->
@@ -329,6 +335,7 @@ function tab(t){
   document.getElementById('p-'+t)?.classList.add('active');
   if(t==='stats')renderStats();
   if(t==='cert')renderCert();
+  if(t==='votes')renderVotesHistory();
   if(t==='info')renderInfo();
 }
 
@@ -529,9 +536,89 @@ function printCert(type){
 function renderInfo(){
   const el=document.getElementById('info-rows');if(!el)return;
   const meta=data.meta||{},state=data.state||{};
-  [['🏛','Committee',meta.committee||state.committee||SID],['📋','Agenda',meta.agenda||'—'],['📅','Date',meta.date||'—'],['⏱','Duration',meta.duration||'—'],['🔑','Session',SID],['🌍','Delegate',NAME+' ('+CODE.toUpperCase()+')'],['📡','Status',ended?'Meeting Ended':'Active']].forEach(([icon,lbl,val])=>{
+  const totalVotes=(data.voteHistory||[]).length;
+  const myVoteCount=(data.voteHistory||[]).filter(v=>v.votes&&v.votes[CODE]).length;
+  [['🏛','Committee',meta.committee||state.committee||SID],['📋','Agenda',meta.agenda||meta.agenda||'—'],['📅','Date',meta.date||'—'],['⏱','Duration',meta.duration||'—'],['🗳','Votes',totalVotes+' votes (you voted in '+myVoteCount+')'],['🔑','Session ID',SID],['🌍','Delegate',NAME+' ('+CODE.toUpperCase()+')'],['📡','Status',ended?'🏁 Meeting Ended':'🟢 Active']].forEach(([icon,lbl,val])=>{
     el.innerHTML+='<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border)"><span style="font-size:16px;flex-shrink:0">'+icon+'</span><span style="font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;min-width:70px">'+lbl+'</span><span style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+val+'</span></div>';
   });
+}
+
+// ── VOTE HISTORY ──
+function renderVotesHistory(){
+  const el=document.getElementById('votes-content');if(!el)return;
+  const vh=data.voteHistory||[];
+  const res=data.resolutions||[];
+  const agenda=data.state?.agenda||data.meta?.agenda||'';
+  const agendaItems=data.state?.agendaItems||[];
+  let html='';
+  // Agenda section
+  if(agenda||agendaItems.length){
+    html+=`<div class="st">📋 Agenda</div>
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--text2);line-height:1.6">
+      ${agenda?`<div style="font-weight:600;color:var(--text);margin-bottom:6px">${agenda}</div>`:''}
+      ${agendaItems.map(i=>`<div style="font-size:12px;color:var(--text3);padding:3px 0;border-bottom:1px solid var(--border)">📌 ${i}</div>`).join('')}
+    </div>`;
+  }
+  // Resolutions
+  if(res.length){
+    html+=`<div class="st">📄 Resolutions</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px">
+      ${res.map(r=>{
+        const st=r.status||'draft';
+        const stColor=st==='passed'?'var(--green)':st==='failed'?'var(--red)':'var(--text3)';
+        const stBg=st==='passed'?'rgba(61,232,160,0.1)':st==='failed'?'rgba(255,107,107,0.1)':'var(--bg3)';
+        return `<div style="background:${stBg};border:1px solid var(--border);border-radius:10px;padding:10px 12px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;color:var(--text3)">${r.id}</span>
+            <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:${stColor}">${st}</span>
+          </div>
+          <div style="font-size:13px;font-weight:600;color:var(--text)">${r.title||'—'}</div>
+          ${r.sponsors?.length?`<div style="font-size:10px;color:var(--text3);margin-top:3px">Sponsors: ${r.sponsors.slice(0,4).join(', ')}${r.sponsors.length>4?' +more':''}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  // Vote history
+  if(!vh.length){
+    html+=`<div class="st">🗳 Vote Results</div>
+    <div style="text-align:center;padding:24px 16px;color:var(--text3);font-size:13px">${ended?'No votes recorded.':'Voting results will appear here.'}</div>`;
+  } else {
+    html+=`<div class="st">🗳 Vote Results (${vh.length})</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${vh.map((v,i)=>{
+        const myVote=v.votes?.[CODE];
+        const myVoteLabel=myVote==='yes'?'✅ Favor':myVote==='no'?'❌ Against':myVote==='abstain'?'🟡 Abstain':'—';
+        const t=v.tally||{};
+        const total=Math.max(1,t.total||1);
+        const fPct=Math.round((t.favor||0)/total*100);
+        const aPct=Math.round((t.against||0)/total*100);
+        return `<div style="background:var(--bg3);border:1px solid ${v.passed?'rgba(61,232,160,0.25)':'rgba(255,107,107,0.2)'};border-radius:12px;padding:12px 14px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:16px">${v.passed?'✅':'❌'}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.resolution||'Vote #'+(i+1)}</div>
+              <div style="font-size:10px;color:var(--text3)">${v.date||''} · ${v.passed?'<span style="color:var(--green)">PASSED</span>':'<span style="color:var(--red)">FAILED</span>'}</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:${myVote?'rgba(106,176,255,0.1)':'var(--bg4)'};color:${myVote?'var(--blue)':'var(--text4)'}">${myVoteLabel}</div>
+          </div>
+          <div style="display:flex;gap:6px;font-size:11px;color:var(--text3)">
+            <span style="color:var(--green)">✅ ${t.favor||0}</span>
+            <span>·</span>
+            <span style="color:var(--red)">❌ ${t.against||0}</span>
+            <span>·</span>
+            <span>🟡 ${t.abstain||0}</span>
+            <span>·</span>
+            <span>${total} total</span>
+          </div>
+          <div style="margin-top:6px;height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex">
+            <div style="height:100%;background:var(--green);width:${fPct}%"></div>
+            <div style="height:100%;background:var(--red);width:${aPct}%"></div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+  el.innerHTML=html||'<div style="text-align:center;padding:24px;color:var(--text3)">No data yet.</div>';
 }
 
 // ── LOGOUT ──
