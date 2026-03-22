@@ -1214,6 +1214,25 @@ window.makeQRUrl = function(data, size) {
       </div>
     </div>
 
+
+          <!-- Delegate PINs section — appears after delegates are added -->
+          <div class="card" id="delegate-pins-card" style="margin-top:12px;display:none">
+            <div class="card-head">
+              <div class="card-head-left">
+                <div class="card-title">🔑 Delegate PINs</div>
+                <span class="chip chip-gray">4-digit portal access</span>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-ghost btn-sm" onclick="generateAllPins()">⚡ Auto-Generate</button>
+                <button class="btn btn-ghost btn-sm" onclick="printPinSheet()">🖨 Print</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:10px 14px">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Each delegate uses their PIN to log into the portal. Share PINs securely.</div>
+              <div id="pin-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px"></div>
+            </div>
+          </div>
+
     <!-- ═══ TIMER ═══ -->
     <div id="page-timer" class="page">
       <div class="timer-page-grid">
@@ -3205,7 +3224,7 @@ function beginSession(){
   renderAllSpk();
   // Auto-connect Firebase with 9-digit code
   if (!_fbSessionId) {
-    _fbSessionId = String(Math.floor(100000000 + Math.random() * 900000000)); // 9-digit
+    _fbSessionId = _genSessionId(); // 8-char alphanumeric
     _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
     _fbAvailable = true;
     startFbPoll();
@@ -6542,7 +6561,7 @@ function buildSessionSnapshot(){
     session, delegates, scores, warnings, rollCallData,
     speakers, currentSpkIdx, speechesDone, curMode,
     sessionHistory, placardQueue, sessionStartTime,
-    chairNotes, amendments, blocs, caucusLog, committeeRules:typeof committeeRules!=='undefined'?committeeRules:[], certBgImage:certBgImage||'', certBgOpacity:certBgOpacity||0.15,
+    chairNotes, amendments, blocs, caucusLog, committeeRules:typeof committeeRules!=='undefined'?committeeRules:[], delegatePins:delegatePins||{}, certBgImage:certBgImage||'', certBgOpacity:certBgOpacity||0.15,
     modLog, gslBankUsed, gslBankHistory, workPapers,
     positionPapers, customAwardTitles,
     resolution: typeof resolution!=='undefined'?resolution:null,
@@ -6910,6 +6929,7 @@ function endMeeting(){
   document.body.appendChild(toast);
   document.getElementById('end-meeting-confirm-btn').onclick=()=>{
     toast.remove();
+    pushMeetingResults(); // Push everything to Firebase before clearing
     doEndSession();
     showSessionEndedModal();
   };
@@ -9358,6 +9378,7 @@ function showSessionEndedModal(){
       <!-- Footer -->
       <div style="padding:14px 20px;display:flex;gap:8px;justify-content:space-between;align-items:center">
         <button onclick="launchConfetti()" class="btn btn-ghost btn-sm">🎉 Confetti</button>
+        <button onclick="pushMeetingResults()" class="btn btn-ghost btn-sm">📤 Push to Portal</button>
         <div style="display:flex;gap:8px">
           <button onclick="showAwardsCeremony();document.getElementById('session-ended-modal').remove()" class="btn btn-primary btn-sm">🏆 Awards Ceremony</button>
           <button onclick="document.getElementById('session-ended-modal').remove();showPage('setup')" class="btn btn-ghost btn-sm">Close</button>
@@ -10466,7 +10487,7 @@ let _fbAvailable = false;
 
 function initFirebase(dbUrl, sessionId) {
   _fbUrl = dbUrl.replace(/\/$/, '');
-  _fbSessionId = sessionId || String(Math.floor(100000000 + Math.random() * 900000000));
+  _fbSessionId = sessionId || _genSessionId();
   _fbAvailable = true;
   // Test connection
   fetch(`${_fbUrl}/mun_${_fbSessionId}/ping.json`, {
@@ -10552,7 +10573,7 @@ function openNetworkSetupModal() {
   modal.id = 'network-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
 
-  const sessionCode = _fbSessionId || String(Math.floor(100000000 + Math.random() * 900000000));
+  const sessionCode = _fbSessionId || _genSessionId();
 
   modal.innerHTML = `
     <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
@@ -11003,6 +11024,265 @@ function pushSessionToFirebase() {
     body: JSON.stringify(sessionData.state)
   }).catch(() => {});
 }
+
+// ══════════════════════════════════════════════════
+// SESSION ID GENERATOR — 8 char alphanumeric
+// ══════════════════════════════════════════════════
+function _genSessionId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I,O,0,1 (ambiguous)
+  let id = '';
+  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
+  return id;
+}
+
+// ══════════════════════════════════════════════════
+// DELEGATE PINs
+// ══════════════════════════════════════════════════
+let delegatePins = {}; // { countryCode: '1234' }
+
+function generateAllPins() {
+  delegates.forEach(d => {
+    if (!delegatePins[d.c]) {
+      delegatePins[d.c] = String(Math.floor(1000 + Math.random() * 9000));
+    }
+  });
+  renderPinGrid();
+  if (typeof pushSessionToFirebase === 'function') setTimeout(pushSessionToFirebase, 300);
+  showToast('PINs generated for all delegates');
+}
+
+function renderPinGrid() {
+  const card = document.getElementById('delegate-pins-card');
+  const grid = document.getElementById('pin-grid');
+  if (!grid) return;
+  if (!delegates.length) { if(card) card.style.display='none'; return; }
+  if (card) card.style.display = '';
+
+  grid.innerHTML = delegates.map(d => {
+    const pin = delegatePins[d.c] || '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+      background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+      ${flagImg(d.c,'flag-img-sm')}
+      <span style="flex:1;font-size:12px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.n}</span>
+      <input type="text" value="${pin}" maxlength="4" inputmode="numeric"
+        style="width:52px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;
+        text-align:center;background:var(--bg);border:1px solid var(--border2);color:var(--text);
+        border-radius:6px;padding:4px;outline:none"
+        oninput="this.value=this.value.replace(/\\D/g,'').slice(0,4);delegatePins['${d.c}']=this.value;setTimeout(pushSessionToFirebase,300)"
+        onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border2)'"/>
+    </div>`;
+  }).join('');
+}
+
+function printPinSheet() {
+  if (!delegates.length) return;
+  const rows = delegates.map(d => {
+    const pin = delegatePins[d.c] || '—';
+    return `<tr>
+      <td><img src="${flagUrl(d.c)}" style="width:28px;height:20px;object-fit:cover;border-radius:2px;vertical-align:middle"/> ${d.n}</td>
+      <td style="font-family:monospace;font-size:18px;font-weight:700;text-align:center">${pin}</td>
+      <td style="font-size:11px;color:#666">boralances.github.io/mun-delegate-portal<br/>Session: ${_fbSessionId}</td>
+    </tr>`;
+  }).join('');
+  const w = window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Delegate PINs — ${session.committee}</title>
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:sans-serif;padding:24px}
+  h1{font-size:18px;margin-bottom:4px}p{font-size:12px;color:#666;margin-bottom:16px}
+  table{width:100%;border-collapse:collapse}th{background:#f0f0f0;padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.08em}
+  td{padding:8px 12px;border-bottom:1px solid #eee;font-size:14px}
+  @media print{body{padding:12px}}</style></head><body>
+  <h1>🔑 Delegate PINs — ${session.committee || 'MUN'}</h1>
+  <p>Session ID: ${_fbSessionId} · ${new Date().toLocaleDateString()} · Confidential — distribute privately</p>
+  <table><thead><tr><th>Delegate</th><th>PIN</th><th>Portal Access</th></tr></thead><tbody>${rows}</tbody></table>
+  <script>window.print();<\/script></body></html>`);
+}
+
+// ══════════════════════════════════════════════════
+// PUSH FULL MEETING RESULTS TO FIREBASE
+// ══════════════════════════════════════════════════
+async function pushMeetingResults() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) {
+    showToast('Firebase not connected — results not pushed','error');
+    return;
+  }
+
+  const now = Date.now();
+  const oneDayMs  = 24 * 60 * 60 * 1000;
+  const twoWeekMs = 14 * 24 * 60 * 60 * 1000;
+
+  // Ranked scores
+  const ranked = Object.entries(scores)
+    .sort((a,b) => b[1]-a[1])
+    .map(([code, pts]) => {
+      const d = delegates.find(x=>x.c===code) || COUNTRIES.find(x=>x.c===code);
+      return d ? { c: code, n: d.n, pts } : null;
+    }).filter(Boolean);
+
+  // Speech counts
+  const speechCounts = {};
+  sessionHistory.filter(e=>e.type==='speech'&&e.delegate).forEach(e=>{
+    speechCounts[e.delegate.c] = (speechCounts[e.delegate.c]||0) + 1;
+  });
+
+  // Warning counts
+  const warnCounts = {};
+  Object.entries(warnings).forEach(([code, list]) => { warnCounts[code] = list.length; });
+
+  // Determine awards
+  const best     = ranked[0] || null;
+  const outstanding = ranked[1] || null;
+  const verbal   = ranked[2] || null;
+
+  const elapsed = sessionStartTime ? Math.floor((Date.now()-sessionStartTime)/1000) : 0;
+  const h = Math.floor(elapsed/3600), m = Math.floor((elapsed%3600)/60);
+
+  // Build per-delegate results (for portal stats)
+  const delegateResults = {};
+  delegates.forEach(d => {
+    delegateResults[d.c] = {
+      n: d.n,
+      c: d.c,
+      pts: scores[d.c] || 0,
+      speeches: speechCounts[d.c] || 0,
+      warnings: warnCounts[d.c] || 0,
+      rank: ranked.findIndex(r=>r.c===d.c) + 1 || 0,
+      pin: delegatePins[d.c] || '',
+      award: best?.c===d.c ? 'best' : outstanding?.c===d.c ? 'outstanding' : verbal?.c===d.c ? 'verbal' : ''
+    };
+  });
+
+  const meetingData = {
+    meta: {
+      committee: session.committee || '',
+      agenda: session.agenda || '',
+      date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}),
+      duration: h ? `${h}h ${m}m` : `${m}m`,
+      endTime: now,
+      // Certificates available 3 hours after end
+      certsAvailableAt: now + (3 * 60 * 60 * 1000),
+      // Session expires 1 day after meeting ends (max 2 weeks from start)
+      expiresAt: Math.min(now + oneDayMs, (sessionStartTime||now) + twoWeekMs),
+      sessionId: _fbSessionId,
+      logoLeft: customLogoLeft || '',
+      logoRight: customLogoRight || '',
+    },
+    ranked,
+    delegateResults,
+    // Awards
+    awards: {
+      best: best ? { c: best.c, n: best.n, pts: best.pts } : null,
+      outstanding: outstanding ? { c: outstanding.c, n: outstanding.n, pts: outstanding.pts } : null,
+      verbal: verbal ? { c: verbal.c, n: verbal.n, pts: verbal.pts } : null,
+      customTitles: typeof customAwardTitles !== 'undefined' ? customAwardTitles : {}
+    },
+    // Stats
+    stats: {
+      totalDelegates: delegates.length,
+      totalSpeeches: sessionHistory.filter(e=>e.type==='speech').length,
+      totalCaucuses: caucusLog.length,
+      totalWarnings: Object.values(warnCounts).reduce((a,b)=>a+b,0),
+      elapsed,
+      speechCounts,
+      warnCounts
+    },
+    // Mark meeting as ended
+    state: {
+      meetingEnded: true,
+      endTime: now,
+      voteActive: false,
+      committee: session.committee || ''
+    }
+  };
+
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(meetingData)
+    });
+    if (r.ok) {
+      showToast('✅ Results pushed to delegate portals!');
+      // Schedule auto-delete
+      scheduleFirebaseDelete();
+    } else {
+      showToast('Firebase push failed — check connection','error');
+    }
+  } catch(e) {
+    showToast('Push failed: '+e.message,'error');
+  }
+}
+
+// ══════════════════════════════════════════════════
+// FIREBASE TTL — delete session data after expiry
+// ══════════════════════════════════════════════════
+function scheduleFirebaseDelete() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  // Store cleanup job in localStorage — checked on next app open
+  try {
+    const jobs = JSON.parse(localStorage.getItem('mun_cleanup_jobs')||'[]');
+    jobs.push({ sessionId: _fbSessionId, fbUrl: _fbUrl, deleteAt: Date.now() + 24*60*60*1000 });
+    localStorage.setItem('mun_cleanup_jobs', JSON.stringify(jobs));
+  } catch(e) {}
+}
+
+async function runFirebaseCleanupJobs() {
+  try {
+    const jobs = JSON.parse(localStorage.getItem('mun_cleanup_jobs')||'[]');
+    const remaining = [];
+    for (const job of jobs) {
+      if (Date.now() >= job.deleteAt) {
+        try {
+          await fetch(`${job.fbUrl}/mun_${job.sessionId}.json`, { method: 'DELETE' });
+          console.log('Deleted Firebase session:', job.sessionId);
+        } catch(e) { remaining.push(job); } // retry next time
+      } else {
+        remaining.push(job);
+      }
+    }
+    localStorage.setItem('mun_cleanup_jobs', JSON.stringify(remaining));
+  } catch(e) {}
+}
+
+// Run cleanup on startup
+setTimeout(runFirebaseCleanupJobs, 3000);
+
+// ══════════════════════════════════════════════════
+// SYNC delegatePins to Firebase
+// ══════════════════════════════════════════════════
+const _origPushSession = pushSessionToFirebase;
+pushSessionToFirebase = function() {
+  _origPushSession();
+  // Also push pins
+  if (_fbAvailable && _fbUrl && _fbSessionId && Object.keys(delegatePins).length) {
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/delegatePins.json`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(delegatePins)
+    }).catch(()=>{});
+  }
+};
+
+// Show pin grid when delegates change
+const _origRenderDelegates = renderDelegates;
+renderDelegates = function() {
+  _origRenderDelegates();
+  renderPinGrid();
+};
+
+// Include pins in session snapshot save/load
+const _origSaveSession = saveSession;
+saveSession = function() {
+  _origSaveSession();
+};
+
+// Hook pins into _applySnapshot
+const _origApplySnapshot = _applySnapshot;
+_applySnapshot = function(snap) {
+  _origApplySnapshot(snap);
+  if (snap.delegatePins) delegatePins = snap.delegatePins;
+  renderPinGrid();
+};
+
 // ═══ STATS ═══
 function updateStats(){
   document.getElementById('s-del').textContent=delegates.length;
