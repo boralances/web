@@ -2791,6 +2791,19 @@ window.makeQRUrl = function(data, size) {
             <div style="font-size:24px;margin-bottom:8px;animation:spin 1s linear infinite">⚙️</div>
             Analyzing speech...
           </div>
+          <details style="margin-top:12px">
+            <summary style="font-size:11px;color:var(--text3);cursor:pointer;user-select:none">🔑 API Key settings</summary>
+            <div style="margin-top:8px;padding:10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:6px">Anthropic API key — stored only in your browser. Get one free at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a></div>
+              <div style="display:flex;gap:6px">
+                <input type="password" id="ai-key-field" placeholder="sk-ant-api03-..."
+                  style="flex:1;font-family:'JetBrains Mono',monospace;font-size:12px"
+                  value=""/>
+                <button onclick="(()=>{const v=document.getElementById('ai-key-field').value.trim();if(!v)return;localStorage.setItem('mun_ai_key',v);showToast('API key saved ✓');})()" class="btn btn-ghost btn-sm">Save</button>
+                <button onclick="localStorage.removeItem('mun_ai_key');document.getElementById('ai-key-field').value='';showToast('Key cleared')" class="btn btn-ghost btn-sm" style="color:var(--red)">Clear</button>
+              </div>
+            </div>
+          </details>
         </div>
       </div>
       <div class="card">
@@ -3084,7 +3097,7 @@ function showPage(id){
   if(id==='delanalysis') renderDelegateAnalysis();
   if(id==='timerlog') renderTimerHistory();
   if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
-  if(id==='aispeech') renderAIHistory();
+  if(id==='aispeech') { renderAIHistory(); const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||''; }
   if(id==='tournament') renderTournament();
   if(id==='pins') renderPinsPage();
   if(id==='spktime') renderSpkTime();
@@ -10793,55 +10806,90 @@ async function runAISpeechAnalysis(){
 
   const typePrompts = {
     full: `Analyze this MUN delegate speech comprehensively. Evaluate: argumentation quality, use of evidence, policy positions, diplomatic language, and overall effectiveness.`,
-    score: `Score this MUN delegate speech from 1-5 stars. Be specific about why. Format: "Score: X/5 — [reason]" then brief explanation.`,
-    feedback: `Give constructive feedback for this MUN delegate speech. Focus on 3 strengths and 3 areas for improvement. Be encouraging but honest.`,
+    score: `Score this MUN delegate speech from 1-5 stars. Be specific about why. Start your response with exactly "Score: X/5" then explain.`,
+    feedback: `Give constructive feedback for this MUN delegate speech. List 3 strengths and 3 areas for improvement. Be encouraging but honest.`,
     position: `Analyze the policy position in this speech. What is the delegate's stance? What solutions do they propose? Are they bloc-aligned?`,
-    improve: `Give 5 specific tips to improve this delegate's speaking style and argumentation based on this speech sample.`
+    improve: `Give 5 specific, actionable tips to improve this delegate's speaking style and argumentation.`
   };
 
-  const prompt = `You are an experienced MUN (Model United Nations) chair evaluating a delegate's speech.
+  const prompt = `You are an experienced MUN (Model United Nations) chair evaluating a delegate speech.
 
 Committee: ${committee}
-Agenda: ${agenda}
+Agenda: ${agenda || 'Not specified'}
 Delegate: ${delegateName}
-${s ? `Previous score: ${s.pts}, Speeches: ${s.speechCount}, Warnings: ${s.warnCount}` : ''}
+${s ? `Previous score: ${s.pts > 0 ? '+' : ''}${s.pts} pts | Speeches: ${s.speechCount} | Warnings: ${s.warnCount}` : ''}
 
-${typePrompts[type]}
+Task: ${typePrompts[type]}
 
-Speech:
+Speech text:
 "${text}"
 
-Keep response concise (150-200 words). Use clear formatting.`;
+Keep your response under 200 words. Use clear formatting with **bold** for key points.`;
 
   if(btn) btn.disabled = true;
   if(result) result.style.display = 'none';
   if(loading) loading.style.display = 'block';
 
   try {
-    // Use the Anthropic API via proxy (no CORS issue)
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-api-key': '',
+        'anthropic-version': '2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
+        max_tokens: 500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
+
+    if(loading) loading.style.display = 'none';
+
+    // Handle auth error — API key needed
+    if(resp.status === 401 || resp.status === 403) {
+      if(result){
+        result.style.display = 'block';
+        result.innerHTML = `
+          <div style="border:1px solid rgba(255,208,96,0.3);background:rgba(255,208,96,0.06);border-radius:8px;padding:14px">
+            <div style="font-weight:700;color:var(--yellow);margin-bottom:8px">🔑 API Key Required</div>
+            <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+              AI Analysis requires an Anthropic API key. Enter your key below — it's stored only in your browser.
+            </div>
+            <div style="display:flex;gap:6px">
+              <input type="password" id="ai-api-key-input" placeholder="sk-ant-api03-..."
+                style="flex:1;font-size:12px;font-family:'JetBrains Mono',monospace"
+                value="${localStorage.getItem('mun_ai_key')||''}"/>
+              <button onclick="saveAIKey()" class="btn btn-primary btn-sm">Save & Retry</button>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-top:6px">
+              Get a free key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--blue)">console.anthropic.com</a>
+            </div>
+          </div>`;
+      }
+      if(btn) btn.disabled = false;
+      return;
+    }
+
     if(!resp.ok){
       const errText = await resp.text().catch(()=>'');
-      throw new Error('API returned '+resp.status+'. '+errText.slice(0,100));
+      let errMsg = 'API Error ' + resp.status;
+      try { const j = JSON.parse(errText); errMsg = j.error?.message || errMsg; } catch(e2){}
+      throw new Error(errMsg);
     }
+
     const data = await resp.json();
     const analysis = data.content?.[0]?.text || 'Analysis failed.';
 
-    if(loading) loading.style.display = 'none';
     if(result){
       result.style.display = 'block';
-      result.innerHTML = analysis.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br/>');
+      result.innerHTML = analysis
+        .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+        .replace(/\n\n/g,'</p><p style="margin-top:8px">')
+        .replace(/\n/g,'<br/>');
+      result.innerHTML = '<p>' + result.innerHTML + '</p>';
     }
 
     // Save to history
@@ -10860,19 +10908,43 @@ Keep response concise (150-200 words). Use clear formatting.`;
       const scoreMatch = analysis.match(/Score:\s*(\d)/);
       if(scoreMatch) {
         const suggested = parseInt(scoreMatch[1]);
-        const pts = [0,1,2,3,4,5][suggested] || 0;
-        if(result) result.innerHTML += `<br/><br/><button onclick="applyAIScore('${_aiDelegate.c}',${pts})" class="btn btn-primary btn-sm">Apply ${suggested}★ → +${pts} pts</button>`;
+        const pts = suggested || 0;
+        if(result) result.innerHTML += `<div style="margin-top:10px"><button onclick="applyAIScore('${_aiDelegate.c}',${pts})" class="btn btn-primary btn-sm">✓ Apply ${suggested}★ (+${pts} pts)</button></div>`;
       }
     }
+
   } catch(e) {
     if(loading) loading.style.display = 'none';
     if(result){
       result.style.display = 'block';
-      result.innerHTML = '<span style="color:var(--red)">API Error: '+e.message+'</span>';
+      result.innerHTML = `<div style="color:var(--red);font-size:12px">
+        <strong>Error:</strong> ${e.message}<br/>
+        <span style="color:var(--text3);font-size:11px">Make sure your API key is set (see the key icon below).</span>
+      </div>`;
     }
   }
   if(btn) btn.disabled = false;
 }
+
+function saveAIKey(){
+  const input = document.getElementById('ai-api-key-input');
+  if(!input?.value?.trim()){ showToast('Enter a valid API key','error'); return; }
+  localStorage.setItem('mun_ai_key', input.value.trim());
+  showToast('API key saved — retrying...');
+  runAISpeechAnalysis();
+}
+
+// Inject saved API key into fetch headers automatically
+const _origFetch = window.fetch;
+window.fetch = function(url, opts){
+  if(typeof url === 'string' && url.includes('api.anthropic.com')){
+    const key = localStorage.getItem('mun_ai_key') || '';
+    if(key && opts?.headers){
+      opts.headers['x-api-key'] = key;
+    }
+  }
+  return _origFetch.apply(this, arguments);
+};
 
 function applyAIScore(code, pts){
   scores[code] = (scores[code]||0) + pts;
