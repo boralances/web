@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karekök Translator — Boralances</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #060410;
+            color: #c084fc;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* BG effects */
+        #bgCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.10;
+            pointer-events: none;
+        }
+
+        .hex-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(90deg, rgba(168,85,247,0.04) 1px, transparent 1px),
+                linear-gradient(rgba(168,85,247,0.04) 1px, transparent 1px);
+            background-size: 44px 44px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .glow-center {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%,-50%);
+            width: 750px; height: 750px;
+            background: radial-gradient(ellipse, rgba(168,85,247,0.08) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            animation: breathe 6s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+            50%      { transform: translate(-50%,-50%) scale(1.3); opacity: 1; }
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 18px 0;
+            background: rgba(6,4,16,0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid #0ff;
+            box-shadow: 0 0 20px rgba(0,255,255,0.4);
+        }
+
+        nav {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff;
+            text-decoration: none;
+            letter-spacing: 3px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #c084fc;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border: 2px solid rgba(168,85,247,0.5);
+            padding: 9px 18px;
+            transition: all 0.3s;
+            clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+        }
+        .back-btn:hover {
+            background: rgba(168,85,247,0.12);
+            border-color: #c084fc;
+            box-shadow: 0 0 20px rgba(168,85,247,0.4);
+            color: #e879f9;
+        }
+
+        /* ── MAIN ── */
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 50px 24px 80px;
+            width: 100%;
+        }
+
+        .page-hero {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-eyebrow {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            letter-spacing: 5px;
+            color: rgba(168,85,247,0.45);
+            margin-bottom: 14px;
+        }
+
+        .page-hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 52px;
+            font-weight: 900;
+            color: #c084fc;
+            text-shadow: 0 0 20px #a855f7, 0 0 50px rgba(168,85,247,0.3);
+            letter-spacing: 5px;
+            animation: purpleGlow 2.5s ease-in-out infinite alternate;
+            margin-bottom: 14px;
+        }
+        @keyframes purpleGlow {
+            from { text-shadow: 0 0 20px #a855f7, 0 0 40px rgba(168,85,247,0.3); }
+            to   { text-shadow: 0 0 35px #c084fc, 0 0 70px rgba(168,85,247,0.6), 0 0 110px rgba(168,85,247,0.15); }
+        }
+
+        .page-hero p {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: rgba(168,85,247,0.4);
+            letter-spacing: 3px;
+        }
+
+        /* ── FORMULA DISPLAY ── */
+        .formula-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .formula-chip {
+            background: rgba(168,85,247,0.06);
+            border: 1px solid rgba(168,85,247,0.25);
+            padding: 12px 22px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: rgba(168,85,247,0.7);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: 1px;
+        }
+
+        .formula-chip .math {
+            color: #c084fc;
+            font-size: 18px;
+            text-shadow: 0 0 10px rgba(168,85,247,0.5);
+        }
+
+        /* ── PANEL ── */
+        .panel {
+            background: rgba(6,4,16,0.88);
+            border: 2px solid rgba(168,85,247,0.35);
+            padding: 40px;
+            box-shadow: 0 0 40px rgba(168,85,247,0.08);
+            position: relative;
+            transition: box-shadow 0.4s;
+        }
+        .panel:hover { box-shadow: 0 0 60px rgba(168,85,247,0.15); }
+
+        .panel::before, .panel::after {
+            content: '';
+            position: absolute;
+            width: 16px; height: 16px;
+            border-color: #a855f7;
+            border-style: solid;
+        }
+        .panel::before { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .panel::after  { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+        .field-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: rgba(168,85,247,0.4);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .field-label:first-child { margin-top: 0; }
+        .field-label::before { content: '//'; color: rgba(168,85,247,0.2); }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(10,6,22,0.85);
+            border: 1px solid rgba(168,85,247,0.22);
+            color: #c084fc;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            line-height: 1.7;
+        }
+        textarea:focus {
+            border-color: rgba(168,85,247,0.65);
+            box-shadow: 0 0 15px rgba(168,85,247,0.12);
+        }
+        textarea::placeholder { color: rgba(168,85,247,0.2); }
+
+        /* ── BUTTONS ── */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            border: 2px solid;
+            background: transparent;
+            transition: all 0.3s;
+            clip-path: polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-encode {
+            border-color: rgba(168,85,247,0.6);
+            color: #c084fc;
+        }
+        .btn-encode:hover {
+            background: rgba(168,85,247,0.12);
+            border-color: #c084fc;
+            box-shadow: 0 0 25px rgba(168,85,247,0.4);
+            color: #e879f9;
+        }
+
+        .btn-decode {
+            border-color: rgba(0,200,255,0.5);
+            color: #00c8ff;
+        }
+        .btn-decode:hover {
+            background: rgba(0,200,255,0.1);
+            border-color: #00c8ff;
+            box-shadow: 0 0 25px rgba(0,200,255,0.35);
+            color: #5de0ff;
+        }
+
+        /* ── OUTPUT ── */
+        .output-box {
+            background: rgba(8,4,20,0.9);
+            border: 1px solid rgba(168,85,247,0.2);
+            padding: 20px 18px;
+            min-height: 80px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            color: #c084fc;
+            word-break: break-word;
+            line-height: 1.7;
+            position: relative;
+            transition: border-color 0.3s;
+        }
+        .output-box.active {
+            border-color: rgba(168,85,247,0.5);
+            box-shadow: 0 0 20px rgba(168,85,247,0.1);
+        }
+        .output-box.error { color: #ff4444; border-color: rgba(255,68,68,0.4); }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: rgba(168,85,247,0.07);
+            border: 1px solid rgba(168,85,247,0.3);
+            color: rgba(168,85,247,0.55);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 5px 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(168,85,247,0.18); color: #c084fc; }
+
+        .output-wrap { position: relative; }
+
+        /* status */
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: rgba(168,85,247,0.35);
+            letter-spacing: 2px;
+        }
+        .status-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: rgba(168,85,247,0.3);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        .status-dot.active { background: #c084fc; box-shadow: 0 0 8px #a855f7; }
+        .status-dot.error  { background: #ff4444; box-shadow: 0 0 8px #ff4444; }
+
+        /* hint */
+        .hint {
+            margin-top: 20px;
+            padding: 14px 16px;
+            background: rgba(168,85,247,0.04);
+            border-left: 3px solid rgba(168,85,247,0.3);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: rgba(168,85,247,0.4);
+            letter-spacing: 1px;
+            line-height: 1.7;
+        }
+
+        /* alphabet grid */
+        .alphabet-section {
+            margin-top: 36px;
+        }
+
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .alpha-cell {
+            background: rgba(168,85,247,0.04);
+            border: 1px solid rgba(168,85,247,0.15);
+            padding: 8px 6px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: default;
+        }
+        .alpha-cell:hover {
+            background: rgba(168,85,247,0.1);
+            border-color: rgba(168,85,247,0.4);
+        }
+        .alpha-cell .letter {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            color: #c084fc;
+            display: block;
+        }
+        .alpha-cell .num {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 10px;
+            color: rgba(168,85,247,0.4);
+            display: block;
+            margin-top: 2px;
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 24px;
+            background: rgba(6,4,16,0.95);
+            border-top: 2px solid #f0f;
+            box-shadow: 0 0 20px rgba(255,0,255,0.3);
+            margin-top: auto;
+        }
+        footer p { color: #0ff; text-shadow: 0 0 10px #0ff; font-size: 13px; }
+
+        @media (max-width: 600px) {
+            .page-hero h1 { font-size: 34px; }
+            .btn-group { flex-direction: column; }
+            .formula-bar { gap: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="hex-grid"></div>
+<div class="glow-center"></div>
+
+<header>
+    <nav>
+        <a href="index.html" class="logo">BORALANCES</a>
+        <a href="sifre.html" class="back-btn">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            Şifreleme
+        </a>
+    </nav>
+</header>
+
+<main>
+    <section class="page-hero">
+        <p class="hero-eyebrow">// BORALANCES — KAREKÖK SİFRELEME SİSTEMİ</p>
+        <h1>√ KAREKÖK</h1>
+        <p>[ Türkçe Alfabe × Karekök Dönüşümü ]</p>
+    </section>
+
+    <div class="formula-bar">
+        <div class="formula-chip">
+            <span>Şifrele</span>
+            <span class="math">harf → (index+1)²</span>
+        </div>
+        <div class="formula-chip">
+            <span>Deşifre</span>
+            <span class="math">√sayı → index → harf</span>
+        </div>
+        <div class="formula-chip">
+            <span>Ayraç</span>
+            <span class="math">, = harf &nbsp;|&nbsp; : = kelime</span>
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="field-label">Giriş Verisi — Sayı veya Metin</div>
+        <textarea id="input" rows="5" placeholder="Örn: 54,51,89:58,26,6   veya   Merhaba Dünya"></textarea>
+
+        <div class="btn-group">
+            <button class="btn btn-encode" onclick="process(false)">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                Şifrele — Harf → Sayı
+            </button>
+            <button class="btn btn-decode" onclick="process(true)">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M11 1a2 2 0 0 0-2 2v4a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h5V3a3 3 0 0 1 6 0v4a1 1 0 1 1-2 0V3a1 1 0 0 0-1-1z"/></svg>
+                Deşifre — Sayı → Harf
+            </button>
+        </div>
+
+        <div class="output-wrap">
+            <div class="field-label">Sistem Çıktısı — Output</div>
+            <div id="output" class="output-box">
+                <span style="color:rgba(168,85,247,0.25)">// Bekleniyor...</span>
+            </div>
+            <button class="copy-btn" onclick="copyOutput()">KOPYALA</button>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">SİSTEM HAZIR — GİRİŞ BEKLENİYOR</span>
+        </div>
+
+        <div class="hint">
+            // Sayı girişinde: virgül (,) harfleri · iki nokta (:) kelimeleri ayırır<br>
+            // Metin girişinde: boşluklar otomatik olarak (:) ayracına dönüştürülür<br>
+            // Alfabe: A B Ç D E F G Ğ H I İ J K L M N O Ö P R S Ş T U Ü V Y Z
+        </div>
+
+        <!-- Alphabet Reference -->
+        <div class="alphabet-section">
+            <div class="field-label">Alfabe Referansı</div>
+            <div class="alphabet-grid" id="alphaGrid"></div>
+        </div>
+
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2026 BORALANCES — All Rights Reserved in the Digital Realm</p>
+</footer>
+
+<script>
+    // ── BG EFFECT (floating squares) ──
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    const symbols = '√∛∜∑∫±×÷=²³ABCDEFabcdef0123456789';
+    const cols2 = Math.floor(window.innerWidth / 22);
+    const drops2 = Array(cols2).fill(1);
+    function drawBg() {
+        ctx.fillStyle = 'rgba(6,4,16,0.07)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#a855f7';
+        ctx.font = '14px Share Tech Mono, monospace';
+        drops2.forEach((y, i) => {
+            const ch = symbols[Math.floor(Math.random() * symbols.length)];
+            ctx.fillText(ch, i * 22, y * 22);
+            if (y * 22 > canvas.height && Math.random() > 0.975) drops2[i] = 0;
+            drops2[i]++;
+        });
+    }
+    setInterval(drawBg, 60);
+
+    // ── ALPHABET ──
+    const alfabe = "ABÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ";
+
+    // Build reference grid
+    const grid = document.getElementById('alphaGrid');
+    alfabe.split('').forEach((harf, i) => {
+        const cell = document.createElement('div');
+        cell.className = 'alpha-cell';
+        cell.innerHTML = `<span class="letter">${harf}</span><span class="num">${Math.pow(i+1,2)}</span>`;
+        grid.appendChild(cell);
+    });
+
+    // ── STATUS ──
+    function setStatus(msg, state) {
+        const dot = document.getElementById('statusDot');
+        const txt = document.getElementById('statusText');
+        dot.className = 'status-dot' + (state ? ' ' + state : '');
+        txt.textContent = msg;
+    }
+
+    function copyOutput() {
+        const text = document.getElementById('output').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = 'KOPYALANDI!';
+            setTimeout(() => btn.textContent = 'KOPYALA', 1500);
+        });
+    }
+
+    // ── LOGIC ──
+    function process(isDecoding) {
+        const input = document.getElementById('input').value.trim();
+        const out = document.getElementById('output');
+
+        if (!input) {
+            out.className = 'output-box error';
+            out.innerText = 'HATA: Giriş alanı boş!';
+            setStatus('HATA — GİRİŞ ALANI BOŞ', 'error');
+            return;
+        }
+
+        if (isDecoding) {
+            // SAYIDAN METNE
+            let kelimeler = input.split(':');
+            let sonuc = kelimeler.map(kelime => {
+                let harfler = kelime.split(',');
+                return harfler.map(sayi => {
+                    let s = parseFloat(sayi.trim());
+                    if (isNaN(s)) return '';
+                    let index = Math.round(Math.sqrt(s)) - 1;
+                    return alfabe[index] || '?';
+                }).join('');
+            }).join(' ');
+
+            if (!sonuc.trim()) {
+                out.className = 'output-box error';
+                out.innerText = 'HATA: Geçersiz sayı formatı!';
+                setStatus('HATA — GEÇERSİZ FORMAT', 'error');
+                return;
+            }
+
+            out.className = 'output-box active';
+            out.innerText = sonuc;
+            setStatus('DEŞİFRE TAMAMLANDI — METİN ÇÖZÜLDÜ', 'active');
+        } else {
+            // METİNDEN SAYIYA
+            let kelimeler = input.toUpperCase().split(' ');
+            let sonuc = kelimeler.map(kelime => {
+                return kelime.split('').map(harf => {
+                    let index = alfabe.indexOf(harf);
+                    return index !== -1 ? Math.pow(index + 1, 2) : null;
+                }).filter(s => s !== null).join(',');
+            }).filter(k => k).join(' : ');
+
+            if (!sonuc) {
+                out.className = 'output-box error';
+                out.innerText = 'HATA: Desteklenmeyen karakter! Yalnızca Türkçe harfler kullanılabilir.';
+                setStatus('HATA — DESTEKSİZ KARAKTER', 'error');
+                return;
+            }
+
+            out.className = 'output-box active';
+            out.innerText = sonuc;
+            setStatus('ŞİFRELEME TAMAMLANDI — VERİ KİLİTLENDİ', 'active');
+        }
+    }
+</script>
+</body>
+</html>
