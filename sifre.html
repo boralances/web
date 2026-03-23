@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifreleme — Boralances</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #060810;
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* ── ANIMATED BACKGROUND ── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .hex-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(90deg, rgba(255,160,0,0.04) 1px, transparent 1px),
+                linear-gradient(rgba(255,160,0,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Floating binary rain */
+        .rain-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: 0.07;
+            pointer-events: none;
+        }
+
+        /* Radial glow */
+        .glow-center {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(ellipse, rgba(255,160,0,0.06) 0%, transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            animation: breathe 6s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+            50% { transform: translate(-50%,-50%) scale(1.2); opacity: 1; }
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 20px 0;
+            background: rgba(6, 8, 16, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid #0ff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 900;
+            font-family: 'Orbitron', sans-serif;
+            color: #0ff;
+            text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+            letter-spacing: 3px;
+            text-decoration: none;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { text-shadow: 0 0 10px #0ff, 0 0 20px #0ff; }
+            50% { text-shadow: 0 0 25px #0ff, 0 0 50px #0ff; }
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ffa000;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border: 2px solid rgba(255,160,0,0.5);
+            padding: 10px 20px;
+            transition: all 0.3s;
+            clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,160,0,0.12);
+            border-color: #ffa000;
+            box-shadow: 0 0 20px rgba(255,160,0,0.4);
+            color: #ffc107;
+        }
+
+        /* ── MAIN ── */
+        main {
+            position: relative;
+            z-index: 5;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 24px 80px;
+        }
+
+        /* Hero */
+        .page-hero {
+            text-align: center;
+            margin-bottom: 70px;
+        }
+
+        .hero-eyebrow {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 13px;
+            letter-spacing: 6px;
+            color: #ffa000;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            opacity: 0.8;
+        }
+
+        .page-hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #ffa000;
+            text-shadow: 0 0 20px #ffa000, 0 0 50px rgba(255,160,0,0.4);
+            margin-bottom: 18px;
+            animation: goldGlow 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes goldGlow {
+            from { text-shadow: 0 0 20px #ffa000, 0 0 40px rgba(255,160,0,0.3); }
+            to   { text-shadow: 0 0 35px #ffa000, 0 0 70px rgba(255,160,0,0.6), 0 0 100px rgba(255,160,0,0.2); }
+        }
+
+        .page-hero p {
+            font-size: 20px;
+            color: rgba(255,160,0,0.6);
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        /* ── QUICK LAUNCH — Karekok & Matrix ── */
+        .quick-launch {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 70px;
+            flex-wrap: wrap;
+        }
+
+        .launch-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 18px 44px;
+            text-decoration: none;
+            transition: all 0.35s cubic-bezier(0.68,-0.55,0.265,1.55);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+        }
+
+        .launch-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .launch-btn:hover::after { opacity: 1; }
+
+        /* Karekok btn — purple/violet */
+        .btn-karekok {
+            background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(124,58,237,0.08));
+            border: 2px solid rgba(168,85,247,0.7);
+            color: #c084fc;
+            box-shadow: 0 0 20px rgba(168,85,247,0.25);
+        }
+
+        .btn-karekok::after {
+            background: rgba(168,85,247,0.1);
+        }
+
+        .btn-karekok:hover {
+            color: #e879f9;
+            border-color: #c084fc;
+            box-shadow: 0 0 40px rgba(168,85,247,0.6), inset 0 0 20px rgba(168,85,247,0.1);
+            transform: translateY(-4px);
+            letter-spacing: 4px;
+        }
+
+        .btn-karekok .btn-icon {
+            font-size: 22px;
+            transition: transform 0.3s;
+        }
+
+        .btn-karekok:hover .btn-icon { transform: rotate(45deg) scale(1.2); }
+
+        /* Matrix btn — green */
+        .btn-matrix {
+            background: linear-gradient(135deg, rgba(0,255,65,0.12), rgba(0,200,50,0.05));
+            border: 2px solid rgba(0,255,65,0.6);
+            color: #00ff41;
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .btn-matrix::after {
+            background: rgba(0,255,65,0.08);
+        }
+
+        .btn-matrix:hover {
+            color: #39ff6e;
+            border-color: #00ff41;
+            box-shadow: 0 0 40px rgba(0,255,65,0.55), inset 0 0 20px rgba(0,255,65,0.08);
+            transform: translateY(-4px);
+            letter-spacing: 4px;
+        }
+
+        .btn-matrix .btn-icon {
+            font-size: 20px;
+            transition: transform 0.3s;
+            display: inline-block;
+        }
+
+        .btn-matrix:hover .btn-icon { transform: translateY(-3px); }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .section-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffa000;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,160,0,0.5), transparent);
+        }
+
+        /* ── CARDS GRID ── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+
+        .enc-card {
+            background: rgba(12, 15, 30, 0.8);
+            border: 1px solid rgba(255,160,0,0.2);
+            padding: 32px 28px;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        .enc-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, transparent, #ffa000, transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .enc-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,160,0,0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .enc-card:hover {
+            border-color: rgba(255,160,0,0.55);
+            box-shadow: 0 0 35px rgba(255,160,0,0.15), 0 8px 30px rgba(0,0,0,0.5);
+            transform: translateY(-6px);
+        }
+
+        .enc-card:hover::before { opacity: 1; }
+        .enc-card:hover::after { opacity: 1; }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            background: rgba(255,160,0,0.08);
+            border: 1px solid rgba(255,160,0,0.2);
+            flex-shrink: 0;
+        }
+
+        .card-tag {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+
+        .tag-symmetric { background: rgba(0,200,255,0.1); color: #00c8ff; border: 1px solid rgba(0,200,255,0.3); }
+        .tag-asymmetric { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+        .tag-hash { background: rgba(255,80,80,0.1); color: #ff6060; border: 1px solid rgba(255,80,80,0.3); }
+        .tag-protocol { background: rgba(0,255,65,0.1); color: #00ff41; border: 1px solid rgba(0,255,65,0.3); }
+        .tag-modern { background: rgba(255,200,0,0.1); color: #ffc800; border: 1px solid rgba(255,200,0,0.3); }
+
+        .card-body { position: relative; z-index: 1; }
+
+        .card-body h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffa000;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+
+        .card-body p {
+            font-size: 15px;
+            line-height: 1.75;
+            color: #8a8fa8;
+            font-weight: 300;
+            margin-bottom: 20px;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: rgba(255,160,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .meta-dot {
+            width: 5px;
+            height: 5px;
+            background: #ffa000;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        /* Key strength bar */
+        .strength-bar {
+            margin-top: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .strength-label {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: rgba(255,160,0,0.4);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bar-track {
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffa000, #ffc107);
+            box-shadow: 0 0 8px rgba(255,160,0,0.5);
+            transition: width 1s ease;
+            width: 0%;
+        }
+
+        /* ── CIPHER TABLE ── */
+        .cipher-table-wrap {
+            background: rgba(10,13,25,0.9);
+            border: 1px solid rgba(255,160,0,0.2);
+            padding: 32px;
+            margin-bottom: 60px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+        }
+
+        th {
+            color: #ffa000;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,160,0,0.3);
+            letter-spacing: 2px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #8a8fa8;
+            vertical-align: top;
+            line-height: 1.5;
+        }
+
+        tr:hover td { background: rgba(255,160,0,0.03); color: #bbb; }
+
+        td:first-child { color: #ffc107; font-weight: 700; }
+
+        .status-safe { color: #00ff41; }
+        .status-warn { color: #ffa000; }
+        .status-danger { color: #ff4444; }
+
+        /* ── TOOL BUTTONS ROW ── */
+        .tool-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 28px;
+            text-decoration: none;
+            border: 2px solid;
+            transition: all 0.3s;
+            clip-path: polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+        }
+
+        .tool-btn-primary {
+            border-color: rgba(255,160,0,0.6);
+            color: #ffa000;
+            background: rgba(255,160,0,0.07);
+        }
+        .tool-btn-primary:hover {
+            background: rgba(255,160,0,0.18);
+            box-shadow: 0 0 25px rgba(255,160,0,0.4);
+            color: #ffc107;
+            transform: translateY(-3px);
+        }
+
+        footer {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 28px;
+            background: rgba(6, 8, 16, 0.95);
+            border-top: 2px solid #f0f;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+            margin-top: 60px;
+        }
+
+        footer p { color: #0ff; text-shadow: 0 0 10px #0ff; font-size: 14px; }
+
+        /* animate bars on load */
+        @keyframes fillBar {
+            from { width: 0; }
+            to   { width: var(--fill); }
+        }
+
+        .bar-fill { animation: fillBar 1.4s ease forwards 0.6s; }
+
+        @media (max-width: 768px) {
+            .page-hero h1 { font-size: 36px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .quick-launch { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas class="rain-canvas" id="rainCanvas"></canvas>
+    <div class="hex-grid"></div>
+    <div class="glow-center"></div>
+
+    <header>
+        <nav>
+            <a href="index.html" class="logo">BORALANCES</a>
+            <a href="index.html" class="back-btn">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                </svg>
+                Ana Sayfa
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="page-hero">
+            <p class="hero-eyebrow">// BORALANCES — GÜVENLİK MODÜLü</p>
+            <h1>ŞİFRELEME</h1>
+            <p>[ Veriyi Korumanın Yolları ]</p>
+        </section>
+
+        <!-- Quick Launch Buttons -->
+        <div class="quick-launch">
+            <a href="karekok.html" class="launch-btn btn-karekok">
+                <span class="btn-icon">√</span>
+                Karekok
+            </a>
+            <a href="matrix.html" class="launch-btn btn-matrix">
+                <span class="btn-icon">▓</span>
+                Matrix
+            </a>
+        </div>
+
+        <!-- Şifreleme Yöntemleri -->
+        <div class="section-header">
+            <h2>Şifreleme Yöntemleri</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="cards-grid">
+
+            <!-- AES -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">🔒</div>
+                    <span class="card-tag tag-symmetric">Simetrik</span>
+                </div>
+                <div class="card-body">
+                    <h3>AES-256</h3>
+                    <p>Advanced Encryption Standard. Dünya genelinde en yaygın kullanılan blok şifreleme algoritması. 256-bit anahtar uzunluğuyla askeri düzeyde güvenlik sağlar.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>256-bit Anahtar</span>
+                        <span class="meta-item"><span class="meta-dot"></span>Blok: 128-bit</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>98%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:98%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RSA -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">🗝️</div>
+                    <span class="card-tag tag-asymmetric">Asimetrik</span>
+                </div>
+                <div class="card-body">
+                    <h3>RSA-4096</h3>
+                    <p>Rivest–Shamir–Adleman. Açık/özel anahtar çifti kullanan asimetrik şifreleme. SSL/TLS, dijital imzalar ve güvenli anahtar değişiminde temel taş.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>4096-bit</span>
+                        <span class="meta-item"><span class="meta-dot"></span>Açık Anahtar</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>94%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:94%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHA-3 -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">🧮</div>
+                    <span class="card-tag tag-hash">Hash</span>
+                </div>
+                <div class="card-body">
+                    <h3>SHA-3 / Keccak</h3>
+                    <p>Secure Hash Algorithm 3. Şifreleme değil, tek yönlü özet fonksiyonu. Ethereum blokzincirinin de kullandığı Keccak-256 varyantıyla veri bütünlüğü doğrulama.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>256 / 512-bit çıktı</span>
+                        <span class="meta-item"><span class="meta-dot"></span>Tek Yönlü</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>96%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:96%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ECC -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">📐</div>
+                    <span class="card-tag tag-asymmetric">Asimetrik</span>
+                </div>
+                <div class="card-body">
+                    <h3>ECC — Eliptik Eğri</h3>
+                    <p>Elliptic Curve Cryptography. RSA'ya kıyasla çok daha kısa anahtarlarla eşdeğer güvenlik sağlar. Mobil cihazlar ve IoT için ideal; Bitcoin ve TLS 1.3 tarafından kullanılır.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>256-bit ≈ RSA-3072</span>
+                        <span class="meta-item"><span class="meta-dot"></span>Hızlı</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>97%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:97%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TLS -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">🌐</div>
+                    <span class="card-tag tag-protocol">Protokol</span>
+                </div>
+                <div class="card-body">
+                    <h3>TLS 1.3</h3>
+                    <p>Transport Layer Security. AES, ECC ve ECDHE'yi birleştiren hibrit protokol. Modern web'in omurgası — tüm HTTPS trafiği bu katmandan geçer.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>Hibrit</span>
+                        <span class="meta-item"><span class="meta-dot"></span>Forward Secrecy</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>99%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:99%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ChaCha20 -->
+            <div class="enc-card">
+                <div class="card-top">
+                    <div class="card-icon">⚡</div>
+                    <span class="card-tag tag-modern">Modern</span>
+                </div>
+                <div class="card-body">
+                    <h3>ChaCha20-Poly1305</h3>
+                    <p>Google tarafından tasarlanan akış şifresi. AES donanım hızlandırması olmayan cihazlarda AES-GCM'den daha hızlı çalışır. WireGuard VPN'in tercih ettiği algoritma.</p>
+                    <div class="card-meta">
+                        <span class="meta-item"><span class="meta-dot"></span>256-bit Anahtar</span>
+                        <span class="meta-item"><span class="meta-dot"></span>AEAD</span>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-label"><span>Güç Seviyesi</span><span>95%</span></div>
+                        <div class="bar-track"><div class="bar-fill" style="--fill:95%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Karşılaştırma Tablosu -->
+        <div class="section-header">
+            <h2>Hızlı Karşılaştırma</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="cipher-table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Algoritma</th>
+                        <th>Tür</th>
+                        <th>Anahtar Uzunluğu</th>
+                        <th>Hız</th>
+                        <th>Kuantum Direnci</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AES-256</td>
+                        <td>Simetrik</td>
+                        <td>256-bit</td>
+                        <td>Çok Hızlı</td>
+                        <td>Kısmi</td>
+                        <td class="status-safe">✔ Güvenli</td>
+                    </tr>
+                    <tr>
+                        <td>RSA-4096</td>
+                        <td>Asimetrik</td>
+                        <td>4096-bit</td>
+                        <td>Yavaş</td>
+                        <td>Hayır</td>
+                        <td class="status-warn">⚠ Geçici</td>
+                    </tr>
+                    <tr>
+                        <td>ECC-256</td>
+                        <td>Asimetrik</td>
+                        <td>256-bit</td>
+                        <td>Hızlı</td>
+                        <td>Hayır</td>
+                        <td class="status-safe">✔ Güvenli</td>
+                    </tr>
+                    <tr>
+                        <td>SHA-3</td>
+                        <td>Hash</td>
+                        <td>—</td>
+                        <td>Hızlı</td>
+                        <td>Kısmi</td>
+                        <td class="status-safe">✔ Güvenli</td>
+                    </tr>
+                    <tr>
+                        <td>ChaCha20</td>
+                        <td>Akış</td>
+                        <td>256-bit</td>
+                        <td>Çok Hızlı</td>
+                        <td>Kısmi</td>
+                        <td class="status-safe">✔ Güvenli</td>
+                    </tr>
+                    <tr>
+                        <td>MD5</td>
+                        <td>Hash</td>
+                        <td>—</td>
+                        <td>Çok Hızlı</td>
+                        <td>Hayır</td>
+                        <td class="status-danger">✘ Kırık</td>
+                    </tr>
+                    <tr>
+                        <td>DES / 3DES</td>
+                        <td>Simetrik</td>
+                        <td>56 / 168-bit</td>
+                        <td>Yavaş</td>
+                        <td>Hayır</td>
+                        <td class="status-danger">✘ Eskimiş</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Tool buttons -->
+        <div class="tool-row">
+            <a href="karekok.html" class="launch-btn btn-karekok" style="font-size:13px;padding:14px 32px;">
+                <span>√</span> Karekok Aracı
+            </a>
+            <a href="matrix.html" class="launch-btn btn-matrix" style="font-size:13px;padding:14px 32px;font-family:'Share Tech Mono',monospace;">
+                <span>▓</span> Matrix Aracı
+            </a>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 BORALANCES — Veri Güvenliğinde Geleceği İnşa Ediyoruz</p>
+    </footer>
+
+    <script>
+        // Binary rain canvas
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノ';
+        const cols = Math.floor(window.innerWidth / 18);
+        const drops = Array(cols).fill(1);
+
+        function draw() {
+            ctx.fillStyle = 'rgba(6,8,16,0.08)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffa000';
+            ctx.font = '13px Share Tech Mono, monospace';
+
+            drops.forEach((y, i) => {
+                const ch = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(ch, i * 18, y * 18);
+                if (y * 18 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+
+        setInterval(draw, 60);
+    </script>
+</body>
+</html>
