@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ekibimiz — TeknoVision | YönBul</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--sky:#38bdf8;--sky2:#0ea5e9;--rose:#fb7185;--grass:#34d399;--sun:#fbbf24;--lav:#a78bfa;--deep:#0f172a;--surface:rgba(255,255,255,0.92);--border:rgba(56,189,248,0.22);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(150deg,#e0f4ff 0%,#fdf6ff 55%,#f0fff8 100%);color:var(--deep);overflow-x:hidden;}
+nav{position:sticky;top:0;z-index:200;height:66px;background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:0 2px 20px rgba(56,189,248,.08);}
+.nav-logo{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:900;background:linear-gradient(90deg,var(--sky2),var(--rose),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.nav-links{display:flex;gap:.2rem;}
+.nav-links a{font-weight:700;font-size:.87rem;color:var(--deep);text-decoration:none;padding:.42rem .88rem;border-radius:999px;transition:background .18s,color .18s;opacity:.6;}
+.nav-links a:hover,.nav-links a.active{background:linear-gradient(135deg,#e0f4ff,#ede9fe);color:var(--sky2);opacity:1;}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg span{position:absolute;border-radius:50%;filter:blur(65px);opacity:.1;animation:bf 18s ease-in-out infinite;}
+.bg span:nth-child(1){width:500px;height:500px;background:var(--lav);top:-150px;left:-150px;}
+.bg span:nth-child(2){width:400px;height:400px;background:var(--sky);top:40%;right:-100px;animation-delay:8s;}
+.bg span:nth-child(3){width:300px;height:300px;background:var(--rose);bottom:-80px;left:30%;animation-delay:14s;}
+@keyframes bf{0%,100%{transform:translate(0,0);}50%{transform:translate(16px,-24px);}}
+section{position:relative;z-index:1;padding:5rem 1.5rem;}
+.container{max-width:1100px;margin:0 auto;}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s,transform .65s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.s-label{font-size:.74rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;color:var(--lav);margin-bottom:.6rem;}
+.s-title{font-family:'Baloo 2',cursive;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;line-height:1.2;margin-bottom:1rem;}
+.s-desc{font-size:1.05rem;opacity:.65;line-height:1.75;max-width:600px;}
+.page-hero{text-align:center;padding:5rem 2rem 3rem;position:relative;z-index:1;}
+.page-hero h1{font-family:'Baloo 2',cursive;font-size:clamp(2.2rem,5vw,4rem);font-weight:900;line-height:1.1;animation:fadeUp .7s ease both;}
+.page-hero h1 span{background:linear-gradient(135deg,var(--lav),var(--sky));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-hero p{margin-top:1rem;opacity:.65;font-size:1.1rem;max-width:600px;margin:1rem auto 0;line-height:1.7;animation:fadeUp .7s .2s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+/* TEAM BANNER */
+.team-banner{background:linear-gradient(135deg,var(--lav),var(--sky2));border-radius:28px;padding:2rem 2.5rem;color:#fff;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;max-width:1100px;margin:0 auto 1rem;box-shadow:0 12px 40px rgba(167,139,250,.3);}
+.team-logo-big{width:80px;height:80px;border-radius:20px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:2.5rem;flex-shrink:0;}
+.tb-title{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:900;}
+.tb-sub{opacity:.75;font-size:.95rem;margin-top:.2rem;}
+.tb-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;}
+.tb-tag{background:rgba(255,255,255,.18);border-radius:999px;padding:.25rem .8rem;font-size:.78rem;font-weight:700;}
+
+/* TEAM GRID */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.8rem;margin-top:3rem;}
+.team-card{background:var(--surface);border:2px solid rgba(255,255,255,.9);border-radius:28px;padding:0;box-shadow:0 8px 32px rgba(56,189,248,.12);overflow:hidden;transition:transform .3s,box-shadow .3s;}
+.team-card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 24px 60px rgba(56,189,248,.22);}
+.tc-header{height:120px;display:flex;align-items:flex-end;padding:1.5rem;position:relative;}
+.tc-avatar{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:900;color:#fff;border:4px solid rgba(255,255,255,.8);box-shadow:0 4px 18px rgba(0,0,0,.15);position:relative;z-index:1;}
+.tc-name-overlay{margin-left:1rem;position:relative;z-index:1;}
+.tc-name{font-family:'Baloo 2',cursive;font-size:1.6rem;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.2);}
+.tc-role{font-size:.78rem;font-weight:800;color:rgba(255,255,255,.85);letter-spacing:1px;text-transform:uppercase;}
+.tc-body{padding:1.5rem;}
+.tc-desc{font-size:.92rem;line-height:1.7;opacity:.7;margin-bottom:1.2rem;}
+.tc-skills{display:flex;flex-wrap:wrap;gap:.4rem;}
+.tc-skill{background:linear-gradient(135deg,#e0f4ff,#ede9fe);border-radius:999px;padding:.28rem .8rem;font-size:.75rem;font-weight:800;color:var(--sky2);}
+.tc-achievements{margin-top:1rem;padding-top:1rem;border-top:1.5px solid rgba(56,189,248,.12);}
+.tc-ach-title{font-size:.75rem;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;opacity:.45;margin-bottom:.5rem;}
+.tc-ach-list{display:flex;flex-direction:column;gap:.3rem;}
+.tc-ach{display:flex;align-items:center;gap:.4rem;font-size:.82rem;font-weight:700;opacity:.7;}
+
+/* ORGANIZATIONS */
+.org-banner{background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:32px;padding:3.5rem 3rem;color:#fff;max-width:1100px;margin:0 auto;text-align:center;}
+.org-banner .s-label{color:var(--sun);}
+.org-banner .s-title{color:#fff;}
+.org-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;margin-top:2.5rem;}
+.org-card{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:18px;padding:1.5rem 1rem;text-align:center;transition:all .2s;}
+.org-card:hover{background:rgba(255,255,255,.13);transform:scale(1.04);}
+.org-icon{font-size:2rem;margin-bottom:.5rem;}
+.org-name{font-size:.9rem;font-weight:700;color:rgba(255,255,255,.8);}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--deep);color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 2rem;font-size:.88rem;}
+.footer-logo{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--sky),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:.5rem;}
+</style>
+</head>
+<body>
+<div class="bg"><span></span><span></span><span></span></div>
+<nav>
+  <a href="kesfet.html" class="nav-logo">🧭 YönBul</a>
+  <div class="nav-links">
+    <a href="kesfet.html">Keşfet</a>
+    <a href="nasil.html">Nasıl</a>
+    <a href="nedenbiz.html">Neden Biz</a>
+    <a href="ekip.html" class="active">Ekip</a>
+    <a href="oyun.html">🎮 Oyun</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1><span>TeknoVision</span> Ekibi</h1>
+  <p>Deneyap Makeatlon ve Proje Şenlikleri'nden gelen, yazılım ve tasarım odaklı, TEKNOFEST'e hazır bir ekip.</p>
+</div>
+
+<section style="padding:1rem 1.5rem 3rem;">
+  <div class="team-banner reveal">
+    <div class="team-logo-big">🚀</div>
+    <div>
+      <div class="tb-title">TeknoVision</div>
+      <div class="tb-sub">TEKNOFEST 2025 — YönBul Projesi</div>
+      <div class="tb-tags">
+        <span class="tb-tag">🏆 Deneyap Makeatlon</span>
+        <span class="tb-tag">🎪 Proje Şenlikleri</span>
+        <span class="tb-tag">🤖 Yapay Zeka</span>
+        <span class="tb-tag">♿ Erişilebilirlik</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM MEMBERS -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Ekip Üyeleri</p>
+      <h2 class="s-title">Arkamızdaki Güç</h2>
+      <p class="s-desc">Her biri kendi alanında uzmanlaşmış, birbirini tamamlayan 5 kişilik tutkulu bir ekip.</p>
+    </div>
+    <div class="team-grid">
+
+      <!-- BORA -->
+      <div class="team-card reveal">
+        <div class="tc-header" style="background:linear-gradient(135deg,#0ea5e9,#a78bfa);">
+          <div class="tc-avatar" style="background:linear-gradient(135deg,#0284c7,#7c3aed);">B</div>
+          <div class="tc-name-overlay">
+            <div class="tc-name">Bora</div>
+            <div class="tc-role">Teknik Lokomotif</div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <p class="tc-desc">Grubumuzun teknik lideri. Unreal Engine, Unity ve Python alanlarındaki uzmanlığıyla projeye güç katıyor.</p>
+          <div class="tc-skills">
+            <span class="tc-skill">Unreal Engine</span>
+            <span class="tc-skill">Unity</span>
+            <span class="tc-skill">Python</span>
+            <span class="tc-skill">Game Dev</span>
+          </div>
+          <div class="tc-achievements">
+            <div class="tc-ach-title">Başarılar</div>
+            <div class="tc-ach-list">
+              <div class="tc-ach">🏆 Coding Olympia Katılımcısı</div>
+              <div class="tc-ach">🎪 Deneyap Makeatlon</div>
+              <div class="tc-ach">🚀 TEKNOFEST 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALPEREN -->
+      <div class="team-card reveal">
+        <div class="tc-header" style="background:linear-gradient(135deg,#fb7185,#fbbf24);">
+          <div class="tc-avatar" style="background:linear-gradient(135deg,#e11d48,#d97706);">A</div>
+          <div class="tc-name-overlay">
+            <div class="tc-name">Alperen</div>
+            <div class="tc-role">Algoritma Uzmanı</div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <p class="tc-desc">Scratch Cup deneyimiyle güçlenen algoritma kurgusu ve yazılım mantığı alanında katkı sağlıyor.</p>
+          <div class="tc-skills">
+            <span class="tc-skill">Algoritma</span>
+            <span class="tc-skill">Scratch</span>
+            <span class="tc-skill">Yazılım Mantığı</span>
+          </div>
+          <div class="tc-achievements">
+            <div class="tc-ach-title">Başarılar</div>
+            <div class="tc-ach-list">
+              <div class="tc-ach">🥤 Scratch Cup Yarışmacısı</div>
+              <div class="tc-ach">🎪 Deneyap Makeatlon</div>
+              <div class="tc-ach">🚀 TEKNOFEST 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MERT -->
+      <div class="team-card reveal">
+        <div class="tc-header" style="background:linear-gradient(135deg,#34d399,#38bdf8);">
+          <div class="tc-avatar" style="background:linear-gradient(135deg,#059669,#0284c7);">M</div>
+          <div class="tc-name-overlay">
+            <div class="tc-name">Mert</div>
+            <div class="tc-role">Analitik Düşünür</div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <p class="tc-desc">Bilsem süreçlerinden gelen analitik düşünme yeteneğini projeye yansıtan güçlü bir ekip üyesi.</p>
+          <div class="tc-skills">
+            <span class="tc-skill">Analitik Düşünme</span>
+            <span class="tc-skill">Problem Çözme</span>
+            <span class="tc-skill">Araştırma</span>
+          </div>
+          <div class="tc-achievements">
+            <div class="tc-ach-title">Başarılar</div>
+            <div class="tc-ach-list">
+              <div class="tc-ach">🧠 Bilsem Mezunu</div>
+              <div class="tc-ach">🎪 Proje Şenlikleri</div>
+              <div class="tc-ach">🚀 TEKNOFEST 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LEVENT -->
+      <div class="team-card reveal">
+        <div class="tc-header" style="background:linear-gradient(135deg,#a78bfa,#fb7185);">
+          <div class="tc-avatar" style="background:linear-gradient(135deg,#7c3aed,#e11d48);">L</div>
+          <div class="tc-name-overlay">
+            <div class="tc-name">Levent</div>
+            <div class="tc-role">Strateji Dehası</div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <p class="tc-desc">Satrançtaki stratejik bakış açısını yazılımla birleştirerek fark yaratan yaratıcı bir zihin.</p>
+          <div class="tc-skills">
+            <span class="tc-skill">Strateji</span>
+            <span class="tc-skill">Yazılım</span>
+            <span class="tc-skill">Satranç</span>
+            <span class="tc-skill">Sistem Tasarımı</span>
+          </div>
+          <div class="tc-achievements">
+            <div class="tc-ach-title">Başarılar</div>
+            <div class="tc-ach-list">
+              <div class="tc-ach">♟️ Turnuva Satranç Oyuncusu</div>
+              <div class="tc-ach">🧠 Bilsem Mezunu</div>
+              <div class="tc-ach">🚀 TEKNOFEST 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAHA -->
+      <div class="team-card reveal">
+        <div class="tc-header" style="background:linear-gradient(135deg,#fbbf24,#34d399);">
+          <div class="tc-avatar" style="background:linear-gradient(135deg,#d97706,#059669);">T</div>
+          <div class="tc-name-overlay">
+            <div class="tc-name">Taha</div>
+            <div class="tc-role">Fiziksel Üretim</div>
+          </div>
+        </div>
+        <div class="tc-body">
+          <p class="tc-desc">Bilsem birikimi ve maket yapımındaki ustalığıyla projelerimizin prototipleme sürecini üstleniyor.</p>
+          <div class="tc-skills">
+            <span class="tc-skill">Maket Yapımı</span>
+            <span class="tc-skill">Prototipleme</span>
+            <span class="tc-skill">3D Tasarım</span>
+            <span class="tc-skill">Üretim</span>
+          </div>
+          <div class="tc-achievements">
+            <div class="tc-ach-title">Başarılar</div>
+            <div class="tc-ach-list">
+              <div class="tc-ach">🏗️ Prototip Uzmanı</div>
+              <div class="tc-ach">🧠 Bilsem Mezunu</div>
+              <div class="tc-ach">🚀 TEKNOFEST 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ORGANIZATIONS -->
+<section>
+  <div class="org-banner reveal">
+    <p class="s-label">Organizasyonlar</p>
+    <h2 class="s-title" style="color:#fff;">Deneyimlerimiz</h2>
+    <p class="s-desc" style="color:rgba(255,255,255,.6);margin:0 auto;">Ekibimizin yer aldığı önemli organizasyonlar ve platformlar.</p>
+    <div class="org-grid">
+      <div class="org-card"><div class="org-icon">🚀</div><div class="org-name">TEKNOFEST 2025</div></div>
+      <div class="org-card"><div class="org-icon">⚙️</div><div class="org-name">Deneyap Makeatlon</div></div>
+      <div class="org-card"><div class="org-icon">🎪</div><div class="org-name">Proje Şenlikleri</div></div>
+      <div class="org-card"><div class="org-icon">💻</div><div class="org-name">Coding Olympia</div></div>
+      <div class="org-card"><div class="org-icon">🎮</div><div class="org-name">Scratch Cup</div></div>
+      <div class="org-card"><div class="org-icon">🧠</div><div class="org-name">BİLSEM</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">🧭 YönBul</span>
+  <p>TeknoVision — TEKNOFEST 2025 &nbsp;·&nbsp; Sevgiyle yapıldı 💙</p>
+  <p style="margin-top:.5rem;font-size:.78rem;opacity:.35;">© 2025 YönBul — Tüm hakları saklıdır.</p>
+</footer>
+<script>
+const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

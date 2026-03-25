@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nasıl Çalışır — YönBul | TeknoVision</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--sky:#38bdf8;--sky2:#0ea5e9;--rose:#fb7185;--grass:#34d399;--sun:#fbbf24;--lav:#a78bfa;--deep:#0f172a;--surface:rgba(255,255,255,0.92);--border:rgba(56,189,248,0.22);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(150deg,#e0f4ff 0%,#fdf6ff 55%,#f0fff8 100%);color:var(--deep);overflow-x:hidden;}
+nav{position:sticky;top:0;z-index:200;height:66px;background:rgba(255,255,255,0.88);backdrop-filter:blur(20px);border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;box-shadow:0 2px 20px rgba(56,189,248,.08);}
+.nav-logo{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:900;background:linear-gradient(90deg,var(--sky2),var(--rose),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.nav-links{display:flex;gap:.2rem;}
+.nav-links a{font-weight:700;font-size:.87rem;color:var(--deep);text-decoration:none;padding:.42rem .88rem;border-radius:999px;transition:background .18s,color .18s;opacity:.6;}
+.nav-links a:hover,.nav-links a.active{background:linear-gradient(135deg,#e0f4ff,#ede9fe);color:var(--sky2);opacity:1;}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg span{position:absolute;border-radius:50%;filter:blur(65px);opacity:.1;animation:bf 18s ease-in-out infinite;}
+.bg span:nth-child(1){width:500px;height:500px;background:var(--sky);top:-150px;left:-150px;}
+.bg span:nth-child(2){width:380px;height:380px;background:var(--lav);top:40%;right:-100px;animation-delay:8s;}
+.bg span:nth-child(3){width:300px;height:300px;background:var(--grass);bottom:-80px;left:30%;animation-delay:14s;}
+@keyframes bf{0%,100%{transform:translate(0,0);}50%{transform:translate(16px,-24px);}}
+section{position:relative;z-index:1;padding:5rem 1.5rem;}
+.container{max-width:1100px;margin:0 auto;}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .65s,transform .65s;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.s-label{font-size:.74rem;font-weight:900;letter-spacing:2.5px;text-transform:uppercase;color:var(--sky2);margin-bottom:.6rem;}
+.s-title{font-family:'Baloo 2',cursive;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;line-height:1.2;margin-bottom:1rem;}
+.s-desc{font-size:1.05rem;opacity:.65;line-height:1.75;max-width:600px;}
+
+/* PAGE HERO */
+.page-hero{text-align:center;padding:5rem 2rem 3rem;position:relative;z-index:1;}
+.page-hero h1{font-family:'Baloo 2',cursive;font-size:clamp(2.2rem,5vw,4rem);font-weight:900;line-height:1.1;animation:fadeUp .7s ease both;}
+.page-hero h1 span{background:linear-gradient(135deg,var(--sky),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.page-hero p{margin-top:1rem;opacity:.65;font-size:1.1rem;max-width:580px;margin:1rem auto 0;line-height:1.7;animation:fadeUp .7s .2s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:0;margin-top:3rem;}
+.step-row{display:grid;grid-template-columns:1fr 60px 1fr;align-items:center;gap:0;margin-bottom:0;}
+.step-row.alt{direction:rtl;}
+.step-row.alt > *{direction:ltr;}
+.step-card{background:var(--surface);border:2px solid rgba(255,255,255,.9);border-radius:26px;padding:2.2rem 2rem;box-shadow:0 8px 32px rgba(56,189,248,.12);transition:transform .25s,box-shadow .25s;}
+.step-card:hover{transform:translateY(-5px);box-shadow:0 18px 48px rgba(56,189,248,.2);}
+.step-num{font-family:'Baloo 2',cursive;font-size:3.5rem;font-weight:900;text-align:center;opacity:.15;line-height:1;}
+.step-icon{font-size:2.8rem;margin-bottom:1rem;display:block;animation:wiggle 3s ease-in-out infinite;}
+@keyframes wiggle{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+.step-card h3{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:700;margin-bottom:.7rem;}
+.step-card p{font-size:.93rem;opacity:.65;line-height:1.7;}
+.step-connector{display:flex;align-items:center;justify-content:center;height:60px;}
+.step-connector::after{content:'↓';font-size:2rem;color:var(--sky);opacity:.4;}
+@media(max-width:700px){.step-row{grid-template-columns:1fr;}.step-row.alt{direction:ltr;}.step-num{display:none;}.step-connector{height:30px;}}
+
+/* CONCEPTS DARK */
+.concepts-dark{background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:32px;padding:4rem 3rem;color:#fff;max-width:1100px;margin:0 auto;}
+.concepts-dark .s-label{color:var(--sun);}
+.concepts-dark .s-title{color:#fff;}
+.concepts-dark .s-desc{color:rgba(255,255,255,.6);}
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2.5rem;}
+.concept-card{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);border-radius:18px;padding:1.5rem 1rem;text-align:center;transition:all .2s;cursor:default;}
+.concept-card:hover{background:rgba(255,255,255,.13);border-color:rgba(56,189,248,.5);transform:scale(1.05);}
+.concept-card .ci{font-size:2.2rem;margin-bottom:.6rem;}
+.concept-card .cl{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.8);}
+.concept-card .cs{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.2rem;}
+
+/* AI SECTION */
+.ai-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;margin-top:3rem;}
+@media(max-width:680px){.ai-grid{grid-template-columns:1fr;}}
+.ai-visual{background:var(--surface);border-radius:28px;padding:2.5rem;box-shadow:0 8px 32px rgba(56,189,248,.15);border:2px solid rgba(255,255,255,.9);text-align:center;}
+.ai-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--lav));display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.5rem;box-shadow:0 8px 32px rgba(56,189,248,.35);animation:pulse 2.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 8px 32px rgba(56,189,248,.35);}50%{box-shadow:0 8px 48px rgba(56,189,248,.6);}}
+.speech{background:linear-gradient(135deg,#e0f4ff,#f5e8ff);border-radius:16px;padding:1.2rem 1.4rem;font-size:.95rem;font-weight:700;line-height:1.6;border:1.5px solid rgba(56,189,248,.2);position:relative;}
+.speech::before{content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);border:10px solid transparent;border-bottom-color:#e0f4ff;}
+.ai-features{display:flex;flex-direction:column;gap:1rem;}
+.ai-feat{display:flex;gap:.9rem;align-items:flex-start;background:var(--surface);border-radius:18px;padding:1.2rem 1.4rem;box-shadow:0 4px 16px rgba(56,189,248,.1);border:2px solid rgba(255,255,255,.9);transition:transform .2s;}
+.ai-feat:hover{transform:translateX(6px);}
+.af-icon{font-size:1.6rem;flex-shrink:0;}
+.af-title{font-size:1rem;font-weight:800;margin-bottom:.3rem;}
+.af-desc{font-size:.87rem;opacity:.6;line-height:1.6;}
+
+/* FOOTER */
+footer{position:relative;z-index:1;background:var(--deep);color:rgba(255,255,255,.5);text-align:center;padding:2.5rem 2rem;font-size:.88rem;}
+.footer-logo{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--sky),var(--rose));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;margin-bottom:.5rem;}
+</style>
+</head>
+<body>
+<div class="bg"><span></span><span></span><span></span></div>
+
+<nav>
+  <a href="kesfet.html" class="nav-logo">🧭 YönBul</a>
+  <div class="nav-links">
+    <a href="kesfet.html">Keşfet</a>
+    <a href="nasil.html" class="active">Nasıl</a>
+    <a href="nedenbiz.html">Neden Biz</a>
+    <a href="ekip.html">Ekip</a>
+    <a href="oyun.html">🎮 Oyun</a>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>Sistem <span>Nasıl</span> Çalışır?</h1>
+  <p>Statik görsellerden kurtarılmış, yapay zeka destekli adım adım öğrenme yolculuğu.</p>
+</div>
+
+<!-- STEPS -->
+<section>
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:1rem;">
+      <p class="s-label">Adım Adım</p>
+      <h2 class="s-title">Öğrenme Yolculuğu</h2>
+    </div>
+
+    <div class="steps">
+      <div class="step-row reveal">
+        <div class="step-card">
+          <span class="step-icon">🎮</span>
+          <h3>1. Dijital Dünyaya Giriş</h3>
+          <p>Kullanıcı, seviyesine uygun eğlenceli bir dijital ortamla karşılaşır. Arayüz sade, renkli ve dikkat dağıtmayan bir tasarıma sahiptir.</p>
+        </div>
+        <div class="step-num">1</div>
+        <div></div>
+      </div>
+      <div class="step-connector reveal"></div>
+
+      <div class="step-row alt reveal">
+        <div class="step-card">
+          <span class="step-icon">❓</span>
+          <h3>2. Soru Sorulur</h3>
+          <p>Sistem, kullanıcıya "Tabağı rafın üstüne mi yoksa altına mı koyalım?" gibi net ve somut sorular sorar. Soru hem görsel hem sesli desteklenir.</p>
+        </div>
+        <div class="step-num">2</div>
+        <div></div>
+      </div>
+      <div class="step-connector reveal"></div>
+
+      <div class="step-row reveal">
+        <div class="step-card">
+          <span class="step-icon">👆</span>
+          <h3>3. Kullanıcı Seçim Yapar</h3>
+          <p>Büyük, renkli ve anlaşılır butonlar aracılığıyla kullanıcı cevabını seçer. Dokunmatik ekran ve fare ile kullanılabilir.</p>
+        </div>
+        <div class="step-num">3</div>
+        <div></div>
+      </div>
+      <div class="step-connector reveal"></div>
+
+      <div class="step-row alt reveal">
+        <div class="step-card">
+          <span class="step-icon">🤖</span>
+          <h3>4. YZ Geri Bildirim Verir</h3>
+          <p>Doğruysa kutlama! Yanlışsa asistan yargılamadan "Bir daha denemeye ne dersin?" diyerek tekrar deneme şansı sunar.</p>
+        </div>
+        <div class="step-num">4</div>
+        <div></div>
+      </div>
+      <div class="step-connector reveal"></div>
+
+      <div class="step-row reveal">
+        <div class="step-card">
+          <span class="step-icon">📈</span>
+          <h3>5. Seviye Atlanır</h3>
+          <p>Başarılı cevaplar arttıkça sistem daha karmaşık mekânsal kavramlara geçer. Her kullanıcı kendi temposunda ilerler.</p>
+        </div>
+        <div class="step-num">5</div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPTS -->
+<section>
+  <div class="concepts-dark reveal">
+    <p class="s-label">Öğrenilen Kavramlar</p>
+    <h2 class="s-title">Hangi Yön Kavramlarını Öğretiyoruz?</h2>
+    <p class="s-desc">Günlük hayatta kullanılan temel mekânsal kavramların tamamı oyunlaştırılmış biçimde sunulur.</p>
+    <div class="concepts-grid">
+      <div class="concept-card"><div class="ci">👈👉</div><div class="cl">Sol — Sağ</div><div class="cs">Yatay eksen</div></div>
+      <div class="concept-card"><div class="ci">⬆️⬇️</div><div class="cl">Üst — Alt</div><div class="cs">Dikey eksen</div></div>
+      <div class="concept-card"><div class="ci">📦🔲</div><div class="cl">İç — Dış</div><div class="cs">Kapsam ilişkisi</div></div>
+      <div class="concept-card"><div class="ci">⬛🔙</div><div class="cl">Ön — Arka</div><div class="cs">Derinlik ekseni</div></div>
+      <div class="concept-card"><div class="ci">↔️</div><div class="cl">Yakın — Uzak</div><div class="cs">Mesafe ilişkisi</div></div>
+      <div class="concept-card"><div class="ci">↕️</div><div class="cl">Yan Yana</div><div class="cs">Yanında olma</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- AI SECTION -->
+<section>
+  <div class="container">
+    <div class="reveal">
+      <p class="s-label">Yapay Zeka</p>
+      <h2 class="s-title">Sabırlı Dijital Yol Arkadaşı</h2>
+      <p class="s-desc">Yapay zeka destekli asistanımız her kullanıcıya özel bir öğrenme yolculuğu sunar.</p>
+    </div>
+    <div class="ai-grid">
+      <div class="ai-visual reveal">
+        <div class="ai-avatar">🤖</div>
+        <div class="speech">"Bir daha denemeye ne dersin? Belki de diğer taraf doğrudur!" 😊</div>
+        <p style="margin-top:1rem;font-size:.8rem;opacity:.45;font-weight:700;">YönBul Yapay Zeka Asistanı</p>
+      </div>
+      <div class="ai-features reveal">
+        <div class="ai-feat"><div class="af-icon">💙</div><div><div class="af-title">Yargılamayan Yaklaşım</div><div class="af-desc">Her hatayı bir öğrenme fırsatına dönüştürür. Asla olumsuz dil kullanmaz.</div></div></div>
+        <div class="ai-feat"><div class="af-icon">🎯</div><div><div class="af-title">Kişiselleştirilmiş</div><div class="af-desc">Her kullanıcının güçlü ve zayıf yönlerini analiz ederek içeriği özelleştirir.</div></div></div>
+        <div class="ai-feat"><div class="af-icon">🔊</div><div><div class="af-title">Sesli Destek</div><div class="af-desc">Okuryazarlık gerektirmeyen sesli yönlendirme ve geri bildirim sistemi.</div></div></div>
+        <div class="ai-feat"><div class="af-icon">📊</div><div><div class="af-title">Analitik Raporlama</div><div class="af-desc">Ebeveyn ve terapistlere şeffaf gelişim raporları sunar.</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-logo">🧭 YönBul</span>
+  <p>TeknoVision — TEKNOFEST 2025 &nbsp;·&nbsp; Sevgiyle yapıldı 💙</p>
+  <p style="margin-top:.5rem;font-size:.78rem;opacity:.35;">© 2025 YönBul — Tüm hakları saklıdır.</p>
+</footer>
+
+<script>
+const obs = new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');});},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

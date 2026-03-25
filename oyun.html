@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YönBul Oyunu — TeknoVision</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Baloo+2:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky:#38bdf8;--sky2:#0ea5e9;--rose:#fb7185;--grass:#34d399;
+  --sun:#fbbf24;--lav:#a78bfa;--deep:#0f172a;--surface:rgba(255,255,255,0.95);
+  --border:rgba(56,189,248,0.22);--shadow:0 8px 32px rgba(56,189,248,0.15);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(150deg,#e0f4ff,#fdf6ff,#f0fff8);color:var(--deep);overflow-x:hidden;min-height:100vh;}
+nav{position:sticky;top:0;z-index:300;height:64px;background:rgba(255,255,255,.9);backdrop-filter:blur(20px);border-bottom:2px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;box-shadow:0 2px 24px rgba(56,189,248,.1);}
+.nav-logo{font-family:'Baloo 2',cursive;font-size:1.4rem;font-weight:900;background:linear-gradient(90deg,var(--sky2),var(--rose),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none;}
+.nav-links{display:flex;gap:.2rem;}
+.nav-links a{font-weight:700;font-size:.85rem;color:var(--deep);text-decoration:none;padding:.4rem .85rem;border-radius:999px;transition:all .18s;opacity:.6;}
+.nav-links a:hover,.nav-links a.active{background:linear-gradient(135deg,#e0f4ff,#ede9fe);color:var(--sky2);opacity:1;}
+.bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg span{position:absolute;border-radius:50%;filter:blur(60px);opacity:.08;animation:bf 20s ease-in-out infinite;}
+.bg span:nth-child(1){width:600px;height:600px;background:var(--sky);top:-200px;left:-200px;}
+.bg span:nth-child(2){width:450px;height:450px;background:var(--lav);top:40%;right:-120px;animation-delay:7s;}
+.bg span:nth-child(3){width:380px;height:380px;background:var(--grass);bottom:-100px;left:20%;animation-delay:14s;}
+.bg span:nth-child(4){width:280px;height:280px;background:var(--rose);top:20%;left:55%;animation-delay:4s;}
+@keyframes bf{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-30px) scale(1.05);}}
+.wrapper{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:1.5rem 1.5rem 5rem;}
+.game-header{text-align:center;margin-bottom:1.5rem;}
+.game-header h1{font-family:'Baloo 2',cursive;font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;}
+.game-header h1 span{background:linear-gradient(135deg,var(--sky),var(--lav));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.game-header p{opacity:.55;font-size:.9rem;margin-top:.3rem;}
+
+/* VOICE BAR */
+.voice-bar{display:flex;align-items:center;gap:.8rem;background:var(--surface);border:2px solid rgba(167,139,250,.3);border-radius:18px;padding:.75rem 1.2rem;margin-bottom:1.2rem;box-shadow:var(--shadow);}
+.voice-toggle{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--lav),var(--sky));color:#fff;font-size:1.3rem;cursor:pointer;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(167,139,250,.4);}
+.voice-toggle:hover{transform:scale(1.1);}
+.voice-toggle.speaking{animation:vPulse 1s ease-in-out infinite;}
+@keyframes vPulse{0%,100%{box-shadow:0 0 0 0 rgba(167,139,250,.7);}50%{box-shadow:0 0 0 14px rgba(167,139,250,0);}}
+.voice-status{flex:1;}
+.vs-title{font-size:.85rem;font-weight:800;}
+.vs-sub{font-size:.72rem;opacity:.5;margin-top:.1rem;}
+.vwave{display:flex;align-items:center;gap:3px;}
+.vwb{width:4px;border-radius:3px;background:var(--lav);animation:vwA 1s ease-in-out infinite;}
+.vwb:nth-child(1){height:8px;animation-delay:0s;}.vwb:nth-child(2){height:16px;animation-delay:.1s;}.vwb:nth-child(3){height:24px;animation-delay:.2s;}.vwb:nth-child(4){height:16px;animation-delay:.3s;}.vwb:nth-child(5){height:8px;animation-delay:.4s;}
+@keyframes vwA{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.8);}}
+.vwave.silent .vwb{animation:none;transform:scaleY(.3);opacity:.3;}
+.read-q-btn{padding:.45rem 1rem;border-radius:999px;border:2px solid rgba(167,139,250,.3);background:linear-gradient(135deg,#ede9fe,#e0f4ff);font-family:'Nunito',sans-serif;font-size:.82rem;font-weight:800;cursor:pointer;color:#6d28d9;transition:all .2s;white-space:nowrap;}
+.read-q-btn:hover{transform:scale(1.04);}
+
+/* MODE SELECTOR */
+.mode-selector{display:grid;grid-template-columns:repeat(6,1fr);gap:.6rem;margin-bottom:1.2rem;}
+.mode-card{background:var(--surface);border:2.5px solid rgba(255,255,255,.9);border-radius:18px;padding:.85rem .5rem;text-align:center;cursor:pointer;transition:all .22s;box-shadow:var(--shadow);}
+.mode-card:hover{transform:translateY(-4px);border-color:var(--sky);}
+.mode-card.active{border-color:transparent;background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;box-shadow:0 8px 28px rgba(56,189,248,.38);}
+.mc-icon{font-size:1.6rem;margin-bottom:.25rem;}
+.mc-name{font-size:.75rem;font-weight:800;}
+.mc-desc{font-size:.62rem;opacity:.6;margin-top:.05rem;}
+.mode-card.active .mc-desc{opacity:.8;}
+
+/* TOPIC TABS */
+.tab-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;}
+.tab-btn{padding:.42rem 1rem;border-radius:999px;border:2px solid var(--border);background:var(--surface);font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;color:var(--deep);transition:all .2s;}
+.tab-btn.active{background:linear-gradient(135deg,var(--sky),var(--sky2));color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(56,189,248,.3);}
+.tab-btn:hover:not(.active){border-color:var(--sky);color:var(--sky2);}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem;margin-bottom:1.2rem;}
+.stat-chip{background:var(--surface);border:2px solid rgba(255,255,255,.85);border-radius:16px;box-shadow:var(--shadow);padding:.8rem .5rem;text-align:center;}
+.stat-chip .val{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;line-height:1;}
+.stat-chip .lbl{font-size:.62rem;font-weight:800;opacity:.45;letter-spacing:1px;text-transform:uppercase;margin-top:.15rem;}
+.sc-score .val{color:var(--sky2);}.sc-streak .val{color:var(--rose);}.sc-level .val{color:var(--lav);}.sc-timer .val{color:var(--sun);}
+.sc-timer.urgent .val{color:#ef4444;animation:tPulse .5s ease-in-out infinite;}
+@keyframes tPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+
+/* PROGRESS */
+.progress-wrap{background:rgba(56,189,248,.1);border-radius:999px;height:10px;margin-bottom:1.5rem;overflow:hidden;position:relative;}
+.progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sky),var(--lav));transition:width .4s cubic-bezier(.34,1.56,.64,1);}
+.progress-label{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.62rem;font-weight:800;color:rgba(56,189,248,.6);}
+
+/* GAME CARD */
+.game-card{background:var(--surface);border-radius:32px;border:2px solid rgba(255,255,255,.9);box-shadow:0 16px 60px rgba(56,189,248,.18);padding:2rem;position:relative;overflow:hidden;}
+.game-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--sky),var(--rose),var(--grass),var(--lav),var(--sun));}
+
+/* DIFF BADGE */
+.diff-badge{display:inline-flex;align-items:center;gap:.4rem;border-radius:999px;padding:.28rem .9rem;font-size:.75rem;font-weight:900;letter-spacing:.5px;text-transform:uppercase;margin-bottom:.8rem;}
+.diff-easy{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#065f46;}
+.diff-medium{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;}
+.diff-hard{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#991b1b;}
+.diff-expert{background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#6d28d9;}
+
+/* HINT */
+.hint-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.42rem 1rem;border-radius:999px;border:2px solid rgba(251,191,36,.4);background:linear-gradient(135deg,#fef9c3,#fef3c7);font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:800;cursor:pointer;color:#92400e;transition:all .2s;margin-bottom:.8rem;}
+.hint-btn:hover{transform:scale(1.04);}
+.hint-btn:disabled{opacity:.4;cursor:default;}
+.hint-text{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:2px solid rgba(251,191,36,.3);border-radius:14px;padding:.8rem 1.1rem;font-size:.88rem;font-weight:700;color:#78350f;margin-bottom:1rem;display:none;animation:fadeInUp .3s ease;}
+.hint-text.show{display:block;}
+
+/* QUESTION */
+.qtxt{font-family:'Baloo 2',cursive;font-size:clamp(1.1rem,3vw,1.5rem);font-weight:700;line-height:1.45;color:var(--deep);margin-bottom:1.2rem;}
+.hl{color:var(--sky2);background:linear-gradient(135deg,#e0f4ff,#ede9fe);border-radius:8px;padding:.1rem .5rem;}
+.hl2{color:#e11d48;background:linear-gradient(135deg,#ffe4e6,#fecdd3);border-radius:8px;padding:.1rem .5rem;}
+
+/* SCENE */
+.scene{background:linear-gradient(135deg,#e8f6ff,#f0e8ff);border-radius:22px;height:230px;position:relative;margin-bottom:1.5rem;overflow:hidden;border:2px solid rgba(255,255,255,.8);}
+.scene-label{position:absolute;font-size:.68rem;font-weight:900;letter-spacing:1px;text-transform:uppercase;opacity:.65;background:rgba(255,255,255,.75);border-radius:8px;padding:.2rem .6rem;top:12px;left:12px;}
+
+/* CHOICES */
+.choices{display:grid;gap:.85rem;}
+.cols2{grid-template-columns:1fr 1fr;}
+.cols3{grid-template-columns:1fr 1fr 1fr;}
+.cols4{grid-template-columns:1fr 1fr;} 
+.choice-btn{padding:1rem .75rem;border-radius:20px;border:2.5px solid transparent;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:800;cursor:pointer;transition:all .22s;background:linear-gradient(135deg,#f8faff,#f4f0ff);color:var(--deep);display:flex;flex-direction:column;align-items:center;gap:.35rem;box-shadow:0 3px 12px rgba(56,189,248,.08);}
+.choice-btn:hover{transform:translateY(-5px) scale(1.03);border-color:var(--sky);box-shadow:0 10px 28px rgba(56,189,248,.22);}
+.cb-emoji{font-size:1.8rem;}
+.choice-btn.correct{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:var(--grass);color:#065f46;animation:cPop .5s cubic-bezier(.34,1.56,.64,1);}
+.choice-btn.wrong{background:linear-gradient(135deg,#fee2e2,#fecaca)!important;border-color:var(--rose);color:#991b1b;animation:shake .4s ease;}
+.choice-btn.disabled{pointer-events:none;opacity:.55;}
+@keyframes cPop{0%{transform:scale(1);}50%{transform:scale(1.1);}100%{transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+
+/* DROP ZONES */
+.drop-zone{border:3px dashed rgba(56,189,248,.3);border-radius:18px;padding:1.2rem;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;cursor:pointer;transition:all .2s;min-height:110px;}
+.drop-zone.active-zone{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.05);animation:zonePulse 1.5s ease-in-out infinite;}
+.drop-zone.hovered,.drop-zone:hover{border-color:var(--grass);background:rgba(52,211,153,.1);transform:scale(1.03);}
+@keyframes zonePulse{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,.3);}50%{box-shadow:0 0 0 8px rgba(56,189,248,0);}}
+.drag-item{font-size:3.5rem;cursor:grab;display:inline-block;transition:transform .15s;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));}
+.drag-item:active{cursor:grabbing;transform:scale(1.25);}
+
+/* MEMORY */
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;padding:.5rem;}
+.mem-card{aspect-ratio:1;border-radius:16px;border:2.5px solid var(--border);background:linear-gradient(135deg,#e0f4ff,#ede9fe);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.6rem;transition:all .35s cubic-bezier(.34,1.56,.64,1);box-shadow:0 4px 14px rgba(56,189,248,.12);transform-style:preserve-3d;position:relative;}
+.mem-card.flipped{transform:rotateY(180deg);}
+.mem-card .mc-f,.mem-card .mc-b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;border-radius:14px;flex-direction:column;gap:.2rem;}
+.mem-card .mc-b{background:linear-gradient(135deg,var(--sky),var(--lav));color:#fff;transform:rotateY(180deg);font-size:.7rem;font-weight:900;text-align:center;padding:.3rem;}
+.mem-card .mc-b .bm{font-size:1.5rem;}
+.mem-card.matched{background:linear-gradient(135deg,#d1fae5,#a7f3d0)!important;border-color:var(--grass);animation:mPop .5s ease;}
+.mem-card:hover:not(.matched){transform:scale(1.06);}
+@keyframes mPop{0%{transform:scale(1);}50%{transform:scale(1.15);}100%{transform:scale(1);}}
+
+/* SEQUENCE */
+.seq-display{display:flex;gap:.6rem;flex-wrap:wrap;padding:1rem 1.5rem;background:linear-gradient(135deg,#1e1b4b,#0f172a);border-radius:18px;min-height:72px;align-items:center;justify-content:center;margin-bottom:1rem;}
+.seq-item{font-size:2rem;padding:.4rem .5rem;border-radius:12px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);transition:all .3s;}
+.seq-item.lit{background:rgba(56,189,248,.35);border-color:var(--sky);transform:scale(1.2);}
+.seq-input{display:flex;gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:1rem;}
+.seq-btn{font-size:1.8rem;padding:.6rem .7rem;border-radius:14px;border:2.5px solid var(--border);background:var(--surface);cursor:pointer;transition:all .2s;}
+.seq-btn:hover{transform:scale(1.12);border-color:var(--sky);background:linear-gradient(135deg,#e0f4ff,#ede9fe);}
+.seq-btn.clicked{animation:sClick .3s ease;}
+@keyframes sClick{0%{transform:scale(1);}50%{transform:scale(.82);}100%{transform:scale(1);}}
+.seq-user-area{display:flex;gap:.5rem;flex-wrap:wrap;padding:.8rem;background:rgba(56,189,248,.07);border-radius:14px;min-height:55px;margin-bottom:1rem;align-items:center;justify-content:center;}
+
+/* CANVAS */
+.canvas-wrap{border-radius:18px;overflow:hidden;border:2.5px solid var(--border);box-shadow:var(--shadow);}
+.draw-canvas{display:block;background:#fff;cursor:crosshair;touch-action:none;width:100%;}
+.canvas-tools{display:flex;gap:.5rem;align-items:center;padding:.75rem;background:var(--surface);border-top:2px solid var(--border);flex-wrap:wrap;}
+.tool-btn{width:36px;height:36px;border-radius:10px;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:1.05rem;display:flex;align-items:center;justify-content:center;transition:all .18s;}
+.tool-btn:hover,.tool-btn.active-tool{background:linear-gradient(135deg,var(--sky),var(--lav));color:#fff;border-color:transparent;transform:scale(1.1);}
+.col-dot{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid rgba(255,255,255,.5);transition:transform .18s;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.col-dot:hover,.col-dot.active-col{transform:scale(1.3);border-color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.2);}
+.sz-slider{width:75px;accent-color:var(--sky2);}
+.submit-draw{padding:.42rem 1.2rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--sky),var(--lav));color:#fff;font-weight:800;font-size:.82rem;cursor:pointer;margin-left:auto;}
+
+/* FEEDBACK */
+.feedback-msg{padding:.9rem 1.2rem;border-radius:16px;font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:.7rem;animation:fadeInUp .3s ease;margin-top:1rem;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.fb-s{background:#d1fae5;color:#065f46;border:2px solid #6ee7b7;}
+.fb-r{background:#fef3c7;color:#92400e;border:2px solid #fcd34d;}
+.fb-f{background:#fee2e2;color:#991b1b;border:2px solid #fca5a5;}
+
+/* NEXT BTN */
+.next-btn{width:100%;margin-top:1rem;padding:1rem;border-radius:18px;border:none;background:linear-gradient(135deg,var(--sky),var(--lav));color:#fff;font-family:'Nunito',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 6px 24px rgba(56,189,248,.35);display:none;}
+.next-btn.show{display:block;}
+.next-btn:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(56,189,248,.5);}
+
+/* FLOATING FX */
+.combo-popup{position:fixed;top:22%;left:50%;transform:translateX(-50%);font-family:'Baloo 2',cursive;font-size:3rem;font-weight:900;color:var(--sun);text-shadow:0 0 30px rgba(251,191,36,.7);z-index:999;pointer-events:none;animation:comboPop 1.2s ease forwards;white-space:nowrap;}
+@keyframes comboPop{0%{opacity:1;transform:translate(-50%,0) scale(.5);}30%{transform:translate(-50%,0) scale(1.25);}70%{opacity:1;transform:translate(-50%,-40px) scale(1);}100%{opacity:0;transform:translate(-50%,-90px) scale(.8);}}
+.xp-popup{position:fixed;top:38%;left:50%;transform:translateX(-50%);font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:900;color:var(--grass);text-shadow:0 0 20px rgba(52,211,153,.6);z-index:998;pointer-events:none;animation:xpA .9s ease forwards;}
+@keyframes xpA{0%{opacity:0;transform:translate(-50%,10px);}20%{opacity:1;}100%{opacity:0;transform:translate(-50%,-55px);}}
+.confetti-p{position:fixed;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:9999;animation:cFall linear forwards;}
+@keyframes cFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(100vh) rotate(720deg);}}
+.particle-p{position:fixed;pointer-events:none;font-size:1.2rem;animation:pFloat .8s ease-out forwards;z-index:9999;}
+@keyframes pFloat{0%{opacity:1;transform:translate(0,0) scale(1);}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.3);}}
+
+/* END */
+.end-screen{display:none;text-align:center;padding:3rem 2rem;animation:fadeInUp .5s ease;}
+.end-screen.show{display:block;}
+.end-trophy{font-size:6rem;animation:tSpin 1.2s cubic-bezier(.34,1.56,.64,1);}
+@keyframes tSpin{0%{transform:scale(0) rotate(-30deg);}70%{transform:scale(1.25) rotate(10deg);}100%{transform:scale(1) rotate(0);}}
+.end-title{font-family:'Baloo 2',cursive;font-size:2.5rem;font-weight:900;margin:.5rem 0;}
+.end-score{font-size:3.5rem;font-weight:900;color:var(--sky2);font-family:'Baloo 2',cursive;}
+.end-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:380px;margin:1.5rem auto;}
+.es-card{background:linear-gradient(135deg,#e0f4ff,#ede9fe);border-radius:16px;padding:1rem .5rem;text-align:center;}
+.es-v{font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--sky2);}
+.es-l{font-size:.68rem;font-weight:800;opacity:.45;text-transform:uppercase;letter-spacing:1px;}
+.end-btns{display:flex;gap:1rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;}
+.end-btn{padding:.88rem 2rem;border-radius:999px;border:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;}
+.end-btn:hover{transform:translateY(-3px);}
+.ebp{background:linear-gradient(135deg,var(--sky),var(--lav));color:#fff;box-shadow:0 8px 28px rgba(56,189,248,.4);}
+.ebs{background:var(--surface);color:var(--deep);border:2.5px solid var(--border);}
+
+@media(max-width:600px){
+  .stats-bar{grid-template-columns:repeat(3,1fr);}
+  .mode-selector{grid-template-columns:repeat(3,1fr);}
+  .memory-grid{grid-template-columns:repeat(3,1fr);}
+  .choices.cols3{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="bg"><span></span><span></span><span></span><span></span></div>
+<nav>
+  <a href="kesfet.html" class="nav-logo">🧭 YönBul</a>
+  <div class="nav-links">
+    <a href="kesfet.html">Keşfet</a>
+    <a href="nasil.html">Nasıl</a>
+    <a href="nedenbiz.html">Neden Biz</a>
+    <a href="ekip.html">Ekip</a>
+    <a href="oyun.html" class="active">🎮 Oyun</a>
+  </div>
+</nav>
+
+<div class="wrapper">
+  <div class="game-header">
+    <h1>🎮 <span>YönBul</span> Oyunu</h1>
+    <p>Yön kavramlarını eğlenerek, görerek ve duyarak öğren!</p>
+  </div>
+
+  <!-- VOICE BAR -->
+  <div class="voice-bar">
+    <button class="voice-toggle" id="voiceToggle" onclick="toggleVoice()">🔊</button>
+    <div class="voice-status">
+      <div class="vs-title" id="vsTitle">Sesli Asistan Hazır</div>
+      <div class="vs-sub">Soruyu sesli duymak için ▶ Oku düğmesine bas</div>
+    </div>
+    <div class="vwave silent" id="vwave">
+      <div class="vwb"></div><div class="vwb"></div><div class="vwb"></div>
+      <div class="vwb"></div><div class="vwb"></div>
+    </div>
+    <button class="read-q-btn" onclick="readQ()">▶ Soruyu Oku</button>
+  </div>
+
+  <!-- MODE SELECTOR -->
+  <div class="mode-selector" id="modeSel">
+    <div class="mode-card active" onclick="selMode('classic',this)"><div class="mc-icon">🎯</div><div class="mc-name">Klasik</div><div class="mc-desc">Çoktan seç</div></div>
+    <div class="mode-card" onclick="selMode('drag',this)"><div class="mc-icon">✋</div><div class="mc-name">Sürükle</div><div class="mc-desc">Nesne taşı</div></div>
+    <div class="mode-card" onclick="selMode('memory',this)"><div class="mc-icon">🧠</div><div class="mc-name">Hafıza</div><div class="mc-desc">Eşleştir</div></div>
+    <div class="mode-card" onclick="selMode('sequence',this)"><div class="mc-icon">🔢</div><div class="mc-name">Sıra</div><div class="mc-desc">Yönleri diz</div></div>
+    <div class="mode-card" onclick="selMode('draw',this)"><div class="mc-icon">✏️</div><div class="mc-name">Çiz</div><div class="mc-desc">Oku & çiz</div></div>
+    <div class="mode-card" onclick="selMode('timed',this)"><div class="mc-icon">⏱️</div><div class="mc-name">Yarış</div><div class="mc-desc">Süre yarışı</div></div>
+  </div>
+
+  <!-- TOPICS -->
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="selTopic('all',this)">🌟 Hepsi</button>
+    <button class="tab-btn" onclick="selTopic('shelf',this)">🪤 Raf</button>
+    <button class="tab-btn" onclick="selTopic('box',this)">📦 Kutu</button>
+    <button class="tab-btn" onclick="selTopic('lr',this)">👈👉 Sol-Sağ</button>
+    <button class="tab-btn" onclick="selTopic('front',this)">🚪 Ön-Arka</button>
+    <button class="tab-btn" onclick="selTopic('table',this)">🪑 Masa</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-chip sc-score"><div class="val" id="sScore">0</div><div class="lbl">Puan</div></div>
+    <div class="stat-chip sc-streak"><div class="val" id="sStreak">0</div><div class="lbl">Seri</div></div>
+    <div class="stat-chip sc-level"><div class="val" id="sLevel">1</div><div class="lbl">Seviye</div></div>
+    <div class="stat-chip sc-lives"><div class="val" id="sLives">❤️❤️❤️</div><div class="lbl">Can</div></div>
+    <div class="stat-chip sc-timer" id="tcChip"><div class="val" id="sTimer">—</div><div class="lbl">Süre</div></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="pFill" style="width:0%"></div><span class="progress-label" id="pLabel"></span></div>
+
+  <!-- MAIN CARD -->
+  <div class="game-card" id="gameCard">
+    <div class="diff-badge diff-easy" id="diffBadge">🌱 Başlangıç</div>
+    <button class="hint-btn" id="hintBtn" onclick="doHint()">💡 İpucu (<span id="hintC">3</span> hak)</button>
+    <div class="hint-text" id="hintTxt"></div>
+    <div id="gameArea"></div>
+    <div id="fbArea"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQ()">Sonraki Soru ➜</button>
+  </div>
+
+  <!-- END -->
+  <div class="game-card end-screen" id="endScreen">
+    <div class="end-trophy" id="eTrophy">🏆</div>
+    <div class="end-title" id="eTitle">Süpersin!</div>
+    <p style="opacity:.5;font-size:.9rem;">Toplam puan:</p>
+    <div class="end-score" id="eScore">0</div>
+    <div class="end-stats">
+      <div class="es-card"><div class="es-v" id="eDogru">0</div><div class="es-l">Doğru</div></div>
+      <div class="es-card"><div class="es-v" id="eYanlış">0</div><div class="es-l">Yanlış</div></div>
+      <div class="es-card"><div class="es-v" id="eMaxS">0</div><div class="es-l">Max Seri</div></div>
+    </div>
+    <p style="opacity:.38;font-size:.84rem;margin-bottom:1rem;" id="eMsg"></p>
+    <div class="end-btns">
+      <button class="end-btn ebp" onclick="restart()">🔄 Tekrar Oyna</button>
+      <a href="kesfet.html" class="end-btn ebs">🏠 Ana Sayfa</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SPEECH ──
+let voiceOn=true, synth=window.speechSynthesis, voices=[];
+function initV(){voices=synth.getVoices();if(!voices.length)synth.onvoiceschanged=()=>{voices=synth.getVoices();};}
+initV();
+function speak(txt,cb){
+  if(!voiceOn||!synth)return;
+  synth.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang='tr-TR';u.rate=0.88;u.pitch=1.1;
+  const tv=voices.find(v=>v.lang.startsWith('tr'));
+  if(tv)u.voice=tv;
+  u.onstart=()=>{document.getElementById('vwave').classList.remove('silent');document.getElementById('vsTitle').textContent='🔊 Konuşuyor...';document.getElementById('voiceToggle').classList.add('speaking');};
+  u.onend=()=>{document.getElementById('vwave').classList.add('silent');document.getElementById('vsTitle').textContent='Sesli Asistan Hazır';document.getElementById('voiceToggle').classList.remove('speaking');if(cb)cb();};
+  synth.speak(u);
+}
+function toggleVoice(){voiceOn=!voiceOn;const b=document.getElementById('voiceToggle');b.textContent=voiceOn?'🔊':'🔇';b.style.background=voiceOn?'linear-gradient(135deg,var(--lav),var(--sky))':'#ddd';if(!voiceOn)synth.cancel();}
+function readQ(){const q=curQ();if(q)speak(q.v||q.qt||'');}
+
+// ── QUESTIONS ──
+const QB=[
+  {t:'shelf',lv:1,qt:'Tabağı rafın <span class="hl">üstüne</span> koyalım!',v:'Tabağı rafın üstüne koyalım!',h:'Üst demek rafın yukarısı, raftan daha yüksek.',e:'🍽️',sc:'shelf',pos:'above',ch:[{e:'⬆️',l:'Rafın üstü',ok:true},{e:'⬇️',l:'Rafın altı',ok:false}],ok:'🎉 Harika! Tabak rafın üstünde!',ov:'Süper! Tabak rafın üstüne ulaştı!',no:'Rafın üstü raftan daha yukarıdadır. Tekrar dene!',dz:['Rafın Üstü','Rafın Altı'],dc:0,dp:'Rafın üzerine bir nesne çiz!',dpv:'Rafın üzerine bir nesne çiz!'},
+  {t:'shelf',lv:1,qt:'Bardağı rafın <span class="hl2">altına</span> koyalım mı?',v:'Bardağı rafın altına koyalım mı?',h:'Altına demek rafın altında, yani raftan daha aşağıda olmak.',e:'🥤',sc:'shelf',pos:'below',ch:[{e:'⬇️',l:'Evet, altına',ok:true},{e:'⬆️',l:'Hayır, üstüne',ok:false}],ok:'✨ Bravo! Bardak rafın altında!',ov:'Aferin! Bardak rafın altına indi!',no:'Altına demek raftan aşağıya. Bir daha dene!',dz:['Rafın Üstü','Rafın Altı'],dc:1,dp:'Rafın altına bir nesne çiz!',dpv:'Rafın altına bir nesne çiz!'},
+  {t:'shelf',lv:2,qt:'📚 Kitap rafın <span class="hl">üstünde mi, altında mı</span>?',v:'Kitap rafın üstünde mi, altında mı?',h:'Gözlerinle sahneye bak — kitap rafın hangi tarafında?',e:'📚',sc:'shelf',pos:'above',ch:[{e:'⬆️',l:'Üstünde',ok:true},{e:'⬇️',l:'Altında',ok:false}],ok:'Doğru! Kitap rafın üstünde 📚',ov:'Doğru! Kitap rafın üstünde duruyor!',no:'Dikkatlice bak — kitap rafın hangi tarafında?',dz:['Rafın Üstü','Rafın Altı'],dc:0,dp:'Kitabı rafın üzerine çiz!',dpv:'Kitabı rafın üzerine çiz!'},
+  {t:'shelf',lv:3,qt:'🏆 Kupa <span class="hl">üstte</span> → <span class="hl2">altta</span> → tekrar <span class="hl">üstte</span>. Şimdi nerede?',v:'Kupa üstte, altta, tekrar üstte. Şimdi nerede?',h:'Son hareketi düşün — kupa en son nereye taşındı?',e:'🏆',sc:'shelf',pos:'above',ch:[{e:'⬆️',l:'Rafın üstü',ok:true},{e:'⬇️',l:'Rafın altı',ok:false},{e:'🤷',l:'Bilmiyorum',ok:false}],ok:'Akıllıca! Kupa son olarak rafın üstüne geldi 🏆',ov:'Mükemmel mantık! Kupa en son rafın üstüneydi!',no:'Son hareketi düşün — kupa en son nereye taşındı?',dz:['Rafın Üstü','Rafın Altı'],dc:0,dp:'Kupanın son konumunu çiz!',dpv:'Kupanın son konumunu çiz!'},
+  {t:'box',lv:1,qt:'Top kutunun <span class="hl">içinde mi</span> duruyor?',v:'Top kutunun içinde mi duruyor?',h:'İçinde olmak kutunun dört duvarının arasında olmak demektir.',e:'⚽',sc:'box',pos:'inside',ch:[{e:'📦',l:'Evet, içinde',ok:true},{e:'🔲',l:'Hayır, dışında',ok:false}],ok:'Süper! Top kutunun içinde ⚽📦',ov:'Harika! Top kutunun içinde!',no:'İçinde demek kutunun içine girmiş olmak. Tekrar dene!',dz:['Kutunun İçi','Kutunun Dışı'],dc:0,dp:'Kutunun içine bir şey çiz!',dpv:'Kutunun içine bir şey çiz!'},
+  {t:'box',lv:1,qt:'🐱 Kediyi kutunun <span class="hl2">dışına</span> çıkaralım!',v:'Kediyi kutunun dışına çıkaralım!',h:'Dışına çıkarmak demek kutunun yanına koymak demektir.',e:'🐱',sc:'box',pos:'inside',ch:[{e:'🔲',l:'Dışarı çıkar',ok:true},{e:'📦',l:'İçeride bırak',ok:false}],ok:'Kedi özgür! Kutunun dışında 🐱✨',ov:'Kedi dışarı çıktı! Aferin!',no:'Dışarı demek kutunun dışında olacak. Bir daha dene!',dz:['Kutunun İçi','Kutunun Dışı'],dc:1,dp:'Kutunun dışında bir kedi çiz!',dpv:'Kutunun dışında bir kedi çiz!'},
+  {t:'box',lv:2,qt:'🎾 Tenis topu kutunun <span class="hl">içinde mi, dışında mı</span>?',v:'Tenis topu kutunun içinde mi, dışında mı?',h:'Sahneye bak — top kutunun içinde mi yoksa yanında mı?',e:'🎾',sc:'box',pos:'outside',ch:[{e:'📦',l:'İçinde',ok:false},{e:'🔲',l:'Dışında',ok:true}],ok:'Evet! Top kutunun dışında 🎾',ov:'Doğru! Top kutunun dışında duruyor!',no:'Dikkatlice bak — top kutunun içinde mi yoksa yanında mı?',dz:['Kutunun İçi','Kutunun Dışı'],dc:1,dp:'Topun konumunu çiz!',dpv:'Topun konumunu çiz!'},
+  {t:'box',lv:3,qt:'🐣 Civciv yumurtanın <span class="hl2">dışına</span> çıktı mı?',v:'Civciv yumurtanın dışına çıktı mı?',h:'Dışına çıkmak demek yumurtanın kabuğunu kırıp çıkmak demektir.',e:'🐣',sc:'box',pos:'outside',ch:[{e:'✅',l:'Evet, dışarıda',ok:true},{e:'🥚',l:'Hayır, içeride',ok:false}],ok:'Evet! Civciv yumurtadan çıktı! 🐣🎉',ov:'Doğru! Civciv artık dışarıda!',no:'Dışında demek yumurtadan çıkmış olmak. Tekrar dene!',dz:['İçinde','Dışında'],dc:1,dp:'Yumurtadan çıkan civciyi çiz!',dpv:'Yumurtadan çıkan civciyi çiz!'},
+  {t:'lr',lv:1,qt:'🐶 Köpek <span class="hl">sol</span> tarafta duruyor. Hangisi sol taraf?',v:'Köpek sol tarafta duruyor. Hangisi sol taraf?',h:'Sol taraf genellikle kalbinin olduğu taraftır!',e:'🐶',sc:'lr',pos:'left',ch:[{e:'👈',l:'Sol taraf',ok:true},{e:'👉',l:'Sağ taraf',ok:false}],ok:'Harika! Sol tarafı buldun! 👈🎉',ov:'Mükemmel! Sol tarafı doğru buldun!',no:'Sol taraf kalp tarafıdır. Tekrar dene!',dz:['Sol Taraf','Sağ Taraf'],dc:0,dp:'Sol tarafta bir köpek çiz!',dpv:'Sol tarafta bir köpek çiz!'},
+  {t:'lr',lv:1,qt:'🌻 Ayçiçeğini <span class="hl2">sağ</span> tarafa taşıyalım!',v:'Ayçiçeğini sağ tarafa taşıyalım!',h:'Sağ taraf sol tarafın tam karşısıdır.',e:'🌻',sc:'lr',pos:'left',ch:[{e:'👉',l:'Sağa taşı',ok:true},{e:'👈',l:'Solda bırak',ok:false}],ok:'Mükemmel! Ayçiçeği sağ tarafta 🌻👉',ov:'Aferin! Ayçiçeği sağ tarafa taşındı!',no:'Sağ taraf sol tarafın karşısıdır. Tekrar dene!',dz:['Sol Taraf','Sağ Taraf'],dc:1,dp:'Sağ tarafa bir çiçek çiz!',dpv:'Sağ tarafa bir çiçek çiz!'},
+  {t:'lr',lv:2,qt:'🦋 Kelebek <span class="hl">hangi tarafta</span> duruyor?',v:'Kelebek hangi tarafta duruyor?',h:'Ekranda kelebeğin konumuna dikkatlice bak.',e:'🦋',sc:'lr',pos:'right',ch:[{e:'👈',l:'Sol tarafta',ok:false},{e:'👉',l:'Sağ tarafta',ok:true}],ok:'Doğru! Kelebek sağ tarafta 🦋',ov:'Doğru! Kelebek sağ tarafta duruyor!',no:'Ekrana bak — kelebek ekranın hangi yarısında?',dz:['Sol Taraf','Sağ Taraf'],dc:1,dp:'Sağ tarafta bir kelebek çiz!',dpv:'Sağ tarafta bir kelebek çiz!'},
+  {t:'lr',lv:3,qt:'🚗 Araba <span class="hl">soldan sağa</span> gitmek istiyor. Hangi yönde?',v:'Araba soldan sağa gitmek istiyor. Hangi yönde?',h:'Soldan sağa gitmek için sağ yönünde hareket etmek gerekir.',e:'🚗',sc:'lr',pos:'left',ch:[{e:'👉',l:'Sağa doğru',ok:true},{e:'👈',l:'Sola doğru',ok:false},{e:'⬆️',l:'Yukarı',ok:false}],ok:'Süper! Araba sağa gitti! 🚗💨',ov:'Harika! Araba soldan sağa doğru gitti!',no:'Soldan sağa gitmek için sağ yönünde ilerlemek gerekir.',dz:['Sol Taraf','Sağ Taraf'],dc:1,dp:'Aracın hareket yönünü çiz!',dpv:'Aracın hareket yönünü çiz!'},
+  {t:'front',lv:1,qt:'🐰 Tavşan ağacın <span class="hl">önünde mi</span> duruyor?',v:'Tavşan ağacın önünde mi duruyor?',h:'Önünde demek ağaçtan önce, yani daha yakın tarafta.',e:'🐰',sc:'front',pos:'front',ch:[{e:'🌳',l:'Evet, önünde',ok:true},{e:'🔙',l:'Hayır, arkasında',ok:false}],ok:'Evet! Tavşan ağacın önünde 🐰🌳',ov:'Doğru! Tavşan ağacın önünde duruyor!',no:'Önünde demek ağaçtan önce, daha yakın tarafta olmak.',dz:['Ağacın Önü','Ağacın Arkası'],dc:0,dp:'Ağacın önüne bir hayvan çiz!',dpv:'Ağacın önüne bir hayvan çiz!'},
+  {t:'front',lv:2,qt:'🦊 Tilkiyi ağacın <span class="hl2">arkasına</span> saklayalım!',v:'Tilkiyi ağacın arkasına saklayalım!',h:'Arkasına saklanmak demek ağacın gerisine gitmek.',e:'🦊',sc:'front',pos:'front',ch:[{e:'🔙',l:'Arkasına sakla',ok:true},{e:'⬛',l:'Önünde bırak',ok:false}],ok:'Tilki sakladı! Ağacın arkasında 🦊🌳',ov:'Aferin! Tilki ağacın arkasına saklandı!',no:'Arkasında demek ağacın gerisinde, görünmez yerde demek.',dz:['Ağacın Önü','Ağacın Arkası'],dc:1,dp:'Ağacın arkasına bir tilki çiz!',dpv:'Ağacın arkasına bir tilki çiz!'},
+  {t:'table',lv:1,qt:'☕ Kahveyi masanın <span class="hl">üstüne</span> koyalım!',v:'Kahveyi masanın üstüne koyalım!',h:'Üstüne demek masanın yüzeyine, düz olan kısmına koymak.',e:'☕',sc:'table',pos:'above',ch:[{e:'⬆️',l:'Masanın üstü',ok:true},{e:'⬇️',l:'Masanın altı',ok:false}],ok:'Aferin! Kahve masanın üstünde ☕✨',ov:'Harika! Kahve masanın üstünde!',no:'Üst demek masanın yüzeyine koymak demektir.',dz:['Masanın Üstü','Masanın Altı'],dc:0,dp:'Masanın üstüne bir fincan çiz!',dpv:'Masanın üstüne bir fincan çiz!'},
+  {t:'table',lv:2,qt:'🐈 Kedi masanın <span class="hl">altında mı, üstünde mi</span>?',v:'Kedi masanın altında mı, üstünde mi?',h:'Masanın altı, masanın bacakları arasındaki gizli kısımdır.',e:'🐈',sc:'table',pos:'below',ch:[{e:'⬆️',l:'Üstünde',ok:false},{e:'⬇️',l:'Altında',ok:true}],ok:'Doğru! Kedi masanın altında 🐈',ov:'Doğru! Kedi masanın altına saklanmış!',no:'Masanın altı bacaklar arasındaki kısımdır.',dz:['Masanın Üstü','Masanın Altı'],dc:1,dp:'Masanın altına bir kedi çiz!',dpv:'Masanın altına bir kedi çiz!'},
+];
+
+// MEMORY PAIRS
+const MEM_PAIRS=[
+  {em:'👈',lb:'SOLDA'},{em:'👉',lb:'SAĞDA'},
+  {em:'⬆️',lb:'ÜSTÜNDE'},{em:'⬇️',lb:'ALTINDA'},
+  {em:'📦',lb:'İÇİNDE'},{em:'🔲',lb:'DIŞINDA'},
+  {em:'🌳',lb:'ÖNÜNDE'},{em:'🔙',lb:'ARKASINDA'},
+];
+
+// SEQUENCES
+const SEQS=[
+  {label:'Sol, Sağ, Sol',seq:['👈','👉','👈'],opts:['👈','👉','⬆️','⬇️']},
+  {label:'Üst, Alt, Üst, Alt',seq:['⬆️','⬇️','⬆️','⬇️'],opts:['⬆️','⬇️','👈','👉']},
+  {label:'İçeri, Dışarı, İçeri',seq:['📦','🔲','📦'],opts:['📦','🔲','👈','⬆️']},
+  {label:'Sağ, Sol, Sağ, Sol',seq:['👉','👈','👉','👈'],opts:['👈','👉','⬆️','⬇️']},
+  {label:'Üst, Sol, Önde, Sağ',seq:['⬆️','👈','🌳','👉'],opts:['👈','👉','⬆️','⬇️','🌳','🔙']},
+];
+
+// DRAW PROMPTS
+const DRAW_P=[
+  {txt:'Rafın <strong>üzerine</strong> bir kupa çiz! 🏆',v:'Rafın üzerine bir kupa çiz!'},
+  {txt:'Kutunun <strong>içine</strong> bir top çiz! ⚽',v:'Kutunun içine bir top çiz!'},
+  {txt:'Masanın <strong>soluna</strong> bir fincan çiz! ☕',v:'Masanın soluna bir fincan çiz!'},
+  {txt:'Ağacın <strong>önüne</strong> bir köpek çiz! 🐶',v:'Ağacın önüne bir köpek çiz!'},
+  {txt:'Evin <strong>sağına</strong> bir çiçek çiz! 🌸',v:'Evin sağına bir çiçek çiz!'},
+  {txt:'Koltuğun <strong>altına</strong> bir kedi çiz! 🐱',v:'Koltuğun altına bir kedi çiz!'},
+  {txt:'Bulutun <strong>altında</strong> bir yağmur damlası çiz! 🌧️',v:'Bulutun altında bir yağmur damlası çiz!'},
+];
+
+// ── GAME STATE ──
+let G={mode:'classic',topic:'all',score:0,streak:0,maxS:0,lives:3,level:1,qi:0,ans:false,wrong:0,hints:3,correct:0,totalW:0,fQ:[],tI:null,tL:0,memC:[],memF:[],memM:0,seqC:null,seqA:[],dragOk:false};
+
+function curQ(){return G.fQ[G.qi]||null;}
+function selMode(m,el){G.mode=m;document.querySelectorAll('.mode-card').forEach(e=>e.classList.remove('active'));el.classList.add('active');restart();}
+function selTopic(t,el){G.topic=t;document.querySelectorAll('.tab-btn').forEach(e=>e.classList.remove('active'));el.classList.add('active');restart();}
+function filt(){let q=G.topic==='all'?[...QB]:QB.filter(x=>x.t===G.topic);return q.sort(()=>Math.random()-.5);}
+
+function restart(){
+  clearInterval(G.tI);
+  G={...G,score:0,streak:0,maxS:0,lives:3,level:1,qi:0,ans:false,wrong:0,hints:3,correct:0,totalW:0,fQ:filt(),tI:null,tL:0,memC:[],memF:[],memM:0,seqC:null,seqA:[]};
+  document.getElementById('hintC').textContent=3;
+  document.getElementById('endScreen').classList.remove('show');
+  document.getElementById('gameCard').style.display='block';
+  document.getElementById('hintTxt').classList.remove('show');
+  updateUI();loadRound();
+}
+
+function loadRound(){
+  G.ans=false;G.wrong=0;
+  document.getElementById('fbArea').innerHTML='';
+  document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('hintTxt').classList.remove('show');
+  ({classic:loadClassic,drag:loadDrag,memory:loadMemory,sequence:loadSeq,draw:loadDraw,timed:loadTimed}[G.mode]||loadClassic)();
+  updateProg();
+}
+
+// ── SCENE BUILDER ──
+function buildScene(q){
+  const {sc:type,pos,e:emoji}=q;
+  let s='<div class="scene">';
+  if(type==='shelf'){
+    const top=pos==='above'?'calc(50% - 62px)':'calc(50% + 14px)';
+    s+=`<div style="position:absolute;left:50%;transform:translateX(-50%);top:50%;width:65%;height:10px;background:linear-gradient(90deg,#c4a882,#a08060);border-radius:5px;box-shadow:0 3px 8px rgba(0,0,0,.15);"></div><div style="position:absolute;font-size:2.8rem;left:50%;transform:translateX(-50%);top:${top};filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));transition:all .5s;">${emoji}</div><div class="scene-label">🪤 Raf</div>`;
+  } else if(type==='box'){
+    const ins=pos==='inside';
+    s+=`<div style="position:absolute;font-size:4.5rem;left:50%;transform:translateX(-50%);bottom:20px;">📦</div><div style="position:absolute;font-size:2.8rem;${ins?'bottom:28px;left:47%;':'bottom:85px;left:62%;'}filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));">${emoji}</div><div class="scene-label">📦 Kutu</div>`;
+  } else if(type==='lr'){
+    const lft=pos==='left';
+    s+=`<div style="position:absolute;left:18px;height:100%;width:4px;background:rgba(56,189,248,.3);border-radius:2px;"></div><div style="position:absolute;right:18px;height:100%;width:4px;background:rgba(251,113,133,.3);border-radius:2px;"></div><div style="position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:.6rem;font-weight:900;color:var(--sky2);writing-mode:vertical-rl;text-transform:uppercase;opacity:.65;">SOL</div><div style="position:absolute;right:8px;top:50%;transform:translateY(-50%) rotate(180deg);font-size:.6rem;font-weight:900;color:var(--rose);writing-mode:vertical-rl;text-transform:uppercase;opacity:.65;">SAĞ</div><div style="position:absolute;font-size:2.8rem;top:50%;transform:translateY(-50%);left:${lft?'22%':'62%'};filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));transition:all .5s;">${emoji}</div>`;
+  } else if(type==='front'){
+    const frt=pos==='front';
+    s+=`<div style="position:absolute;font-size:5rem;left:50%;transform:translateX(-50%);top:20px;">🌳</div><div style="position:absolute;font-size:2.8rem;left:50%;transform:translateX(-50%);top:${frt?'122px':'48px'};opacity:${frt?1:.22};filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));transition:all .5s;">${emoji}</div><div class="scene-label">🌳 Ağaç</div>`;
+  } else if(type==='table'){
+    const ab=pos==='above';
+    s+=`<div style="position:absolute;bottom:62px;left:15%;right:15%;height:14px;background:linear-gradient(90deg,#c4a882,#a08060);border-radius:4px;"></div><div style="position:absolute;bottom:20px;left:27%;width:8px;height:42px;background:#a08060;border-radius:4px;"></div><div style="position:absolute;bottom:20px;right:27%;width:8px;height:42px;background:#a08060;border-radius:4px;"></div><div style="position:absolute;font-size:2.8rem;left:50%;transform:translateX(-50%);${ab?'bottom:78px':'bottom:24px'};filter:drop-shadow(0 4px 10px rgba(0,0,0,.12));transition:all .5s;">${emoji}</div><div class="scene-label">🪑 Masa</div>`;
+  }
+  return s+'</div>';
+}
+
+// ── CLASSIC ──
+function loadClassic(){
+  const q=curQ();if(!q){showEnd();return;}
+  setDiff(q.lv);
+  const nc=q.ch.length;const cc=nc===2?'cols2':nc===3?'cols3':'cols4';
+  document.getElementById('gameArea').innerHTML=`<div class="qtxt">${q.qt}</div>${buildScene(q)}<div class="choices ${cc}">${[...q.ch].sort(()=>Math.random()-.5).map(c=>`<button class="choice-btn" onclick="classicAns(${c.ok},this)"><span class="cb-emoji">${c.e}</span><span>${c.l}</span></button>`).join('')}</div>`;
+  speak(q.v);
+}
+function classicAns(ok,btn){
+  if(G.ans)return;const q=curQ();
+  document.querySelectorAll('.choice-btn').forEach(b=>{if(b!==btn&&ok)b.classList.add('disabled');});
+  if(ok){G.ans=true;btn.classList.add('correct');doCorrect(q);}
+  else{btn.classList.add('wrong');btn.classList.add('disabled');G.wrong++;G.streak=0;G.totalW++;
+    if(G.wrong>=2){G.lives--;showFB('fail','💔 '+q.no);if(G.lives<=0){speak('Canların bitti!');setTimeout(showEnd,1400);return;}}
+    else showFB('retry','😊 '+q.no);speak(q.no);updateUI();}
+}
+
+// ── DRAG & DROP ──
+function loadDrag(){
+  const q=curQ();if(!q){showEnd();return;}
+  setDiff(q.lv);
+  const [z0,z1]=q.dz;
+  document.getElementById('gameArea').innerHTML=`
+    <div class="qtxt">${q.qt}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;">
+      <div class="drop-zone active-zone" id="dz0" ondragover="event.preventDefault()" ondrop="dropH(0)" onclick="dropH(0)">
+        <div style="font-size:1.6rem;">${q.dc===0?'✅':'❌'[0]}</div>
+        <div style="font-weight:800;font-size:.85rem;text-align:center;">${z0}</div>
+      </div>
+      <div class="drop-zone active-zone" id="dz1" ondragover="event.preventDefault()" ondrop="dropH(1)" onclick="dropH(1)">
+        <div style="font-size:1.6rem;">${q.dc===1?'✅':'✅'[1]||'🎯'}</div>
+        <div style="font-weight:800;font-size:.85rem;text-align:center;">${z1}</div>
+      </div>
+    </div>
+    <div style="text-align:center;padding:.75rem;">
+      <div class="drag-item" id="dItem" draggable="true" ondragstart="G.dragObj=true">${q.e}</div>
+      <div style="font-size:.75rem;opacity:.45;margin-top:.4rem;font-weight:700;">Sürükle ya da alandaki kutucuğa dokun!</div>
+    </div>`;
+  speak(q.v+' Doğru alana sürükle!');
+  setupTouch();
+}
+function setupTouch(){
+  const item=document.getElementById('dItem');if(!item)return;
+  let clone=null;
+  item.addEventListener('touchstart',e=>{e.preventDefault();clone=item.cloneNode(true);const t=e.touches[0];clone.style.cssText=`position:fixed;pointer-events:none;z-index:999;font-size:3.5rem;left:${t.clientX}px;top:${t.clientY}px;transform:translate(-50%,-50%);`;document.body.appendChild(clone);},{passive:false});
+  item.addEventListener('touchmove',e=>{e.preventDefault();if(!clone)return;const t=e.touches[0];clone.style.left=t.clientX+'px';clone.style.top=t.clientY+'px';},{passive:false});
+  item.addEventListener('touchend',e=>{if(clone){clone.remove();clone=null;}const t=e.changedTouches[0];const el=document.elementFromPoint(t.clientX,t.clientY);if(!el)return;const dz=el.closest('.drop-zone');if(!dz)return;const i=parseInt(dz.id.replace('dz',''));const q=curQ();dropH(i);});
+}
+function dropH(i){
+  if(G.ans)return;const q=curQ();
+  if(i===q.dc){
+    G.ans=true;
+    const z=document.getElementById('dz'+i);z.style.background='linear-gradient(135deg,#d1fae5,#a7f3d0)';z.style.borderColor='var(--grass)';z.style.borderStyle='solid';
+    const item=document.getElementById('dItem');if(item)item.style.display='none';
+    z.innerHTML+=`<div style="font-size:3rem;animation:cPop .4s ease">${q.e}</div>`;
+    doCorrect(q);
+  } else {
+    G.wrong++;G.streak=0;G.totalW++;
+    const z=document.getElementById('dz'+i);z.style.background='linear-gradient(135deg,#fee2e2,#fecaca)';
+    setTimeout(()=>{if(z)z.style.background='';},700);
+    if(G.wrong>=2){G.lives--;showFB('fail','💔 '+q.no);if(G.lives<=0){setTimeout(showEnd,1400);return;}}
+    else showFB('retry','😊 '+q.no);speak(q.no);updateUI();
+  }
+}
+
+// ── MEMORY ──
+function loadMemory(){
+  G.memC=[];G.memF=[];G.memM=0;
+  const p=[...MEM_PAIRS].sort(()=>Math.random()-.5).slice(0,4);
+  const cards=[...p,...p].map((x,i)=>({...x,id:i,matched:false})).sort(()=>Math.random()-.5);
+  G.memC=cards;
+  document.getElementById('gameArea').innerHTML=`<div class="qtxt">🧠 Eşleşen yön kartlarını bul! Tıkla ve eşleştir!</div><div class="memory-grid">${cards.map((c,i)=>`<div class="mem-card" id="mc${i}" onclick="flipMem(${i})"><div class="mc-f">❓</div><div class="mc-b"><div class="bm">${c.em}</div><div>${c.lb}</div></div></div>`).join('')}</div>`;
+  speak('Eşleşen yön kartlarını bul! Tıkla ve eşleştir!');
+}
+function flipMem(i){
+  if(G.memF.length===2)return;const c=G.memC[i];
+  if(c.matched||G.memF.includes(i))return;
+  document.getElementById('mc'+i).classList.add('flipped');G.memF.push(i);
+  if(G.memF.length===2){
+    const [a,b]=G.memF;const ca=G.memC[a],cb=G.memC[b];
+    if(ca.lb===cb.lb){
+      ca.matched=cb.matched=true;G.memM++;
+      document.getElementById('mc'+a).classList.add('matched');document.getElementById('mc'+b).classList.add('matched');
+      G.memF=[];G.score+=20;G.streak++;G.correct++;speak('Eşleşti! Harika!');spawnParticles(document.getElementById('mc'+a));updateUI();
+      if(G.memM===4){setTimeout(()=>{G.ans=true;showFB('success','🎉 Tüm kartları eşleştirdin!');document.getElementById('nextBtn').classList.add('show');speak('Tebrikler! Tüm kartları eşleştirdin!');spawnConfetti();},300);}
+    } else {setTimeout(()=>{document.getElementById('mc'+a).classList.remove('flipped');document.getElementById('mc'+b).classList.remove('flipped');G.memF=[];G.streak=0;updateUI();},950);}
+  }
+}
+
+// ── SEQUENCE ──
+function loadSeq(){
+  const s=SEQS[Math.floor(Math.random()*SEQS.length)];G.seqC=s;G.seqA=[];
+  document.getElementById('gameArea').innerHTML=`
+    <div class="qtxt">🔢 Bu sırayı <span class="hl">ezberle</span> ve tekrar et!</div>
+    <div class="seq-display">${s.seq.map(e=>`<div class="seq-item">${e}</div>`).join('')}</div>
+    <div style="font-size:.8rem;font-weight:700;opacity:.45;text-align:center;margin-bottom:.5rem;">↓ Aşağıdaki düğmelerle aynı sırayla tıkla</div>
+    <div class="seq-user-area" id="seqUA"><span style="opacity:.3;font-size:.82rem;font-weight:700;">Henüz seçim yapılmadı...</span></div>
+    <div class="seq-input">${[...new Set(s.opts)].map(e=>`<button class="seq-btn" onclick="seqTap('${e}',this)">${e}</button>`).join('')}</div>
+    <button onclick="G.seqA=[];const d=document.getElementById('seqUA');if(d)d.innerHTML='<span style=\\'opacity:.3;font-size:.82rem;font-weight:700;\\'>Henüz seçim yapılmadı...</span>'" style="margin-top:.6rem;padding:.38rem .9rem;border-radius:999px;border:2px solid var(--border);background:var(--surface);font-size:.8rem;font-weight:700;cursor:pointer;">🗑️ Temizle</button>`;
+  speak('Sırayı ezberle ve tekrar et: '+s.seq.join(', '));
+  let i=0;const its=document.querySelectorAll('.seq-item');
+  const hi=setInterval(()=>{its.forEach(x=>x.classList.remove('lit'));if(i<its.length){its[i].classList.add('lit');i++;}else clearInterval(hi);},750);
+}
+function seqTap(e,btn){
+  if(G.ans)return;G.seqA.push(e);
+  const ua=document.getElementById('seqUA');if(ua)ua.innerHTML=G.seqA.map(x=>`<span style="font-size:2rem;">${x}</span>`).join('');
+  btn.classList.add('clicked');setTimeout(()=>btn.classList.remove('clicked'),300);
+  if(G.seqA.length===G.seqC.seq.length){
+    const ok=G.seqA.every((x,i)=>x===G.seqC.seq[i]);
+    if(ok){G.ans=true;doCorrect({ok:'🎉 Sırayı mükemmel tekrarladın!',ov:'Süper! Sırayı tam doğru tekrarladın!'});}
+    else{G.seqA=[];if(ua)ua.innerHTML='<span style="opacity:.3;font-size:.82rem;font-weight:700;">Tekrar dene...</span>';G.streak=0;G.wrong++;G.totalW++;if(G.wrong>=2){G.lives--;if(G.lives<=0){showEnd();return;}}showFB('retry','😊 Tam doğru değil! Sırayı tekrar izle ve dene!');speak('Tam doğru değil! Tekrar dene!');updateUI();}
+  }
+}
+
+// ── DRAW ──
+let dCtx,dColor='#38bdf8',dSize=8,dDraw=false,dTool='pen';
+function loadDraw(){
+  const p=DRAW_P[Math.floor(Math.random()*DRAW_P.length)];
+  document.getElementById('gameArea').innerHTML=`
+    <div class="qtxt">✏️ ${p.txt}</div>
+    <div class="canvas-wrap">
+      <canvas class="draw-canvas" id="dCanvas" height="220"></canvas>
+      <div class="canvas-tools">
+        <button class="tool-btn active-tool" id="tPen" onclick="setTool('pen')">✏️</button>
+        <button class="tool-btn" id="tErase" onclick="setTool('eraser')">⬜</button>
+        <div style="width:1px;height:28px;background:var(--border);margin:0 3px;"></div>
+        ${['#38bdf8','#fb7185','#34d399','#fbbf24','#a78bfa','#0f172a','#ef4444','#f97316'].map(c=>`<div class="col-dot${c===dColor?' active-col':''}" style="background:${c}" onclick="setDColor('${c}',this)"></div>`).join('')}
+        <div style="width:1px;height:28px;background:var(--border);margin:0 3px;"></div>
+        <input type="range" class="sz-slider" min="2" max="28" value="8" oninput="dSize=+this.value">
+        <button class="tool-btn" onclick="clearC()" title="Temizle">🗑️</button>
+        <button class="submit-draw" onclick="submitDraw()">✅ Tamam!</button>
+      </div>
+    </div>`;
+  speak(p.v);
+  requestAnimationFrame(()=>{setupCanvas();});
+}
+function setupCanvas(){
+  const c=document.getElementById('dCanvas');if(!c)return;
+  c.width=c.offsetWidth||700;dCtx=c.getContext('2d');dCtx.lineCap='round';dCtx.lineJoin='round';
+  const gp=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();const p=gp(e);dCtx.beginPath();dCtx.moveTo(p.x,p.y);dCtx.strokeStyle=dTool==='eraser'?'#ffffff':dColor;dCtx.lineWidth=dTool==='eraser'?dSize*3:dSize;dCtx.globalCompositeOperation=dTool==='eraser'?'destination-out':'source-over';dDraw=true;};
+  const move=e=>{if(!dDraw)return;e.preventDefault();const p=gp(e);dCtx.lineTo(p.x,p.y);dCtx.stroke();dCtx.beginPath();dCtx.moveTo(p.x,p.y);};
+  const stop=()=>{dDraw=false;dCtx.beginPath();};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);c.addEventListener('mouseup',stop);c.addEventListener('mouseleave',stop);
+  c.addEventListener('touchstart',start,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',stop);
+}
+function setTool(t){dTool=t;document.getElementById('tPen').classList.toggle('active-tool',t==='pen');document.getElementById('tErase').classList.toggle('active-tool',t==='eraser');}
+function setDColor(c,el){dColor=c;document.querySelectorAll('.col-dot').forEach(x=>x.classList.remove('active-col'));el.classList.add('active-col');dTool='pen';document.getElementById('tPen').classList.add('active-tool');document.getElementById('tErase').classList.remove('active-tool');}
+function clearC(){const c=document.getElementById('dCanvas');if(c&&dCtx)dCtx.clearRect(0,0,c.width,c.height);}
+function submitDraw(){G.ans=true;showFB('success','🎨 Harika çizim! Bravo!');speak('Harika bir çizim yaptın! Bravo!');G.score+=15;G.streak++;G.correct++;updateUI();spawnConfetti();document.getElementById('nextBtn').classList.add('show');}
+
+// ── TIMED ──
+function loadTimed(){
+  const q=curQ();if(!q){showEnd();return;}
+  setDiff(q.lv);G.tL=Math.max(8,15-G.level);updateTimer();
+  clearInterval(G.tI);
+  G.tI=setInterval(()=>{G.tL--;updateTimer();if(G.tL<=3)document.getElementById('tcChip').classList.add('urgent');
+    if(G.tL<=0){clearInterval(G.tI);document.getElementById('tcChip').classList.remove('urgent');G.lives--;G.streak=0;const ok=q.ch.find(c=>c.ok);showFB('fail',`⏰ Süre doldu! Doğru: ${ok?ok.l:''}`);speak('Süre doldu!');updateUI();if(G.lives<=0){setTimeout(showEnd,1400);return;}G.ans=true;document.getElementById('nextBtn').classList.add('show');}},1000);
+  const nc=q.ch.length;const cc=nc===2?'cols2':nc===3?'cols3':'cols4';
+  document.getElementById('gameArea').innerHTML=`<div class="qtxt">${q.qt}</div>${buildScene(q)}<div class="choices ${cc}">${[...q.ch].sort(()=>Math.random()-.5).map(c=>`<button class="choice-btn" onclick="timedAns(${c.ok},this)"><span class="cb-emoji">${c.e}</span><span>${c.l}</span></button>`).join('')}</div>`;
+  speak(q.v);
+}
+function updateTimer(){const e=document.getElementById('sTimer');if(e)e.textContent=G.tL+'s';}
+function timedAns(ok,btn){
+  if(G.ans)return;clearInterval(G.tI);document.getElementById('tcChip').classList.remove('urgent');G.ans=true;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.add('disabled'));
+  const q=curQ();
+  if(ok){btn.classList.add('correct');const bonus=G.tL*2;G.score+=10+bonus;G.streak++;G.correct++;if(G.streak>G.maxS)G.maxS=G.streak;showFB('success',`✅ ${q.ok} ⚡+${bonus} hız bonusu!`);speak(q.ov||q.ok);spawnParticles(btn);if(G.streak%3===0&&G.streak>0)showCombo(G.streak);document.getElementById('nextBtn').classList.add('show');}
+  else{btn.classList.add('wrong');G.streak=0;G.lives--;G.totalW++;showFB('fail','❌ '+q.no);speak(q.no);if(G.lives<=0){setTimeout(showEnd,1400);return;}document.getElementById('nextBtn').classList.add('show');}
+  updateUI();
+}
+
+// ── CORRECT ──
+function doCorrect(q){
+  const pts=10*(1+Math.floor(G.streak/3));
+  G.score+=pts;G.streak++;G.correct++;if(G.streak>G.maxS)G.maxS=G.streak;
+  G.level=Math.min(5,1+Math.floor(G.correct/3));
+  showFB('success','✅ '+(q.ok||'Harika!'));speak(q.ov||q.ok||'Süper!');
+  if(pts>10){const x=document.createElement('div');x.className='xp-popup';x.textContent='+'+pts+' puan!';document.body.appendChild(x);setTimeout(()=>x.remove(),950);}
+  spawnConfetti();if(G.streak>0&&G.streak%3===0)showCombo(G.streak);
+  document.getElementById('nextBtn').classList.add('show');clearInterval(G.tI);document.getElementById('tcChip').classList.remove('urgent');updateUI();
+}
+
+// ── HINT ──
+function doHint(){
+  if(G.hints<=0)return;const q=curQ();if(!q)return;
+  G.hints--;document.getElementById('hintC').textContent=G.hints;
+  document.getElementById('hintTxt').textContent='💡 '+q.h;document.getElementById('hintTxt').classList.add('show');
+  speak('İpucu: '+q.h);if(G.hints<=0)document.getElementById('hintBtn').disabled=true;
+}
+
+// ── FX ──
+function showFB(t,msg){const a=document.getElementById('fbArea');const c={success:'fb-s',retry:'fb-r',fail:'fb-f'}[t]||'fb-r';a.innerHTML=`<div class="feedback-msg ${c}">${msg}</div>`;}
+function spawnParticles(el){
+  const ems=['✨','🌟','💫','⭐','🎉'];const r=el?el.getBoundingClientRect():{left:window.innerWidth/2,top:window.innerHeight/2,width:0,height:0};
+  for(let i=0;i<8;i++){const p=document.createElement('div');p.className='particle-p';p.style.cssText=`left:${r.left+r.width/2}px;top:${r.top+r.height/2}px;--dx:${(Math.random()-.5)*120}px;--dy:${-60-Math.random()*80}px;`;p.textContent=ems[Math.floor(Math.random()*ems.length)];document.body.appendChild(p);setTimeout(()=>p.remove(),850);}
+}
+function spawnConfetti(){
+  const cols=['#38bdf8','#fb7185','#34d399','#fbbf24','#a78bfa','#f97316'];
+  for(let i=0;i<22;i++){const p=document.createElement('div');p.className='confetti-p';p.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${5+Math.random()*9}px;height:${5+Math.random()*9}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${1.2+Math.random()*2}s;animation-delay:${Math.random()*.5}s;`;document.body.appendChild(p);setTimeout(()=>p.remove(),3000);}
+}
+function showCombo(n){const el=document.createElement('div');el.className='combo-popup';el.textContent=n+'x KOMBO! 🔥';document.body.appendChild(el);setTimeout(()=>el.remove(),1200);speak(n+' kombo! İnanılmaz!');}
+
+// ── UI ──
+function updateUI(){
+  document.getElementById('sScore').textContent=G.score;
+  document.getElementById('sStreak').textContent=G.streak+(G.streak>2?'🔥':'');
+  document.getElementById('sLevel').textContent=G.level;
+  document.getElementById('sLives').innerHTML=[0,1,2].map(i=>`<span style="filter:${i>=G.lives?'grayscale(1)':'none'};opacity:${i>=G.lives?.3:1}">❤️</span>`).join('');
+  if(G.mode!=='timed')document.getElementById('sTimer').textContent='—';
+}
+function setDiff(lv){const el=document.getElementById('diffBadge');const m={1:['diff-easy','🌱 Başlangıç'],2:['diff-medium','⭐ Orta'],3:['diff-hard','🔥 İleri'],4:['diff-expert','💎 Uzman']};const[c,t]=m[lv]||m[1];el.className='diff-badge '+c;el.textContent=t;}
+function updateProg(){const tot=G.fQ.length||10;document.getElementById('pFill').style.width=Math.min(100,(G.qi/tot)*100)+'%';document.getElementById('pLabel').textContent=G.qi+'/'+tot;}
+
+// ── NEXT / END ──
+function nextQ(){G.qi++;clearInterval(G.tI);document.getElementById('tcChip').classList.remove('urgent');document.getElementById('sTimer').textContent='—';document.getElementById('hintTxt').classList.remove('show');loadRound();}
+function showEnd(){
+  clearInterval(G.tI);
+  document.getElementById('gameCard').style.display='none';
+  const e=document.getElementById('endScreen');e.classList.add('show');
+  document.getElementById('eScore').textContent=G.score;
+  document.getElementById('eDogru').textContent=G.correct;
+  document.getElementById('eYanlış').textContent=G.totalW;
+  document.getElementById('eMaxS').textContent=G.maxS;
+  let t='🏆',ti='Efsanesin!',m='Yön uzmanı oldun!';
+  if(G.score<25){t='😊';ti='İyi Deneme!';m='Her denemede daha iyiye gidiyorsun!';}
+  else if(G.score<80){t='⭐';ti='Harika!';m='Çok ilerliyorsun, devam et!';}
+  else if(G.score<160){t='🥇';ti='Süpersin!';m='Neredeyse mükemmel!';}
+  document.getElementById('eTrophy').textContent=t;document.getElementById('eTitle').textContent=ti;document.getElementById('eMsg').textContent=m;
+  spawnConfetti();speak(ti+' Toplam '+G.score+' puan kazandın!');
+}
+
+restart();
+</script>
+</body>
+</html>
