@@ -134,6 +134,8 @@ body.light-theme .session-pill{background:#f4f6f9}
 .pill-sub{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .status-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text4);margin-right:6px;vertical-align:middle}
 .sb-session-actions-hidden{display:none!important}
+@keyframes quorum-pulse{0%,100%{background:var(--red-dim);border-color:rgba(248,81,73,0.6)}50%{background:rgba(248,81,73,0.25);border-color:var(--red)}}
+.quorum-alarm{animation:quorum-pulse 1.4s ease-in-out infinite!important;color:var(--red)!important}
 /* ── MOBILE RESPONSIVE ── */
 @media (max-width: 768px) {
   :root { --sidebar: 0px; }
@@ -794,6 +796,10 @@ window.makeQRUrl = function(data, size) {
       Roll Call
       <span class="nav-badge" id="nav-rc-badge">—</span>
     </button>
+    <button class="nav-item disabled" id="nav-agenda" onclick="showPage('agenda')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/><path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/></svg>
+      Agenda
+    </button>
     <button class="nav-item disabled" id="nav-modcaucus" onclick="showPage('modcaucus')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
       Motion
@@ -1044,6 +1050,7 @@ window.makeQRUrl = function(data, size) {
         🏆 Scoreboard
       </button>
       <button id="btn-relay-setup" onclick="openNetworkSetupModal()" class="btn btn-ghost btn-sm" title="Cross-network delegate portal (Firebase)" style="display:none;padding:5px 9px;font-size:13px">🌐</button>
+      <button id="btn-audience" onclick="openAudienceDisplay()" class="btn btn-ghost btn-sm" title="Live Audience Display" style="display:none;padding:5px 9px;font-size:13px">📺</button>
       <button id="btn-attend-qr" onclick="openAttendanceQR()" class="btn btn-ghost btn-sm" title="QR Yoklama" style="display:none;padding:5px 9px;font-size:13px">📲</button>
       <button id="btn-replay" onclick="showSessionReplay()" class="btn btn-ghost btn-sm" title="Session replay" style="display:none;padding:5px 9px;font-size:13px">⏪</button>
       <button id="btn-photo-mode" onclick="togglePhotoMode()" class="btn btn-ghost btn-sm" title="Photo mode — clean view for screenshots" style="display:none;padding:5px 9px;font-size:13px">📷</button>
@@ -2874,6 +2881,29 @@ window.makeQRUrl = function(data, size) {
       </div>
     </div>
 
+    <!-- ═══ AGENDA TRACKER ═══ -->
+    <div id="page-agenda" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">📋 Agenda Tracker</div>
+            <span class="chip chip-gray" id="agenda-progress-chip">0 / 0</span>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="addAgendaItem()">+ Add Item</button>
+        </div>
+        <div class="card-body" style="padding:10px 14px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Track agenda items. Click to mark as current, check to complete.</div>
+          <div id="agenda-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">📊 Time Allocation</div></div>
+        <div class="card-body" style="padding:10px 14px">
+          <div id="agenda-time-bars" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -3054,6 +3084,7 @@ const PAGES_META = {
   chairscript:{title:"Chair's Script",          crumb:'Procedural speech templates for the chair'},
   comrules:   {title:'Committee Rules',          crumb:'Custom rules of procedure for this committee'},
   timerlog:   {title:'Timer History',            crumb:'Log of all timer sessions this meeting'},
+  agenda:     {title:'Agenda Tracker',              crumb:'Track and time agenda items'},
   pins:       {title:'Delegate PINs & Access',         crumb:'4-digit PINs for portal access — print & distribute'},
   aispeech:   {title:'AI Speech Analysis',        crumb:'Analyze delegate speeches with Claude AI'},
   tournament: {title:'Tournament Mode',           crumb:'Manage multiple committees simultaneously'},
@@ -3098,6 +3129,7 @@ function showPage(id){
   if(id==='timerlog') renderTimerHistory();
   if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
   if(id==='aispeech') { renderAIHistory(); const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||''; }
+  if(id==='agenda') renderAgenda();
   if(id==='tournament') renderTournament();
   if(id==='pins') renderPinsPage();
   if(id==='spktime') renderSpkTime();
@@ -3240,12 +3272,16 @@ function beginSession(){
   const _bpres=document.getElementById('btn-presentation'); if(_bpres) _bpres.style.display='';
   const _bphoto=document.getElementById('btn-photo-mode'); if(_bphoto) _bphoto.style.display='';
   const _baqr=document.getElementById('btn-attend-qr'); if(_baqr) _baqr.style.display='';
+  const _baud=document.getElementById('btn-audience'); if(_baud) _baud.style.display='';
   const _brelay=document.getElementById('btn-relay-setup'); if(_brelay) _brelay.style.display='';
   const _bsic=document.getElementById('session-id-chip'); if(_bsic){_bsic.style.display='';_bsic.textContent='ID: '+_fbSessionId;}
+  const _bmc=document.getElementById('btn-multichair'); if(_bmc) _bmc.style.display='';
+  initChairId();
+  startChairHeartbeat();
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech','nav-pins'].forEach(id=>{
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech','nav-pins','nav-agenda'].forEach(id=>{
     document.getElementById(id).classList.remove('disabled');
   });
   sessionStartTime=Date.now();
@@ -3827,7 +3863,9 @@ function pauseTimer(){
   document.getElementById('btn-resume').style.display='';
 }
 function resumeTimer(){
+  if(timerRunning) return; // prevent double-start
   timerRunning=true;
+  clearInterval(timerInterval); // clear any stale interval
   document.getElementById('btn-pause').style.display='';
   document.getElementById('btn-resume').style.display='none';
   timerInterval=setInterval(tick,1000);
@@ -5028,6 +5066,7 @@ function stopSessionClock(){ clearInterval(sessionClockInterval); }
 // ═══ QUORUM CHECK ═══
 function updateQuorumCheck(){
   const chip=document.getElementById('quorum-chip');
+  const prevQuorum = chip && !chip.textContent.includes('No Quorum');
   if(!chip) return;
   const total=delegates.length;
   if(total===0){ chip.style.display='none'; return; }
@@ -5036,9 +5075,13 @@ function updateQuorumCheck(){
   chip.style.display='';
   if(quorum){
     chip.textContent=`Quorum ✓ (${present}/${total})`;
+    chip.classList.remove('quorum-alarm');
+    if(!prevQuorum && present>0){ showToast(`✅ Quorum restored (${present}/${total})`,'info'); }
     chip.style.background='var(--green-dim)';chip.style.borderColor='rgba(63,185,80,0.4)';chip.style.color='var(--green)';
   } else {
     chip.textContent=`⚠ No Quorum (${present}/${total})`;
+    if(prevQuorum){ showToast(`⚠ Quorum lost! ${present}/${total} present`,'error'); chip.classList.add('quorum-alarm'); }
+    else { chip.classList.add('quorum-alarm'); }
     chip.style.background='var(--red-dim)';chip.style.borderColor='rgba(248,81,73,0.4)';chip.style.color='var(--red)';
   }
 }
@@ -7173,6 +7216,7 @@ function recordMotionVote(){
 function clearMotionVotes(){ motionVotes=[]; renderMotionVotes(); }
 
 function renderMotionVotes(){
+  renderMotionCounter();
   const list=document.getElementById('mv-list'); if(!list) return;
   const chip=document.getElementById('mv-count-chip'); if(chip) chip.textContent=motionVotes.length;
   const nb=document.getElementById('nav-mv-count'); if(nb) nb.textContent=motionVotes.length;
@@ -10553,8 +10597,10 @@ function connectRelay() {
 // Free tier: unlimited connections, no auth needed for this use case
 // Works on any network, any browser, any device
 
-let _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';  // Hardcoded Firebase URL
+let _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
 let _fbSessionId = '';
+let _isSecondaryChair = false; // true = joined existing session as co-chair
+let _chairRole = 'primary'; // 'primary' | 'co-chair'
 let _fbPollIv = null;
 let _fbAvailable = false;
 
@@ -10600,19 +10646,21 @@ function startFbPoll() {
       if (!r.ok) return;
       const data = await r.json();
       if (!data) return;
-      // Sync attendance
+
+      // Sync attendance (from portal + other chairs)
       if (data.attendance) {
         let changed = false;
         Object.entries(data.attendance).forEach(([code, val]) => {
           if (delegates.find(d=>d.c===code) && rollCallData[code] !== val) {
             rollCallData[code] = val; changed = true;
             const d = delegates.find(x=>x.c===code);
-            showToast((d?d.n:code) + ' ✅ Present');
+            showToast((d?d.n:code) + (val==='present+voting'?' ✋ P+V':' ✅ Present'));
           }
         });
         if (changed) { renderRollCall(); updateQuorumCheck(); }
       }
-      // Sync votes
+
+      // Sync votes (from portal + other chairs)
       if (data.votes) {
         let voteChanged = false;
         Object.entries(data.votes).forEach(([code, val]) => {
@@ -10624,6 +10672,42 @@ function startFbPoll() {
         });
         if (voteChanged) { renderVoteList(); updateVoteStats(); if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
       }
+
+      // ── MULTI-CHAIR: sync scores from other chairs ──
+      if (data.scores && _isSecondaryChair) {
+        let scoreChanged = false;
+        Object.entries(data.scores).forEach(([code, pts]) => {
+          if (typeof pts === 'number' && scores[code] !== pts) {
+            scores[code] = pts; scoreChanged = true;
+          }
+        });
+        if (scoreChanged) { renderScoreTab(); if(typeof renderStatsDashboard==='function') renderStatsDashboard(); }
+      }
+
+      // ── MULTI-CHAIR: sync speakers queue if secondary ──
+      if (data.multichair?.speakers && _isSecondaryChair) {
+        const newQ = data.multichair.speakers;
+        if (JSON.stringify(newQ) !== JSON.stringify(speakers.map(s=>s.c))) {
+          // Remote queue changed — update if we aren't actively speaking
+          if (!timerRunning) {
+            speakers = newQ.map(c => delegates.find(d=>d.c===c)||COUNTRIES.find(d=>d.c===c)).filter(Boolean);
+            currentSpkIdx = data.multichair.currentSpkIdx ?? -1;
+            renderAllSpk(); updateStats();
+          }
+        }
+      }
+
+      // ── MULTI-CHAIR: sync warnings from other chairs ──
+      if (data.warnings && _isSecondaryChair) {
+        let wChanged = false;
+        Object.entries(data.warnings).forEach(([code, list]) => {
+          if (Array.isArray(list) && JSON.stringify(warnings[code]) !== JSON.stringify(list)) {
+            warnings[code] = list; wChanged = true;
+          }
+        });
+        if (wChanged && typeof renderWarnings==='function') renderWarnings();
+      }
+
     } catch(e) {}
   }, 2000);
 }
@@ -10802,7 +10886,7 @@ async function runAISpeechAnalysis(){
   const delegateName = _aiDelegate?.n || 'Unknown Delegate';
   const committee = session.committee || 'Committee';
   const agenda = session.agenda || '';
-  const s = _aiDelegate ? getDelegateStats(_aiDelegate) : null;
+  const s = _aiDelegate ? (typeof getDelegateStats==='function' ? getDelegateStats(_aiDelegate) : null) : null;
 
   const typePrompts = {
     full: `Analyze this MUN delegate speech comprehensively. Evaluate: argumentation quality, use of evidence, policy positions, diplomatic language, and overall effectiveness.`,
@@ -11311,6 +11395,8 @@ async function pushMeetingResults() {
     },
     // Vote history (all votes this session)
     voteHistory: voteHistory||[],
+    // Agenda tracker
+    agendaItems: agendaItems.map(a=>({text:a.text,status:a.status})),
     // Agenda items / resolutions
     resolutions: (typeof resolutions!=='undefined'?resolutions:[]).map(r=>({
       id:r.id, title:r.title, status:r.status, sponsors:r.sponsors||[]
@@ -11474,6 +11560,650 @@ function printAllPlacardsWithPins() {
   if(generated>0){pushSessionToFirebase();showToast(`Generated ${generated} new PINs`);}
   // Print after a small delay to ensure QR URLs are ready
   setTimeout(printAllPlacards, 300);
+}
+
+
+// ═══════════════════════════════════════════════════
+// AGENDA TRACKER
+// ═══════════════════════════════════════════════════
+let agendaItems = []; // [{id, text, status:'pending'|'current'|'done', startTime, endTime}]
+
+function addAgendaItem(text) {
+  const t = text || prompt('Agenda item:');
+  if (!t?.trim()) return;
+  agendaItems.push({
+    id: Date.now().toString(36),
+    text: t.trim(),
+    status: 'pending',
+    startTime: null,
+    endTime: null
+  });
+  renderAgenda();
+}
+
+function setAgendaCurrent(id) {
+  const now = Date.now();
+  agendaItems.forEach(a => {
+    if (a.status === 'current') {
+      a.status = 'pending';
+      a.startTime = null;
+    }
+  });
+  const item = agendaItems.find(a => a.id === id);
+  if (item) {
+    item.status = 'current';
+    item.startTime = now;
+    logEvent('note', null, `Agenda: ${item.text}`, 0);
+  }
+  renderAgenda();
+  setTimeout(pushSessionToFirebase, 300);
+  // Push to Firebase for live display
+  if (_fbAvailable && _fbUrl && _fbSessionId) {
+    fetch(_fbUrl + '/mun_' + _fbSessionId + '/state.json', {
+      method: 'PATCH', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({currentAgendaItem: item?.text || '', agenda: session.agenda||''})
+    }).catch(()=>{});
+  }
+}
+
+function completeAgendaItem(id) {
+  const item = agendaItems.find(a => a.id === id);
+  if (!item) return;
+  item.status = 'done';
+  item.endTime = Date.now();
+  renderAgenda();
+}
+
+function deleteAgendaItem(id) {
+  agendaItems = agendaItems.filter(a => a.id !== id);
+  renderAgenda();
+}
+
+function renderAgenda() {
+  const list = document.getElementById('agenda-list');
+  const chip = document.getElementById('agenda-progress-chip');
+  const bars = document.getElementById('agenda-time-bars');
+  if (!list) return;
+
+  const done = agendaItems.filter(a => a.status === 'done').length;
+  if (chip) chip.textContent = done + ' / ' + agendaItems.length;
+
+  if (!agendaItems.length) {
+    list.innerHTML = `<div class="empty-state">No agenda items. Click "+ Add Item" to start.</div>`;
+    if (bars) bars.innerHTML = '';
+    return;
+  }
+
+  list.innerHTML = agendaItems.map(a => {
+    const isDone = a.status === 'done';
+    const isCurrent = a.status === 'current';
+    const elapsed = a.startTime ? Math.floor((Date.now() - a.startTime) / 1000) : 0;
+    const totalTime = a.endTime && a.startTime ? Math.floor((a.endTime - a.startTime) / 1000) : elapsed;
+    const timeStr = totalTime > 0 ? fmtTime(totalTime) : '';
+
+    return `<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;
+      background:${isCurrent ? 'rgba(56,139,253,0.08)' : 'var(--bg3)'};
+      border:1px solid ${isCurrent ? 'rgba(56,139,253,0.4)' : isDone ? 'rgba(63,185,80,0.2)' : 'var(--border)'};
+      border-radius:10px;transition:all 0.2s">
+      <div style="width:16px;height:16px;border-radius:50%;border:2px solid ${isDone ? 'var(--green)' : isCurrent ? 'var(--blue)' : 'var(--border2)'};
+        background:${isDone ? 'var(--green)' : isCurrent ? 'var(--blue)' : 'transparent'};
+        display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer"
+        onclick="completeAgendaItem('${a.id}')" title="Mark done">
+        ${isDone ? '<svg width="10" height="10" viewBox="0 0 16 16" fill="white"><path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/></svg>' : ''}
+      </div>
+      <span style="flex:1;font-size:13px;font-weight:600;
+        color:${isDone ? 'var(--text3)' : isCurrent ? 'var(--blue)' : 'var(--text)'};
+        text-decoration:${isDone ? 'line-through' : 'none'}">${a.text}</span>
+      ${isCurrent ? `<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--blue)">${timeStr}</span>` : ''}
+      ${timeStr && !isCurrent ? `<span style="font-size:10px;color:var(--text3)">${timeStr}</span>` : ''}
+      ${isCurrent ? '' : `<button onclick="setAgendaCurrent('${a.id}')" style="background:none;border:1px solid var(--border);color:var(--text3);border-radius:5px;padding:2px 7px;cursor:pointer;font-size:10px" title="Set as current">▶</button>`}
+      <button onclick="deleteAgendaItem('${a.id}')" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:14px;padding:2px 4px">×</button>
+    </div>`;
+  }).join('');
+
+  // Time bars
+  if (bars) {
+    const timed = agendaItems.filter(a => a.startTime);
+    if (!timed.length) { bars.innerHTML = '<div style="font-size:11px;color:var(--text3)">No timing data yet — set an item as current to start tracking.</div>'; return; }
+    const maxT = Math.max(1, ...timed.map(a => a.endTime && a.startTime ? a.endTime - a.startTime : Date.now() - a.startTime));
+    bars.innerHTML = timed.map(a => {
+      const t = a.endTime && a.startTime ? a.endTime - a.startTime : Date.now() - a.startTime;
+      const pct = Math.round(t / maxT * 100);
+      return `<div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:3px">
+          <span>${a.text}</span><span style="font-family:'JetBrains Mono',monospace">${fmtTime(Math.floor(t/1000))}</span>
+        </div>
+        <div style="height:6px;background:var(--bg4);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${a.status==='done'?'var(--green)':'var(--blue)'};border-radius:3px;transition:width 0.5s"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Update agenda current item timer every 5s
+setInterval(() => {
+  if (document.getElementById('page-agenda')?.classList.contains('active')) renderAgenda();
+}, 5000);
+
+// ═══════════════════════════════════════════════════
+// LIVE AUDIENCE DISPLAY
+// ═══════════════════════════════════════════════════
+let _audienceWin = null;
+
+function openAudienceDisplay() {
+  if (_audienceWin && !_audienceWin.closed) { _audienceWin.focus(); return; }
+
+  const html = buildAudienceHTML();
+  const blob = new Blob([html], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
+  _audienceWin = window.open(url, 'mun-audience', 'width=1280,height=720');
+
+  // Push updates every 2s
+  setInterval(() => {
+    if (!_audienceWin || _audienceWin.closed) return;
+    try {
+      const data = {
+        committee: session.committee || '',
+        agenda: session.agenda || '',
+        currentAgendaItem: (agendaItems.find(a => a.status === 'current')?.text) || '',
+        currentSpeaker: (currentSpkIdx >= 0 && speakers[currentSpkIdx]) ? speakers[currentSpkIdx].n : '',
+        currentSpeakerCode: (currentSpkIdx >= 0 && speakers[currentSpkIdx]) ? speakers[currentSpkIdx].c : '',
+        timerSecs,
+        totalSecs,
+        timerRunning,
+        mode: curMode || '',
+        queueLength: speakers.length,
+        speechesDone,
+        voteActive: !!window._votePortalActive,
+        resolution: (typeof resolution !== 'undefined' && resolution) ? (resolution.id + ' — ' + (resolution.title || '')) : '',
+        votes: {...votes},
+        delegates: delegates.length,
+        present: Object.values(rollCallData).filter(v => v === 'present' || v === 'present+voting').length
+      };
+      _audienceWin._munData = data;
+    } catch(e) {}
+  }, 500);
+}
+
+function buildAudienceHTML() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MUN — Live Display</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060a12;color:#e8f0fe;font-family:-apple-system,BlinkMacSystemFont,'Inter',sans-serif;height:100vh;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;grid-template-columns:1fr 1fr;gap:0}
+.header{grid-column:1/3;background:linear-gradient(135deg,rgba(56,139,253,0.15),rgba(6,10,18,0));border-bottom:1px solid rgba(56,139,253,0.2);padding:18px 32px;display:flex;align-items:center;justify-content:space-between}
+.committee{font-size:22px;font-weight:800;color:#e8f0fe;letter-spacing:0.03em}
+.agenda-item{font-size:14px;color:rgba(255,255,255,0.4);margin-top:4px}
+.clock-area{text-align:right}
+.clock{font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:700;color:#6ab0ff;line-height:1}
+.clock.danger{color:#ff6b6b}
+.mode-label{font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;text-transform:uppercase;letter-spacing:0.12em}
+
+.speaker-panel{grid-column:1;background:rgba(13,21,32,0.8);border-right:1px solid rgba(255,255,255,0.05);padding:40px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.spk-label{font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:12px}
+.spk-flag{width:120px;height:84px;object-fit:cover;border-radius:10px;border:2px solid rgba(255,255,255,0.1);margin-bottom:16px;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.spk-name{font-size:48px;font-weight:800;color:#e8f0fe;line-height:1;margin-bottom:8px}
+.spk-queue{font-size:14px;color:rgba(255,255,255,0.3)}
+
+.info-panel{grid-column:2;background:rgba(6,10,18,0.6);padding:40px;display:flex;flex-direction:column;justify-content:center;gap:24px}
+.info-row{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:18px 22px}
+.info-lbl{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:6px}
+.info-val{font-size:22px;font-weight:700;color:#e8f0fe}
+
+.vote-banner{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,rgba(61,232,160,0.15),rgba(6,10,18,0));border-top:2px solid rgba(61,232,160,0.4);padding:20px 40px;text-align:center}
+.vote-title{font-size:14px;font-weight:700;color:#3de8a0;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px}
+.vote-bars{display:flex;gap:20px;justify-content:center;align-items:flex-end}
+.vote-bar-wrap{text-align:center}
+.vote-bar{border-radius:6px 6px 0 0;min-height:4px;transition:height 0.5s ease}
+.vote-num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:800;margin-bottom:4px}
+.vote-lbl{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4)}
+
+.footer{grid-column:1/3;background:rgba(6,10,18,0.9);border-top:1px solid rgba(255,255,255,0.05);padding:12px 32px;display:flex;justify-content:space-between;align-items:center}
+.footer-left{font-size:12px;color:rgba(255,255,255,0.25)}
+.footer-right{font-size:12px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,0.2)}
+
+.timer-bar-wrap{width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:8px}
+.timer-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,#6ab0ff,#3b8fee);transition:width 0.5s linear}
+.timer-bar.danger{background:linear-gradient(90deg,#ff8c8c,#ff6b6b)}
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <div class="committee" id="d-committee">Model United Nations</div>
+    <div class="agenda-item" id="d-agenda-item">Loading...</div>
+  </div>
+  <div class="clock-area">
+    <div class="clock" id="d-clock">—:——</div>
+    <div class="mode-label" id="d-mode">Waiting</div>
+    <div class="timer-bar-wrap"><div class="timer-bar" id="d-timer-bar" style="width:100%"></div></div>
+  </div>
+</div>
+
+<div class="speaker-panel">
+  <div class="spk-label">Current Speaker</div>
+  <img class="spk-flag" id="d-flag" src="" alt="" style="display:none"/>
+  <div class="spk-name" id="d-speaker">—</div>
+  <div class="spk-queue" id="d-queue"></div>
+</div>
+
+<div class="info-panel">
+  <div class="info-row">
+    <div class="info-lbl">Committee</div>
+    <div class="info-val" id="d-committee2">—</div>
+  </div>
+  <div class="info-row">
+    <div class="info-lbl">Agenda</div>
+    <div class="info-val" id="d-agenda" style="font-size:16px;color:rgba(255,255,255,0.6)">—</div>
+  </div>
+  <div class="info-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div>
+      <div class="info-lbl">Present</div>
+      <div class="info-val" id="d-present" style="color:#3de8a0">—</div>
+    </div>
+    <div>
+      <div class="info-lbl">Speakers</div>
+      <div class="info-val" id="d-queue2" style="color:#6ab0ff">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="vote-banner" id="d-vote-banner">
+  <div class="vote-title" id="d-vote-resolution">Resolution Vote</div>
+  <div class="vote-bars">
+    <div class="vote-bar-wrap">
+      <div class="vote-num" style="color:#3de8a0" id="d-v-yes">0</div>
+      <div class="vote-bar" id="d-vb-yes" style="height:40px;width:80px;background:#3de8a0"></div>
+      <div class="vote-lbl">In Favor</div>
+    </div>
+    <div class="vote-bar-wrap">
+      <div class="vote-num" style="color:#ffd060" id="d-v-abs">0</div>
+      <div class="vote-bar" id="d-vb-abs" style="height:20px;width:80px;background:#ffd060"></div>
+      <div class="vote-lbl">Abstain</div>
+    </div>
+    <div class="vote-bar-wrap">
+      <div class="vote-num" style="color:#ff6b6b" id="d-v-no">0</div>
+      <div class="vote-bar" id="d-vb-no" style="height:30px;width:80px;background:#ff6b6b"></div>
+      <div class="vote-lbl">Against</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-left" id="d-footer-left">MUN Chair — Live Display</div>
+  <div class="footer-right" id="d-time"></div>
+</div>
+
+<scr\x69pt>
+const modeNames = {opening:'Opening Speech',gsl:'General Speakers List',motion:'Moderated Caucus',unmod:'Unmoderated Caucus'};
+function fmt(s){const m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec;}
+
+function update(d){
+  document.getElementById('d-committee').textContent = d.committee || 'Model United Nations';
+  document.getElementById('d-committee2').textContent = d.committee || '—';
+  document.getElementById('d-agenda').textContent = d.agenda || '—';
+  document.getElementById('d-agenda-item').textContent = d.currentAgendaItem ? '📌 ' + d.currentAgendaItem : (d.agenda || 'No agenda set');
+  document.getElementById('d-present').textContent = d.present + ' / ' + d.delegates;
+  document.getElementById('d-queue2').textContent = d.queueLength + ' in queue';
+  document.getElementById('d-queue').textContent = d.queueLength > 1 ? (d.queueLength - 1) + ' speakers waiting' : '';
+
+  // Speaker
+  const spkEl = document.getElementById('d-speaker');
+  const flagEl = document.getElementById('d-flag');
+  if(d.currentSpeaker){
+    spkEl.textContent = d.currentSpeaker;
+    flagEl.src = 'https://flagcdn.com/w320/' + (d.currentSpeakerCode||'un').toLowerCase() + '.png';
+    flagEl.style.display = '';
+  } else {
+    spkEl.textContent = '—';
+    flagEl.style.display = 'none';
+  }
+
+  // Timer
+  const clockEl = document.getElementById('d-clock');
+  const barEl = document.getElementById('d-timer-bar');
+  const isDanger = d.timerSecs < 15 && d.timerSecs > 0;
+  clockEl.textContent = d.timerRunning || d.timerSecs < d.totalSecs ? fmt(d.timerSecs) : '—:——';
+  clockEl.className = 'clock' + (isDanger ? ' danger' : '');
+  barEl.style.width = d.totalSecs > 0 ? Math.round(d.timerSecs/d.totalSecs*100) + '%' : '100%';
+  barEl.className = 'timer-bar' + (isDanger ? ' danger' : '');
+  document.getElementById('d-mode').textContent = modeNames[d.mode] || '';
+
+  // Vote
+  const banner = document.getElementById('d-vote-banner');
+  if(d.voteActive){
+    banner.style.display = '';
+    const yes = Object.values(d.votes||{}).filter(v=>v==='yes').length;
+    const no = Object.values(d.votes||{}).filter(v=>v==='no').length;
+    const abs = Object.values(d.votes||{}).filter(v=>v==='abstain').length;
+    const maxV = Math.max(1,yes,no,abs);
+    document.getElementById('d-v-yes').textContent = yes;
+    document.getElementById('d-v-no').textContent = no;
+    document.getElementById('d-v-abs').textContent = abs;
+    document.getElementById('d-vb-yes').style.height = Math.max(8, Math.round(yes/maxV*100)) + 'px';
+    document.getElementById('d-vb-no').style.height = Math.max(8, Math.round(no/maxV*100)) + 'px';
+    document.getElementById('d-vb-abs').style.height = Math.max(8, Math.round(abs/maxV*100)) + 'px';
+    if(d.resolution) document.getElementById('d-vote-resolution').textContent = d.resolution;
+  } else {
+    banner.style.display = 'none';
+  }
+
+  document.getElementById('d-time').textContent = new Date().toLocaleTimeString();
+}
+
+setInterval(()=>{
+  const d = window._munData;
+  if(d) update(d);
+  else if(window.opener?._munData) update(window.opener._munData);
+}, 500);
+<\/script>
+</body></html>`;
+}
+
+// ═══════════════════════════════════════════════════
+// DELEGATE PERFORMANCE PDF
+// ═══════════════════════════════════════════════════
+function generateDelegatePerformancePDF(code) {
+  const d = delegates.find(x => x.c === code) || COUNTRIES.find(x => x.c === code);
+  if (!d) return;
+  const pts = scores[code] || 0;
+  const warns = (warnings[code] || []);
+  const spkTime = speakerTimeLog[code] || 0;
+  const speeches = sessionHistory.filter(e => e.type === 'speech' && e.delegate?.c === code);
+  const ranked = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const rank = ranked.findIndex(([c])=>c===code)+1;
+  const committee = session.committee || 'Committee';
+  const date = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  // Score history sparkline SVG
+  const hist = scoreHistory[code] || [];
+  let running = 0;
+  const points = hist.map((h,i) => { running += h.pts||0; return running; });
+  const maxP = Math.max(1, Math.abs(Math.max(...points, Math.min(...points))));
+  const spkline = points.length > 1 ? points.map((p,i) => {
+    const x = Math.round(i / (points.length-1) * 200);
+    const y = Math.round(50 - (p/maxP)*45);
+    return `${x},${y}`;
+  }).join(' ') : '';
+
+  const w = window.open('','_blank');
+  if (!w) { showToast('Popup blocked','error'); return; }
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Performance — ${d.n}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:#f8f9fa;color:#1a1d23;padding:20px;max-width:800px;margin:0 auto}
+    .header{background:linear-gradient(135deg,#0d1520,#1a2535);color:white;border-radius:16px;padding:28px;margin-bottom:20px;display:flex;align-items:center;gap:20px}
+    .flag{width:100px;height:70px;object-fit:cover;border-radius:8px;border:2px solid rgba(255,255,255,0.15)}
+    .del-name{font-size:32px;font-weight:800;color:#fff;margin-bottom:4px}
+    .del-meta{font-size:13px;color:rgba(255,255,255,0.4)}
+    .grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+    .stat{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:16px;text-align:center}
+    .stat-val{font-size:28px;font-weight:800;color:#1a1d23;margin-bottom:4px}
+    .stat-val.green{color:#16a34a}.stat-val.red{color:#dc2626}.stat-val.blue{color:#2563eb}
+    .stat-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.12em;color:#9ca3af}
+    .section{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:20px;margin-bottom:12px}
+    .sec-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#6b7280;margin-bottom:12px}
+    .speech-row{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+    .speech-time{color:#9ca3af;width:60px;flex-shrink:0;font-variant-numeric:tabular-nums}
+    .warn-item{padding:6px 10px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:12px;color:#dc2626;margin-bottom:6px}
+    @media print{body{padding:0}@page{margin:12mm}}
+  </style></head><body>
+  <div class="header">
+    <img class="flag" src="https://flagcdn.com/w320/${d.c.toLowerCase()}.png" alt="${d.n}" onerror="this.style.display='none'"/>
+    <div>
+      <div class="del-name">${d.n}</div>
+      <div class="del-meta">${committee} · ${date}</div>
+      ${rank ? `<div style="margin-top:6px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,208,96,0.15);border:1px solid rgba(255,208,96,0.3);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:700;color:#ffd060">${rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'#'+rank} Rank ${rank} of ${ranked.length}</div>` : ''}
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><div class="stat-val ${pts>0?'green':pts<0?'red':''}">${pts>0?'+':''}${pts}</div><div class="stat-lbl">Score</div></div>
+    <div class="stat"><div class="stat-val blue">${speeches.length}</div><div class="stat-lbl">Speeches</div></div>
+    <div class="stat"><div class="stat-val">${fmtTime(spkTime)}</div><div class="stat-lbl">Speak Time</div></div>
+    <div class="stat"><div class="stat-val ${warns.length>0?'red':''}">${warns.length}</div><div class="stat-lbl">Warnings</div></div>
+  </div>
+
+  ${spkline ? `<div class="section">
+    <div class="sec-title">Score Progression</div>
+    <svg viewBox="0 0 200 60" width="100%" height="60" style="overflow:visible">
+      <line x1="0" y1="50" x2="200" y2="50" stroke="#e5e7eb" stroke-width="1"/>
+      <polyline points="${spkline}" fill="none" stroke="#3b8fee" stroke-width="2" stroke-linejoin="round"/>
+      <circle cx="${points.length > 1 ? 200 : 0}" cy="${points.length ? (50-(points[points.length-1]/maxP)*45) : 50}" r="4" fill="#3b8fee"/>
+    </svg>
+  </div>` : ''}
+
+  ${speeches.length ? `<div class="section">
+    <div class="sec-title">Speech Log (${speeches.length})</div>
+    ${speeches.map(s=>`<div class="speech-row"><span class="speech-time">${s.time||''}</span><span>${s.detail||'Speech'}</span>${s.pts?`<span style="margin-left:auto;font-weight:700;color:${s.pts>0?'#16a34a':'#dc2626'}">${s.pts>0?'+':''}${s.pts}</span>`:''}</div>`).join('')}
+  </div>` : ''}
+
+  ${warns.length ? `<div class="section">
+    <div class="sec-title">Warnings (${warns.length})</div>
+    ${warns.map(w=>`<div class="warn-item">⚠ ${w.reason||w||'Warning issued'} ${w.time?`<span style="color:#9ca3af;float:right">${w.time}</span>`:''}</div>`).join('')}
+  </div>` : ''}
+
+  <scr\x69pt>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+
+// ══════════════════════════════════════════════════════════
+// MULTI-CHAIR — shared session management
+// Primary chair creates, co-chairs join with session ID
+// All chairs see: attendance, votes, warnings, scores sync
+// Primary chair controls: timer, speakers queue
+// Co-chairs can: score, warn, take notes, view everything
+// ══════════════════════════════════════════════════════════
+
+let _chairId = ''; // unique ID for this chair instance
+let _otherChairs = {}; // {chairId: {role, name, lastSeen, page}}
+let _chairHeartbeatIv = null;
+
+function initChairId() {
+  _chairId = 'chair_' + Math.random().toString(36).slice(2, 8);
+}
+
+function openMultiChairModal() {
+  const existing = document.getElementById('multichair-modal');
+  if (existing) { existing.remove(); return; }
+
+  const modal = document.createElement('div');
+  modal.id = 'multichair-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
+
+  const connected = _otherChairs ? Object.keys(_otherChairs).filter(k => Date.now() - (_otherChairs[k].lastSeen||0) < 10000) : [];
+
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+      <div style="padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:var(--text)">👥 Multi-Chair Session</div>
+          <div style="font-size:11px;color:var(--text3)">Multiple chairs can manage the same session simultaneously</div>
+        </div>
+        <button onclick="document.getElementById('multichair-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+      </div>
+      <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px">
+
+        <!-- Current status -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Current Session</div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="flex:1">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--blue)">${_fbSessionId || '—'}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px">${_isSecondaryChair ? '🪑 Co-Chair' : '👑 Primary Chair'} · ${session.committee || 'No session'}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:11px;color:var(--green)">● ${connected.length + 1} chair${connected.length !== 0 ? 's' : ''} online</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Online chairs list -->
+        ${connected.length > 0 ? `
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Online Chairs</div>
+          ${connected.map(k => {
+            const c = _otherChairs[k];
+            return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:16px">${c.role==='primary'?'👑':'🪑'}</span>
+              <span style="font-size:13px;font-weight:600;color:var(--text)">${c.name||'Chair'}</span>
+              <span style="font-size:10px;color:var(--text3);margin-left:auto">${c.page||'—'}</span>
+              <span style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></span>
+            </div>`;
+          }).join('')}
+        </div>` : ''}
+
+        <!-- Join existing session -->
+        ${!_isSecondaryChair ? `
+        <div style="background:rgba(106,176,255,0.06);border:1px solid rgba(106,176,255,0.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">🔗 Join as Co-Chair</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Enter another session's ID to join as co-chair. You'll see and sync all data.</div>
+          <div style="display:flex;gap:6px">
+            <input type="text" id="mc-join-id" placeholder="Session ID (e.g. ABC12DEF)"
+              style="flex:1;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
+              maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+            <button onclick="joinAsCoChair()" class="btn btn-primary btn-sm">Join</button>
+          </div>
+          <div id="mc-join-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
+        </div>` : `
+        <div style="background:rgba(61,232,160,0.06);border:1px solid rgba(61,232,160,0.2);border-radius:10px;padding:14px">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">✅ Co-Chair Mode Active</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">You are viewing the session in co-chair mode. Scores and warnings sync automatically.</div>
+          <button onclick="leaveCoChair()" class="btn btn-danger btn-sm">Leave Co-Chair Mode</button>
+        </div>`}
+
+        <!-- Invite info -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Invite Another Chair</div>
+          <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Share this Session ID with your co-chairs:</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--text);letter-spacing:0.15em;text-align:center;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px">${_fbSessionId || '—'}</div>
+          <button onclick="navigator.clipboard?.writeText('${_fbSessionId}').then(()=>showToast('Copied!'))" class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px">📋 Copy Session ID</button>
+        </div>
+
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  modal.onclick = e => { if (e.target === modal) modal.remove(); };
+}
+
+async function joinAsCoChair() {
+  const id = (document.getElementById('mc-join-id')?.value || '').trim().toUpperCase();
+  const status = document.getElementById('mc-join-status');
+  if (id.length < 6) { if(status) status.textContent = 'Enter a valid session ID'; return; }
+  if(status) status.textContent = 'Connecting...';
+
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${id}.json`);
+    if (!r.ok) throw new Error('Cannot reach Firebase');
+    const data = await r.json();
+    if (!data) throw new Error(`Session "${id}" not found`);
+    if (!data.delegates?.length) throw new Error('Session has no delegates — is it active?');
+
+    // Load session data
+    _fbSessionId = id;
+    _isSecondaryChair = true;
+    _chairRole = 'co-chair';
+
+    // Apply remote data
+    if (data.delegates) delegates = [...data.delegates];
+    if (data.state) {
+      session.committee = data.state.committee || session.committee;
+      session.agenda = data.state.agenda || session.agenda;
+    }
+    if (data.attendance) Object.assign(rollCallData, data.attendance);
+    if (data.delegatePins) Object.assign(delegatePins, data.delegatePins);
+    if (data.scores) Object.assign(scores, data.scores);
+
+    startFbPoll();
+    startChairHeartbeat();
+    pushSessionToFirebase();
+
+    // Update UI
+    const sic = document.getElementById('session-id-chip');
+    if(sic) { sic.style.display=''; sic.textContent = 'CO: ' + id; sic.style.color='var(--orange)'; sic.style.borderColor='rgba(219,109,40,0.4)'; }
+    updateStats(); renderRollCall(); renderAllSpk(); renderDelegates();
+
+    document.getElementById('multichair-modal')?.remove();
+    showToast(`✅ Joined session ${id} as co-chair`);
+    openMultiChairModal(); // reopen to show updated state
+
+  } catch(e) {
+    if(status) status.innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+  }
+}
+
+function leaveCoChair() {
+  _isSecondaryChair = false;
+  _chairRole = 'primary';
+  clearInterval(_chairHeartbeatIv);
+  document.getElementById('multichair-modal')?.remove();
+  showToast('Left co-chair mode');
+  const sic = document.getElementById('session-id-chip');
+  if(sic) { sic.style.color=''; sic.style.borderColor=''; sic.textContent = 'ID: ' + _fbSessionId; }
+}
+
+function startChairHeartbeat() {
+  if (!_chairId) initChairId();
+  clearInterval(_chairHeartbeatIv);
+  _chairHeartbeatIv = setInterval(() => {
+    if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+    const activePage = document.querySelector('.nav-item.active')?.textContent?.trim() || '';
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        role: _chairRole,
+        name: _chairRole === 'primary' ? 'Primary Chair' : 'Co-Chair',
+        page: activePage,
+        lastSeen: Date.now()
+      })
+    }).catch(()=>{});
+
+    // Read other chairs
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`)
+      .then(r=>r.json())
+      .then(chairs => {
+        if (!chairs) return;
+        _otherChairs = {};
+        Object.entries(chairs).forEach(([id, c]) => {
+          if (id !== _chairId) _otherChairs[id] = c;
+        });
+        // Update chip if others are online
+        const online = Object.values(_otherChairs).filter(c => Date.now() - (c.lastSeen||0) < 10000).length;
+        const sic = document.getElementById('session-id-chip');
+        if (sic && online > 0) {
+          sic.textContent = `ID: ${_fbSessionId} · ${online+1}👤`;
+        }
+      }).catch(()=>{});
+
+    // Push scores+warnings for sync
+    if (!_isSecondaryChair) {
+      const scoreSnap = {...scores};
+      const warnSnap = {};
+      Object.entries(warnings).forEach(([c,l])=>{ if(l?.length) warnSnap[c]=l; });
+      if (Object.keys(scoreSnap).length) {
+        fetch(`${_fbUrl}/mun_${_fbSessionId}/scores.json`, {
+          method: 'PUT', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(scoreSnap)
+        }).catch(()=>{});
+      }
+      if (Object.keys(warnSnap).length) {
+        fetch(`${_fbUrl}/mun_${_fbSessionId}/warnings.json`, {
+          method: 'PUT', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(warnSnap)
+        }).catch(()=>{});
+      }
+    }
+  }, 5000);
 }
 
 // ═══ STATS ═══
