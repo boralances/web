@@ -1,107 +1,908 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boralances - Mods</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Rajdhani',sans-serif;background:#0a0e27;color:#fff;overflow-x:hidden}
-        .cyber-grid{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,rgba(0,255,255,0.03) 1px,transparent 1px),linear-gradient(rgba(0,255,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:1}
-        header{position:relative;z-index:10;padding:20px 0;background:rgba(10,14,39,0.8);backdrop-filter:blur(10px);border-bottom:2px solid #0ff;box-shadow:0 0 20px rgba(0,255,255,0.5)}
-        nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px}
-        .logo{font-size:28px;font-weight:900;font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 10px #0ff,0 0 20px #0ff;letter-spacing:3px;animation:logoGlow 3s ease-in-out infinite;text-decoration:none}
-        @keyframes logoGlow{0%,100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff}50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px #0ff}}
-        .nav-links{display:flex;gap:24px;list-style:none;align-items:center}
-        .nav-links a{color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:8px 16px;border:2px solid transparent;transition:all 0.4s;position:relative;text-transform:uppercase;letter-spacing:2px}
-        .nav-links a::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,#0ff,#f0f);opacity:0;transition:opacity 0.3s;z-index:-1;filter:blur(20px)}
-        .nav-links a:hover::before{opacity:0.7}
-        .nav-links a:hover{color:#0ff;border:2px solid #0ff;box-shadow:0 0 20px #0ff,inset 0 0 10px rgba(0,255,255,0.3);text-shadow:0 0 10px #0ff;transform:translateY(-3px)}
-        .nav-mun{background:linear-gradient(135deg,rgba(56,139,253,0.15),rgba(56,139,253,0.05));border:2px solid rgba(56,139,253,0.6)!important;color:#388bfd!important;font-size:14px!important;letter-spacing:1px!important;border-radius:4px;display:flex!important;align-items:center;gap:6px}
-        .nav-mun:hover{color:#6db3ff!important;border-color:#388bfd!important;box-shadow:0 0 20px rgba(56,139,253,0.5),inset 0 0 10px rgba(56,139,253,0.15)!important;text-shadow:0 0 10px #388bfd!important;background:linear-gradient(135deg,rgba(56,139,253,0.25),rgba(56,139,253,0.1))!important}
-        main{position:relative;z-index:5;max-width:1200px;margin:0 auto;padding:40px 20px}
-        .page-title{text-align:center;padding:40px 20px;margin-bottom:40px}
-        .page-title h1{font-size:48px;font-family:'Orbitron',sans-serif;font-weight:900;color:#0ff;text-shadow:0 0 20px #0ff,0 0 40px #0ff;margin-bottom:15px;animation:glow 2s ease-in-out infinite alternate;letter-spacing:4px}
-        @keyframes glow{from{text-shadow:0 0 20px #0ff,0 0 40px #0ff;transform:scale(1)}to{text-shadow:0 0 30px #0ff,0 0 60px #0ff,0 0 80px #0ff;transform:scale(1.02)}}
-        .page-title p{font-size:20px;font-weight:400;color:#f0f;text-shadow:0 0 10px #f0f}
-        .mod-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:40px;margin-top:40px}
-        .mod-card{background:rgba(20,25,50,0.7);border:2px solid #0ff;padding:40px;position:relative;animation:fadeInUp 0.8s ease-out;transition:all 0.5s cubic-bezier(0.68,-0.55,0.265,1.55)}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-        .mod-card::before{content:'';position:absolute;top:-2px;left:-2px;right:-2px;bottom:-2px;background:linear-gradient(45deg,#0ff,#f0f,#0ff);z-index:-1;filter:blur(15px);opacity:0;transition:opacity 0.5s}
-        .mod-card:hover::before{opacity:0.8;animation:borderRotate 3s linear infinite}
-        @keyframes borderRotate{0%{filter:blur(15px) hue-rotate(0deg)}100%{filter:blur(15px) hue-rotate(360deg)}}
-        .mod-card:hover{transform:translateY(-10px);box-shadow:0 15px 50px rgba(0,255,255,0.6)}
-        .mod-card h2{font-size:32px;font-family:'Orbitron',sans-serif;font-weight:700;color:#f0f;text-shadow:0 0 15px #f0f;margin-bottom:20px;letter-spacing:2px}
-        .mod-card p{font-size:18px;line-height:1.8;color:#ccc;font-weight:300;margin-bottom:25px}
-        .mod-features{list-style:none;margin:20px 0}
-        .mod-features li{padding:10px 0;padding-left:25px;position:relative;color:#aaa;font-size:16px}
-        .mod-features li::before{content:'▸';position:absolute;left:0;color:#0ff;text-shadow:0 0 10px #0ff;font-size:20px}
-        .download-btn{display:inline-block;padding:15px 35px;background:rgba(0,255,255,0.1);border:2px solid #0ff;color:#0ff;text-decoration:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;transition:all 0.4s;margin-top:20px}
-        .download-btn:hover{background:#0ff;color:#0a0e27;box-shadow:0 0 30px #0ff;transform:translateY(-3px)}
-        footer{position:relative;z-index:10;text-align:center;padding:30px;background:rgba(10,14,39,0.9);border-top:2px solid #f0f;box-shadow:0 0 20px rgba(255,0,255,0.5);margin-top:60px}
-        footer p{color:#0ff;text-shadow:0 0 10px #0ff}
-        @media(max-width:768px){.nav-links{flex-direction:column;gap:10px}.page-title h1{font-size:32px}.mod-grid{grid-template-columns:1fr}}
-    
-        /* DELEGATE PORTAL NAV BUTTON */
-        .nav-portal {
-            background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(63,185,80,0.04));
-            border: 2px solid rgba(63,185,80,0.5) !important;
-            color: #3fb950 !important;
-            font-size: 14px !important;
-            letter-spacing: 1px !important;
-            border-radius: 4px;
-            display: flex !important;
-            align-items: center;
-            gap: 6px;
-        }
-        .nav-portal:hover {
-            color: #56d364 !important;
-            border-color: #3fb950 !important;
-            box-shadow: 0 0 20px rgba(63,185,80,0.4), inset 0 0 10px rgba(63,185,80,0.1) !important;
-            text-shadow: 0 0 10px #3fb950 !important;
-            background: linear-gradient(135deg, rgba(63,185,80,0.22), rgba(63,185,80,0.08)) !important;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#060a12">
+<title>MUN Delegate Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;--bg4:#1c2840;--bg5:#222f45;
+  --blue:#6ab0ff;--blue-dim:rgba(106,176,255,0.12);
+  --green:#3de8a0;--green-dim:rgba(61,232,160,0.12);
+  --red:#ff6b6b;--red-dim:rgba(255,107,107,0.12);
+  --yellow:#ffd060;--yellow-dim:rgba(255,208,96,0.1);
+  --orange:#ff9f43;--purple:#c792ff;
+  --text:#ddeeff;--text2:#8aaccc;--text3:#4a6580;--text4:#2a3d52;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);--border3:rgba(255,255,255,0.18);
+  --r:14px;--sh:0 8px 40px rgba(0,0,0,0.6);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ── LOADING SCREEN ── */
+#splash{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity 0.4s}
+#splash.hidden{opacity:0;pointer-events:none}
+.spin{width:28px;height:28px;border:2px solid rgba(255,255,255,0.08);border-top-color:var(--blue);border-radius:50%;animation:rot .75s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.splash-lm{width:60px;height:60px;border-radius:18px;background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;box-shadow:0 6px 28px rgba(59,143,238,0.5)}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;width:100%;flex-direction:column;align-items:center;padding:0 0 100px}
+.screen.active{display:flex}
+
+/* ── JOIN SCREEN ── */
+.join-wrap{width:100%;max-width:420px;padding:20px 16px;display:flex;flex-direction:column;align-items:center}
+.logo{text-align:center;margin:32px 0 24px}
+.logo-mark{width:58px;height:58px;border-radius:18px;background:linear-gradient(140deg,#7ec8ff,#3b8fee,#1558c8);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 10px;box-shadow:0 6px 28px rgba(59,143,238,0.5)}
+.logo-title{font-size:20px;font-weight:800;color:var(--text)}.logo-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:20px;width:100%;box-shadow:var(--sh);overflow:hidden;margin-bottom:12px}
+.card-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,0.025),transparent)}
+.card-title{font-size:14px;font-weight:700;color:var(--text)}.card-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.card-body{padding:16px 20px}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+input{width:100%;padding:13px 14px;border-radius:var(--r);background:rgba(6,10,18,.75);border:1px solid var(--border2);color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:border-color .18s,box-shadow .18s}
+input:focus{border-color:rgba(106,176,255,.5);box-shadow:0 0 0 3px rgba(106,176,255,.08)}
+.mono{font-family:'SF Mono','JetBrains Mono',monospace;letter-spacing:.14em;text-align:center;font-size:20px;font-weight:700}
+.pin-inp{font-size:28px;font-weight:800;letter-spacing:.28em;text-align:center}
+
+.btn-primary{width:100%;padding:14px;border-radius:var(--r);border:none;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;background:linear-gradient(135deg,#7ec8ff,#3b8fee,#1d6ed8);color:#fff;box-shadow:0 3px 16px rgba(59,143,238,.4);transition:all .15s}
+.btn-primary:active{transform:scale(.98)}.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.btn-ghost{width:100%;padding:12px;border-radius:var(--r);border:1px solid var(--border2);background:rgba(255,255,255,.04);color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px}
+.btn-ghost:active{transform:scale(.98)}
+
+.err-box{background:var(--red-dim);border:1px solid rgba(255,107,107,.25);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-top:10px;display:none}
+
+/* ── COUNTRY LIST ── */
+.del-list{display:flex;flex-direction:column;gap:5px;max-height:350px;overflow-y:auto;padding:2px}
+.del-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+.del-row:active{transform:scale(.98)}.del-row:hover{border-color:rgba(106,176,255,.3);background:rgba(106,176,255,.05)}
+.del-flag{width:38px;height:27px;object-fit:cover;border-radius:4px;border:1px solid var(--border2);flex-shrink:0}
+.del-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+
+/* ── PORTAL ── */
+#sc-portal{padding:0}
+.portal-header{
+  background:linear-gradient(160deg,rgba(56,139,253,.1),transparent),var(--bg2);
+  padding:22px 20px 16px;text-align:center;
+  border-bottom:1px solid var(--border);position:relative;overflow:hidden;
+}
+.portal-header::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(56,139,253,.08),transparent 70%);pointer-events:none}
+.p-flag{width:88px;height:62px;object-fit:cover;border-radius:10px;border:2px solid var(--border2);margin-bottom:10px;box-shadow:0 6px 24px rgba(0,0,0,.5)}
+.p-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.p-name{font-size:25px;font-weight:800;color:var(--text);line-height:1.1}
+.p-committee{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── BOTTOM NAV ── */
+.bnav{
+  position:fixed;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(13,21,32,.95);border-top:1px solid var(--border2);
+  backdrop-filter:blur(16px);
+  display:flex;padding:8px 0 env(safe-area-inset-bottom,0);
+}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;transition:color .15s;position:relative}
+.bn span{font-size:18px;line-height:1}.bn.active{color:var(--blue)}
+.bn-dot{position:absolute;top:5px;right:20%;width:6px;height:6px;border-radius:50%;background:var(--green);display:none}
+.bn-dot.show{display:block}
+
+/* ── TAB PANELS ── */
+.panel{display:none;width:100%;max-width:480px;padding:16px 16px 20px;margin:0 auto}
+.panel.active{display:block}
+
+/* ── SECTION TITLES ── */
+.sec-title{font-size:9px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── CONN BAR ── */
+.conn-bar{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-radius:10px;margin-bottom:14px;border:1px solid var(--border)}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--text4);flex-shrink:0;transition:background .3s}
+.conn-dot.ok{background:var(--green)}.conn-dot.err{background:var(--red)}
+.conn-sid{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--blue);margin-left:auto}
+
+/* ── STATUS CARDS ── */
+.status-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.status-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px}
+.status-icon{font-size:22px;flex-shrink:0}
+.status-info{min-width:0}
+.status-label{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:2px}
+.status-val{font-size:13px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ── ACTION BUTTONS ── */
+.act-btn{
+  width:100%;padding:16px;border-radius:16px;border:2px solid;
+  font-size:16px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:inherit;margin-bottom:8px;transition:all .15s;background:transparent;
+}
+.act-btn:active{transform:scale(.97)}.act-btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn-checkin{border-color:rgba(106,176,255,.35);color:var(--blue)}.btn-checkin:hover{background:var(--blue-dim)}
+.btn-yes{border-color:rgba(61,232,160,.35);color:var(--green)}.btn-yes:hover{background:var(--green-dim)}
+.btn-abs{border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}.btn-abs:hover{background:rgba(255,255,255,.04)}
+.btn-no{border-color:rgba(255,107,107,.35);color:var(--red)}.btn-no:hover{background:var(--red-dim)}
+.btn-done{border-color:rgba(255,255,255,.07);color:var(--text3);cursor:default}
+
+/* ── LIVE BADGE ── */
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-dim);border:1px solid rgba(61,232,160,.3);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);margin-bottom:10px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pls 1.2s ease-in-out infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+
+/* ── VOTE RES ── */
+.vote-res{font-size:12px;color:var(--text3);margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);line-height:1.5;font-style:italic}
+
+/* ── BADGES ── */
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.b-ok{background:var(--green-dim);border:1px solid rgba(61,232,160,.25);color:var(--green)}
+.b-pend{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text3)}
+.b-voted{background:var(--blue-dim);border:1px solid rgba(106,176,255,.25);color:var(--blue)}
+.b-warn{background:var(--red-dim);border:1px solid rgba(255,107,107,.25);color:var(--red)}
+
+/* ── STATS ── */
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:var(--text)}
+.stat-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-top:3px}
+
+/* ── LEADERBOARD ── */
+.lb-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border)}
+.lb-rank{font-size:14px;min-width:22px}.lb-flag{width:30px;height:21px;object-fit:cover;border-radius:3px;border:1px solid var(--border2);flex-shrink:0}
+.lb-name{flex:1;font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-bw{width:52px;height:5px;background:var(--bg4);border-radius:2px;overflow:hidden}
+.lb-b{height:100%;border-radius:2px;background:var(--green)}
+.lb-pts{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--green);min-width:38px;text-align:right}
+
+/* ── VOTE CARDS ── */
+.vote-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.vote-card.pass{border-color:rgba(61,232,160,.2)}.vote-card.fail{border-color:rgba(255,107,107,.2)}
+.vote-meta{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.vote-verdict{font-size:13px;font-weight:800}.pass .vote-verdict{color:var(--green)}.fail .vote-verdict{color:var(--red)}
+.vote-title{font-size:12px;font-weight:700;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vote-date{font-size:10px;color:var(--text3)}
+.vote-tally{display:flex;gap:10px;font-size:11px;color:var(--text3);margin-bottom:6px}
+.vote-my{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--blue-dim);color:var(--blue);margin-left:auto}
+.vote-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;display:flex}
+.vb-yes{height:100%;background:var(--green)}.vb-no{height:100%;background:var(--red)}.vb-abs{height:100%;background:rgba(255,255,255,.15)}
+
+/* ── RESOLUTION CARDS ── */
+.res-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.res-id{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);font-weight:700;margin-bottom:3px}
+.res-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px}
+.res-status{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;padding:2px 8px;border-radius:6px}
+.rs-passed{background:var(--green-dim);color:var(--green)}.rs-failed{background:var(--red-dim);color:var(--red)}.rs-draft{background:rgba(255,255,255,.05);color:var(--text3)}
+.res-sponsors{font-size:11px;color:var(--text3);margin-top:5px}
+
+/* ── CERT CARDS ── */
+.cert-card{background:linear-gradient(135deg,rgba(255,208,96,.08),rgba(255,159,67,.04)),var(--bg3);border:1px solid rgba(255,208,96,.2);border-radius:16px;padding:20px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
+.cert-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent)}
+.cert-icon{font-size:48px;margin-bottom:8px}.cert-type{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--yellow);margin-bottom:6px}
+.cert-name{font-size:20px;font-weight:800;color:var(--text)}.cert-committee{font-size:12px;color:var(--text3);margin-top:3px}
+.cert-meta{font-size:11px;color:var(--text4);margin-top:6px}
+.cert-btn{margin-top:12px;padding:12px 20px;background:linear-gradient(135deg,rgba(255,208,96,.2),rgba(255,159,67,.12));border:1px solid rgba(255,208,96,.4);border-radius:10px;color:var(--yellow);font-size:13px;font-weight:700;cursor:pointer;width:100%;font-family:inherit;transition:all .15s}
+.cert-btn:active{transform:scale(.98)}.cert-btn.blue{background:var(--blue-dim);border-color:rgba(106,176,255,.4);color:var(--blue)}
+.cert-lock{font-size:13px;color:var(--text3);font-style:italic;margin-top:8px}
+.cert-countdown{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--yellow);margin-top:4px}
+
+/* ── AWARD BANNER ── */
+.award-banner{background:linear-gradient(135deg,rgba(255,208,96,.12),rgba(255,159,67,.06));border:2px solid rgba(255,208,96,.35);border-radius:18px;padding:20px;text-align:center;margin-bottom:14px}
+.award-icon{font-size:52px;margin-bottom:6px}.award-type{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--yellow)}
+.award-name{font-size:18px;font-weight:800;color:var(--text);margin-top:4px}
+
+/* ── ENDED BANNER ── */
+.ended-banner{background:linear-gradient(135deg,rgba(255,208,96,.07),rgba(255,159,67,.04));border:1px solid rgba(255,208,96,.22);border-radius:12px;padding:12px 16px;margin-bottom:14px;text-align:center}
+.eb-title{font-size:14px;font-weight:700;color:var(--yellow)}.eb-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* ── INFO ROWS ── */
+.info-table{background:var(--bg3);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.info-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center}
+.info-key{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.1em;min-width:76px}
+.info-val{font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+
+/* ── DIVIDER ── */
+.div{height:1px;background:var(--border);margin:14px 0}
+.rank-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:12px;font-size:13px;font-weight:700;background:var(--yellow-dim);border:1px solid rgba(255,208,96,.3);color:var(--yellow);margin-bottom:14px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:80px;left:50%;z-index:1000;transform:translateX(-50%) translateY(40px);background:var(--bg2);border:1px solid var(--border3);border-radius:14px;padding:11px 22px;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--sh);white-space:nowrap;pointer-events:none;transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0}
+#toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── EMPTY STATES ── */
+.empty-state{text-align:center;padding:32px 16px;color:var(--text3);font-size:13px}
+.empty-icon{font-size:40px;margin-bottom:10px}
+
+/* ── AGENDA ── */
+.agenda-card{background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:14px;margin-bottom:12px}
+.agenda-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px}
+.agenda-item{font-size:12px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.agenda-item:last-child{border-bottom:none}
+
+/* ── Enhanced visual design ── */
+.screen{animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Better card shadow */
+.card{box-shadow:0 4px 24px rgba(0,0,0,0.5),0 1px 0 rgba(255,255,255,0.04) inset}
+
+/* Gradient header */
+.pt{background:linear-gradient(160deg,rgba(56,139,253,0.18),rgba(61,232,160,0.04),var(--bg2))}
+
+/* Tab active glow */
+.tb.active{box-shadow:0 2px 12px rgba(0,0,0,0.4),0 0 0 1px rgba(255,255,255,0.06) inset;background:var(--bg2)}
+
+/* Better action buttons */
+.ab{transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1)}
+.ab:hover{transform:translateY(-1px)}
+.by:hover{background:rgba(61,232,160,0.12);box-shadow:0 4px 16px rgba(61,232,160,0.2)}
+.bno:hover{background:rgba(255,107,107,0.12);box-shadow:0 4px 16px rgba(255,107,107,0.2)}
+.babs:hover{background:rgba(255,255,255,0.06)}
+
+/* Vote result card */
+.vr-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  padding:14px 16px;margin-bottom:8px;transition:all 0.2s;
+}
+.vr-card:hover{border-color:var(--border2)}
+.vr-passed{border-left:3px solid var(--green)!important}
+.vr-failed{border-left:3px solid var(--red)!important}
+
+/* Progress bars */
+.vote-bar-track{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;margin-top:6px;display:flex}
+.vbt-yes{background:var(--green);border-radius:3px 0 0 3px;transition:width 0.4s ease}
+.vbt-abs{background:var(--yellow);transition:width 0.4s ease}
+.vbt-no{background:var(--red);border-radius:0 3px 3px 0;transition:width 0.4s ease}
+
+/* Skeleton loader */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
 <body>
-    <div class="cyber-grid"></div>
-    <header>
-        <nav>
-            <a href="index.html" class="logo">BORALANCES</a>
-            <ul class="nav-links">
-                <li><a href="server.html">Server</a></li>
-                <li><a href="mods.html">Mods</a></li>
-                <li><a href="modpack.html">Modpack</a></li>
-                <li><a href="studio.html">Studio</a></li>
-                <li><a href="blog.html">Blog</a></li>
-                <li><a href="mun-chair.html" class="nav-mun">
-                    <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
-                    MUN Chair
-                </a></li>
-                <li><a href="mun-delegate-portal.html" class="nav-portal"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg> Del. Portal</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section class="page-title">
-            <h1>MODS</h1>
-            <p>&gt;&gt;&gt; Enhance Your Gaming Experience &lt;&lt;&lt;</p>
-        </section>
-        <div class="mod-grid">
-            <div class="mod-card">
-                <h2>BoralancesContent</h2>
-                <p>Oyununuza yeni içerikler, öğeler ve mekanikler ekleyen kapsamlı içerik modu. Dünyayı daha zengin ve eğlenceli hale getirir.</p>
-                <ul class="mod-features">
-                    <li>Yeni bloklar ve öğeler</li>
-                    <li>Gelişmiş oyun mekanikleri</li>
-                    <li>Özel crafting tarifleri</li>
-                    <li>Performans optimizasyonları</li>
-                </ul>
-                <a href="https://www.curseforge.com/minecraft/mc-mods/boralances-content" class="download-btn">Download</a>
-            </div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-lm">M</div>
+  <div class="spin"></div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 1 — JOIN (Session ID)
+══════════════════════════════════════ -->
+<div class="screen" id="sc-join">
+  <div class="join-wrap">
+    <div class="logo">
+      <div class="logo-mark">M</div>
+      <div class="logo-title">MUN Delegate Portal</div>
+      <div class="logo-sub">boralances.github.io/mun-delegate-portal</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Join Session</div>
+        <div class="card-sub">Enter the 8-character code shown on the chair's screen</div>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Session Code</label>
+          <input type="text" class="mono" id="inp-sid" placeholder="ABC1 2DEF"
+            maxlength="8" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+            oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+            onkeydown="if(event.key==='Enter')doJoin()"/>
         </div>
-    </main>
-    <footer><p>&copy; 2026 BORALANCES - All Rights Reserved in the Digital Realm</p></footer>
+        <button class="btn-primary" id="btn-join" onclick="doJoin()">Continue →</button>
+        <div class="err-box" id="err-join"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 2 — SELECT COUNTRY
+══════════════════════════════════════ -->
+<div class="screen" id="sc-select">
+  <div class="join-wrap">
+    <div class="logo" style="margin-top:16px">
+      <div class="logo-mark">🌍</div>
+      <div class="logo-title">Select Your Country</div>
+      <div class="logo-sub" id="sel-committee">—</div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:12px">
+        <input type="text" id="inp-search" placeholder="🔍  Search country..."
+          oninput="filterCountries()" style="margin-bottom:10px"/>
+        <div class="del-list" id="country-list"></div>
+      </div>
+    </div>
+    <button class="btn-ghost" style="width:100%" onclick="goTo('sc-join')">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 3 — PIN
+══════════════════════════════════════ -->
+<div class="screen" id="sc-pin">
+  <div class="join-wrap">
+    <div class="logo">
+      <div class="logo-mark">🔑</div>
+      <div class="logo-title" id="pin-heading">Enter PIN</div>
+      <div class="logo-sub" id="pin-sub">4-digit PIN from your chair</div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="field">
+          <label>4-Digit PIN</label>
+          <input type="password" class="mono pin-inp" id="inp-pin"
+            placeholder="••••" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+            onkeydown="if(event.key==='Enter')doPin()"/>
+        </div>
+        <button class="btn-primary" onclick="doPin()">Unlock Portal →</button>
+        <button class="btn-ghost" onclick="backFromPin()">← Back</button>
+        <div class="err-box" id="err-pin"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SCREEN 4 — PORTAL
+══════════════════════════════════════ -->
+<div class="screen" id="sc-portal">
+  <!-- Header -->
+  <div class="portal-header" style="width:100%">
+    <img class="p-flag" id="p-flag" src="" alt=""/>
+    <div class="p-label">Delegate of</div>
+    <div class="p-name" id="p-name">—</div>
+    <div class="p-committee" id="p-committee">—</div>
+  </div>
+
+  <!-- Tab Panels -->
+  <div class="panel active" id="p-home"></div>
+  <div class="panel" id="p-vote"></div>
+  <div class="panel" id="p-stats"></div>
+  <div class="panel" id="p-agenda"></div>
+  <div class="panel" id="p-cert"></div>
+  <div class="panel" id="p-info"></div>
+
+  <!-- Bottom Nav -->
+  <nav class="bnav">
+    <button class="bn active" id="bn-home" onclick="tab('home')"><span>🏠</span>Home</button>
+    <button class="bn" id="bn-vote" onclick="tab('vote')"><span>🗳</span>Vote<div class="bn-dot" id="dot-vote"></div></button>
+    <button class="bn" id="bn-stats" onclick="tab('stats')"><span>📊</span>Stats</button>
+    <button class="bn" id="bn-agenda" onclick="tab('agenda')"><span>📋</span>Agenda</button>
+    <button class="bn" id="bn-cert" onclick="tab('cert')"><span>🏅</span>Cert</button>
+    <button class="bn" id="bn-info" onclick="tab('info')"><span>ℹ</span>Info</button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══ CONFIG ═══
+const FB = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+
+// ═══ STATE ═══
+let SID='', CODE='', NAME='';
+let D={}; // full Firebase data snapshot
+let checkedIn=false, voted=false, voteActive=false, ended=false;
+let iv=null, certIv=null;
+
+// ═══ INIT ═══
+(function(){
+  setTimeout(()=>{
+    const sp=document.getElementById('splash');
+    sp.classList.add('hidden');
+    setTimeout(()=>sp.style.display='none',400);
+  },600);
+  // URL params
+  const p=new URLSearchParams(location.search);
+  const s=p.get('s'),c=p.get('c'),n=p.get('n');
+  try{const sv=JSON.parse(localStorage.getItem('mun_p')||'{}');if(sv.sid)document.getElementById('inp-sid').value=sv.sid;}catch(e){}
+  if(s) document.getElementById('inp-sid').value=s;
+  if(s&&c&&n){SID=s;CODE=c;NAME=decodeURIComponent(n);goTo('sc-pin');setPinLabels();}
+  else goTo('sc-join');
+})();
+
+// ═══ SCREENS ═══
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById(id);if(el)el.classList.add('active');window.scrollTo(0,0);}
+function showErr(id,msg){const e=document.getElementById(id);if(e){e.textContent=msg;e.style.display='block';}}
+function hideErr(id){const e=document.getElementById(id);if(e)e.style.display='none';}
+
+// ═══ TOAST ═══
+function toast(msg,dur){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),dur||2600);}
+
+// ═══ FIREBASE ═══
+async function fbGet(path){
+  const url=path?`${FB}/mun_${SID}/${path}.json`:`${FB}/mun_${SID}.json`;
+  const r=await fetch(url);if(!r.ok)throw new Error('Firebase error '+r.status);
+  return r.json();
+}
+async function fbPatch(path,data){
+  const r=await fetch(`${FB}/mun_${SID}/${path}.json`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  if(!r.ok)throw new Error('Firebase write error');
+}
+
+// ═══ JOIN ═══
+async function doJoin(){
+  const btn=document.getElementById('btn-join');
+  SID=(document.getElementById('inp-sid').value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(SID.length<6){showErr('err-join','Enter a valid 8-character session code.');return;}
+  btn.disabled=true;btn.textContent='Connecting...';hideErr('err-join');
+  try{
+    D=await fbGet();
+    if(!D) throw new Error(`Session "${SID}" not found. Is the session active?`);
+    if(D.meta?.expiresAt&&Date.now()>D.meta.expiresAt) throw new Error('This session has expired.');
+    try{localStorage.setItem('mun_p',JSON.stringify({sid:SID}));}catch(e){}
+    const committee=D.state?.committee||D.meta?.committee||'';
+    const el=document.getElementById('sel-committee');if(el)el.textContent=committee;
+    renderCountries(D.delegates||[]);
+    goTo('sc-select');
+  }catch(e){showErr('err-join',e.message||'Could not connect. Check the session code.');}
+  btn.disabled=false;btn.textContent='Continue →';
+}
+
+// ═══ COUNTRY SELECT ═══
+function renderCountries(dels){
+  const list=document.getElementById('country-list');
+  if(!dels.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">🌍</div>No delegates yet.</div>';return;}
+  list.innerHTML=dels.map(d=>`
+    <div class="del-row" onclick="selectCountry('${d.c}','${d.n.replace(/'/g,"\\'")}')">
+      <img class="del-flag" src="https://flagcdn.com/w80/${d.c.toLowerCase()}.png" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span class="del-name">${d.n}</span>
+      <span style="color:var(--text4);font-size:16px">›</span>
+    </div>`).join('');
+}
+function filterCountries(){
+  const q=(document.getElementById('inp-search')?.value||'').toLowerCase();
+  renderCountries((D.delegates||[]).filter(d=>d.n.toLowerCase().includes(q)));
+}
+function selectCountry(code,name){
+  CODE=code;NAME=name;
+  const pins=D.delegatePins||{};
+  if(pins[code]){goTo('sc-pin');setPinLabels();}
+  else openPortal();
+}
+
+// ═══ PIN ═══
+function setPinLabels(){
+  const h=document.getElementById('pin-heading');if(h)h.textContent=NAME?'PIN for '+NAME:'Enter PIN';
+  const s=document.getElementById('pin-sub');if(s)s.textContent=NAME?`4-digit PIN for ${NAME}`:'Enter the 4-digit PIN given by your chair';
+}
+function backFromPin(){goTo(D.delegates?.length?'sc-select':'sc-join');}
+async function doPin(){
+  const pin=(document.getElementById('inp-pin')?.value||'').trim();
+  if(pin.length!==4){showErr('err-pin','Enter the 4-digit PIN.');return;}
+  // Refresh data if needed
+  if(!D||!D.delegatePins){try{D=await fbGet();}catch(e){}}
+  const pins=D.delegatePins||{};
+  if(CODE){
+    if(!pins[CODE]||pins[CODE]===pin){openPortal();}
+    else{showErr('err-pin','Incorrect PIN. Check with your chair.');document.getElementById('inp-pin').value='';}
+  }else{
+    const match=Object.entries(pins).find(([c,p])=>p===pin);
+    if(match){CODE=match[0];const d=(D.delegates||[]).find(x=>x.c===CODE);NAME=d?d.n:CODE;openPortal();}
+    else{showErr('err-pin','Incorrect PIN.');document.getElementById('inp-pin').value='';}
+  }
+}
+
+// ═══ OPEN PORTAL ═══
+function openPortal(){
+  document.getElementById('p-flag').src=`https://flagcdn.com/w160/${CODE.toLowerCase()}.png`;
+  document.getElementById('p-name').textContent=NAME;
+  goTo('sc-portal');
+  tab('home');
+  poll();
+  iv=setInterval(poll,2500);
+}
+
+// ═══ TABS ═══
+const TABS=['home','vote','stats','agenda','cert','info'];
+function tab(t){
+  TABS.forEach(x=>{
+    document.getElementById('p-'+x)?.classList.toggle('active',x===t);
+    document.getElementById('bn-'+x)?.classList.toggle('active',x===t);
+  });
+  if(t==='home')renderHome();
+  else if(t==='vote')renderVotePanel();
+  else if(t==='stats')renderStats();
+  else if(t==='agenda')renderAgenda();
+  else if(t==='cert')renderCert();
+  else if(t==='info')renderInfo();
+}
+
+// ═══ ACTIONS ═══
+async function doCheckin(val){
+  val=val||'present';
+  if(checkedIn||ended)return;
+  try{
+    await fbPatch('attendance',{[CODE]:val});
+    setCheckedIn(val);
+    toast(val==='present+voting'?'✋ Present & Voting!':'✅ Present recorded!');
+  }catch(e){toast('Error — try again',2000);}
+}
+function setCheckedIn(val){
+  val=val||'present';
+  checkedIn=true;
+  const isPV=val==='present+voting';
+  const a=document.getElementById('ci-area');
+  if(a)a.innerHTML=`<button class="act-btn btn-done" style="${isPV?'border-color:rgba(106,176,255,0.4);color:#88c8ff':''}">${isPV?'✋ Present & Voting':'✅ Present'} — Recorded</button>`;
+  document.querySelectorAll('.bdg-ci').forEach(b=>{b.className='badge b-ok';b.style.background=isPV?'rgba(106,176,255,0.1)':'';b.textContent=isPV?'✋ P+V':'✅ Present';});
+}
+async function doVote(v){
+  if(voted||!voteActive)return;
+  document.querySelectorAll('#vote-buttons .act-btn').forEach(b=>b.disabled=true);
+  try{
+    await fbPatch('votes',{[CODE]:v});
+    setVoted(v);
+  }catch(e){document.querySelectorAll('#vote-buttons .act-btn').forEach(b=>b.disabled=false);toast('Error — try again',2000);}
+}
+function setVoted(v){
+  voted=true;
+  const lbl=v==='yes'?'✅ In Favor':v==='no'?'❌ Against':'🟡 Abstain';
+  const clr=v==='yes'?'var(--green)':v==='no'?'var(--red)':'rgba(255,255,255,.3)';
+  const va=document.getElementById('vote-buttons');
+  if(va)va.innerHTML=`<button class="act-btn btn-done" style="border-color:${clr};color:${clr}">${lbl} — Vote Recorded</button>`;
+  document.querySelectorAll('.bdg-v').forEach(b=>{b.style.display='';b.className='badge b-voted';b.textContent='🗳 '+lbl;});
+  // Update vote dot
+  const dot=document.getElementById('dot-vote');if(dot)dot.classList.remove('show');
+  toast(lbl+' recorded!');
+}
+
+// ═══ POLL ═══
+async function poll(){
+  try{
+    D=await fbGet();if(!D)return;
+    // Conn
+    const dot=document.getElementById('cnd'),txt=document.getElementById('cnt-txt');
+    if(dot)dot.className='conn-dot ok';
+    if(txt)txt.textContent='Live · Session '+SID;
+    // Committee
+    const com=D.state?.committee||D.meta?.committee||SID;
+    const pc=document.getElementById('p-committee');if(pc)pc.textContent=com;
+    // Check-in sync
+    if(!checkedIn&&D.attendance?.[CODE])setCheckedIn(D.attendance[CODE]);
+    // Meeting ended
+    const wasEnded=ended;
+    ended=!!(D.state?.meetingEnded||D.meta?.endTime);
+    if(ended&&!wasEnded){renderHome();renderCert();}
+    // Vote
+    const wasActive=voteActive;
+    voteActive=!!(D.state?.voteActive)&&!ended;
+    if(voteActive&&!wasActive){
+      if(!voted){
+        const dot=document.getElementById('dot-vote');if(dot)dot.classList.add('show');
+        toast('🗳 Voting is now open!',4000);
+      }
+      renderVotePanel();
+    }else if(!voteActive&&wasActive){
+      const dot=document.getElementById('dot-vote');if(dot)dot.classList.remove('show');
+      renderVotePanel();
+    }
+    // Sync vote from Firebase
+    if(!voted&&D.votes?.[CODE]){const v=D.votes[CODE];if(['yes','no','abstain'].includes(v))setVoted(v);}
+    // Refresh current tab
+    const activeTab=document.querySelector('.bn.active')?.id?.replace('bn-','');
+    if(activeTab==='home')renderHome();
+    else if(activeTab==='vote')renderVotePanel();
+    else if(activeTab==='stats')renderStats();
+    else if(activeTab==='agenda')renderAgenda();
+    else if(activeTab==='cert')renderCert();
+  }catch(e){
+    const dot=document.getElementById('cnd'),txt=document.getElementById('cnt-txt');
+    if(dot)dot.className='conn-dot err';if(txt)txt.textContent='Reconnecting...';
+  }
+}
+
+// ═══ HOME PANEL ═══
+function renderHome(){
+  const el=document.getElementById('p-home');if(!el)return;
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const awards=D.awards||{},titles=awards.customTitles||{};
+  const amap={best:{icon:'🥇',lbl:titles.best||'Best Delegate'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation'}};
+  let html='';
+  // Conn bar
+  html+=`<div class="conn-bar"><div class="conn-dot" id="cnd"></div><span id="cnt-txt">Connecting...</span><span class="conn-sid">${SID}</span></div>`;
+  // Ended banner
+  if(ended){html+=`<div class="ended-banner"><div class="eb-title">🏁 Meeting Has Ended</div><div class="eb-sub">${meta.date||''} ${meta.duration?'· '+meta.duration:''}</div></div>`;}
+  // Award
+  if(me.award&&amap[me.award]){
+    const aw=amap[me.award];
+    html+=`<div class="award-banner"><div class="award-icon">${aw.icon}</div><div class="award-type">${aw.lbl}</div><div class="award-name">Congratulations, ${NAME}!</div></div>`;
+  }
+  // Status cards
+  html+=`<div class="status-row">
+    <div class="status-card">
+      <div class="status-icon">${checkedIn?'✅':'⭕'}</div>
+      <div class="status-info"><div class="status-label">Attendance</div><div class="status-val" style="color:${checkedIn?'var(--green)':'var(--text3)'}">${checkedIn?'Present':'Not checked in'}</div></div>
+    </div>
+    <div class="status-card">
+      <div class="status-icon">${voted?'🗳':'⏳'}</div>
+      <div class="status-info"><div class="status-label">Last Vote</div><div class="status-val" style="color:${voted?'var(--blue)':'var(--text3)'}">${voted?'Voted':'No active vote'}</div></div>
+    </div>
+  </div>`;
+  // Check-in button
+  if(!ended){
+    html+=`<div class="sec-title">📋 Attendance</div>
+    <div id="ci-area">${checkedIn?'<button class="act-btn btn-done">✅ Checked In!</button>':'<button class="act-btn btn-checkin" onclick="doCheckin(\'present\')"><span>👋</span> Present</button><button class="act-btn" style="margin-top:6px;border:2px solid rgba(106,176,255,0.45);color:#88c8ff;background:transparent;padding:13px;border-radius:13px;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;font-family:inherit" onclick="doCheckin(\'present+voting\')"><span>✋</span> Present &amp; Voting</button><div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">P&amp;V delegates cannot abstain</div>'}</div>`;
+  }
+  // Active vote hint
+  if(voteActive&&!voted&&!ended){
+    html+=`<div class="sec-title" style="margin-top:14px">🗳 Active Vote</div>
+    <div class="vote-res">${D.state?.resolution||'Resolution Vote'}</div>
+    <button class="act-btn btn-yes" onclick="tab('vote')">Go to Voting →</button>`;
+  }
+  // Quick stats if ended
+  if(ended&&me.pts!==undefined){
+    html+=`<div class="sec-title" style="margin-top:14px">📊 Your Results</div>
+    <div class="status-row">
+      <div class="status-card"><div class="status-icon">⭐</div><div class="status-info"><div class="status-label">Score</div><div class="status-val" style="color:${me.pts>0?'var(--green)':me.pts<0?'var(--red)':'var(--text)'}">${me.pts>0?'+':''}${me.pts}</div></div></div>
+      <div class="status-card"><div class="status-icon">🎤</div><div class="status-info"><div class="status-label">Speeches</div><div class="status-val">${me.speeches||0}</div></div></div>
+    </div>`;
+  }
+  // Badges
+  html+=`<div class="badge-row">
+    <span class="badge bdg-ci ${checkedIn?'b-ok':'b-pend'}">${checkedIn?'✅ Present':'⭕ Not checked in'}</span>
+    <span class="badge bdg-v b-pend" style="${voted?'':'display:none'}">${voted?'🗳 Voted':''}</span>
+    ${(me.warnings||0)>0?`<span class="badge b-warn">⚠ ${me.warnings} warning${me.warnings>1?'s':''}</span>`:''}
+  </div>`;
+  el.innerHTML=html;
+}
+
+// ═══ VOTE PANEL ═══
+function renderVotePanel(){
+  const el=document.getElementById('p-vote');if(!el)return;
+  let html='';
+  if(ended){
+    html=`<div class="sec-title">🗳 Vote History</div>`;
+    const vh=D.voteHistory||[];
+    if(!vh.length){html+='<div class="empty-state"><div class="empty-icon">🗳</div>No votes recorded.</div>';}
+    else vh.forEach((v,i)=>{
+      const myV=v.votes?.[CODE];
+      const myLbl=myV==='yes'?'In Favor':myV==='no'?'Against':myV==='abstain'?'Abstain':'—';
+      const t=v.tally||{};const tot=Math.max(1,t.total||1);
+      const fp=Math.round((t.favor||0)/tot*100),ap=Math.round((t.against||0)/tot*100),absp=Math.round((t.abstain||0)/tot*100);
+      html+=`<div class="vote-card ${v.passed?'pass':'fail'}">
+        <div class="vote-meta">
+          <span class="vote-verdict">${v.passed?'PASSED':'FAILED'}</span>
+          <span class="vote-title">${v.resolution||'Vote #'+(i+1)}</span>
+          <span class="vote-date">${v.date||''}</span>
+        </div>
+        <div style="display:flex;align-items:center;margin-bottom:6px">
+          <div class="vote-tally"><span style="color:var(--green)">✅ ${t.favor||0}</span><span>·</span><span style="color:var(--red)">❌ ${t.against||0}</span><span>·</span><span>🟡 ${t.abstain||0}</span></div>
+          ${myV?`<span class="vote-my">${myLbl}</span>`:''}
+        </div>
+        <div class="vote-bar"><div class="vb-yes" style="width:${fp}%"></div><div class="vb-no" style="width:${ap}%"></div><div class="vb-abs" style="width:${absp}%"></div></div>
+      </div>`;
+    });
+  }else if(!voteActive){
+    html=`<div class="empty-state"><div class="empty-icon">⏳</div>Waiting for the chair to open voting...</div>`;
+  }else if(voted){
+    html=`<div class="sec-title">🗳 Current Vote</div>
+    <div class="vote-res">${D.state?.resolution||'Resolution'}</div>
+    <div id="vote-buttons"><button class="act-btn btn-done" style="border-color:var(--blue);color:var(--blue)">✓ Your vote has been recorded</button></div>`;
+  }else{
+    html=`<div class="live-badge"><div class="live-dot"></div>VOTING OPEN</div>
+    <div class="sec-title">🗳 Cast Your Vote</div>
+    <div class="vote-res" id="vr-res">${D.state?.resolution||'Resolution Vote'}</div>
+    <div id="vote-buttons">
+      <button class="act-btn btn-yes" onclick="doVote('yes')">✅ In Favor</button>
+      <button class="act-btn btn-abs" onclick="doVote('abstain')">🟡 Abstain</button>
+      <button class="act-btn btn-no" onclick="doVote('no')">❌ Against</button>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+// ═══ STATS ═══
+function renderStats(){
+  const el=document.getElementById('p-stats');if(!el)return;
+  if(!ended){el.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div>Stats will be available after the meeting ends.</div>';return;}
+  const dr=D.delegateResults||{},me=dr[CODE]||{},ranked=D.ranked||[];
+  const maxPts=ranked.length?Math.max(1,...ranked.map(r=>Math.abs(r.pts))):1;
+  const myRank=me.rank||ranked.findIndex(r=>r.c===CODE)+1||0;
+  let html=`<div class="sec-title">📊 Your Performance</div>
+  <div class="stat-grid">
+    ${[['Score',(me.pts>0?'+':'')+me.pts,me.pts>0?'var(--green)':me.pts<0?'var(--red)':'var(--text)'],['Speeches',me.speeches||0,'var(--blue)'],['Warnings',me.warnings||0,me.warnings>0?'var(--red)':'var(--text)'],['Rank',myRank?'#'+myRank:'—','var(--yellow)']].map(([l,v,c])=>`<div class="stat-card"><div class="stat-val" style="color:${c}">${v}</div><div class="stat-lbl">${l}</div></div>`).join('')}
+  </div>`;
+  if(myRank){const m=myRank===1?'🥇':myRank===2?'🥈':myRank===3?'🥉':'';html+=`<div class="rank-badge">${m} #${myRank} of ${ranked.length} delegates</div>`;}
+  html+=`<div class="div"></div><div class="sec-title">🏆 Leaderboard</div>`;
+  html+=ranked.slice(0,20).map((r,i)=>{
+    const mine=r.c===CODE;
+    const pct=Math.max(0,Math.round(r.pts/maxPts*100));
+    const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)+'.';
+    return `<div class="lb-row" style="${mine?'background:rgba(106,176,255,.06);border-radius:8px;padding:9px 8px;margin:-1px':''}">
+      <span class="lb-rank">${medal}</span>
+      <img class="lb-flag" src="https://flagcdn.com/w80/${r.c.toLowerCase()}.png" onerror="this.style.display='none'" alt=""/>
+      <span class="lb-name" style="${mine?'color:var(--blue);font-weight:800':''}">${r.n}${mine?' ✦':''}</span>
+      <div class="lb-bw"><div class="lb-b" style="width:${pct}%"></div></div>
+      <span class="lb-pts">${r.pts>0?'+':''}${r.pts}</span>
+    </div>`;
+  }).join('');
+  el.innerHTML=html;
+}
+
+// ═══ AGENDA ═══
+function renderAgenda(){
+  const el=document.getElementById('p-agenda');if(!el)return;
+  const meta=D.meta||{},state=D.state||{};
+  const agenda=meta.agenda||state.agenda||'';
+  const agendaItems=state.agendaItems||[];
+  const res=D.resolutions||[];
+  const vh=D.voteHistory||[];
+  let html='';
+  // Agenda
+  if(agenda){
+    html+=`<div class="sec-title">📋 Agenda</div>
+    <div class="agenda-card"><div class="agenda-title">${agenda}</div>
+    ${agendaItems.map(i=>`<div class="agenda-item">📌 ${i}</div>`).join('')}
+    </div>`;
+  }
+  // Resolutions
+  if(res.length){
+    html+=`<div class="sec-title">📄 Resolutions (${res.length})</div>`;
+    res.forEach(r=>{
+      const st=r.status||'draft';
+      html+=`<div class="res-card">
+        <div class="res-id">${r.id||'—'}</div>
+        <div class="res-title">${r.title||'—'}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="res-status rs-${st}">${st}</span>
+          ${r.sponsors?.length?`<span class="res-sponsors">Sponsors: ${r.sponsors.slice(0,5).join(', ')}</span>`:''}
+        </div>
+      </div>`;
+    });
+  }
+  // Vote summary
+  if(vh.length){
+    html+=`<div class="sec-title" style="margin-top:4px">🗳 Vote Summary</div>`;
+    vh.forEach((v,i)=>{
+      const t=v.tally||{},tot=Math.max(1,t.total||1);
+      const fp=Math.round((t.favor||0)/tot*100),ap=Math.round((t.against||0)/tot*100),absp=Math.round((t.abstain||0)/tot*100);
+      html+=`<div class="vote-card ${v.passed?'pass':'fail'}" style="margin-bottom:8px">
+        <div class="vote-meta">
+          <span class="vote-verdict">${v.passed?'✅ PASSED':'❌ FAILED'}</span>
+          <span class="vote-title">${v.resolution||'Vote #'+(i+1)}</span>
+        </div>
+        <div class="vote-tally"><span style="color:var(--green)">✅ ${t.favor||0}</span><span>·</span><span style="color:var(--red)">❌ ${t.against||0}</span><span>·</span><span>🟡 ${t.abstain||0}</span><span>·</span><span>${tot} delegates</span></div>
+        <div class="vote-bar"><div class="vb-yes" style="width:${fp}%"></div><div class="vb-no" style="width:${ap}%"></div><div class="vb-abs" style="width:${absp}%"></div></div>
+      </div>`;
+    });
+  }
+  if(!html){el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>Agenda details will appear here once the chair sets them.</div>';return;}
+  el.innerHTML=html;
+}
+
+// ═══ CERT ═══
+function renderCert(){
+  const el=document.getElementById('p-cert');if(!el)return;
+  if(!ended){el.innerHTML='<div class="empty-state"><div class="empty-icon">🏅</div>Certificates will be available after the meeting ends.</div>';return;}
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const awards=D.awards||{},titles=awards.customTitles||{};
+  const now=Date.now(),certsAt=meta.certsAvailableAt||0;
+  const amap={best:{icon:'🥇',lbl:titles.best||'Best Delegate',clr:'var(--yellow)'},outstanding:{icon:'🥈',lbl:titles.outstanding||'Outstanding Delegate',clr:'#b0b8c8'},verbal:{icon:'🥉',lbl:titles.verbal||'Verbal Commendation',clr:'#c8966a'}};
+  let html='';
+  if(me.award&&amap[me.award]){
+    const aw=amap[me.award];
+    if(certsAt>now){
+      html+=`<div class="cert-card">
+        <div class="cert-icon">${aw.icon}</div>
+        <div class="cert-type" style="color:${aw.clr}">${aw.lbl}</div>
+        <div class="cert-name">${NAME}</div>
+        <div class="cert-committee">${meta.committee||''}</div>
+        <div class="cert-lock">🔒 Certificate unlocks in</div>
+        <div class="cert-countdown" id="cert-cd">calculating...</div>
+      </div>`;
+      if(certIv)clearInterval(certIv);
+      certIv=setInterval(()=>{
+        const e2=document.getElementById('cert-cd');if(!e2){clearInterval(certIv);return;}
+        const left=certsAt-Date.now();
+        if(left<=0){clearInterval(certIv);renderCert();return;}
+        const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);
+        e2.textContent=(h?h+'h ':'')+m+'m '+s+'s';
+      },1000);
+    }else{
+      html+=`<div class="cert-card">
+        <div class="cert-icon">${aw.icon}</div>
+        <div class="cert-type" style="color:${aw.clr}">${aw.lbl}</div>
+        <div class="cert-name">${NAME}</div>
+        <div class="cert-committee">${meta.committee||''}</div>
+        <div class="cert-meta">${meta.date||''} · Score: ${me.pts>0?'+':''}${me.pts||0}</div>
+        <button class="cert-btn" onclick="printCert('award')">📄 View / Print Certificate</button>
+      </div>`;
+    }
+  }
+  html+=`<div class="cert-card" style="margin-top:4px">
+    <div class="cert-icon">📜</div>
+    <div class="cert-type" style="color:var(--blue)">Certificate of Participation</div>
+    <div class="cert-name">${NAME}</div>
+    <div class="cert-committee">${meta.committee||''}</div>
+    <div class="cert-meta">${meta.date||''} · ${me.speeches||0} speeches</div>
+    <button class="cert-btn blue" onclick="printCert('attendance')">📄 View / Print Certificate</button>
+  </div>`;
+  el.innerHTML=html;
+}
+
+function printCert(type){
+  const meta=D.meta||{},dr=D.delegateResults||{},me=dr[CODE]||{},awards=D.awards||{},titles=awards.customTitles||{};
+  const amap={best:titles.best||'Best Delegate',outstanding:titles.outstanding||'Outstanding Delegate',verbal:titles.verbal||'Verbal Commendation'};
+  const certTitle=type==='award'?(amap[me.award]||'Award'):'Certificate of Participation';
+  const logo1=meta.logoLeft||'',logo2=meta.logoRight||'';
+  const w=window.open('','_blank');if(!w){toast('Allow popups to print',3000);return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${certTitle}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>*{margin:0;padding:0;box-sizing:border-box}body{background:#f8f6f0;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:16px;font-family:'Cormorant Garamond',serif}
+  .c{width:100%;max-width:297mm;background:#fff;padding:14mm 16mm;position:relative;border:8px solid #8b6914;box-shadow:0 0 0 3px #c8a84b,0 0 0 6px #8b6914;overflow:hidden}
+  .bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,rgba(212,175,55,.07),transparent 60%);pointer-events:none}
+  .logos{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .li{height:56px;object-fit:contain;max-width:120px}
+  .org{font-size:10px;color:#8b6914;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+  .line{width:100%;height:1px;background:linear-gradient(to right,transparent,#c8a84b,transparent);margin:8px 0}
+  .lbl{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#8b6914;text-align:center;margin:14px 0 4px}
+  h1{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#1a1200;text-align:center;letter-spacing:2px;margin-bottom:5px}
+  .pre{font-size:12px;color:#666;text-align:center;letter-spacing:.1em;margin-bottom:7px}
+  .del{font-family:'Playfair Display',serif;font-size:34px;font-style:italic;color:#8b6914;text-align:center;margin-bottom:4px}
+  .for{font-size:11px;color:#888;text-align:center;letter-spacing:.08em;margin-bottom:4px}
+  .com{font-size:14px;font-weight:600;color:#1a1200;text-align:center;letter-spacing:.06em}
+  .score{text-align:center;font-size:12px;color:#888;margin:8px 0}.score span{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#8b6914}
+  .meta{font-size:10px;color:#bbb;text-align:center;margin-top:8px}
+  @media print{body{padding:0;background:#fff}@page{size:A4 landscape;margin:8mm}}
+  </style></head><body><div class="c"><div class="bg"></div>
+  <div class="logos">${logo1?`<img class="li" src="${logo1}" alt=""/>`:'<div></div>'}<div class="org">🌍 Model United Nations</div>${logo2?`<img class="li" src="${logo2}" alt=""/>`:'<div></div>'}</div>
+  <div class="line"></div>
+  <div class="lbl">Certificate of ${type==='award'?'Achievement':'Participation'}</div>
+  <h1>${certTitle}</h1><div class="pre">is hereby presented to</div>
+  <div class="del">${NAME}</div>
+  <div class="for">representing</div>
+  <div class="com">${meta.committee||'Committee'}</div>
+  ${type==='award'?`<div class="score">Score: <span>${me.pts>0?'+':''}${me.pts||0}</span></div>`:''}
+  <div class="line"></div>
+  <div class="meta">${meta.date||''} · Session ${SID}</div>
+  </div><scr`+`ipt>window.print();<\/scr`+`ipt></body></html>`);
+  w.document.close();
+}
+
+// ═══ INFO ═══
+function renderInfo(){
+  const el=document.getElementById('p-info');if(!el)return;
+  const meta=D.meta||{},state=D.state||{},dr=D.delegateResults||{},me=dr[CODE]||{};
+  const vh=D.voteHistory||[];
+  const myVoteCount=vh.filter(v=>v.votes&&v.votes[CODE]).length;
+  const passedCount=vh.filter(v=>v.passed).length;
+  const rows=[
+    ['🏛','Committee',meta.committee||state.committee||SID],
+    ['📋','Agenda',meta.agenda||state.agenda||'—'],
+    ['📅','Date',meta.date||'—'],
+    ['⏱','Duration',meta.duration||'—'],
+    ['👥','Delegates',(D.delegates?.length||0)+' registered'],
+    ['🗳','Votes',vh.length+' total · '+passedCount+' passed · you voted in '+myVoteCount],
+    ['🔑','Session ID',SID],
+    ['🌍','Your Country',NAME+' ('+CODE.toUpperCase()+')'],
+    ['📡','Status',ended?'🏁 Meeting Ended':'🟢 Active'],
+    ['⏳','Expires',meta.expiresAt?new Date(meta.expiresAt).toLocaleDateString():'—'],
+  ];
+  el.innerHTML=`
+    <div class="sec-title">ℹ Session Information</div>
+    <div class="info-table">
+      ${rows.map(([i,k,v])=>`<div class="info-row"><div class="info-icon">${i}</div><div class="info-key">${k}</div><div class="info-val">${v}</div></div>`).join('')}
+    </div>
+    <button class="btn-ghost" onclick="logout()">🚪 Leave Session</button>`;
+}
+
+// ═══ LOGOUT ═══
+function logout(){
+  clearInterval(iv);clearInterval(certIv);
+  SID='';CODE='';NAME='';D={};checkedIn=voted=voteActive=ended=false;
+  try{localStorage.removeItem('mun_p');}catch(e){}
+  document.getElementById('inp-sid').value='';
+  document.getElementById('inp-pin').value='';
+  goTo('sc-join');
+}
+
+// ═══ BROADCAST CHANNEL ═══
+try{const bc=new BroadcastChannel('mun_portal_'+SID);bc.onmessage=()=>poll();}catch(e){}
+</script>
 </body>
 </html>
