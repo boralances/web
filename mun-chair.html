@@ -194,6 +194,17 @@ body.presentation-mode .mode-cards{display:none!important}
 body.presentation-mode .timer-wrap{
   transform:scale(1.6);margin-top:40px;
 }
+/* Timer fullscreen mode */
+body.timer-fullscreen .sidebar{display:none!important}
+body.timer-fullscreen .topbar{display:none!important}
+body.timer-fullscreen .content{padding:0!important;background:#000!important}
+body.timer-fullscreen .page{padding:0!important;max-width:100%!important}
+body.timer-fullscreen .timer-page-grid{display:flex!important;align-items:center!important;justify-content:center!important;height:100vh!important;background:#000}
+body.timer-fullscreen .mode-cards{display:none!important}
+body.timer-fullscreen .timer-wrap{transform:scale(2.2)!important;margin:0!important}
+body.timer-fullscreen #yield-row{display:none!important}
+body.timer-fullscreen #placard-queue-row{display:none!important}
+body.timer-fullscreen #btn-timer-fullscreen{position:fixed!important;top:14px!important;right:14px!important;z-index:999!important;background:rgba(255,255,255,0.08)!important;border-color:rgba(255,255,255,0.15)!important}
 /* Photo mode — clean screenshot view */
 body.photo-mode .sidebar{display:none!important}
 body.photo-mode .topbar{display:none!important}
@@ -1054,6 +1065,7 @@ window.makeQRUrl = function(data, size) {
       <button id="btn-attend-qr" onclick="openAttendanceQR()" class="btn btn-ghost btn-sm" title="QR Yoklama" style="display:none;padding:5px 9px;font-size:13px">📲</button>
       <button id="btn-replay" onclick="showSessionReplay()" class="btn btn-ghost btn-sm" title="Session replay" style="display:none;padding:5px 9px;font-size:13px">⏪</button>
       <button id="btn-photo-mode" onclick="togglePhotoMode()" class="btn btn-ghost btn-sm" title="Photo mode — clean view for screenshots" style="display:none;padding:5px 9px;font-size:13px">📷</button>
+      <button id="btn-timer-fullscreen" onclick="toggleTimerFullscreen()" class="btn btn-ghost btn-sm" title="Fullscreen timer" style="display:none;padding:5px 9px;font-size:13px">⛶</button>
       <button id="btn-presentation" onclick="togglePresentation()" class="btn btn-ghost btn-sm" title="Presentation mode — fullscreen timer" style="display:none;padding:5px 9px;font-size:13px">⛶</button>
       <button onclick="generateChairScript()" class="btn btn-ghost btn-sm" id="btn-chairscript" style="display:none;font-size:11px;font-weight:600" title="Generate chair script PDF">📜 Script</button>
       <button onclick="showShortcutsOverlay()" class="btn btn-ghost btn-sm" title="Keyboard shortcuts" style="padding:5px 9px;font-size:13px;font-weight:700">?</button>
@@ -1088,6 +1100,29 @@ window.makeQRUrl = function(data, size) {
           <button class="btn btn-primary btn-sm" onclick="document.getElementById('restore-file-input').click()">Load Session</button>
         </div>
       </div>
+
+      <!-- Join existing committee -->
+      <div class="card" style="margin-bottom:12px;border-color:rgba(61,232,160,0.3);background:rgba(61,232,160,0.04)">
+        <div class="card-body" style="padding:14px 16px">
+          <div style="display:flex;align-items:flex-start;gap:12px">
+            <span style="font-size:22px;flex-shrink:0">🔗</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Join Existing Committee</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Enter a session ID to join as co-chair. The primary chair controls roles.</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <input type="text" id="join-session-id-input" placeholder="Session ID (e.g. ABC12DEF)"
+                  style="width:180px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
+                  maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+                <input type="password" id="join-session-password" placeholder="Session password"
+                  style="width:160px;font-size:13px" maxlength="32"/>
+                <button class="btn btn-success btn-sm" onclick="joinCommitteeFromSetup()">Join →</button>
+              </div>
+              <div id="join-setup-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-head">
           <div class="card-head-left">
@@ -3270,12 +3305,14 @@ function beginSession(){
   const _bsc=document.getElementById('btn-scoreboard'); if(_bsc) _bsc.style.display='';
   const _bhdmi=document.getElementById('btn-hdmi'); if(_bhdmi) _bhdmi.style.display='';
   const _bpres=document.getElementById('btn-presentation'); if(_bpres) _bpres.style.display='';
+  const _btfs=document.getElementById('btn-timer-fullscreen'); if(_btfs) _btfs.style.display='';
   const _bphoto=document.getElementById('btn-photo-mode'); if(_bphoto) _bphoto.style.display='';
   const _baqr=document.getElementById('btn-attend-qr'); if(_baqr) _baqr.style.display='';
   const _baud=document.getElementById('btn-audience'); if(_baud) _baud.style.display='';
   const _brelay=document.getElementById('btn-relay-setup'); if(_brelay) _brelay.style.display='';
   const _bsic=document.getElementById('session-id-chip'); if(_bsic){_bsic.style.display='';_bsic.textContent='ID: '+_fbSessionId;}
   const _bmc=document.getElementById('btn-multichair'); if(_bmc) _bmc.style.display='';
+  const _broles=document.getElementById('btn-roles'); if(_broles) _broles.style.display='';
   initChairId();
   startChairHeartbeat();
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
@@ -3301,7 +3338,8 @@ function beginSession(){
   // Auto-generate PINs for all delegates
   delegates.forEach(d=>{if(!delegatePins[d.c])delegatePins[d.c]=String(Math.floor(1000+Math.random()*9000));});
   generateDelegatePortals();
-  setTimeout(pushSessionToFirebase, 500); // slight delay so Firebase connection is ready
+  setTimeout(pushSessionToFirebase, 500);
+  setTimeout(pushSessionPassword, 800); // slight delay so Firebase connection is ready
   showPage('timer');
 }
 
@@ -3335,6 +3373,10 @@ function endSession(){
 }
 
 function doEndSession(){
+  // Clear all timers safely
+  clearInterval(timerInterval); timerRunning = false;
+  clearInterval(_fbPollIv); clearInterval(_lsPollInterval);
+  clearInterval(_portalPollIv); clearInterval(_chairHeartbeatIv);
   stopTimer();
   curMode=null; timerSecs=0; totalSecs=0; timerRunning=false;
   speakers=[]; currentSpkIdx=-1; speechesDone=0;
@@ -3358,8 +3400,10 @@ function doEndSession(){
   safe('btn-scoreboard', el=>el.style.display='none');
   safe('btn-hdmi', el=>el.style.display='none');
   safe('btn-presentation', el=>el.style.display='none');
+  safe('btn-timer-fullscreen', el=>el.style.display='none');
   safe('btn-chairscript', el=>el.style.display='none');
   if(document.body.classList.contains('presentation-mode')) togglePresentation();
+  if(document.body.classList.contains('timer-fullscreen')) toggleTimerFullscreen();
   safe('tb-del-chip',el=> el.style.display='none');
   safe('pill-committee', el => el.textContent='Not configured');
   safe('pill-agenda',    el => el.textContent='—');
@@ -8352,7 +8396,9 @@ function _applySnapshot(snap){
   document.getElementById('tb-del-chip').textContent = delegates.length+' delegates';
   document.getElementById('session-clock-chip').style.display='';
   document.getElementById('quorum-chip').style.display='';
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
+  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-pins','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech','nav-pins','nav-agenda'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
+  // Also re-show topbar session buttons
+  document.querySelectorAll('.sb-session-actions-hidden').forEach(el=>el.classList.remove('sb-session-actions-hidden'));
   startSessionClock(); updateQuorumCheck(); updateStats(); renderAllSpk(); startAutoSave();
   showPage('timer');
 }
@@ -12205,6 +12251,248 @@ function startChairHeartbeat() {
     }
   }, 5000);
 }
+
+
+// ════════════════════════════════════════════════════════════════
+// TIMER FULLSCREEN
+// ════════════════════════════════════════════════════════════════
+let _timerFullscreen = false;
+function toggleTimerFullscreen() {
+  _timerFullscreen = !_timerFullscreen;
+  document.body.classList.toggle('timer-fullscreen', _timerFullscreen);
+  // Show timer page
+  if (_timerFullscreen) {
+    showPage('timer');
+    const btn = document.getElementById('btn-timer-fullscreen');
+    if (btn) { btn.textContent = '✕'; btn.title = 'Exit fullscreen (Esc)'; }
+  } else {
+    const btn = document.getElementById('btn-timer-fullscreen');
+    if (btn) { btn.textContent = '⛶'; btn.title = 'Fullscreen timer'; }
+  }
+}
+// Esc exits timer fullscreen too (already handled in keydown — just add)
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && _timerFullscreen) toggleTimerFullscreen();
+}, true);
+
+// ════════════════════════════════════════════════════════════════
+// SESSION ROLES — chair / co-chair / admin
+// Roles:
+//   admin   — full access, can reassign roles, can end session
+//   chair   — can give points, use timer, full control
+//   co-chair — can warn, view everything, use AI, can't score
+// ════════════════════════════════════════════════════════════════
+let _sessionPassword = ''; // set by primary chair in setup
+let _myChairName = '';
+let _myChairRoleLevel = 'chair'; // 'admin' | 'chair' | 'co-chair'
+let _chairRoles = {}; // {chairId: {name, role, lastSeen}}
+
+const ROLE_LEVELS = {admin: 3, chair: 2, 'co-chair': 1};
+function canDoAction(action) {
+  const lvl = ROLE_LEVELS[_myChairRoleLevel] || 2;
+  const needed = {score: 2, warn: 1, timer: 2, end: 3, roles: 3, view: 1};
+  return lvl >= (needed[action] || 1);
+}
+
+function openRolesModal() {
+  const existing = document.getElementById('roles-modal');
+  if (existing) { existing.remove(); return; }
+  if (!_fbAvailable) { showToast('Connect Firebase first','error'); return; }
+
+  // Fetch current chairs
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`)
+    .then(r => r.json())
+    .then(chairs => {
+      const modal = document.createElement('div');
+      modal.id = 'roles-modal';
+      modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
+
+      const chairList = chairs ? Object.entries(chairs)
+        .filter(([,c]) => Date.now() - (c.lastSeen||0) < 30000)
+        .map(([id, c]) => {
+          const isSelf = id === _chairId;
+          const canEdit = canDoAction('roles') && !isSelf;
+          return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid ${isSelf?'rgba(56,139,253,0.3)':'var(--border)'};border-radius:10px;margin-bottom:6px">
+            <span style="font-size:18px">${c.role==='admin'?'👑':c.role==='co-chair'?'🪑':'🎓'}</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">${c.name||'Chair'} ${isSelf?'<span style="font-size:10px;color:var(--blue)">(you)</span>':''}</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">${c.role||'chair'} · last seen ${Math.round((Date.now()-(c.lastSeen||0))/1000)}s ago</div>
+            </div>
+            ${canEdit ? `<select onchange="setChairRole('${id}',this.value)" style="font-size:12px;padding:4px 8px">
+              <option value="co-chair" ${c.role==='co-chair'?'selected':''}>Co-Chair</option>
+              <option value="chair" ${c.role==='chair'?'selected':''}>Chair</option>
+              <option value="admin" ${c.role==='admin'?'selected':''}>Admin</option>
+            </select>` : `<span style="font-size:11px;color:var(--text3);background:var(--bg4);padding:3px 8px;border-radius:6px">${c.role||'chair'}</span>`}
+          </div>`;
+        }).join('') : '<div style="text-align:center;padding:20px;color:var(--text3)">No other chairs online.</div>';
+
+      modal.innerHTML = `
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-xl)">
+          <div style="padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:15px;font-weight:700">👑 Chair Roles</div>
+              <div style="font-size:11px;color:var(--text3)">Session: ${_fbSessionId} · Your role: ${_myChairRoleLevel}</div>
+            </div>
+            <button onclick="document.getElementById('roles-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
+          </div>
+          <div style="padding:16px 22px">
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+                ${[
+                  ['👑 Admin','Full control, roles, end session','var(--yellow)'],
+                  ['🎓 Chair','Score, timer, all features','var(--blue)'],
+                  ['🪑 Co-Chair','Warn, view, AI analysis','var(--green)']
+                ].map(([t,d,c])=>`<div style="background:var(--bg4);border-radius:8px;padding:8px;text-align:center">
+                  <div style="font-size:13px;font-weight:700;color:${c};margin-bottom:3px">${t}</div>
+                  <div style="font-size:10px;color:var(--text3)">${d}</div>
+                </div>`).join('')}
+              </div>
+            </div>
+            <div class="sec-title-sm" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Online Chairs</div>
+            ${chairList}
+          </div>
+        </div>`;
+      document.body.appendChild(modal);
+      modal.onclick = e => { if (e.target === modal) modal.remove(); };
+    }).catch(() => showToast('Could not load chairs','error'));
+}
+
+function setChairRole(chairId, newRole) {
+  if (!canDoAction('roles')) { showToast('Only admins can change roles','error'); return; }
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${chairId}.json`, {
+    method: 'PATCH', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({role: newRole})
+  }).then(() => {
+    showToast(`Role updated to ${newRole}`);
+    document.getElementById('roles-modal')?.remove();
+    setTimeout(openRolesModal, 300);
+  }).catch(()=>{});
+}
+
+// ════════════════════════════════════════════════════════════════
+// JOIN COMMITTEE FROM SETUP PAGE
+// ════════════════════════════════════════════════════════════════
+let _sessionPasswordHash = '';
+
+async function joinCommitteeFromSetup() {
+  const id = (document.getElementById('join-session-id-input')?.value || '').trim().toUpperCase();
+  const pw = (document.getElementById('join-session-password')?.value || '').trim();
+  const status = document.getElementById('join-setup-status');
+
+  if (id.length < 6) { if(status) status.innerHTML='<span style="color:var(--red)">Enter a valid session ID</span>'; return; }
+  if(status) status.textContent = 'Connecting...';
+
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${id}.json`);
+    if (!r.ok) throw new Error('Cannot reach Firebase');
+    const data = await r.json();
+    if (!data) throw new Error(`Session "${id}" not found`);
+
+    // Check password if set
+    if (data.sessionPassword && data.sessionPassword !== pw) {
+      if(status) status.innerHTML = '<span style="color:var(--red)">Incorrect password</span>';
+      return;
+    }
+
+    if (!data.delegates?.length) throw new Error('Session has no delegates — is it active?');
+
+    // Ask for a name
+    const name = prompt('Your name (shown to other chairs):') || 'Co-Chair';
+
+    // Apply session data
+    _fbSessionId = id;
+    _isSecondaryChair = true;
+    _chairRole = 'co-chair';
+    _myChairRoleLevel = 'co-chair';
+    _myChairName = name;
+
+    delegates = [...data.delegates];
+    if (data.state) { session.committee = data.state.committee||''; session.agenda = data.state.agenda||''; }
+    if (data.attendance) Object.assign(rollCallData, data.attendance);
+    if (data.delegatePins) Object.assign(delegatePins, data.delegatePins);
+    if (data.scores) Object.assign(scores, data.scores);
+    if (data.warnings) Object.assign(warnings, data.warnings);
+
+    // Set inputs
+    const ci = document.getElementById('setup-committee');
+    if (ci) ci.value = session.committee;
+    const ai = document.getElementById('setup-agenda');
+    if (ai) ai.value = session.agenda;
+
+    // Begin the session as co-chair
+    beginSession();
+
+    // Override role after beginSession
+    _myChairRoleLevel = 'co-chair';
+    _isSecondaryChair = true;
+
+    startFbPoll();
+    initChairId();
+    startChairHeartbeat();
+
+    // Register in Firebase
+    fetch(`${_fbUrl}/mun_${id}/chairs/${_chairId}.json`, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name, role: 'co-chair', lastSeen: Date.now(), page: 'timer'})
+    }).catch(()=>{});
+
+    // Style chip
+    const sic = document.getElementById('session-id-chip');
+    if (sic) { sic.textContent = 'CO: ' + id; sic.style.color='var(--orange)'; }
+
+    if(status) status.innerHTML = `<span style="color:var(--green)">✅ Joined as co-chair!</span>`;
+
+  } catch(e) {
+    if(status) status.innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// SAVE SESSION PASSWORD TO FIREBASE WHEN SESSION STARTS
+// ════════════════════════════════════════════════════════════════
+function pushSessionPassword() {
+  const pw = document.getElementById('setup-session-password')?.value?.trim() || '';
+  if (!pw || !_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/sessionPassword.json`, {
+    method: 'PUT', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(pw)
+  }).catch(()=>{});
+}
+
+// ════════════════════════════════════════════════════════════════
+// ROLE-BASED UI ENFORCEMENT
+// ════════════════════════════════════════════════════════════════
+function enforceRoleUI() {
+  // Co-chairs can't score — disable score popup trigger
+  if (_myChairRoleLevel === 'co-chair') {
+    document.querySelectorAll('[onclick*="showScorePopup"],[onclick*="rateScore"],[onclick*="openScorePanel"]')
+      .forEach(el => { el.title = 'Only chairs can score'; el.style.opacity = '0.4'; el.style.pointerEvents = 'none'; });
+  }
+}
+
+// Check Firebase for role updates
+function checkRoleFromFirebase() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId || !_chairId) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`)
+    .then(r => r.json())
+    .then(data => {
+      if (data?.role && data.role !== _myChairRoleLevel) {
+        _myChairRoleLevel = data.role;
+        _chairRole = data.role;
+        showToast(`Your role updated to: ${data.role}`);
+        enforceRoleUI();
+        const sic = document.getElementById('session-id-chip');
+        if (sic) {
+          if (data.role === 'admin') sic.style.color = 'var(--yellow)';
+          else if (data.role === 'co-chair') sic.style.color = 'var(--orange)';
+          else sic.style.color = '';
+        }
+      }
+    }).catch(()=>{});
+}
+
+// Poll for role changes every 10s
+setInterval(checkRoleFromFirebase, 10000);
 
 // ═══ STATS ═══
 function updateStats(){
