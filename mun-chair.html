@@ -3078,6 +3078,8 @@ let scoreboardBlobUrl=null;
 let customAwardTitles={best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
 let sessionSuspended=false;
 let suspendPassword='';
+let _myChairRoleLevel = 'chair';   // default role for the primary chair
+let _myChairName = 'Chair';        // default name for the chair
 const ARC_C = 2*Math.PI*85; // 534.07
 
 const PAGES_META = {
@@ -12051,12 +12053,291 @@ function generateDelegatePerformancePDF(code) {
 
 let _chairId = ''; // unique ID for this chair instance
 let _otherChairs = {}; // {chairId: {role, name, lastSeen, page}}
-let _chairHeartbeatIv = null;
 
 function initChairId() {
   _chairId = 'chair_' + Math.random().toString(36).slice(2, 8);
 }
 
+
+// ════════════════════════════════════════════════════════════════
+// MULTI-CHAIR SYSTEM — Final Implementation
+//
+// Roles:
+//   chair    → 1 per session. Full control: score, warn, timer,
+//              see all co-chairs, promote/demote them.
+//   co-chair → max 3. Can: control timer (start/stop/pause),
+//              send AI analysis notes. Cannot: score, warn,
+//              end meeting, change roles.
+//
+// Sync: Chair pushes live state to Firebase every 2s.
+//       Co-chairs receive it instantly (no delay).
+// ════════════════════════════════════════════════════════════════
+
+let _chairHeartbeatIv = null;
+
+function initChairId() {
+  if (!_chairId) _chairId = 'c_' + Math.random().toString(36).slice(2,9);
+}
+
+// ── Is this instance a co-chair? ──
+function isCoChair() { return _myChairRoleLevel === 'co-chair'; }
+function isChair()   { return _myChairRoleLevel === 'chair'; }
+
+// ── What co-chairs can do ──
+// Timer: start, stop, pause (not reset/mode change)
+// AI: send analysis notes to chair
+// Cannot: score, warn, change speakers, end meeting, change roles
+
+// ── HEARTBEAT — runs for ALL chair instances ──
+function startChairHeartbeat() {
+  initChairId();
+  clearInterval(_chairHeartbeatIv);
+
+  // Register self immediately
+  _pushMyPresence();
+
+  _chairHeartbeatIv = setInterval(() => {
+    if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+
+    // 1. Push my presence
+    _pushMyPresence();
+
+    // 2. Read all chairs list
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`)
+      .then(r => r.json())
+      .then(chairs => {
+        if (!chairs) return;
+        _otherChairs = {};
+        Object.entries(chairs).forEach(([id, c]) => {
+          if (id !== _chairId && Date.now() - (c.lastSeen||0) < 15000)
+            _otherChairs[id] = c;
+        });
+        _updateChairChip();
+        // Show notification badge on 👥 if new co-chair joined
+        const coCount = Object.values(_otherChairs).filter(c=>c.role==='co-chair').length;
+        const mcBtn = document.getElementById('btn-multichair');
+        if (mcBtn && isChair()) {
+          mcBtn.textContent = coCount > 0 ? `👥 ${coCount+1}` : '👥';
+        }
+      }).catch(()=>{});
+
+    // 3. CHAIR: push live session state for co-chairs
+    if (isChair()) {
+      _pushLiveState();
+    }
+
+    // 4. CO-CHAIR: read live state from chair + check role changes
+    if (isCoChair()) {
+      _pullLiveState();
+    }
+
+  }, 2000); // every 2s for near-instant sync
+}
+
+function _pushMyPresence() {
+  if (!_fbUrl || !_fbSessionId || !_chairId) return;
+  const activePage = document.querySelector('.nav-item.active')?.textContent?.trim().slice(0,20) || '';
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      role: _myChairRoleLevel,
+      name: _myChairName || (_myChairRoleLevel === 'chair' ? 'Chair' : 'Co-Chair'),
+      page: activePage,
+      lastSeen: Date.now()
+    })
+  }).catch(()=>{});
+}
+
+// ── CHAIR pushes everything co-chairs need ──
+function _pushLiveState() {
+  const spk = currentSpkIdx >= 0 && speakers[currentSpkIdx] ? speakers[currentSpkIdx] : null;
+  const liveState = {
+    // Timer
+    timerSecs,
+    totalSecs,
+    timerRunning,
+    curMode: curMode || '',
+    // Current speaker
+    currentSpeakerCode: spk ? spk.c : '',
+    currentSpeakerName: spk ? spk.n : '',
+    currentSpkIdx,
+    // Queue
+    speakersQueue: speakers.map(s => s.c),
+    speechesDone,
+    // Session
+    committee: session.committee || '',
+    agenda: session.agenda || '',
+    // Scores + warnings (full sync)
+    scores: {...scores},
+    warnings: Object.fromEntries(Object.entries(warnings).filter(([,v])=>v?.length)),
+    // Roll call
+    rollCall: {...rollCallData},
+    // Votes
+    votes: {...votes},
+    voteActive: !!window._votePortalActive,
+    resolution: (typeof resolution !== 'undefined' && resolution) ? (resolution.id + ' — ' + (resolution.title||'')) : '',
+    // Timestamp
+    t: Date.now()
+  };
+
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(liveState)
+  }).catch(()=>{});
+}
+
+let _lastLiveStateT = 0;
+
+// ── CO-CHAIR pulls and applies live state ──
+async function _pullLiveState() {
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`);
+    if (!r.ok) return;
+    const live = await r.json();
+    if (!live || live.t === _lastLiveStateT) return;
+    _lastLiveStateT = live.t;
+
+    // Apply timer state (if not actively running on co-chair side)
+    if (typeof live.timerSecs === 'number') timerSecs = live.timerSecs;
+    if (typeof live.totalSecs === 'number') totalSecs = live.totalSecs;
+    if (!live.timerRunning && timerRunning) { stopTimer(); timerRunning = false; }
+    if (typeof live.curMode === 'string' && live.curMode !== curMode) {
+      curMode = live.curMode || null;
+    }
+
+    // Apply scores
+    if (live.scores) {
+      let changed = false;
+      Object.entries(live.scores).forEach(([c,p]) => { if(scores[c]!==p){scores[c]=p;changed=true;} });
+      if (changed && typeof renderScoreTab==='function') renderScoreTab();
+    }
+
+    // Apply warnings
+    if (live.warnings) {
+      let changed = false;
+      Object.entries(live.warnings).forEach(([c,l]) => {
+        if(JSON.stringify(warnings[c])!==JSON.stringify(l)){warnings[c]=l;changed=true;}
+      });
+      if (changed && typeof renderWarnings==='function') renderWarnings();
+    }
+
+    // Apply roll call
+    if (live.rollCall) {
+      let changed = false;
+      Object.entries(live.rollCall).forEach(([c,v]) => {
+        if(rollCallData[c]!==v){rollCallData[c]=v;changed=true;}
+      });
+      if (changed) { renderRollCall(); updateQuorumCheck(); }
+    }
+
+    // Apply votes
+    if (live.votes) {
+      Object.entries(live.votes).forEach(([c,v]) => { if(!votes[c]) votes[c]=v; });
+      renderVoteList(); updateVoteStats();
+    }
+
+    // Apply speakers queue
+    if (live.speakersQueue && !timerRunning) {
+      const newQ = live.speakersQueue;
+      if (JSON.stringify(speakers.map(s=>s.c)) !== JSON.stringify(newQ)) {
+        speakers = newQ.map(c => delegates.find(d=>d.c===c)||COUNTRIES.find(d=>d.c===c)).filter(Boolean);
+        currentSpkIdx = live.currentSpkIdx ?? -1;
+        speechesDone = live.speechesDone ?? 0;
+        renderAllSpk(); updateStats();
+      }
+    }
+
+    // Update timer display
+    renderClock();
+    if (totalSecs > 0) setArc(timerSecs / totalSecs);
+
+    // Update committee/agenda
+    if (live.committee) {
+      session.committee = live.committee;
+      const pc = document.getElementById('pill-committee');
+      if (pc) pc.textContent = live.committee;
+    }
+    if (live.agenda) {
+      session.agenda = live.agenda;
+      const pa = document.getElementById('pill-agenda');
+      if (pa) pa.textContent = live.agenda;
+    }
+
+    // Vote active
+    if (live.voteActive !== window._votePortalActive) {
+      window._votePortalActive = live.voteActive;
+    }
+
+    // Check my role
+    const myChairData = (await fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`).then(r=>r.json()).catch(()=>null));
+    if (myChairData?.role && myChairData.role !== _myChairRoleLevel) {
+      const oldRole = _myChairRoleLevel;
+      _myChairRoleLevel = myChairData.role;
+      showToast(`Your role changed: ${oldRole} → ${myChairData.role}`);
+      _applyRoleRestrictions();
+      _updateChairChip();
+    }
+
+  } catch(e) {}
+}
+
+function _updateChairChip() {
+  const sic = document.getElementById('session-id-chip');
+  if (!sic) return;
+  const coCount = Object.values(_otherChairs).length;
+  const roleEmoji = _myChairRoleLevel === 'chair' ? '🎓' : '🪑';
+  sic.textContent = coCount > 0
+    ? `${roleEmoji} ${_fbSessionId} · ${coCount+1}👤`
+    : `${roleEmoji} ${_fbSessionId}`;
+  sic.style.color = _myChairRoleLevel === 'chair' ? '' : 'var(--orange)';
+  sic.style.borderColor = _myChairRoleLevel === 'chair' ? '' : 'rgba(219,109,40,0.4)';
+}
+
+// ── APPLY ROLE RESTRICTIONS to UI ──
+function _applyRoleRestrictions() {
+  if (!isCoChair()) return;
+
+  // Hide scoring controls
+  ['btn-rate','inline-score-panel','score-popup'].forEach(id => {
+    safe(id, el => { el.style.display='none'; });
+  });
+
+  // Disable score buttons
+  document.querySelectorAll('[onclick*="showScorePopup"],[onclick*="rateScore"],[onclick*="applyScore"]')
+    .forEach(el => {
+      el.style.opacity = '0.3';
+      el.style.pointerEvents = 'none';
+      el.title = 'Co-chairs cannot score';
+    });
+
+  // Disable warning buttons
+  document.querySelectorAll('[onclick*="addWarning"],[onclick*="openWarning"]')
+    .forEach(el => {
+      el.style.opacity = '0.3';
+      el.style.pointerEvents = 'none';
+      el.title = 'Co-chairs cannot warn';
+    });
+
+  // Hide end meeting / end session
+  safe('btn-end-meeting', el => el.style.display='none');
+  safe('btn-end-confirm-btn', el => el.style.display='none');
+
+  // Co-chairs CAN use timer start/stop/pause — leave those alone
+  // Show co-chair banner
+  if (!document.getElementById('cochair-banner')) {
+    const banner = document.createElement('div');
+    banner.id = 'cochair-banner';
+    banner.style.cssText = 'position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(219,109,40,0.15);border:1px solid rgba(219,109,40,0.4);border-radius:10px;padding:6px 16px;font-size:11px;font-weight:700;color:var(--orange);pointer-events:none';
+    banner.textContent = '🪑 Co-Chair Mode — Timer & AI only';
+    document.body.appendChild(banner);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// CHAIR PANEL — chair sees co-chairs, can promote/demote
+// ══════════════════════════════════════════════════════════════
 function openMultiChairModal() {
   const existing = document.getElementById('multichair-modal');
   if (existing) { existing.remove(); return; }
@@ -12065,74 +12346,67 @@ function openMultiChairModal() {
   modal.id = 'multichair-modal';
   modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
 
-  const connected = _otherChairs ? Object.keys(_otherChairs).filter(k => Date.now() - (_otherChairs[k].lastSeen||0) < 10000) : [];
+  const coChairs = Object.entries(_otherChairs).filter(([,c]) => Date.now()-(c.lastSeen||0) < 15000);
+  const coCount = coChairs.filter(([,c])=>c.role==='co-chair').length;
+  const canAddMore = coCount < 3;
+
+  const chairList = coChairs.length ? coChairs.map(([id, c]) => {
+    const isOnline = Date.now() - (c.lastSeen||0) < 8000;
+    const ago = Math.round((Date.now()-(c.lastSeen||0))/1000);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;
+      background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
+      <span style="width:8px;height:8px;border-radius:50%;background:${isOnline?'var(--green)':'var(--text4)'};flex-shrink:0"></span>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:var(--text)">${c.name||'Co-Chair'}</div>
+        <div style="font-size:10px;color:var(--text3)">${c.page||'—'} · ${ago}s ago · <strong style="color:${c.role==='chair'?'var(--blue)':'var(--orange)'}">${c.role}</strong></div>
+      </div>
+      ${isChair() ? `
+      <div style="display:flex;gap:5px">
+        ${c.role==='co-chair' ? `<button onclick="promoteToChair('${id}')" class="btn btn-primary btn-sm" title="Promote to Chair — you become co-chair">Promote 👑</button>` : ''}
+        ${c.role==='chair' ? `<button onclick="demoteToCoChair('${id}')" class="btn btn-ghost btn-sm">Demote 🪑</button>` : ''}
+      </div>` : ''}
+    </div>`;
+  }).join('') : `<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">
+    No co-chairs connected yet.<br/>Share the session ID so they can join.
+  </div>`;
 
   modal.innerHTML = `
-    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
       <div style="padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
         <div>
-          <div style="font-size:15px;font-weight:700;color:var(--text)">👥 Multi-Chair Session</div>
-          <div style="font-size:11px;color:var(--text3)">Multiple chairs can manage the same session simultaneously</div>
+          <div style="font-size:15px;font-weight:700">👥 Multi-Chair Panel</div>
+          <div style="font-size:11px;color:var(--text3)">You are: <strong style="color:${isChair()?'var(--blue)':'var(--orange)'}">${_myChairRoleLevel}</strong> · ${coChairs.length} co-chair${coChairs.length!==1?'s':''} connected</div>
         </div>
         <button onclick="document.getElementById('multichair-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
       </div>
-      <div style="padding:18px 22px;display:flex;flex-direction:column;gap:14px">
+      <div style="padding:18px 22px">
 
-        <!-- Current status -->
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Current Session</div>
-          <div style="display:flex;gap:10px;align-items:center">
-            <div style="flex:1">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--blue)">${_fbSessionId || '—'}</div>
-              <div style="font-size:11px;color:var(--text3);margin-top:2px">${_isSecondaryChair ? '🪑 Co-Chair' : '👑 Primary Chair'} · ${session.committee || 'No session'}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-size:11px;color:var(--green)">● ${connected.length + 1} chair${connected.length !== 0 ? 's' : ''} online</div>
-            </div>
+        <!-- Role explanation -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+          <div style="background:rgba(56,139,253,0.08);border:1px solid rgba(56,139,253,0.2);border-radius:10px;padding:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px">🎓 Chair (1)</div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.5">Score · Warn · All controls<br/>Promotes/demotes co-chairs</div>
+          </div>
+          <div style="background:rgba(219,109,40,0.08);border:1px solid rgba(219,109,40,0.2);border-radius:10px;padding:10px">
+            <div style="font-size:12px;font-weight:700;color:var(--orange);margin-bottom:4px">🪑 Co-Chair (max 3)</div>
+            <div style="font-size:10px;color:var(--text3);line-height:1.5">Timer start/stop · AI notes<br/>Real-time view of everything</div>
           </div>
         </div>
 
-        <!-- Online chairs list -->
-        ${connected.length > 0 ? `
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Online Chairs</div>
-          ${connected.map(k => {
-            const c = _otherChairs[k];
-            return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
-              <span style="font-size:16px">${c.role==='primary'?'👑':'🪑'}</span>
-              <span style="font-size:13px;font-weight:600;color:var(--text)">${c.name||'Chair'}</span>
-              <span style="font-size:10px;color:var(--text3);margin-left:auto">${c.page||'—'}</span>
-              <span style="width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0"></span>
-            </div>`;
-          }).join('')}
-        </div>` : ''}
-
-        <!-- Join existing session -->
-        ${!_isSecondaryChair ? `
-        <div style="background:rgba(106,176,255,0.06);border:1px solid rgba(106,176,255,0.2);border-radius:10px;padding:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">🔗 Join as Co-Chair</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Enter another session's ID to join as co-chair. You'll see and sync all data.</div>
-          <div style="display:flex;gap:6px">
-            <input type="text" id="mc-join-id" placeholder="Session ID (e.g. ABC12DEF)"
-              style="flex:1;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
-              maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
-            <button onclick="joinAsCoChair()" class="btn btn-primary btn-sm">Join</button>
+        <!-- Session ID to share -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Share with co-chairs</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:800;color:var(--text);letter-spacing:0.18em;text-align:center;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 14px">${_fbSessionId}</div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button onclick="navigator.clipboard?.writeText('${_fbSessionId}').then(()=>showToast('Copied ✓'))" class="btn btn-ghost btn-sm" style="flex:1">📋 Copy ID</button>
+            ${document.getElementById('setup-session-password')?.value ? `<button onclick="navigator.clipboard?.writeText(document.getElementById('setup-session-password').value).then(()=>showToast('Password copied ✓'))" class="btn btn-ghost btn-sm" style="flex:1">🔑 Copy Password</button>` : ''}
           </div>
-          <div id="mc-join-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
-        </div>` : `
-        <div style="background:rgba(61,232,160,0.06);border:1px solid rgba(61,232,160,0.2);border-radius:10px;padding:14px">
-          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">✅ Co-Chair Mode Active</div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">You are viewing the session in co-chair mode. Scores and warnings sync automatically.</div>
-          <button onclick="leaveCoChair()" class="btn btn-danger btn-sm">Leave Co-Chair Mode</button>
-        </div>`}
-
-        <!-- Invite info -->
-        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Invite Another Chair</div>
-          <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Share this Session ID with your co-chairs:</div>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:800;color:var(--text);letter-spacing:0.15em;text-align:center;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px">${_fbSessionId || '—'}</div>
-          <button onclick="navigator.clipboard?.writeText('${_fbSessionId}').then(()=>showToast('Copied!'))" class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px">📋 Copy Session ID</button>
+          ${!canAddMore ? `<div style="font-size:10px;color:var(--red);margin-top:6px;text-align:center">Maximum 3 co-chairs reached</div>` : `<div style="font-size:10px;color:var(--text3);margin-top:6px;text-align:center">${3-coCount} co-chair slot${3-coCount!==1?'s':''} available</div>`}
         </div>
+
+        <!-- Connected co-chairs -->
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Connected (${coChairs.length})</div>
+        ${chairList}
 
       </div>
     </div>`;
@@ -12141,358 +12415,197 @@ function openMultiChairModal() {
   modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
 
-async function joinAsCoChair() {
-  const id = (document.getElementById('mc-join-id')?.value || '').trim().toUpperCase();
-  const status = document.getElementById('mc-join-status');
-  if (id.length < 6) { if(status) status.textContent = 'Enter a valid session ID'; return; }
-  if(status) status.textContent = 'Connecting...';
+// ── Chair promotes co-chair → chair, demotes self → co-chair ──
+function promoteToChair(coChairId) {
+  if (!isChair()) { showToast('Only the chair can promote','error'); return; }
 
-  try {
-    const r = await fetch(`${_fbUrl}/mun_${id}.json`);
-    if (!r.ok) throw new Error('Cannot reach Firebase');
-    const data = await r.json();
-    if (!data) throw new Error(`Session "${id}" not found`);
-    if (!data.delegates?.length) throw new Error('Session has no delegates — is it active?');
+  // Check co-chair count
+  const coCount = Object.values(_otherChairs).filter(c=>c.role==='co-chair').length;
+  if (coCount >= 3) { showToast('Max 3 co-chairs already','error'); return; }
 
-    // Load session data
-    _fbSessionId = id;
-    _isSecondaryChair = true;
-    _chairRole = 'co-chair';
+  if (!confirm(`Promote this co-chair to Chair? You will become a co-chair.`)) return;
 
-    // Apply remote data
-    if (data.delegates) delegates = [...data.delegates];
-    if (data.state) {
-      session.committee = data.state.committee || session.committee;
-      session.agenda = data.state.agenda || session.agenda;
-    }
-    if (data.attendance) Object.assign(rollCallData, data.attendance);
-    if (data.delegatePins) Object.assign(delegatePins, data.delegatePins);
-    if (data.scores) Object.assign(scores, data.scores);
-
-    startFbPoll();
-    startChairHeartbeat();
-    pushSessionToFirebase();
-
-    // Update UI
-    const sic = document.getElementById('session-id-chip');
-    if(sic) { sic.style.display=''; sic.textContent = 'CO: ' + id; sic.style.color='var(--orange)'; sic.style.borderColor='rgba(219,109,40,0.4)'; }
-    updateStats(); renderRollCall(); renderAllSpk(); renderDelegates();
-
-    document.getElementById('multichair-modal')?.remove();
-    showToast(`✅ Joined session ${id} as co-chair`);
-    openMultiChairModal(); // reopen to show updated state
-
-  } catch(e) {
-    if(status) status.innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
-  }
-}
-
-function leaveCoChair() {
-  _isSecondaryChair = false;
-  _chairRole = 'primary';
-  clearInterval(_chairHeartbeatIv);
-  document.getElementById('multichair-modal')?.remove();
-  showToast('Left co-chair mode');
-  const sic = document.getElementById('session-id-chip');
-  if(sic) { sic.style.color=''; sic.style.borderColor=''; sic.textContent = 'ID: ' + _fbSessionId; }
-}
-
-function startChairHeartbeat() {
-  if (!_chairId) initChairId();
-  clearInterval(_chairHeartbeatIv);
-  _chairHeartbeatIv = setInterval(() => {
-    if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
-    const activePage = document.querySelector('.nav-item.active')?.textContent?.trim() || '';
+  // Update Firebase: promote them, demote self
+  Promise.all([
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${coChairId}.json`, {
+      method: 'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({role:'chair'})
+    }),
     fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`, {
-      method: 'PUT',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        role: _chairRole,
-        name: _chairRole === 'primary' ? 'Primary Chair' : 'Co-Chair',
-        page: activePage,
-        lastSeen: Date.now()
-      })
-    }).catch(()=>{});
-
-    // Read other chairs
-    fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`)
-      .then(r=>r.json())
-      .then(chairs => {
-        if (!chairs) return;
-        _otherChairs = {};
-        Object.entries(chairs).forEach(([id, c]) => {
-          if (id !== _chairId) _otherChairs[id] = c;
-        });
-        // Update chip if others are online
-        const online = Object.values(_otherChairs).filter(c => Date.now() - (c.lastSeen||0) < 10000).length;
-        const sic = document.getElementById('session-id-chip');
-        if (sic && online > 0) {
-          sic.textContent = `ID: ${_fbSessionId} · ${online+1}👤`;
-        }
-      }).catch(()=>{});
-
-    // Push scores+warnings for sync
-    if (!_isSecondaryChair) {
-      const scoreSnap = {...scores};
-      const warnSnap = {};
-      Object.entries(warnings).forEach(([c,l])=>{ if(l?.length) warnSnap[c]=l; });
-      if (Object.keys(scoreSnap).length) {
-        fetch(`${_fbUrl}/mun_${_fbSessionId}/scores.json`, {
-          method: 'PUT', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(scoreSnap)
-        }).catch(()=>{});
-      }
-      if (Object.keys(warnSnap).length) {
-        fetch(`${_fbUrl}/mun_${_fbSessionId}/warnings.json`, {
-          method: 'PUT', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify(warnSnap)
-        }).catch(()=>{});
-      }
-    }
-  }, 5000);
+      method: 'PATCH', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({role:'co-chair'})
+    })
+  ]).then(() => {
+    _myChairRoleLevel = 'co-chair';
+    _chairRole = 'co-chair';
+    _isSecondaryChair = true;
+    _applyRoleRestrictions();
+    _updateChairChip();
+    document.getElementById('multichair-modal')?.remove();
+    showToast('Promoted! You are now co-chair.');
+  }).catch(() => showToast('Error updating roles','error'));
 }
 
-
-// ════════════════════════════════════════════════════════════════
-// TIMER FULLSCREEN
-// ════════════════════════════════════════════════════════════════
-let _timerFullscreen = false;
-function toggleTimerFullscreen() {
-  _timerFullscreen = !_timerFullscreen;
-  document.body.classList.toggle('timer-fullscreen', _timerFullscreen);
-  // Show timer page
-  if (_timerFullscreen) {
-    showPage('timer');
-    const btn = document.getElementById('btn-timer-fullscreen');
-    if (btn) { btn.textContent = '✕'; btn.title = 'Exit fullscreen (Esc)'; }
-  } else {
-    const btn = document.getElementById('btn-timer-fullscreen');
-    if (btn) { btn.textContent = '⛶'; btn.title = 'Fullscreen timer'; }
-  }
-}
-// Esc exits timer fullscreen too (already handled in keydown — just add)
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape' && _timerFullscreen) toggleTimerFullscreen();
-}, true);
-
-// ════════════════════════════════════════════════════════════════
-// SESSION ROLES — chair / co-chair / admin
-// Roles:
-//   admin   — full access, can reassign roles, can end session
-//   chair   — can give points, use timer, full control
-//   co-chair — can warn, view everything, use AI, can't score
-// ════════════════════════════════════════════════════════════════
-let _sessionPassword = ''; // set by primary chair in setup
-let _myChairName = '';
-let _myChairRoleLevel = 'chair'; // 'admin' | 'chair' | 'co-chair'
-let _chairRoles = {}; // {chairId: {name, role, lastSeen}}
-
-const ROLE_LEVELS = {admin: 3, chair: 2, 'co-chair': 1};
-function canDoAction(action) {
-  const lvl = ROLE_LEVELS[_myChairRoleLevel] || 2;
-  const needed = {score: 2, warn: 1, timer: 2, end: 3, roles: 3, view: 1};
-  return lvl >= (needed[action] || 1);
-}
-
-function openRolesModal() {
-  const existing = document.getElementById('roles-modal');
-  if (existing) { existing.remove(); return; }
-  if (!_fbAvailable) { showToast('Connect Firebase first','error'); return; }
-
-  // Fetch current chairs
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`)
-    .then(r => r.json())
-    .then(chairs => {
-      const modal = document.createElement('div');
-      modal.id = 'roles-modal';
-      modal.style.cssText = 'position:fixed;inset:0;z-index:820;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
-
-      const chairList = chairs ? Object.entries(chairs)
-        .filter(([,c]) => Date.now() - (c.lastSeen||0) < 30000)
-        .map(([id, c]) => {
-          const isSelf = id === _chairId;
-          const canEdit = canDoAction('roles') && !isSelf;
-          return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border:1px solid ${isSelf?'rgba(56,139,253,0.3)':'var(--border)'};border-radius:10px;margin-bottom:6px">
-            <span style="font-size:18px">${c.role==='admin'?'👑':c.role==='co-chair'?'🪑':'🎓'}</span>
-            <div style="flex:1">
-              <div style="font-size:13px;font-weight:600;color:var(--text)">${c.name||'Chair'} ${isSelf?'<span style="font-size:10px;color:var(--blue)">(you)</span>':''}</div>
-              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em">${c.role||'chair'} · last seen ${Math.round((Date.now()-(c.lastSeen||0))/1000)}s ago</div>
-            </div>
-            ${canEdit ? `<select onchange="setChairRole('${id}',this.value)" style="font-size:12px;padding:4px 8px">
-              <option value="co-chair" ${c.role==='co-chair'?'selected':''}>Co-Chair</option>
-              <option value="chair" ${c.role==='chair'?'selected':''}>Chair</option>
-              <option value="admin" ${c.role==='admin'?'selected':''}>Admin</option>
-            </select>` : `<span style="font-size:11px;color:var(--text3);background:var(--bg4);padding:3px 8px;border-radius:6px">${c.role||'chair'}</span>`}
-          </div>`;
-        }).join('') : '<div style="text-align:center;padding:20px;color:var(--text3)">No other chairs online.</div>';
-
-      modal.innerHTML = `
-        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-xl)">
-          <div style="padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <div style="font-size:15px;font-weight:700">👑 Chair Roles</div>
-              <div style="font-size:11px;color:var(--text3)">Session: ${_fbSessionId} · Your role: ${_myChairRoleLevel}</div>
-            </div>
-            <button onclick="document.getElementById('roles-modal').remove()" style="background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer">×</button>
-          </div>
-          <div style="padding:16px 22px">
-            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-                ${[
-                  ['👑 Admin','Full control, roles, end session','var(--yellow)'],
-                  ['🎓 Chair','Score, timer, all features','var(--blue)'],
-                  ['🪑 Co-Chair','Warn, view, AI analysis','var(--green)']
-                ].map(([t,d,c])=>`<div style="background:var(--bg4);border-radius:8px;padding:8px;text-align:center">
-                  <div style="font-size:13px;font-weight:700;color:${c};margin-bottom:3px">${t}</div>
-                  <div style="font-size:10px;color:var(--text3)">${d}</div>
-                </div>`).join('')}
-              </div>
-            </div>
-            <div class="sec-title-sm" style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Online Chairs</div>
-            ${chairList}
-          </div>
-        </div>`;
-      document.body.appendChild(modal);
-      modal.onclick = e => { if (e.target === modal) modal.remove(); };
-    }).catch(() => showToast('Could not load chairs','error'));
-}
-
-function setChairRole(chairId, newRole) {
-  if (!canDoAction('roles')) { showToast('Only admins can change roles','error'); return; }
+// ── Chair demotes another chair back to co-chair ──
+function demoteToCoChair(chairId) {
+  if (!isChair()) { showToast('Only the chair can demote','error'); return; }
+  if (!confirm('Demote this chair to co-chair?')) return;
   fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${chairId}.json`, {
-    method: 'PATCH', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({role: newRole})
+    method: 'PATCH', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({role:'co-chair'})
   }).then(() => {
-    showToast(`Role updated to ${newRole}`);
-    document.getElementById('roles-modal')?.remove();
-    setTimeout(openRolesModal, 300);
-  }).catch(()=>{});
+    showToast('Demoted to co-chair');
+    document.getElementById('multichair-modal')?.remove();
+    setTimeout(openMultiChairModal, 300);
+  }).catch(() => showToast('Error','error'));
 }
 
-// ════════════════════════════════════════════════════════════════
-// JOIN COMMITTEE FROM SETUP PAGE
-// ════════════════════════════════════════════════════════════════
-let _sessionPasswordHash = '';
+// ── CO-CHAIR: send AI note to chair ──
+function sendAINoteToChair(text) {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  const note = {
+    from: _myChairName || 'Co-Chair',
+    chairId: _chairId,
+    text,
+    time: new Date().toLocaleTimeString(),
+    t: Date.now()
+  };
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(note)
+  }).then(() => showToast('Note sent to chair ✓')).catch(()=>{});
+}
 
+// ── CHAIR: poll AI notes from co-chairs ──
+function pollAINotes() {
+  if (!isChair() || !_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`)
+    .then(r=>r.json())
+    .then(notes => {
+      if (!notes) return;
+      Object.entries(notes).forEach(([key, note]) => {
+        if (note.t && Date.now()-note.t < 6000 && note.t > (_lastAINoteT||0)) {
+          _lastAINoteT = note.t;
+          showToast(`🤖 ${note.from}: "${note.text.slice(0,60)}"`, 5000);
+        }
+      });
+    }).catch(()=>{});
+}
+let _lastAINoteT = 0;
+setInterval(pollAINotes, 3000);
+
+// ── JOIN COMMITTEE FROM SETUP ──
 async function joinCommitteeFromSetup() {
-  const id = (document.getElementById('join-session-id-input')?.value || '').trim().toUpperCase();
-  const pw = (document.getElementById('join-session-password')?.value || '').trim();
+  const id = (document.getElementById('join-session-id-input')?.value||'').trim().toUpperCase();
+  const pw = (document.getElementById('join-session-password')?.value||'').trim();
   const status = document.getElementById('join-setup-status');
 
-  if (id.length < 6) { if(status) status.innerHTML='<span style="color:var(--red)">Enter a valid session ID</span>'; return; }
+  if (id.length < 6) { if(status) status.innerHTML='<span style="color:var(--red)">Enter a valid session ID (6-8 chars)</span>'; return; }
   if(status) status.textContent = 'Connecting...';
 
   try {
     const r = await fetch(`${_fbUrl}/mun_${id}.json`);
     if (!r.ok) throw new Error('Cannot reach Firebase');
     const data = await r.json();
-    if (!data) throw new Error(`Session "${id}" not found`);
+    if (!data) throw new Error(`Session "${id}" not found. Is the chair's session active?`);
 
-    // Check password if set
+    // Check password
     if (data.sessionPassword && data.sessionPassword !== pw) {
-      if(status) status.innerHTML = '<span style="color:var(--red)">Incorrect password</span>';
-      return;
+      if(status) status.innerHTML='<span style="color:var(--red)">Incorrect password</span>'; return;
     }
 
-    if (!data.delegates?.length) throw new Error('Session has no delegates — is it active?');
+    // Check co-chair limit
+    const chairs = data.chairs || {};
+    const activeCoChairs = Object.values(chairs).filter(c =>
+      c.role === 'co-chair' && Date.now()-(c.lastSeen||0) < 15000
+    ).length;
+    if (activeCoChairs >= 3) throw new Error('Maximum 3 co-chairs already connected');
 
-    // Ask for a name
-    const name = prompt('Your name (shown to other chairs):') || 'Co-Chair';
+    if (!data.delegates?.length) throw new Error('No delegates in this session yet — ask the chair to start first');
 
-    // Apply session data
+    const name = prompt('Your name (shown to the chair):') || 'Co-Chair';
+
+    // Apply session
     _fbSessionId = id;
-    _isSecondaryChair = true;
-    _chairRole = 'co-chair';
     _myChairRoleLevel = 'co-chair';
+    _chairRole = 'co-chair';
+    _isSecondaryChair = true;
     _myChairName = name;
+    _fbAvailable = true;
 
-    delegates = [...data.delegates];
-    if (data.state) { session.committee = data.state.committee||''; session.agenda = data.state.agenda||''; }
+    delegates = [...(data.delegates||[])];
+    if (data.state) { session.committee=data.state.committee||''; session.agenda=data.state.agenda||''; }
     if (data.attendance) Object.assign(rollCallData, data.attendance);
     if (data.delegatePins) Object.assign(delegatePins, data.delegatePins);
     if (data.scores) Object.assign(scores, data.scores);
     if (data.warnings) Object.assign(warnings, data.warnings);
 
-    // Set inputs
-    const ci = document.getElementById('setup-committee');
-    if (ci) ci.value = session.committee;
-    const ai = document.getElementById('setup-agenda');
-    if (ai) ai.value = session.agenda;
+    // Fill setup fields
+    const ci=document.getElementById('setup-committee'); if(ci) ci.value=session.committee;
+    const ai=document.getElementById('setup-agenda'); if(ai) ai.value=session.agenda;
 
-    // Begin the session as co-chair
+    // Begin session
     beginSession();
 
-    // Override role after beginSession
+    // Restore co-chair role (beginSession resets it)
     _myChairRoleLevel = 'co-chair';
+    _chairRole = 'co-chair';
     _isSecondaryChair = true;
 
-    startFbPoll();
     initChairId();
+    startFbPoll();
     startChairHeartbeat();
+    _applyRoleRestrictions();
+    _updateChairChip();
 
-    // Register in Firebase
-    fetch(`${_fbUrl}/mun_${id}/chairs/${_chairId}.json`, {
-      method: 'PUT', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({name, role: 'co-chair', lastSeen: Date.now(), page: 'timer'})
-    }).catch(()=>{});
+    // Add co-chair AI note button to AI page
+    _addCoChairAIButton();
 
-    // Style chip
-    const sic = document.getElementById('session-id-chip');
-    if (sic) { sic.textContent = 'CO: ' + id; sic.style.color='var(--orange)'; }
-
-    if(status) status.innerHTML = `<span style="color:var(--green)">✅ Joined as co-chair!</span>`;
+    if(status) status.innerHTML=`<span style="color:var(--green)">✅ Joined as co-chair! The chair can see you.</span>`;
 
   } catch(e) {
-    if(status) status.innerHTML = `<span style="color:var(--red)">${e.message}</span>`;
+    if(status) status.innerHTML=`<span style="color:var(--red)">${e.message}</span>`;
   }
 }
 
-// ════════════════════════════════════════════════════════════════
-// SAVE SESSION PASSWORD TO FIREBASE WHEN SESSION STARTS
-// ════════════════════════════════════════════════════════════════
+function _addCoChairAIButton() {
+  // Add a "Send to Chair" button on the AI analysis page for co-chairs
+  const aiCard = document.querySelector('#page-aispeech .card-body');
+  if (!aiCard || document.getElementById('cochair-ai-send')) return;
+  const btn = document.createElement('button');
+  btn.id = 'cochair-ai-send';
+  btn.className = 'btn btn-primary';
+  btn.style.marginTop = '8px';
+  btn.textContent = '📤 Send Analysis to Chair';
+  btn.onclick = () => {
+    const txt = document.getElementById('ai-result')?.textContent?.trim();
+    if (!txt) { showToast('Run an analysis first','error'); return; }
+    const delName = _aiDelegate?.n || 'unknown delegate';
+    sendAINoteToChair(`[AI: ${delName}] ${txt.slice(0,200)}`);
+  };
+  aiCard.appendChild(btn);
+}
+
+// ── ROLES MODAL (simple, chair only) ──
+function openRolesModal() { openMultiChairModal(); }
+
+// ── SAVE SESSION PASSWORD ──
 function pushSessionPassword() {
-  const pw = document.getElementById('setup-session-password')?.value?.trim() || '';
+  const pw = document.getElementById('setup-session-password')?.value?.trim();
   if (!pw || !_fbAvailable || !_fbUrl || !_fbSessionId) return;
   fetch(`${_fbUrl}/mun_${_fbSessionId}/sessionPassword.json`, {
-    method: 'PUT', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(pw)
+    method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(pw)
   }).catch(()=>{});
 }
 
-// ════════════════════════════════════════════════════════════════
-// ROLE-BASED UI ENFORCEMENT
-// ════════════════════════════════════════════════════════════════
-function enforceRoleUI() {
-  // Co-chairs can't score — disable score popup trigger
-  if (_myChairRoleLevel === 'co-chair') {
-    document.querySelectorAll('[onclick*="showScorePopup"],[onclick*="rateScore"],[onclick*="openScorePanel"]')
-      .forEach(el => { el.title = 'Only chairs can score'; el.style.opacity = '0.4'; el.style.pointerEvents = 'none'; });
-  }
+// ── canDoAction (kept for backward compat) ──
+function canDoAction(action) {
+  if (action === 'score' || action === 'warn' || action === 'end' || action === 'roles')
+    return isChair();
+  return true;
 }
 
-// Check Firebase for role updates
-function checkRoleFromFirebase() {
-  if (!_fbAvailable || !_fbUrl || !_fbSessionId || !_chairId) return;
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs/${_chairId}.json`)
-    .then(r => r.json())
-    .then(data => {
-      if (data?.role && data.role !== _myChairRoleLevel) {
-        _myChairRoleLevel = data.role;
-        _chairRole = data.role;
-        showToast(`Your role updated to: ${data.role}`);
-        enforceRoleUI();
-        const sic = document.getElementById('session-id-chip');
-        if (sic) {
-          if (data.role === 'admin') sic.style.color = 'var(--yellow)';
-          else if (data.role === 'co-chair') sic.style.color = 'var(--orange)';
-          else sic.style.color = '';
-        }
-      }
-    }).catch(()=>{});
-}
-
-// Poll for role changes every 10s
-setInterval(checkRoleFromFirebase, 10000);
 
 // ═══ STATS ═══
 function updateStats(){
