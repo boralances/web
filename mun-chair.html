@@ -825,6 +825,10 @@ window.makeQRUrl = function(data, size) {
       Placard
       <span class="nav-badge" id="nav-placard-count">0</span>
     </button>
+    <button class="nav-item disabled" id="nav-cochair" onclick="showPage('cochair')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>
+      Co-Chair
+    </button>
     <button class="nav-item disabled" id="nav-pins" onclick="showPage('pins')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M11.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3A2.5 2.5 0 0 1 11.5 0a2.5 2.5 0 0 1 .5 4.95V7.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H12v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5V9.5H9.5a.5.5 0 0 1-.5-.5V8a.5.5 0 0 1 .5-.5h.05V4.95A2.5 2.5 0 0 1 9.05 3zM2 13a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/></svg>
       PINs
@@ -2939,6 +2943,76 @@ window.makeQRUrl = function(data, size) {
       </div>
     </div>
 
+    <!-- ═══ CO-CHAIR PANEL ═══ -->
+    <div id="page-cochair" class="page" style="max-width:680px">
+      <div class="card" style="margin-bottom:12px">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">👥 Multi-Chair Session</div>
+            <span class="chip" id="cochair-role-chip" style="background:rgba(56,139,253,0.15);border-color:rgba(56,139,253,0.3);color:var(--blue)">🎓 Chair</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="refreshCoChairPanel()">⟳ Refresh</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:14px">
+          <!-- My status -->
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">My Role</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="flex:1">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--blue)" id="cochair-session-id-big">—</div>
+                <div style="font-size:11px;color:var(--text3)" id="cochair-role-desc">Session ID · Chair</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="copySessionId()" title="Copy session ID">📋 Copy ID</button>
+            </div>
+          </div>
+
+          <!-- Co-chairs list -->
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">
+            Connected Chairs <span id="cochair-count-badge" style="font-size:10px;color:var(--text3)"></span>
+          </div>
+          <div id="cochair-list" style="display:flex;flex-direction:column;gap:6px"></div>
+
+          <!-- Role legend -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+            <div style="background:rgba(56,139,253,0.06);border:1px solid rgba(56,139,253,0.15);border-radius:8px;padding:10px">
+              <div style="font-size:11px;font-weight:700;color:var(--blue);margin-bottom:4px">🎓 Chair</div>
+              <div style="font-size:10px;color:var(--text3);line-height:1.5">Score · Warn · All controls<br/>Promotes / demotes co-chairs</div>
+            </div>
+            <div style="background:rgba(219,109,40,0.06);border:1px solid rgba(219,109,40,0.15);border-radius:8px;padding:10px">
+              <div style="font-size:11px;font-weight:700;color:var(--orange);margin-bottom:4px">🪑 Co-Chair (max 3)</div>
+              <div style="font-size:10px;color:var(--text3);line-height:1.5">Timer start/stop · AI notes<br/>Live view (updates ~2s)</div>
+            </div>
+          </div>
+
+          <!-- Share section -->
+          <div style="margin-top:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Share with co-chairs</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:8px">They open MUN Chair → Setup → "Join Existing Committee"</div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--text);background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;letter-spacing:0.15em" id="cochair-share-id">—</div>
+              <button class="btn btn-ghost btn-sm" onclick="copySessionId()">📋 Copy</button>
+            </div>
+            <div id="cochair-pw-row" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Notes from co-chairs -->
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">🤖 AI Notes from Co-Chairs</div>
+          <button class="btn btn-ghost btn-sm" onclick="clearAINotes()">Clear</button>
+        </div>
+        <div class="card-body" style="padding:10px 14px">
+          <div id="ainotes-list">
+            <div class="empty-state">No AI notes yet. Co-chairs can send analysis notes here.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ DELEGATES ═══ -->
     <div id="page-delegates" class="page" style="max-width:700px">
       <div class="card">
@@ -3078,8 +3152,6 @@ let scoreboardBlobUrl=null;
 let customAwardTitles={best:'Best Delegate',outstanding:'Outstanding Delegate',verbal:'Verbal Commendation'};
 let sessionSuspended=false;
 let suspendPassword='';
-let _myChairRoleLevel = 'chair';   // default role for the primary chair
-let _myChairName = 'Chair';        // default name for the chair
 const ARC_C = 2*Math.PI*85; // 534.07
 
 const PAGES_META = {
@@ -3122,6 +3194,7 @@ const PAGES_META = {
   comrules:   {title:'Committee Rules',          crumb:'Custom rules of procedure for this committee'},
   timerlog:   {title:'Timer History',            crumb:'Log of all timer sessions this meeting'},
   agenda:     {title:'Agenda Tracker',              crumb:'Track and time agenda items'},
+  cochair:    {title:'Co-Chair Panel',              crumb:'Manage co-chairs and multi-chair session'},
   pins:       {title:'Delegate PINs & Access',         crumb:'4-digit PINs for portal access — print & distribute'},
   aispeech:   {title:'AI Speech Analysis',        crumb:'Analyze delegate speeches with Claude AI'},
   tournament: {title:'Tournament Mode',           crumb:'Manage multiple committees simultaneously'},
@@ -3167,6 +3240,7 @@ function showPage(id){
   if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
   if(id==='aispeech') { renderAIHistory(); const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||''; }
   if(id==='agenda') renderAgenda();
+  if(id==='cochair') refreshCoChairPanel();
   if(id==='tournament') renderTournament();
   if(id==='pins') renderPinsPage();
   if(id==='spktime') renderSpkTime();
@@ -3320,9 +3394,7 @@ function beginSession(){
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
-  ['nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech','nav-pins','nav-agenda'].forEach(id=>{
-    document.getElementById(id).classList.remove('disabled');
-  });
+  ['nav-cochair','nav-timer','nav-speakers','nav-delegates','nav-awards','nav-warnings','nav-rollcall','nav-modcaucus','nav-resolutions','nav-placard','nav-pins','nav-history','nav-notes','nav-amendments','nav-profiles','nav-summary','nav-nameplate','nav-modlog','nav-gslbank','nav-workpapers','nav-blocs','nav-caucuslog','nav-speakstats','nav-postracker','nav-lobbyroom','nav-seating','nav-comreport','nav-motionvotes','nav-feedback','nav-delnotes','nav-appeals','nav-scoretab','nav-spktime','nav-scorehistory','nav-chairscript','nav-comrules','nav-statsdash','nav-delanalysis','nav-timerlog','nav-aispeech','nav-pins','nav-agenda'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('disabled');});
   sessionStartTime=Date.now();
   startSessionClock();
   startAutoSave();
@@ -10647,8 +10719,12 @@ function connectRelay() {
 
 let _fbUrl = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
 let _fbSessionId = '';
-let _isSecondaryChair = false; // true = joined existing session as co-chair
-let _chairRole = 'primary'; // 'primary' | 'co-chair'
+let _isSecondaryChair = false;
+let _chairRole = 'chair'; // 'chair' | 'co-chair'
+let _myChairRoleLevel = 'chair'; // 'chair' | 'co-chair'
+let _myChairName = '';
+let _sessionPassword = '';
+let _lastAINoteT = 0;
 let _fbPollIv = null;
 let _fbAvailable = false;
 
@@ -12181,14 +12257,38 @@ function _pushLiveState() {
     t: Date.now()
   };
 
+  // Write to Firebase
   fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`, {
     method: 'PUT',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify(liveState)
   }).catch(()=>{});
+  // Also broadcast locally (same machine = instant, no Firebase delay)
+  try { new BroadcastChannel('mun_live_'+_fbSessionId).postMessage(liveState); } catch(e) {}
 }
 
 let _lastLiveStateT = 0;
+// Listen for instant local broadcasts (same machine)
+(function() {
+  try {
+    const _bc = new BroadcastChannel('mun_live_' + (_fbSessionId || 'none'));
+    // Reconnect when session ID changes
+    let _bcSid = _fbSessionId;
+    setInterval(()=>{
+      if (_fbSessionId !== _bcSid && _fbSessionId) {
+        _bcSid = _fbSessionId;
+        try {
+          new BroadcastChannel('mun_live_' + _fbSessionId).onmessage = e => {
+            if (isCoChair() && e.data) { Object.assign({}, e.data); _pullLiveState(); }
+          };
+        } catch(e2) {}
+      }
+    }, 2000);
+    _bc.onmessage = e => {
+      if (isCoChair() && e.data) _pullLiveState();
+    };
+  } catch(e) {}
+})();
 
 // ── CO-CHAIR pulls and applies live state ──
 async function _pullLiveState() {
@@ -12492,7 +12592,6 @@ function pollAINotes() {
       });
     }).catch(()=>{});
 }
-let _lastAINoteT = 0;
 setInterval(pollAINotes, 3000);
 
 // ── JOIN COMMITTEE FROM SETUP ──
@@ -12606,6 +12705,127 @@ function canDoAction(action) {
   return true;
 }
 
+
+
+// ════════════════════════════════════════════════════════════
+// CO-CHAIR PANEL — sidebar page functions
+// ════════════════════════════════════════════════════════════
+let _aiNotes = [];
+
+function copySessionId() {
+  navigator.clipboard?.writeText(_fbSessionId||'').then(()=>showToast('Session ID copied ✓'));
+}
+
+async function refreshCoChairPanel() {
+  const chip = document.getElementById('cochair-role-chip');
+  const bigId = document.getElementById('cochair-session-id-big');
+  const shareId = document.getElementById('cochair-share-id');
+  const roleDesc = document.getElementById('cochair-role-desc');
+  const pwRow = document.getElementById('cochair-pw-row');
+  const list = document.getElementById('cochair-list');
+  const badge = document.getElementById('cochair-count-badge');
+
+  if(bigId) bigId.textContent = _fbSessionId || '—';
+  if(shareId) shareId.textContent = _fbSessionId || '—';
+
+  const roleLbl = _myChairRoleLevel === 'chair' ? '🎓 Chair' : '🪑 Co-Chair';
+  const roleColor = _myChairRoleLevel === 'chair' ? 'var(--blue)' : 'var(--orange)';
+  if(chip){ chip.textContent = roleLbl; chip.style.color = roleColor; chip.style.borderColor = roleColor.replace(')', ',0.3)').replace('var','rgba').replace('(--blue','(56,139,253').replace('(--orange','(219,109,40'); }
+  if(roleDesc) roleDesc.textContent = `${_fbSessionId} · ${roleLbl}`;
+  if(pwRow){
+    const pw = document.getElementById('setup-session-password')?.value?.trim();
+    pwRow.textContent = pw ? `Password: ${pw}` : 'No password set';
+  }
+
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) {
+    if(list) list.innerHTML='<div class="empty-state">Firebase not connected.</div>';
+    return;
+  }
+
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}/chairs.json`);
+    const chairs = await r.json();
+
+    if (!chairs) {
+      if(list) list.innerHTML='<div class="empty-state">No other chairs connected.</div>';
+      if(badge) badge.textContent='(0 others)';
+      return;
+    }
+
+    const all = Object.entries(chairs).filter(([id, c]) => Date.now()-(c.lastSeen||0) < 20000);
+    const others = all.filter(([id])=>id!==_chairId);
+    if(badge) badge.textContent = `(${others.length} other${others.length!==1?'s':''})`;
+
+    if (!others.length) {
+      if(list) list.innerHTML='<div class="empty-state">No other chairs connected yet.</div>';
+      return;
+    }
+
+    const iAmChair = isChair();
+    if(list) list.innerHTML = others.map(([id, c]) => {
+      const ago = Math.round((Date.now()-(c.lastSeen||0))/1000);
+      const online = ago < 8;
+      const isOtherChair = c.role === 'chair';
+      return `<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;
+        background:var(--bg3);border:1px solid ${online?'rgba(63,185,80,0.2)':'var(--border)'};
+        border-radius:10px">
+        <span style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:${online?'var(--green)':'var(--text4)'}"></span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${c.name||'Chair'}</div>
+          <div style="font-size:10px;color:var(--text3)">${c.page||'—'} · ${ago}s ago</div>
+        </div>
+        <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:7px;
+          background:${isOtherChair?'rgba(56,139,253,0.12)':'rgba(219,109,40,0.12)'};
+          color:${isOtherChair?'var(--blue)':'var(--orange)'}">${isOtherChair?'🎓 Chair':'🪑 Co-Chair'}</span>
+        ${iAmChair && !isOtherChair ? `
+          <button onclick="promoteToChair('${id}')" class="btn btn-primary btn-sm" style="font-size:11px">Promote 👑</button>
+        ` : ''}
+        ${iAmChair && isOtherChair && id!==_chairId ? `
+          <button onclick="demoteToCoChair('${id}')" class="btn btn-ghost btn-sm" style="font-size:11px">Demote 🪑</button>
+        ` : ''}
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    if(list) list.innerHTML=`<div class="empty-state" style="color:var(--red)">Error: ${e.message}</div>`;
+  }
+
+  // Also load AI notes
+  loadAINotes();
+}
+
+async function loadAINotes() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`);
+    const notes = await r.json();
+    const el = document.getElementById('ainotes-list');
+    if (!el) return;
+    if (!notes) { el.innerHTML='<div class="empty-state">No AI notes yet.</div>'; return; }
+
+    const list = Object.values(notes).sort((a,b)=>(b.t||0)-(a.t||0)).slice(0,20);
+    el.innerHTML = list.map(n=>`
+      <div style="padding:9px 12px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <span style="font-size:11px;font-weight:700;color:var(--blue)">${n.from||'Co-Chair'}</span>
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${n.time||''}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5">${n.text||''}</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+async function clearAINotes() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  await fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`, {method:'DELETE'}).catch(()=>{});
+  loadAINotes();
+  showToast('AI notes cleared');
+}
+
+// Auto-refresh co-chair panel every 4s when visible
+setInterval(()=>{
+  if(document.getElementById('page-cochair')?.classList.contains('active')) refreshCoChairPanel();
+}, 4000);
 
 // ═══ STATS ═══
 function updateStats(){
