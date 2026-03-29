@@ -3629,20 +3629,6 @@ function addSpkFromQ(gidx){
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
   _fbPushNow();
-  // Missing helper functions for multi‑chair sync
-function safe(id, fn) { const el = document.getElementById(id); if (el) fn(el); }
-
-function _pushLiveState() { _fbPushNow(); }
-function _pushAllSessionData() { _fbPushNow(); }
-function _pullLiveState() {
-  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`)
-    .then(r => r.ok ? r.json() : null)
-    .then(live => { if (live) _applyLiveState(live); })
-    .catch(() => {});
-}
-
-let _lastAINoteT2 = 0;  // used in _pollAINotes
   if(curMode==='opening'||curMode==='gsl') { document.getElementById('btn-next').style.display=''; const aibtn=document.getElementById('btn-ai-flag'); if(aibtn) aibtn.style.display=''; }
   const inp=document.getElementById('spk-q');
   inp.value='';
@@ -12340,6 +12326,13 @@ function _initBC() {
     };
   } catch(e) {}
 }
+function _pushLiveState() {
+  _fbPushNow();
+}
+
+function _pushAllSessionData() {
+  pushSessionToFirebase();
+}
 
 // ── HEARTBEAT: runs every 1 second for ALL chairs ──
 function startChairHeartbeat() {
@@ -12626,7 +12619,7 @@ function _applyLiveState(live) {
     Object.entries(live.warnings).forEach(([code, list]) => {
       if (JSON.stringify(warnings[code]) !== JSON.stringify(list)) { warnings[code] = list; changed = true; }
     });
-    if (changed) try { renderWarningsList(); } catch(e) {}
+    if (changed) try { renderWarnings(); } catch(e) {}
   }
 
   // ── Votes ──
