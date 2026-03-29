@@ -1397,6 +1397,11 @@ window.makeQRUrl = function(data, size) {
                 Next
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
               </button>
+              <button class="btn btn-ghost" id="btn-ai-flag" onclick="flagCurrentSpeakerAI()"
+                title="Flag current speaker as using AI — sends alert to chair"
+                style="display:none;border-color:rgba(248,81,73,0.4);color:var(--red);gap:5px;font-size:12px;padding:7px 12px">
+                🤖 AI
+              </button>
             </div>
             <!-- Yield / Right of Reply row — visible when a speaker is active -->
             <div id="yield-row" style="display:none;padding:10px 16px;border-top:1px solid var(--border);display:none;gap:6px;flex-wrap:wrap;justify-content:center">
@@ -2990,6 +2995,10 @@ window.makeQRUrl = function(data, size) {
           </div>
         </div>
         <div class="card-body" style="padding:14px">
+          <!-- Live status from chair — updated in real time -->
+          <div id="cochair-live-status" style="margin-bottom:12px">
+            <div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">⏳ Waiting for live data...</div>
+          </div>
           <!-- My status -->
           <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:12px">
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">My Role</div>
@@ -3003,6 +3012,16 @@ window.makeQRUrl = function(data, size) {
           </div>
 
           <!-- Co-chairs list -->
+          <!-- Quick AI flag button for co-chairs -->
+          <div style="margin-bottom:12px" id="cochair-ai-flag-row">
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Quick Actions</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button onclick="flagCurrentSpeakerAI()" class="btn btn-danger btn-sm" style="flex:1;gap:6px">
+                🤖 Flag Current Speaker as AI
+              </button>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-top:5px">Instantly alerts the chair. No analysis needed.</div>
+          </div>
           <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">
             Connected Chairs <span id="cochair-count-badge" style="font-size:10px;color:var(--text3)"></span>
           </div>
@@ -3609,7 +3628,8 @@ function addSpkFromQ(gidx){
   speakers.push({...c});
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
-  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  _fbPushNow();
+  if(curMode==='opening'||curMode==='gsl') { document.getElementById('btn-next').style.display=''; const aibtn=document.getElementById('btn-ai-flag'); if(aibtn) aibtn.style.display=''; }
   const inp=document.getElementById('spk-q');
   inp.value='';
   filterSpkQ();
@@ -3621,6 +3641,7 @@ function addSpkFromMain(gidx){
   speakers.push({...c});
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
+  _fbPushNow();
   const inp=document.getElementById('spk-search2');
   inp.value='';
   filterSpk2();
@@ -3633,6 +3654,7 @@ function removeSpeaker(idx){
   if(currentSpkIdx>=speakers.length) currentSpkIdx=speakers.length-1;
   if(!speakers.length) currentSpkIdx=-1;
   renderAllSpk(); updateStats(); updateSpkPanel();
+  _fbPushNow();
 }
 function clearSpeakers(){
   speakers=[]; currentSpkIdx=-1; speechesDone=0;
@@ -3694,7 +3716,7 @@ function addPickerSelected(){
   pickerSelected.clear();
   renderDelegatePicker();
   renderAllSpk(); updateStats(); updateSpkPanel();
-  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  if(curMode==='opening'||curMode==='gsl') { document.getElementById('btn-next').style.display=''; const aibtn=document.getElementById('btn-ai-flag'); if(aibtn) aibtn.style.display=''; }
   showToast(`Added ${added} speaker${added!==1?'s':''} to the queue.`);
 }
 
@@ -3703,7 +3725,7 @@ function addAllDelegates(){
   delegates.forEach(d => speakers.push({...d}));
   if(currentSpkIdx===-1 && speakers.length) currentSpkIdx=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
-  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  if(curMode==='opening'||curMode==='gsl') { document.getElementById('btn-next').style.display=''; const aibtn=document.getElementById('btn-ai-flag'); if(aibtn) aibtn.style.display=''; }
   showToast(`Added all ${delegates.length} delegates to the queue.`);
 }
 
@@ -3780,6 +3802,7 @@ function nextSpeaker(){
     speechesDone=currentSpkIdx+1;
     currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
     renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+    _fbPushNow();
   }
 }
 
@@ -5218,7 +5241,7 @@ function addPlacardToQueue(idx){
   placardQueue.splice(idx,1);
   if(currentSpkIdx===-1) currentSpkIdx=0;
   renderAllSpk(); updateStats(); renderPlacardPage();
-  if(curMode==='opening'||curMode==='gsl') document.getElementById('btn-next').style.display='';
+  if(curMode==='opening'||curMode==='gsl') { document.getElementById('btn-next').style.display=''; const aibtn=document.getElementById('btn-ai-flag'); if(aibtn) aibtn.style.display=''; }
   showToast(`${d.n} added to speaker queue from placard`);
   logEvent('placard',d,'Added to queue from placard raise',0);
 }
@@ -12230,28 +12253,49 @@ function isChair()   { return _myChairRoleLevel === 'chair'; }
 // Cannot: score, warn, change speakers, end meeting, change roles
 
 // ── HEARTBEAT — runs for ALL chair instances ──
-// ── IMMEDIATE Firebase push — call this after any state change ──
+// ── IMMEDIATE Firebase push — call after any state change ──
+// Writes to THREE places simultaneously:
+//   /liveState  — real-time co-chair sync (timer, speaker, queue, etc.)
+//   /           — top-level session data (scores, warnings, rollCall, votes)
+//   BroadcastChannel — instant same-machine sync (0ms)
 function _fbPushNow() {
   if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
-  // Build and push liveState instantly
   const live = _buildLiveState();
+
+  // 1. Live state (co-chair reads this every 1s)
   fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(live)
   }).catch(() => {});
-  // Also broadcast locally for instant same-machine sync
-  try { if (_bc) _bc.postMessage(live); } catch(e) {}
-  // Push scores and warnings immediately (so co-chair panels update)
-  const toWrite = {
+
+  // 2. Top-level session data (delegates, portals, etc. read this)
+  const topLevel = {
     scores: { ...scores },
-    warnings: Object.fromEntries(Object.entries(warnings).filter(([,v])=>Array.isArray(v)&&v.length))
+    warnings: Object.fromEntries(Object.entries(warnings).filter(([,v])=>Array.isArray(v)&&v.length)),
+    attendance: { ...rollCallData },
+    votes: { ...votes },
+    delegatePins: { ...delegatePins },
+    state: {
+      committee: session.committee || '',
+      agenda: session.agenda || '',
+      voteActive: !!window._votePortalActive,
+      currentSpeaker: live.spkName || '',
+      currentSpeakerCode: live.spkCode || '',
+      timerRunning: live.timerRunning,
+      curMode: live.curMode,
+      meetingActive: true,
+      updatedAt: Date.now()
+    }
   };
   fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(toWrite)
+    body: JSON.stringify(topLevel)
   }).catch(() => {});
+
+  // 3. Broadcast channel (instant, no network needed)
+  try { if (_bc) _bc.postMessage(live); } catch(e) {}
 }
 
 
@@ -12351,193 +12395,317 @@ function _pushMyPresence() {
 }
 
 // ── Build live state object ──
+// ════════════════════════════════════════════════════════════
+// flagCurrentSpeakerAI — any chair/co-chair clicks 🤖 AI
+// Sends instant alert to chair, logs to Firebase, no AI tab needed
+// ════════════════════════════════════════════════════════════
+function flagCurrentSpeakerAI() {
+  const spk = (currentSpkIdx >= 0 && currentSpkIdx < speakers.length) ? speakers[currentSpkIdx] : null;
+  if (!spk) { showToast('No active speaker', 'error'); return; }
+
+  const note = {
+    type: 'ai_flag',
+    from: _myChairName || (_myChairRoleLevel === 'chair' ? 'Chair' : 'Co-Chair'),
+    fromRole: _myChairRoleLevel,
+    delegate: spk.n,
+    delegateCode: spk.c,
+    text: `⚠️ AI detected: ${spk.n} may be using AI assistance`,
+    time: new Date().toLocaleTimeString(),
+    t: Date.now()
+  };
+
+  // Show locally
+  showToast(`🤖 AI flagged: ${spk.n}`, 3000);
+
+  // Always push to Firebase immediately
+  if (_fbAvailable && _fbUrl && _fbSessionId) {
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note)
+    }).catch(() => {});
+
+    // Also write to dedicated aiFlags for clear separation
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/aiFlags.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(note)
+    }).catch(() => {});
+  }
+
+  // If co-chair, send note to chair
+  if (isCoChair()) {
+    sendAINoteToChair(note.text);
+  }
+
+  // Flash the button red briefly
+  const btn = document.getElementById('btn-ai-flag');
+  if (btn) {
+    btn.style.background = 'rgba(248,81,73,0.2)';
+    btn.textContent = '🤖 Flagged!';
+    setTimeout(() => { btn.style.background = ''; btn.innerHTML = '🤖 AI'; }, 2000);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// CO-CHAIR CAPABILITIES — can manage speakers list + roll call
+// Everything immediately writes to Firebase via _fbPushNow
+// ════════════════════════════════════════════════════════════
+
+// Co-chair can add/remove speakers — we already hooked _fbPushNow above
+// Co-chair can do roll call — hook setRollCall above writes immediately
+
+// Override speaker add functions to allow co-chairs
+// (The guards only block scoring/warnings, not speaker management)
+
+// ════════════════════════════════════════════════════════════
+// ENHANCED _buildLiveState — include EVERYTHING
+// ════════════════════════════════════════════════════════════
 function _buildLiveState() {
   const spk = (currentSpkIdx >= 0 && currentSpkIdx < speakers.length) ? speakers[currentSpkIdx] : null;
+
+  // Build full speakers list with names
+  const fullQueue = speakers.map((s, i) => ({
+    c: s.c,
+    n: s.n,
+    isCurrent: i === currentSpkIdx,
+    isDone: i < currentSpkIdx
+  }));
+
+  // Roll call counts
+  const rcPresent = Object.values(rollCallData).filter(v => v === 'present' || v === 'present+voting').length;
+  const rcPV = Object.values(rollCallData).filter(v => v === 'present+voting').length;
+  const rcTotal = delegates.length;
+
   return {
     t: Date.now(),
-    // Timer
+    // ── Timer ──
     timerSecs,
     totalSecs,
     timerRunning,
     curMode: curMode || '',
-    // Current speaker
+    timerElapsed: totalSecs - timerSecs, // how much time used
+    // ── Current speaker ──
     spkCode: spk ? spk.c : '',
     spkName: spk ? spk.n : '',
     spkIdx: currentSpkIdx,
-    spkRole: 'chair', // speaker is at chair's session
-    // Queue
-    queue: speakers.map(s => s.c),
+    spkTimeUsed: spk ? (speakerTimeLog[spk.c] || 0) : 0, // total speaking time
+    // ── Speakers queue ──
+    queue: fullQueue,
     speechesDone,
-    // Scores + warnings
+    // ── Roll call ──
+    rollCall: { ...rollCallData },
+    rcPresent,
+    rcPV,
+    rcTotal,
+    // ── Scores + warnings ──
     scores: { ...scores },
     warnings: Object.fromEntries(Object.entries(warnings).filter(([, v]) => Array.isArray(v) && v.length)),
-    // Attendance
-    rollCall: { ...rollCallData },
-    // Votes
+    // ── Votes ──
     votes: { ...votes },
     voteActive: !!window._votePortalActive,
     resolution: (typeof resolution !== 'undefined' && resolution) ? (resolution.id + ' — ' + (resolution.title || '')) : '',
-    // Session info
+    // ── Session ──
     committee: session.committee || '',
     agenda: session.agenda || '',
     agendaItem: (typeof agendaItems !== 'undefined' ? agendaItems.find(a => a.status === 'current')?.text : '') || '',
-    // Who is chair
+    // ── Delegates ──
+    delegateCount: delegates.length,
+    // ── Chair identity ──
     chairId: _chairId,
-    chairName: _myChairName || 'Chair'
+    chairName: _myChairName || 'Chair',
+    chairRole: _myChairRoleLevel,
+    // ── Speaker time logs ──
+    speakerTimeLog: { ...speakerTimeLog },
   };
 }
 
-// ── Chair pushes live state to Firebase ──
-function _pushLiveState() {
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(_buildLiveState())
-  }).catch(() => {});
-}
-
-// ── Chair pushes full session data (delegates, pins, scores, etc.) ──
-function _pushAllSessionData() {
-  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
-  const full = {
-    delegates: delegates.map(d => ({ c: d.c, n: d.n })),
-    delegatePins: { ...delegatePins },
-    scores: { ...scores },
-    warnings: Object.fromEntries(Object.entries(warnings).filter(([, v]) => Array.isArray(v) && v.length)),
-    rollCall: { ...rollCallData },
-    votes: { ...votes },
-    sessionPassword: document.getElementById('setup-session-password')?.value?.trim() || '',
-    state: {
-      committee: session.committee || '',
-      agenda: session.agenda || '',
-      voteActive: !!window._votePortalActive,
-      meetingActive: true
-    }
-  };
-  fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(full)
-  }).catch(() => {});
-}
-
-// ── Also push full data when scores/warnings change ──
-// Hook this into the existing score/warn functions
-const _origApplyScore = typeof applyScore !== 'undefined' ? applyScore : null;
-
-let _lastFullPush = 0;
-function _scheduleFullPush() {
-  const now = Date.now();
-  if (now - _lastFullPush > 3000) { // debounce 3s
-    _lastFullPush = now;
-    setTimeout(_pushAllSessionData, 500);
-  }
-}
-
-// ── Co-chair pulls live state ──
-let _lastLiveT = 0;
-async function _pullLiveState() {
-  try {
-    const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`);
-    if (!r.ok) return;
-    const live = await r.json();
-    if (!live || !live.t || live.t <= _lastLiveT) return;
-    _lastLiveT = live.t;
-    _applyLiveState(live);
-  } catch(e) {}
-}
-
-// ── Apply live state to co-chair UI ──
+// ════════════════════════════════════════════════════════════
+// ENHANCED _applyLiveState — use all the new fields
+// ════════════════════════════════════════════════════════════
 function _applyLiveState(live) {
   if (!live) return;
 
-  // Timer
-  if (typeof live.timerSecs === 'number' && !timerRunning) timerSecs = live.timerSecs;
+  // ── Timer ──
+  if (typeof live.timerSecs === 'number') {
+    if (!timerRunning) timerSecs = live.timerSecs;
+  }
   if (typeof live.totalSecs === 'number') totalSecs = live.totalSecs;
+
   if (live.timerRunning && !timerRunning) {
     timerRunning = true;
     clearInterval(timerInterval);
     timerInterval = setInterval(tick, 1000);
-    document.getElementById('btn-pause')?.style && (document.getElementById('btn-pause').style.display = '');
-    document.getElementById('btn-start')?.style && (document.getElementById('btn-start').style.display = 'none');
+    safe('btn-pause', el => el.style.display = '');
+    safe('btn-start', el => el.style.display = 'none');
+    safe('btn-resume', el => el.style.display = 'none');
   } else if (!live.timerRunning && timerRunning) {
-    stopTimer(); timerRunning = false;
-    document.getElementById('btn-pause')?.style && (document.getElementById('btn-pause').style.display = 'none');
-    document.getElementById('btn-start')?.style && (document.getElementById('btn-start').style.display = '');
+    clearInterval(timerInterval); timerRunning = false;
+    safe('btn-pause', el => el.style.display = 'none');
+    safe('btn-start', el => el.style.display = '');
   }
-  if (live.curMode !== undefined) curMode = live.curMode || null;
-  renderClock();
-  if (totalSecs > 0) setArc(timerSecs / totalSecs);
 
-  // Current speaker — pre-fill AI delegate field
-  if (live.spkCode) {
-    const spkDel = delegates.find(d => d.c === live.spkCode);
-    if (spkDel) {
-      // Auto-set AI delegate to current speaker
-      if (!_aiDelegate || _aiDelegate.c !== live.spkCode) {
-        _aiDelegate = spkDel;
-        const srch = document.getElementById('ai-delegate-search');
-        if (srch) srch.value = spkDel.n;
-        // Show AI send button for co-chairs
-        _showCoChairAIButton(spkDel);
-      }
+  if (live.curMode !== undefined && live.curMode !== curMode) curMode = live.curMode || null;
+
+  try { renderClock(); if (totalSecs > 0) setArc(timerSecs / totalSecs); } catch(e) {}
+
+  // ── Speakers queue ──
+  if (Array.isArray(live.queue) && !timerRunning) {
+    const newCodes = live.queue.map(s => s.c || s);
+    const curCodes = speakers.map(s => s.c);
+    if (JSON.stringify(newCodes) !== JSON.stringify(curCodes)) {
+      speakers = live.queue.map(s => {
+        const code = s.c || s;
+        return delegates.find(d => d.c === code) || COUNTRIES.find(d => d.c === code) || { c: code, n: s.n || code };
+      }).filter(Boolean);
+      currentSpkIdx = typeof live.spkIdx === 'number' ? live.spkIdx : -1;
+      speechesDone = live.speechesDone || 0;
+      try { renderAllSpk(); updateStats(); } catch(e) {}
+
+      // Show Next + AI buttons if there's a current speaker
+      const spk = currentSpkIdx >= 0 && speakers[currentSpkIdx];
+      safe('btn-next', el => el.style.display = spk ? '' : 'none');
+      safe('btn-ai-flag', el => el.style.display = spk ? '' : 'none');
     }
-  } else {
-    // No speaker — keep current _aiDelegate but disable send
-    const sendBtn = document.getElementById('cochair-ai-send-btn');
-    if (sendBtn) sendBtn.style.display = 'none';
   }
 
-  // Scores
-  if (live.scores) {
-    let ch = false;
-    Object.entries(live.scores).forEach(([c, p]) => { if (scores[c] !== p) { scores[c] = p; ch = true; } });
-    if (ch && typeof renderScoreTab === 'function') renderScoreTab();
+  // ── Current speaker → auto-fill AI delegate ──
+  if (live.spkCode) {
+    const spkDel = delegates.find(d => d.c === live.spkCode) || { c: live.spkCode, n: live.spkName || live.spkCode };
+    if (!_aiDelegate || _aiDelegate.c !== live.spkCode) {
+      _aiDelegate = spkDel;
+      safe('ai-delegate-search', el => el.value = spkDel.n);
+      if (isCoChair()) _showCoChairAIButton(spkDel);
+    }
   }
 
-  // Warnings
-  if (live.warnings) {
-    let ch = false;
-    Object.entries(live.warnings).forEach(([c, l]) => {
-      if (JSON.stringify(warnings[c]) !== JSON.stringify(l)) { warnings[c] = l; ch = true; }
+  // ── Speaker time log ──
+  if (live.speakerTimeLog) {
+    Object.entries(live.speakerTimeLog).forEach(([c, t]) => {
+      if (typeof t === 'number') speakerTimeLog[c] = t;
     });
-    if (ch && typeof renderWarnings === 'function') renderWarnings();
   }
 
-  // Roll call
+  // ── Roll call ──
   if (live.rollCall) {
-    let ch = false;
-    Object.entries(live.rollCall).forEach(([c, v]) => {
-      if (rollCallData[c] !== v) { rollCallData[c] = v; ch = true; }
+    let changed = false;
+    Object.entries(live.rollCall).forEach(([code, val]) => {
+      if (rollCallData[code] !== val) { rollCallData[code] = val; changed = true; }
     });
-    if (ch) { try { renderRollCall(); updateQuorumCheck(); } catch(e) {} }
+    if (changed) {
+      try { renderRollCall(); updateQuorumCheck(); } catch(e) {}
+    }
   }
 
-  // Votes
+  // ── Scores ──
+  if (live.scores) {
+    let changed = false;
+    Object.entries(live.scores).forEach(([code, pts]) => {
+      if (scores[code] !== pts) { scores[code] = pts; changed = true; }
+    });
+    if (changed) try { renderScoreTab(); } catch(e) {}
+  }
+
+  // ── Warnings ──
+  if (live.warnings) {
+    let changed = false;
+    Object.entries(live.warnings).forEach(([code, list]) => {
+      if (JSON.stringify(warnings[code]) !== JSON.stringify(list)) { warnings[code] = list; changed = true; }
+    });
+    if (changed) try { renderWarnings(); } catch(e) {}
+  }
+
+  // ── Votes ──
   if (live.votes) {
     Object.entries(live.votes).forEach(([c, v]) => { if (!votes[c]) votes[c] = v; });
     try { renderVoteList(); updateVoteStats(); } catch(e) {}
   }
 
-  // Speaker queue (only if timer not running locally)
-  if (live.queue && !timerRunning) {
-    const newQ = live.queue;
-    if (JSON.stringify(speakers.map(s => s.c)) !== JSON.stringify(newQ)) {
-      speakers = newQ.map(c => delegates.find(d => d.c === c) || COUNTRIES.find(d => d.c === c)).filter(Boolean);
-      currentSpkIdx = typeof live.spkIdx === 'number' ? live.spkIdx : -1;
-      speechesDone = live.speechesDone || 0;
-      try { renderAllSpk(); updateStats(); } catch(e) {}
-    }
-  }
+  // ── Session info ──
+  if (live.committee) session.committee = live.committee;
+  if (live.agenda) session.agenda = live.agenda;
+  if (live.voteActive !== undefined) window._votePortalActive = live.voteActive;
 
-  // Session info
-  if (live.committee && live.committee !== session.committee) {
-    session.committee = live.committee;
-  }
-  if (live.agenda && live.agenda !== session.agenda) {
-    session.agenda = live.agenda;
+  // ── Update co-chair panel if open ──
+  if (document.getElementById('page-cochair')?.classList.contains('active')) {
+    _updateCoChairLivePanel(live);
   }
 }
+
+// ── Live status display in co-chair panel ──
+function _updateCoChairLivePanel(live) {
+  const el = document.getElementById('cochair-live-status');
+  if (!el || !live) return;
+  const spkName = live.spkName || '—';
+  const spkTime = live.spkTimeUsed ? `${Math.floor(live.spkTimeUsed/60)}m ${live.spkTimeUsed%60}s` : '';
+  const timerStr = live.totalSecs > 0
+    ? `${Math.floor(live.timerSecs/60)}:${String(live.timerSecs%60).padStart(2,'0')} / ${Math.floor(live.totalSecs/60)}:${String(live.totalSecs%60).padStart(2,'0')}`
+    : '—';
+  const qLen = Array.isArray(live.queue) ? live.queue.length : 0;
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:3px">Timer</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:${live.timerRunning?'var(--green)':'var(--text2)'}">${timerStr}</div>
+        <div style="font-size:10px;color:var(--text3)">${live.timerRunning?'Running':'Stopped'} · ${live.curMode||'—'}</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:3px">Speaker</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${spkName}</div>
+        <div style="font-size:10px;color:var(--text3)">${spkTime} · ${qLen} in queue</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:16px;font-weight:800;color:var(--green)">${live.rcPresent||0}</div>
+        <div style="font-size:9px;color:var(--text3)">Present</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:16px;font-weight:800;color:var(--blue)">${live.rcPV||0}</div>
+        <div style="font-size:9px;color:var(--text3)">P+V</div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+        <div style="font-size:16px;font-weight:800;color:var(--text2)">${live.delegateCount||delegates.length}</div>
+        <div style="font-size:9px;color:var(--text3)">Total</div>
+      </div>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+// CO-CHAIR AI NOTES PANEL — polls every 3s when chair
+// ════════════════════════════════════════════════════════════
+function _pollAINotes() {
+  if (!isChair() || !_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`)
+    .then(r => r.ok ? r.json() : null)
+    .then(notes => {
+      if (!notes) return;
+      const vals = Object.values(notes);
+      vals.forEach(n => {
+        if (n.t && n.t > _lastAINoteT2 && Date.now() - n.t < 12000) {
+          _lastAINoteT2 = n.t;
+          const icon = n.type === 'ai_flag' ? '🤖' : '📤';
+          showToast(`${icon} ${n.from}: "${n.text.slice(0, 70)}"`, 6000);
+          if (document.getElementById('page-cochair')?.classList.contains('active')) loadAINotes();
+        }
+      });
+    }).catch(() => {});
+}
+
+// ════════════════════════════════════════════════════════════
+// Push session password whenever it changes
+// ════════════════════════════════════════════════════════════
+function pushSessionPassword() {
+  const pw = document.getElementById('setup-session-password')?.value?.trim() || '';
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/sessionPassword.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(pw)
+  }).then(() => showToast(pw ? 'Password saved ✓' : 'Password cleared')).catch(() => showToast('Save failed', 'error'));
+}
+
 
 // ── Co-chair AI send button ──
 function _showCoChairAIButton(delegate) {
@@ -12683,25 +12851,6 @@ function sendAINoteToChair(text) {
   }).then(() => showToast('✅ Sent to chair')).catch(() => showToast('Send failed', 'error'));
 }
 
-// ── AI NOTES: chair polls ──
-let _lastAINoteT2 = 0;
-function _pollAINotes() {
-  if (!isChair() || !_fbUrl || !_fbSessionId) return;
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/aiNotes.json`)
-    .then(r => r.ok ? r.json() : null)
-    .then(notes => {
-      if (!notes) return;
-      Object.values(notes).forEach(n => {
-        if (n.t && n.t > _lastAINoteT2 && Date.now() - n.t < 10000) {
-          _lastAINoteT2 = n.t;
-          showToast(`🤖 ${n.from}: "${n.text.slice(0, 70)}"`, 6000);
-          if (document.getElementById('page-cochair')?.classList.contains('active'))
-            loadAINotes();
-        }
-      });
-    }).catch(() => {});
-}
-
 // ── MULTI-CHAIR MODAL (topbar 👥 button) ──
 function openMultiChairModal() {
   const ex = document.getElementById('multichair-modal');
@@ -12825,15 +12974,6 @@ async function joinCommitteeFromSetup() {
   }
 }
 
-// ── SAVE SESSION PASSWORD ──
-function pushSessionPassword() {
-  const pw = document.getElementById('setup-session-password')?.value?.trim();
-  if (!pw || !_fbAvailable || !_fbUrl || !_fbSessionId) return;
-  fetch(`${_fbUrl}/mun_${_fbSessionId}/sessionPassword.json`, {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pw)
-  }).catch(() => {});
-}
-
 // ── canDoAction ──
 function canDoAction(action) {
   if (['score','warn','end','roles'].includes(action)) return isChair();
@@ -12870,6 +13010,13 @@ async function refreshCoChairPanel() {
 
   if(bigId) bigId.textContent = _fbSessionId || '—';
   if(shareId) shareId.textContent = _fbSessionId || '—';
+  // Pull and show live state immediately
+  if (isCoChair() && _fbAvailable && _fbUrl && _fbSessionId) {
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`)
+      .then(r => r.ok ? r.json() : null)
+      .then(live => { if(live) _updateCoChairLivePanel(live); })
+      .catch(() => {});
+  }
 
   const roleLbl = isChair() ? '🎓 Chair' : '🪑 Co-Chair';
   const roleColor = _myChairRoleLevel === 'chair' ? 'var(--blue)' : 'var(--orange)';
