@@ -1105,6 +1105,40 @@ window.makeQRUrl = function(data, size) {
         </div>
       </div>
 
+
+      <!-- Co-Chair Quick Login -->
+      <div class="card" style="margin-bottom:12px;border-color:rgba(219,109,40,0.3);background:rgba(219,109,40,0.04)">
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-title">🪑 Join as Co-Chair</div>
+            <span class="chip chip-gray">Session password only</span>
+          </div>
+        </div>
+        <div class="card-body" style="padding:14px 16px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">
+            Co-chairs enter the session password to join instantly. The chair sets the password in the session settings below.
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:end">
+            <div>
+              <label class="field-label">Session ID</label>
+              <input type="text" id="cochair-quick-id" placeholder="ABC12DEF"
+                style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
+                maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+            </div>
+            <div>
+              <label class="field-label">Session Password</label>
+              <input type="password" id="cochair-quick-pw" placeholder="Password from chair"
+                style="font-size:13px" maxlength="32"
+                onkeydown="if(event.key==='Enter')quickJoinAsCoChair()"/>
+            </div>
+            <button class="btn btn-success btn-sm" onclick="quickJoinAsCoChair()" style="padding:9px 16px">
+              Join →
+            </button>
+          </div>
+          <div id="cochair-quick-status" style="font-size:11px;margin-top:8px;display:none"></div>
+        </div>
+      </div>
+
       <!-- Join existing committee -->
       <div class="card" style="margin-bottom:12px;border-color:rgba(61,232,160,0.3);background:rgba(61,232,160,0.04)">
         <div class="card-body" style="padding:14px 16px">
@@ -3238,7 +3272,32 @@ function showPage(id){
   if(id==='delanalysis') renderDelegateAnalysis();
   if(id==='timerlog') renderTimerHistory();
   if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
-  if(id==='aispeech') { renderAIHistory(); const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||''; }
+  if(id==='aispeech') {
+    renderAIHistory();
+    const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||'';
+    // Co-chair: show current speaker banner and hide delegate search
+    if(isCoChair()) {
+      const spk = currentSpkIdx>=0 && speakers[currentSpkIdx] ? speakers[currentSpkIdx] : null;
+      if(spk) {
+        _aiDelegate = spk;
+        const srch = document.getElementById('ai-delegate-search');
+        if(srch) srch.value = spk.n;
+        _showCoChairAIButton(spk);
+      }
+      // Add a banner showing current speaker
+      let banner = document.getElementById('cochair-ai-banner');
+      if(!banner) {
+        banner = document.createElement('div');
+        banner.id = 'cochair-ai-banner';
+        banner.style.cssText = 'background:rgba(219,109,40,0.1);border:1px solid rgba(219,109,40,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--orange);margin-bottom:10px';
+        const aiBody = document.querySelector('#page-aispeech .card-body');
+        if(aiBody) aiBody.insertBefore(banner, aiBody.firstChild);
+      }
+      banner.innerHTML = spk
+        ? `🪑 Co-Chair AI · Current speaker: <strong>${spk.n}</strong> — Run analysis then send to chair`
+        : `🪑 Co-Chair AI · Waiting for a speaker to start...`;
+    }
+  }
   if(id==='agenda') renderAgenda();
   if(id==='cochair') refreshCoChairPanel();
   if(id==='tournament') renderTournament();
@@ -3949,6 +4008,7 @@ function startTimer(){
   if(timerSecs<=0) timerSecs=totalSecs;
   _recordTimerStart();
   timerRunning=true;
+  _fbPushNow();
   document.getElementById('btn-start').style.display='none';
   document.getElementById('btn-pause').style.display='';
   document.getElementById('btn-resume').style.display='none';
@@ -3977,12 +4037,14 @@ function tick(){
 }
 function pauseTimer(){
   stopTimer(); timerRunning=false;
+  _fbPushNow();
   document.getElementById('btn-pause').style.display='none';
   document.getElementById('btn-resume').style.display='';
 }
 function resumeTimer(){
-  if(timerRunning) return; // prevent double-start
+  if(timerRunning) return;
   timerRunning=true;
+  _fbPushNow();
   clearInterval(timerInterval); // clear any stale interval
   document.getElementById('btn-pause').style.display='';
   document.getElementById('btn-resume').style.display='none';
@@ -4021,7 +4083,8 @@ function setArc(ratio){
 let scorePopupWin = null;
 
 function showScorePopup(delegate, onDone) {
-  // Close any existing score window
+  // Co-chairs cannot score
+  if (isCoChair()) { showToast('Co-chairs cannot score — chair only', 'error'); if(onDone) onDone(); return; }
   if(scorePopupWin && !scorePopupWin.closed) scorePopupWin.close();
 
   const warnCount = (warnings[delegate.c]||[]).length;
@@ -4170,12 +4233,11 @@ function showScorePopup(delegate, onDone) {
   // Expose callbacks on window so the score popup can call back
   window._scoreCallback = function(basePts, total, mods) {
     scores[delegate.c] = (scores[delegate.c]||0) + total;
-    // Log to score history
     if(!scoreHistory[delegate.c]) scoreHistory[delegate.c]=[];
     scoreHistory[delegate.c].push({pts:total,base:basePts,mods,time:new Date().toLocaleTimeString(),type:'speech'});
-    // No toast — score is private, only visible in Scores tab
     if(scoreboardWin&&!scoreboardWin.closed) updateScoreboard();
     if(typeof renderScoreTab==='function') renderScoreTab();
+    _fbPushNow(); // ← immediate Firebase write
     URL.revokeObjectURL(url);
     onDone();
   };
@@ -4320,6 +4382,7 @@ function showAwardsCeremony() {
 let warnings = {}; // { countryCode: [{ reason, time }] }
 
 function addWarning(delegate) {
+  if (isCoChair()) { showToast('Co-chairs cannot add warnings — chair only', 'error'); return; }
   if(!warnings[delegate.c]) warnings[delegate.c] = [];
   warnings[delegate.c].push({ time: new Date().toLocaleTimeString() });
   // Apply -5 score penalty
@@ -4820,6 +4883,7 @@ function openManualScoreDrop(){filterManualScoreSearch();}
 function closeManualScoreDrop(){const dd=document.getElementById('manual-score-drop');if(dd)dd.classList.remove('open');}
 
 function applyManualScore(){
+  if (isCoChair()) { showToast('Co-chairs cannot score', 'error'); return; }
   const inp=document.getElementById('manual-score-search');
   const code=inp.dataset.code;
   const name=inp.dataset.name||inp.value;
@@ -4833,6 +4897,7 @@ function applyManualScore(){
   inp.value=''; inp.dataset.code=''; inp.dataset.name='';
   showToast(`${name} → ${pts>0?'+':''}${pts} pts (Total: ${scores[code].toFixed(1)})`);
   renderManualScoreLog();
+  _fbPushNow(); // ← immediate
 }
 
 function renderManualScoreLog(){
@@ -12165,6 +12230,31 @@ function isChair()   { return _myChairRoleLevel === 'chair'; }
 // Cannot: score, warn, change speakers, end meeting, change roles
 
 // ── HEARTBEAT — runs for ALL chair instances ──
+// ── IMMEDIATE Firebase push — call this after any state change ──
+function _fbPushNow() {
+  if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+  // Build and push liveState instantly
+  const live = _buildLiveState();
+  fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(live)
+  }).catch(() => {});
+  // Also broadcast locally for instant same-machine sync
+  try { if (_bc) _bc.postMessage(live); } catch(e) {}
+  // Push scores and warnings immediately (so co-chair panels update)
+  const toWrite = {
+    scores: { ...scores },
+    warnings: Object.fromEntries(Object.entries(warnings).filter(([,v])=>Array.isArray(v)&&v.length))
+  };
+  fetch(`${_fbUrl}/mun_${_fbSessionId}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(toWrite)
+  }).catch(() => {});
+}
+
+
 // ════════════════════════════════════════════════════════════
 // MULTI-CHAIR — clean, fast, no errors
 // Chair: score, warn, all controls, promotes/demotes
@@ -12781,7 +12871,7 @@ async function refreshCoChairPanel() {
   if(bigId) bigId.textContent = _fbSessionId || '—';
   if(shareId) shareId.textContent = _fbSessionId || '—';
 
-  const roleLbl = _myChairRoleLevel === 'chair' ? '🎓 Chair' : '🪑 Co-Chair';
+  const roleLbl = isChair() ? '🎓 Chair' : '🪑 Co-Chair';
   const roleColor = _myChairRoleLevel === 'chair' ? 'var(--blue)' : 'var(--orange)';
   if(chip){ chip.textContent = roleLbl; chip.style.color = roleColor; chip.style.borderColor = roleColor.replace(')', ',0.3)').replace('var','rgba').replace('(--blue','(56,139,253').replace('(--orange','(219,109,40'); }
   if(roleDesc) roleDesc.textContent = `${_fbSessionId} · ${roleLbl}`;
@@ -12879,6 +12969,108 @@ async function clearAINotes() {
 setInterval(()=>{
   if(document.getElementById('page-cochair')?.classList.contains('active')) refreshCoChairPanel();
 }, 4000);
+
+
+// ── QUICK JOIN as co-chair (password only) ──
+async function quickJoinAsCoChair() {
+  const idEl = document.getElementById('cochair-quick-id');
+  const pwEl = document.getElementById('cochair-quick-pw');
+  const statusEl = document.getElementById('cochair-quick-status');
+
+  const id = (idEl?.value || '').trim().toUpperCase();
+  const pw = (pwEl?.value || '').trim();
+
+  if (!id || id.length < 6) {
+    _qjStatus('Enter the session ID (8 characters)', 'error'); return;
+  }
+  if (!pw) {
+    _qjStatus('Enter the session password', 'error'); return;
+  }
+
+  _qjStatus('Connecting...', 'info');
+
+  try {
+    const r = await fetch(`${_fbUrl}/mun_${id}.json`);
+    if (!r.ok) throw new Error('Cannot reach Firebase — check your connection');
+    const data = await r.json();
+    if (!data) throw new Error(`Session "${id}" not found`);
+
+    // Verify password
+    if (!data.sessionPassword) throw new Error('This session has no password set. Ask the chair to set one.');
+    if (data.sessionPassword !== pw) throw new Error('Incorrect password');
+
+    // Check co-chair limit
+    const chairs = data.chairs || {};
+    const activeCo = Object.values(chairs).filter(c =>
+      c.role === 'co-chair' && Date.now() - (c.lastSeen || 0) < 20000
+    ).length;
+    if (activeCo >= 3) throw new Error('Max 3 co-chairs already connected');
+
+    if (!data.delegates?.length) throw new Error('Chair hasn\'t started the session yet');
+
+    const name = prompt('Your name (shown to the chair):') || 'Co-Chair';
+    if (!name) return;
+
+    // Set state
+    _fbSessionId = id;
+    _myChairRoleLevel = 'co-chair';
+    _chairRole = 'co-chair';
+    _isSecondaryChair = true;
+    _myChairName = name;
+    _fbAvailable = true;
+
+    // Load remote data
+    delegates = [...(data.delegates || [])];
+    if (data.state) {
+      session.committee = data.state.committee || '';
+      session.agenda = data.state.agenda || '';
+    }
+    if (data.attendance)  Object.assign(rollCallData, data.attendance);
+    if (data.delegatePins) Object.assign(delegatePins, data.delegatePins);
+    if (data.scores)      Object.assign(scores, data.scores);
+    if (data.warnings)    Object.assign(warnings, data.warnings);
+
+    // Fill setup fields
+    const ci = document.getElementById('setup-committee');
+    const ai = document.getElementById('setup-agenda');
+    if (ci) ci.value = session.committee;
+    if (ai) ai.value = session.agenda;
+
+    // Start the session
+    beginSession();
+
+    // Restore co-chair role after beginSession resets it
+    _myChairRoleLevel = 'co-chair';
+    _chairRole = 'co-chair';
+    _isSecondaryChair = true;
+
+    // Init sync
+    initChairId();
+    _initBC();
+    clearInterval(_fbPollIv);
+    startFbPoll();
+    startChairHeartbeat();
+    _applyRoleRestrictions();
+    _updateChairChip();
+
+    _qjStatus(`✅ Joined "${id}" as co-chair`, 'success');
+    showToast(`🪑 Co-Chair: ${id}`);
+
+    // Navigate to co-chair page
+    setTimeout(() => showPage('cochair'), 800);
+
+  } catch(e) {
+    _qjStatus(e.message, 'error');
+  }
+}
+
+function _qjStatus(msg, type) {
+  const el = document.getElementById('cochair-quick-status');
+  if (!el) return;
+  el.style.display = '';
+  el.style.color = type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : 'var(--text3)';
+  el.textContent = type === 'error' ? '❌ ' + msg : type === 'success' ? '✅ ' + msg : msg;
+}
 
 // ═══ STATS ═══
 function updateStats(){
