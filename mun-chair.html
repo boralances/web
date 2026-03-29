@@ -3659,6 +3659,8 @@ function removeSpeaker(idx){
 function clearSpeakers(){
   speakers=[]; currentSpkIdx=-1; speechesDone=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
+  _fbPushNow(); // ADD THIS
+
 }
 
 // ═══ BULK ADD ═══
@@ -3739,6 +3741,7 @@ function shuffleSpeakers(){
   currentSpkIdx=0; speechesDone=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
   showToast('Queue shuffled randomly.');
+   _fbPushNow();
 }
 
 function renderAllSpk(){
@@ -4536,6 +4539,7 @@ function renderRollCall(){
       rollCallData[btn.dataset.code]=btn.dataset.val;
       updateRcStats();
       renderRollCall();
+      _fbPushNow(); // ADD THIS
     });
   });
   updateRcStats();
@@ -4553,11 +4557,14 @@ function updateRcStats(){
 function rcMarkAll(val){
   delegates.forEach(d=>{ rollCallData[d.c]=val; });
   renderRollCall();
+  _fbPushNow(); // ADD THIS
 }
 function rcReset(){
   rollCallData={};
   renderRollCall();
+  _fbPushNow(); // ADD THIS
 }
+
 
 // ═══ POINT OF ORDER ═══
 function raisePointOfOrder(){
@@ -10921,7 +10928,7 @@ function startFbPoll() {
       }
 
     } catch(e) {}
-  }, 2000);
+  }, 1);
 }
 
 // Update vote active state in Firebase
@@ -12333,6 +12340,8 @@ function _pushLiveState() {
 function _pushAllSessionData() {
   pushSessionToFirebase();
 }
+function _pushLiveState() { _fbPushNow(); }
+function _pushAllSessionData() { pushSessionToFirebase(); }
 
 // ── HEARTBEAT: runs every 1 second for ALL chairs ──
 function startChairHeartbeat() {
@@ -12595,15 +12604,14 @@ function _applyLiveState(live) {
 
   // ── Roll call ──
   if (live.rollCall) {
-    let changed = false;
-    Object.entries(live.rollCall).forEach(([code, val]) => {
-      if (rollCallData[code] !== val) { rollCallData[code] = val; changed = true; }
-    });
-    if (changed) {
-      try { renderRollCall(); updateQuorumCheck(); } catch(e) {}
-    }
+  let changed = false;
+  Object.entries(live.rollCall).forEach(([code, val]) => {
+    if (rollCallData[code] !== val) { rollCallData[code] = val; changed = true; }
+  });
+  if (changed) {
+    try { renderRollCall(); updateQuorumCheck(); } catch(e) {}
   }
-
+}
   // ── Scores ──
   if (live.scores) {
     let changed = false;
