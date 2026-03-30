@@ -251,6 +251,7 @@ input:focus{border-color:rgba(255,159,67,0.5);box-shadow:0 0 0 3px rgba(255,159,
     <button class="tab" id="tab-spk" onclick="switchTab('spk')"><span>🎤</span>Speakers</button>
     <button class="tab" id="tab-rc" onclick="switchTab('rc')"><span>📋</span>Roll Call</button>
     <button class="tab" id="tab-ai" onclick="switchTab('ai')"><span>🤖</span>AI</button>
+    <button class="tab" id="tab-warn" onclick="switchTab('warn')"><span>⚠</span>Warn</button>
   </div>
 
   <!-- ── TIMER TAB ── -->
@@ -345,6 +346,39 @@ input:focus{border-color:rgba(255,159,67,0.5);box-shadow:0 0 0 3px rgba(255,159,
     <div class="div"></div>
     <div class="stitle" style="margin-top:8px">Recent AI Notes / Flags</div>
     <div id="ai-notes-list"><div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No notes yet.</div></div>
+  </div>
+
+  <!-- ── WARN TAB ── -->
+  <div class="panel" id="p-warn">
+    <div style="background:rgba(255,107,107,0.07);border:1px solid rgba(255,107,107,0.2);border-radius:10px;padding:12px 14px;margin-bottom:12px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--red);margin-bottom:4px">Current Speaker</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text)" id="warn-cur-spk">No active speaker</div>
+      <button onclick="warnCurrentSpeaker()" class="tbtn tbtn-stop" style="margin-top:10px;width:100%">
+        ⚠ Warn Current Speaker
+      </button>
+    </div>
+
+    <div class="stitle">Warn Any Delegate</div>
+    <div class="srch" style="margin-bottom:8px">
+      <svg class="srch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+      <input type="text" id="warn-search" placeholder="Search delegate..." autocomplete="off"
+        oninput="filterWarnSearch()" onfocus="filterWarnSearch();document.getElementById('warn-drop').classList.add('open')"
+        onblur="setTimeout(()=>document.getElementById('warn-drop').classList.remove('open'),200)"
+        style="padding-left:34px"/>
+      <div class="drop" id="warn-drop"></div>
+    </div>
+    <div class="field">
+      <label class="fl">Reason (optional)</label>
+      <input type="text" id="warn-reason" placeholder="e.g. Unparliamentary language" maxlength="100"/>
+    </div>
+    <button class="tbtn tbtn-stop" id="warn-send-btn" onclick="warnSelected()" style="width:100%;margin-bottom:14px" disabled>
+      ⚠ Issue Warning
+    </button>
+    <div id="warn-selected" style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:10px"></div>
+
+    <div class="div"></div>
+    <div class="stitle" style="margin-top:10px">Warning Log</div>
+    <div id="warn-log-list"><div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No warnings issued yet.</div></div>
   </div>
 
 </div>
@@ -644,6 +678,7 @@ function applyLiveState(live) {
 
   if (spkEl) spkEl.textContent = spkName || 'No active speaker';
   if (aiCurSpk) aiCurSpk.textContent = spkName || 'No active speaker';
+  safe('warn-cur-spk', el => el.textContent = spkName || 'No active speaker');
   if (spkSub && live.spkTimeUsed != null) {
     const usedSecs = live.spkTimeUsed || 0;
     spkSub.textContent = spkName ? `Total speaking time: ${fmtTime(usedSecs)}` : '';
@@ -921,8 +956,100 @@ function switchTab(tab) {
   if (tab === 'rc') renderRollCall();
   if (tab === 'spk') renderSpeakers();
   if (tab === 'ai') { loadAINotes(); document.getElementById('ai-cur-spk').textContent = liveState.spkName || 'No active speaker'; }
+  if (tab === 'warn') {
+    const wcs = document.getElementById('warn-cur-spk');
+    if (wcs) wcs.textContent = liveState.spkName || 'No active speaker';
+    renderWarnLog();
+  }
   // Update heartbeat page
   fbPatch(`chairs/${myId}`, { page: tab, lastSeen: Date.now() }).catch(() => {});
+}
+
+// ══════════════════════════════════════════════════════════
+// WARN
+// ══════════════════════════════════════════════════════════
+let warnTarget = null;
+const warnLog = []; // local log
+
+function filterWarnSearch() {
+  const q = (document.getElementById('warn-search')?.value || '').toLowerCase();
+  const drop = document.getElementById('warn-drop');
+  if (!drop) return;
+  const filtered = delegates.filter(d => d.n.toLowerCase().includes(q) || d.c.toLowerCase().includes(q));
+  drop.innerHTML = filtered.slice(0, 12).map(d => `
+    <div class="drop-item" onmousedown="selectWarnTarget('${d.c}','${d.n.replace(/'/g,"\\'")}')">
+      <img class="di-flag" src="${flagUrl(d.c)}" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span>${d.n}</span>
+    </div>`).join('');
+  if (!filtered.length) drop.innerHTML = '<div style="padding:12px;color:var(--text3);font-size:12px">No results.</div>';
+}
+
+function selectWarnTarget(code, name) {
+  warnTarget = { c: code, n: name };
+  document.getElementById('warn-search').value = name;
+  document.getElementById('warn-drop').classList.remove('open');
+  const btn = document.getElementById('warn-send-btn');
+  if (btn) { btn.disabled = false; btn.textContent = `⚠ Warn ${name}`; }
+  const sel = document.getElementById('warn-selected');
+  if (sel) sel.textContent = `Selected: ${name}`;
+}
+
+function warnCurrentSpeaker() {
+  const spkName = liveState.spkName || '';
+  const spkCode = liveState.spkCode || '';
+  if (!spkName || !spkCode) { toast('No active speaker', 1800); return; }
+  issueWarning(spkCode, spkName, '');
+}
+
+function warnSelected() {
+  if (!warnTarget) { toast('Select a delegate first', 1800); return; }
+  const reason = (document.getElementById('warn-reason')?.value || '').trim();
+  issueWarning(warnTarget.c, warnTarget.n, reason);
+  // Reset
+  warnTarget = null;
+  document.getElementById('warn-search').value = '';
+  document.getElementById('warn-reason').value = '';
+  const btn = document.getElementById('warn-send-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⚠ Issue Warning'; }
+  document.getElementById('warn-selected').textContent = '';
+}
+
+function issueWarning(code, name, reason) {
+  const entry = { code, name, reason, time: new Date().toLocaleTimeString(), t: Date.now(), from: myName };
+  warnLog.unshift(entry);
+
+  // Write to Firebase as a co-chair command
+  fbWriteCmd('add_warning', { code, reason: reason || 'Warning', delegate: name });
+
+  // Also write directly to warnings node so it's immediately in Firebase
+  fbGet('').then(data => {
+    const existing = (data?.warnings?.[code]) || [];
+    const updated = [...existing, { reason: reason || 'Warning', time: entry.time, from: myName }];
+    fbPatch('warnings', { [code]: updated });
+  }).catch(() => {
+    fbPatch('warnings', { [code]: [{ reason: reason || 'Warning', time: entry.time, from: myName }] });
+  });
+
+  toast(`⚠ ${name} warned`, 2000);
+  renderWarnLog();
+}
+
+function renderWarnLog() {
+  const el = document.getElementById('warn-log-list');
+  if (!el) return;
+  if (!warnLog.length) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No warnings issued yet.</div>';
+    return;
+  }
+  el.innerHTML = warnLog.map(w => `
+    <div style="padding:9px 12px;background:rgba(255,107,107,0.06);border:1px solid rgba(255,107,107,0.15);border-radius:10px;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+        <span style="font-size:12px">⚠</span>
+        <span style="font-size:12px;font-weight:700;color:var(--red)">${w.name}</span>
+        <span style="font-size:10px;color:var(--text3);margin-left:auto">${w.time}</span>
+      </div>
+      ${w.reason ? `<div style="font-size:11px;color:var(--text3)">${w.reason}</div>` : ''}
+    </div>`).join('');
 }
 
 // ══════════════════════════════════════════════════════════
