@@ -3469,6 +3469,7 @@ function beginSession(){
   const _broles=document.getElementById('btn-roles'); if(_broles) _broles.style.display='';
   initChairId();
   startChairHeartbeat();
+  startCochairCmdPoll();
   const _breplay=document.getElementById('btn-replay'); if(_breplay) _breplay.style.display='';
   const _bcs=document.getElementById('btn-chairscript'); if(_bcs) _bcs.style.display='';
   // Unlock nav
@@ -3659,8 +3660,6 @@ function removeSpeaker(idx){
 function clearSpeakers(){
   speakers=[]; currentSpkIdx=-1; speechesDone=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
-  _fbPushNow(); // ADD THIS
-
 }
 
 // ═══ BULK ADD ═══
@@ -3741,7 +3740,6 @@ function shuffleSpeakers(){
   currentSpkIdx=0; speechesDone=0;
   renderAllSpk(); updateStats(); updateSpkPanel();
   showToast('Queue shuffled randomly.');
-   _fbPushNow();
 }
 
 function renderAllSpk(){
@@ -4539,7 +4537,6 @@ function renderRollCall(){
       rollCallData[btn.dataset.code]=btn.dataset.val;
       updateRcStats();
       renderRollCall();
-      _fbPushNow(); // ADD THIS
     });
   });
   updateRcStats();
@@ -4557,14 +4554,11 @@ function updateRcStats(){
 function rcMarkAll(val){
   delegates.forEach(d=>{ rollCallData[d.c]=val; });
   renderRollCall();
-  _fbPushNow(); // ADD THIS
 }
 function rcReset(){
   rollCallData={};
   renderRollCall();
-  _fbPushNow(); // ADD THIS
 }
-
 
 // ═══ POINT OF ORDER ═══
 function raisePointOfOrder(){
@@ -10928,7 +10922,7 @@ function startFbPoll() {
       }
 
     } catch(e) {}
-  }, 500);
+  }, 2000);
 }
 
 // Update vote active state in Firebase
@@ -12333,15 +12327,6 @@ function _initBC() {
     };
   } catch(e) {}
 }
-function _pushLiveState() {
-  _fbPushNow();
-}
-
-function _pushAllSessionData() {
-  pushSessionToFirebase();
-}
-function _pushLiveState() { _fbPushNow(); }
-function _pushAllSessionData() { pushSessionToFirebase(); }
 
 // ── HEARTBEAT: runs every 1 second for ALL chairs ──
 function startChairHeartbeat() {
@@ -12351,7 +12336,7 @@ function startChairHeartbeat() {
 
   // Push presence immediately
   _pushMyPresence();
-  if (isChair()) { _pushLiveState(); _pushAllSessionData(); }
+  if (isChair()) { _fbPushNow(); }
 
   _chairHeartbeatIv = setInterval(() => {
     if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
@@ -12360,7 +12345,7 @@ function startChairHeartbeat() {
 
     if (isChair()) {
       // Push live state every tick
-      _pushLiveState();
+      _fbPushNow();
       // Broadcast locally too (instant for same-machine co-chairs)
       if (_bc) {
         try {
@@ -12604,14 +12589,15 @@ function _applyLiveState(live) {
 
   // ── Roll call ──
   if (live.rollCall) {
-  let changed = false;
-  Object.entries(live.rollCall).forEach(([code, val]) => {
-    if (rollCallData[code] !== val) { rollCallData[code] = val; changed = true; }
-  });
-  if (changed) {
-    try { renderRollCall(); updateQuorumCheck(); } catch(e) {}
+    let changed = false;
+    Object.entries(live.rollCall).forEach(([code, val]) => {
+      if (rollCallData[code] !== val) { rollCallData[code] = val; changed = true; }
+    });
+    if (changed) {
+      try { renderRollCall(); updateQuorumCheck(); } catch(e) {}
+    }
   }
-}
+
   // ── Scores ──
   if (live.scores) {
     let changed = false;
@@ -13233,6 +13219,139 @@ function _qjStatus(msg, type) {
   el.style.color = type === 'error' ? 'var(--red)' : type === 'success' ? 'var(--green)' : 'var(--text3)';
   el.textContent = type === 'error' ? '❌ ' + msg : type === 'success' ? '✅ ' + msg : msg;
 }
+
+
+// ════════════════════════════════════════════════════════════
+// CO-CHAIR COMMANDS — chair executes commands from co-chair portal
+// Co-chair writes to /cochairCmds, chair polls every 1s and executes
+// ════════════════════════════════════════════════════════════
+let _lastCochairCmdT = 0;
+let _cochairCmdIv = null;
+
+function startCochairCmdPoll() {
+  clearInterval(_cochairCmdIv);
+  _cochairCmdIv = setInterval(async () => {
+    if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
+    try {
+      const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}/cochairCmds.json`);
+      if (!r.ok) return;
+      const cmds = await r.json();
+      if (!cmds) return;
+
+      // Process new commands (newer than our last processed)
+      const entries = Object.entries(cmds).sort((a, b) => (a[1].t || 0) - (b[1].t || 0));
+      let anyNew = false;
+
+      for (const [key, cmd] of entries) {
+        if (!cmd.t || cmd.t <= _lastCochairCmdT) continue;
+        if (Date.now() - cmd.t > 10000) continue; // ignore old commands (>10s)
+        _lastCochairCmdT = cmd.t;
+        anyNew = true;
+
+        const from = cmd.from || 'Co-Chair';
+
+        switch (cmd.cmd) {
+          case 'timer_start':
+            if (typeof startTimer === 'function') startTimer();
+            showToast(`▶ ${from} started timer`);
+            break;
+          case 'timer_pause':
+            if (typeof pauseTimer === 'function') pauseTimer();
+            showToast(`⏸ ${from} paused timer`);
+            break;
+          case 'timer_resume':
+            if (typeof resumeTimer === 'function') resumeTimer();
+            showToast(`▶ ${from} resumed timer`);
+            break;
+          case 'timer_stop':
+            if (typeof stopTimer === 'function') stopTimer();
+            timerRunning = false;
+            showToast(`⏹ ${from} stopped timer`);
+            break;
+          case 'next_speaker':
+            if (typeof nextSpeaker === 'function') nextSpeaker();
+            showToast(`› ${from}: next speaker`);
+            break;
+          case 'add_speaker':
+            if (cmd.speakerCode) {
+              const d = delegates.find(x => x.c === cmd.speakerCode)
+                || COUNTRIES.find(x => x.c === cmd.speakerCode);
+              if (d) {
+                speakers.push({ ...d });
+                if (currentSpkIdx === -1) currentSpkIdx = 0;
+                try { renderAllSpk(); updateStats(); updateSpkPanel(); } catch(e) {}
+                showToast(`➕ ${from} added ${cmd.speakerName || d.n}`);
+                _fbPushNow();
+              }
+            }
+            break;
+          case 'remove_speaker':
+            if (typeof cmd.index === 'number' && cmd.index >= 0 && cmd.index < speakers.length) {
+              const name = speakers[cmd.index]?.n || '';
+              speakers.splice(cmd.index, 1);
+              if (currentSpkIdx >= speakers.length) currentSpkIdx = speakers.length - 1;
+              if (!speakers.length) currentSpkIdx = -1;
+              try { renderAllSpk(); updateStats(); updateSpkPanel(); } catch(e) {}
+              showToast(`${from} removed ${name}`);
+              _fbPushNow();
+            }
+            break;
+          case 'rollcall_update':
+            if (cmd.code && cmd.val) {
+              rollCallData[cmd.code] = cmd.val;
+              try { renderRollCall(); updateQuorumCheck(); updateStats(); } catch(e) {}
+              const d = delegates.find(x => x.c === cmd.code);
+              showToast(`${from}: ${d?.n || cmd.code} → ${cmd.val}`);
+              _fbPushNow();
+            }
+            break;
+          case 'ai_flag':
+            showToast(`🤖 ${from}: AI detected — ${cmd.delegate || ''}`, 6000);
+            if (document.getElementById('page-cochair')?.classList.contains('active')) loadAINotes();
+            break;
+          case 'ai_note':
+            showToast(`📤 ${from}: "${(cmd.text || '').slice(0, 60)}"`, 5000);
+            if (document.getElementById('page-cochair')?.classList.contains('active')) loadAINotes();
+            break;
+        }
+      }
+
+      // Clean up old commands (keep Firebase tidy)
+      if (anyNew) {
+        const toDelete = entries.filter(([, cmd]) => cmd.t && Date.now() - cmd.t > 15000);
+        toDelete.forEach(([key]) => {
+          fetch(`${_fbUrl}/mun_${_fbSessionId}/cochairCmds/${key}.json`, { method: 'DELETE' }).catch(() => {});
+        });
+      }
+    } catch(e) {}
+  }, 1000); // poll every 1 second
+}
+
+// Also listen for BroadcastChannel (same machine, instant)
+(function() {
+  let _bcCmd = null;
+  function _initBCCmd() {
+    if (!_fbSessionId) return;
+    try {
+      if (_bcCmd) _bcCmd.close();
+      _bcCmd = new BroadcastChannel('mun_live_' + _fbSessionId);
+      _bcCmd.onmessage = (e) => {
+        if (!e.data || e.data.type !== 'cochair_cmd') return;
+        // Execute immediately without Firebase round-trip
+        const cmd = e.data;
+        switch(cmd.cmd) {
+          case 'timer_start':  if(typeof startTimer==='function') startTimer(); break;
+          case 'timer_pause':  if(typeof pauseTimer==='function') pauseTimer(); break;
+          case 'timer_resume': if(typeof resumeTimer==='function') resumeTimer(); break;
+          case 'timer_stop':   if(typeof stopTimer==='function'){stopTimer();timerRunning=false;} break;
+          case 'next_speaker': if(typeof nextSpeaker==='function') nextSpeaker(); break;
+        }
+      };
+    } catch(e) {}
+  }
+  setTimeout(_initBCCmd, 1000);
+  setInterval(() => { if (_fbSessionId && (!_bcCmd)) _initBCCmd(); }, 3000);
+})();
 
 // ═══ STATS ═══
 function updateStats(){
