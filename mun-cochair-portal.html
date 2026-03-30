@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>MUN Co-Chair Portal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#060a12;--bg2:#0d1520;--bg3:#141d2b;--bg4:#1c2840;
+  --blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;
+  --orange:#ff9f43;--text:#ddeeff;--text2:#8aaccc;--text3:#4a6580;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --r:12px;--sh:0 4px 24px rgba(0,0,0,0.6);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif;overflow-x:hidden}
+body{display:flex;flex-direction:column;align-items:center;padding-bottom:60px}
+
+/* ── SCREENS ── */
+.screen{display:none;width:100%;max-width:480px;padding:16px;flex-direction:column;align-items:center}
+.screen.active{display:flex}
+
+/* ── LOGIN ── */
+.logo-wrap{text-align:center;margin:32px 0 20px}
+.logo-icon{width:56px;height:56px;border-radius:16px;margin:0 auto 10px;
+  background:linear-gradient(140deg,#ff9f43,#e85d04);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  box-shadow:0 4px 20px rgba(232,93,4,0.4)}
+.logo-title{font-size:20px;font-weight:800;color:var(--text)}
+.logo-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+.card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;
+  width:100%;box-shadow:var(--sh);overflow:hidden;margin-bottom:10px}
+.ch{padding:14px 18px 11px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(255,255,255,0.025),transparent)}
+.ct{font-size:14px;font-weight:700}.cs{font-size:11px;color:var(--text3);margin-top:2px}
+.cb{padding:16px 18px}
+.field{margin-bottom:12px}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.13em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+input[type=text],input[type=password]{
+  width:100%;padding:12px 13px;border-radius:var(--r);
+  background:rgba(0,0,0,0.4);border:1px solid var(--border2);
+  color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:all 0.15s}
+input:focus{border-color:rgba(255,159,67,0.5);box-shadow:0 0 0 3px rgba(255,159,67,0.08)}
+.mono{font-family:'JetBrains Mono','SF Mono',monospace;font-size:18px;font-weight:700;
+  letter-spacing:0.12em;text-align:center}
+.btn{width:100%;padding:13px;border-radius:var(--r);border:none;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+  transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn:active{transform:scale(0.98)}
+.btn-p{background:linear-gradient(135deg,#ff9f43,#e85d04,#c44d01);color:#fff;
+  box-shadow:0 3px 14px rgba(232,93,4,0.4)}
+.btn-p:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-g{background:rgba(255,255,255,0.04);border:1px solid var(--border2);color:var(--text2);margin-top:7px}
+.err{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.25);
+  border-radius:9px;padding:9px 13px;font-size:12px;color:var(--red);margin-top:8px;display:none}
+
+/* ── PORTAL TOP ── */
+.ptop{background:linear-gradient(160deg,rgba(255,159,67,0.1),var(--bg2));
+  padding:18px;border-bottom:1px solid var(--border);width:100%;display:flex;
+  align-items:center;gap:12px;position:sticky;top:0;z-index:50;backdrop-filter:blur(12px)}
+.ptop-role{font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--orange);margin-bottom:2px}
+.ptop-name{font-size:16px;font-weight:800;color:var(--text)}
+.ptop-session{font-size:11px;color:var(--text3)}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:var(--text4);flex-shrink:0;margin-left:auto;transition:background 0.3s}
+.conn-dot.ok{background:var(--green)}
+.conn-dot.err{background:var(--red)}
+
+/* ── TABS ── */
+.tabs{display:flex;width:100%;background:var(--bg3);border-bottom:1px solid var(--border);
+  position:sticky;top:61px;z-index:40}
+.tab{flex:1;padding:10px 4px;border:none;background:transparent;
+  font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;
+  color:var(--text3);transition:all 0.15s;display:flex;flex-direction:column;
+  align-items:center;gap:3px;border-bottom:2px solid transparent}
+.tab span{font-size:16px}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+.panel{display:none;width:100%;padding:14px 16px}
+.panel.active{display:block}
+
+/* ── SECTION TITLE ── */
+.stitle{font-size:9px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px}
+
+/* ── TIMER PANEL ── */
+.timer-display{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;
+  padding:24px;text-align:center;margin-bottom:12px}
+.timer-mode{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:8px}
+.timer-clock{font-family:'JetBrains Mono','SF Mono',monospace;font-size:60px;font-weight:800;
+  color:var(--text);line-height:1;margin-bottom:4px;transition:color 0.3s}
+.timer-clock.danger{color:var(--red)}
+.timer-clock.running{color:var(--green)}
+.timer-bar-wrap{height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-bottom:10px}
+.timer-bar{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));
+  border-radius:3px;transition:width 0.5s linear}
+.timer-bar.danger{background:var(--red)}
+.timer-spk{font-size:14px;font-weight:700;color:var(--text2)}
+.timer-spk-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+.timer-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.tbtn{padding:12px;border-radius:12px;border:none;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all 0.15s;display:flex;
+  align-items:center;justify-content:center;gap:6px}
+.tbtn:active{transform:scale(0.96)}
+.tbtn-start{background:linear-gradient(135deg,#3de8a0,#1eaa70);color:#001a0f;grid-column:span 2}
+.tbtn-pause{background:rgba(255,208,96,0.15);border:1px solid rgba(255,208,96,0.3);color:var(--yellow)}
+.tbtn-resume{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);color:var(--green)}
+.tbtn-stop{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:var(--red)}
+.tbtn-next{background:rgba(106,176,255,0.1);border:1px solid rgba(106,176,255,0.3);color:var(--blue)}
+.tbtn-ai{background:rgba(255,107,107,0.1);border:2px solid rgba(255,107,107,0.5);
+  color:var(--red);grid-column:span 3;font-size:14px}
+.tbtn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
+
+/* ── SPEAKER ROW ── */
+.spk-row{display:flex;align-items:center;gap:10px;padding:9px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  margin-bottom:6px;transition:all 0.2s}
+.spk-row.current{background:rgba(61,232,160,0.06);border-color:rgba(61,232,160,0.25)}
+.spk-row.done{opacity:0.4}
+.spk-flag{width:34px;height:24px;object-fit:cover;border-radius:4px;
+  border:1px solid var(--border2);flex-shrink:0}
+.spk-name{font-size:13px;font-weight:600;color:var(--text);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.spk-badge{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700}
+.badge-current{background:rgba(61,232,160,0.12);color:var(--green)}
+.badge-done{background:rgba(255,255,255,0.04);color:var(--text4)}
+.badge-waiting{background:rgba(106,176,255,0.08);color:var(--blue)}
+
+/* ── ROLL CALL ── */
+.rc-row{display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:5px}
+.rc-flag{width:32px;height:22px;object-fit:cover;border-radius:3px;border:1px solid var(--border2);flex-shrink:0}
+.rc-name{font-size:12px;font-weight:600;color:var(--text);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rc-btns{display:flex;gap:4px;flex-shrink:0}
+.rcbtn{padding:4px 8px;border-radius:6px;border:1px solid var(--border2);
+  font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;
+  background:transparent;color:var(--text3);transition:all 0.15s}
+.rcbtn.active-p{background:rgba(61,232,160,0.15);border-color:rgba(61,232,160,0.4);color:var(--green)}
+.rcbtn.active-pv{background:rgba(106,176,255,0.15);border-color:rgba(106,176,255,0.4);color:var(--blue)}
+.rcbtn.active-a{background:rgba(255,107,107,0.1);border-color:rgba(255,107,107,0.3);color:var(--red)}
+.rc-summary{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.rc-chip{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700}
+.rcs-p{background:rgba(61,232,160,0.1);color:var(--green)}
+.rcs-pv{background:rgba(106,176,255,0.1);color:var(--blue)}
+.rcs-a{background:rgba(255,107,107,0.08);color:var(--red)}
+
+/* ── AI PANEL ── */
+.ai-spk-banner{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);
+  border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.ai-spk-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--red);margin-bottom:4px}
+.ai-spk-name{font-size:16px;font-weight:800;color:var(--text)}
+
+/* ── SEARCH ── */
+.srch{position:relative;margin-bottom:10px}
+.srch input{padding-left:34px}
+.srch-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.drop{position:absolute;top:100%;left:0;right:0;background:var(--bg2);border:1px solid var(--border2);
+  border-radius:10px;z-index:100;max-height:220px;overflow-y:auto;display:none;margin-top:3px;box-shadow:var(--sh)}
+.drop.open{display:block}
+.drop-item{padding:9px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:13px;transition:background 0.12s}
+.drop-item:hover{background:rgba(255,255,255,0.04)}
+.di-flag{width:28px;height:20px;object-fit:cover;border-radius:3px;border:1px solid var(--border2)}
+
+/* ── QUORUM BAR ── */
+.quorum-bar{background:var(--bg3);border:1px solid var(--border);border-radius:10px;
+  padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.qb-label{font-size:11px;font-weight:700;color:var(--text2);flex:1}
+.qb-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;color:var(--green)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:16px;left:50%;z-index:999;
+  transform:translateX(-50%) translateY(80px);background:var(--bg2);
+  border:1px solid var(--border2);border-radius:13px;padding:10px 20px;
+  font-size:13px;font-weight:600;white-space:nowrap;box-shadow:var(--sh);
+  pointer-events:none;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── SPINNER ── */
+#spn{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;
+  justify-content:center;z-index:900;flex-direction:column;gap:10px}
+.sp{width:26px;height:26px;border:2px solid rgba(255,255,255,0.07);
+  border-top-color:var(--orange);border-radius:50%;animation:rot 0.75s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.div{height:1px;background:var(--border);margin:12px 0}
+.btn-sm{padding:8px 14px;border-radius:9px;border:1px solid var(--border2);
+  background:rgba(255,255,255,0.04);color:var(--text2);font-size:12px;font-weight:700;
+  cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-sm:active{transform:scale(0.97)}
+</style>
+</head>
+<body>
+
+<div id="spn"><div class="sp"></div><span style="font-size:12px;color:var(--text3)">Loading...</span></div>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div class="screen" id="sc-login">
+  <div class="logo-wrap">
+    <div class="logo-icon">🪑</div>
+    <div class="logo-title">Co-Chair Portal</div>
+    <div class="logo-sub">MUN Chair · boralances.github.io</div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><div class="ct">Join Session</div><div class="cs">Enter session ID and password</div></div>
+    <div class="cb">
+      <div class="field">
+        <label class="fl">Session ID</label>
+        <input type="text" class="mono" id="inp-sid" placeholder="ABC12DEF" maxlength="8"
+          autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+          oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+          onkeydown="if(event.key==='Enter')document.getElementById('inp-pw').focus()"/>
+      </div>
+      <div class="field">
+        <label class="fl">Session Password</label>
+        <input type="password" id="inp-pw" placeholder="Set by the chair"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <div class="field">
+        <label class="fl">Your Name</label>
+        <input type="text" id="inp-name" placeholder="e.g. Ahmet Yılmaz"
+          onkeydown="if(event.key==='Enter')doLogin()"/>
+      </div>
+      <button class="btn btn-p" id="btn-login" onclick="doLogin()">Join as Co-Chair →</button>
+      <div class="err" id="err-login"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PORTAL ══════════════ -->
+<div class="screen" id="sc-portal" style="padding:0;max-width:480px">
+
+  <!-- sticky top bar -->
+  <div class="ptop">
+    <div>
+      <div class="ptop-role">🪑 Co-Chair</div>
+      <div class="ptop-name" id="ptop-name">—</div>
+      <div class="ptop-session" id="ptop-session">—</div>
+    </div>
+    <div class="conn-dot" id="conn-dot"></div>
+  </div>
+
+  <!-- tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-timer" onclick="switchTab('timer')"><span>⏱</span>Timer</button>
+    <button class="tab" id="tab-spk" onclick="switchTab('spk')"><span>🎤</span>Speakers</button>
+    <button class="tab" id="tab-rc" onclick="switchTab('rc')"><span>📋</span>Roll Call</button>
+    <button class="tab" id="tab-ai" onclick="switchTab('ai')"><span>🤖</span>AI</button>
+  </div>
+
+  <!-- ── TIMER TAB ── -->
+  <div class="panel active" id="p-timer">
+    <div class="timer-display">
+      <div class="timer-mode" id="t-mode">Waiting...</div>
+      <div class="timer-clock" id="t-clock">—:——</div>
+      <div class="timer-bar-wrap"><div class="timer-bar" id="t-bar" style="width:100%"></div></div>
+      <div class="timer-spk" id="t-spk">No active speaker</div>
+      <div class="timer-spk-sub" id="t-spk-sub"></div>
+    </div>
+
+    <div class="timer-btns">
+      <button class="tbtn tbtn-start" id="tbtn-start" onclick="doTimerStart()">▶ Start</button>
+      <button class="tbtn tbtn-pause" id="tbtn-pause" onclick="doTimerPause()" style="display:none">⏸ Pause</button>
+      <button class="tbtn tbtn-resume" id="tbtn-resume" onclick="doTimerResume()" style="display:none">▶ Resume</button>
+      <button class="tbtn tbtn-stop" id="tbtn-stop" onclick="doTimerStop()">⏹ Stop</button>
+      <button class="tbtn tbtn-next" id="tbtn-next" onclick="doNextSpeaker()">Next ›</button>
+    </div>
+
+    <button class="tbtn tbtn-ai" id="tbtn-ai-flag" onclick="doFlagAI()" style="margin-bottom:10px">
+      🤖 Flag Current Speaker — USING AI
+    </button>
+
+    <!-- Live session stats -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div class="card" style="padding:10px;text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--blue)" id="stat-queue">0</div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:2px">Queue</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--green)" id="stat-done">0</div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:2px">Done</div>
+      </div>
+      <div class="card" style="padding:10px;text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:800;color:var(--text2)" id="stat-present">0</div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:2px">Present</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SPEAKERS TAB ── -->
+  <div class="panel" id="p-spk">
+    <div class="stitle">Add Speaker</div>
+    <div class="srch" style="margin-bottom:12px">
+      <svg class="srch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+      <input type="text" id="spk-search" placeholder="Search delegate..." autocomplete="off"
+        oninput="filterSpkSearch()" onfocus="filterSpkSearch();document.getElementById('spk-drop').classList.add('open')"
+        onblur="setTimeout(()=>document.getElementById('spk-drop').classList.remove('open'),200)"
+        style="padding-left:34px"/>
+      <div class="drop" id="spk-drop"></div>
+    </div>
+    <div class="div" style="margin:0 0 10px"></div>
+    <div class="stitle">Speaker Queue (<span id="queue-count">0</span>)</div>
+    <div id="spk-list"><div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">No speakers in queue.</div></div>
+  </div>
+
+  <!-- ── ROLL CALL TAB ── -->
+  <div class="panel" id="p-rc">
+    <div class="rc-summary" id="rc-summary"></div>
+    <div class="quorum-bar">
+      <div class="qb-label" id="qb-label">Quorum status</div>
+      <div class="qb-val" id="qb-val">—</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <button class="btn-sm" onclick="rcMarkAll('present')" style="flex:1">✓ All Present</button>
+      <button class="btn-sm" onclick="rcMarkAll('absent')" style="flex:1;color:var(--red)">✗ All Absent</button>
+    </div>
+    <div id="rc-list"></div>
+  </div>
+
+  <!-- ── AI TAB ── -->
+  <div class="panel" id="p-ai">
+    <div class="ai-spk-banner">
+      <div class="ai-spk-label">Current Speaker</div>
+      <div class="ai-spk-name" id="ai-cur-spk">No active speaker</div>
+    </div>
+
+    <button class="tbtn tbtn-ai" onclick="doFlagAI()" style="margin-bottom:14px;width:100%">
+      🤖 Flag as Using AI → Alert Chair
+    </button>
+
+    <div class="div"></div>
+    <div class="stitle" style="margin-top:8px">Send Custom Note to Chair</div>
+    <textarea id="ai-note-text" placeholder="Type a note for the chair... (e.g. 'Delegate reading from phone')"
+      style="width:100%;min-height:90px;background:var(--bg3);border:1px solid var(--border2);
+      color:var(--text);font-family:inherit;font-size:13px;line-height:1.6;
+      padding:10px 12px;border-radius:10px;resize:vertical;outline:none;margin-bottom:8px"
+      onfocus="this.style.borderColor='var(--orange)'" onblur="this.style.borderColor='var(--border2)'"></textarea>
+    <button class="btn btn-p" onclick="doSendNote()" style="margin-bottom:14px">📤 Send Note to Chair</button>
+
+    <div class="div"></div>
+    <div class="stitle" style="margin-top:8px">Recent AI Notes / Flags</div>
+    <div id="ai-notes-list"><div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No notes yet.</div></div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════
+const FB = 'https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let SID = '';
+let myName = '';
+let myId = 'cc_' + Math.random().toString(36).slice(2, 9);
+let sessionData = {};   // full Firebase snapshot
+let delegates = [];     // [{c, n}]
+let rollCall = {};      // {code: 'present'|'present+voting'|'absent'}
+let liveState = {};     // /liveState node
+let pollIv = null;
+let bc = null;          // BroadcastChannel
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('spn').style.display = 'none', 200);
+  // Pre-fill from URL params
+  const p = new URLSearchParams(location.search);
+  if (p.get('s')) document.getElementById('inp-sid').value = p.get('s');
+  if (p.get('n')) document.getElementById('inp-name').value = decodeURIComponent(p.get('n'));
+  show('sc-login');
+});
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function toast(msg, dur) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), dur || 2800);
+}
+
+function err(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg; el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+function fmtTime(s) {
+  if (s == null || isNaN(s)) return '—:——';
+  return Math.floor(s/60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function flagUrl(code) {
+  return `https://flagcdn.com/w80/${(code||'un').toLowerCase()}.png`;
+}
+
+// ══════════════════════════════════════════════════════════
+// FIREBASE HELPERS
+// ══════════════════════════════════════════════════════════
+async function fbGet(path) {
+  const url = path
+    ? `${FB}/mun_${SID}/${path}.json`
+    : `${FB}/mun_${SID}.json`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`Firebase read failed (${r.status})`);
+  return r.json();
+}
+
+function fbPut(path, data) {
+  return fetch(`${FB}/mun_${SID}/${path}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
+
+function fbPatch(path, data) {
+  return fetch(`${FB}/mun_${SID}/${path}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
+
+function fbPost(path, data) {
+  return fetch(`${FB}/mun_${SID}/${path}.json`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).catch(() => {});
+}
+
+// ══════════════════════════════════════════════════════════
+// WRITE LIVE STATE — co-chair writes timer commands
+// Co-chair writes to /liveState/cochair_cmd so chair picks it up
+// Chair's MUN Chair app reads these and applies them
+// ══════════════════════════════════════════════════════════
+function fbWriteCmd(cmd, extra) {
+  const payload = { cmd, from: myName, fromId: myId, t: Date.now(), ...extra };
+  // Write as a command for the chair to execute
+  fbPost('cochairCmds', payload);
+  // Also broadcast locally
+  try { if (bc) bc.postMessage({ type: 'cochair_cmd', ...payload }); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════
+async function doLogin() {
+  const sidEl = document.getElementById('inp-sid');
+  const pwEl = document.getElementById('inp-pw');
+  const nameEl = document.getElementById('inp-name');
+  const btnEl = document.getElementById('btn-login');
+
+  SID = (sidEl.value || '').trim().toUpperCase();
+  const pw = (pwEl.value || '').trim();
+  const name = (nameEl.value || '').trim();
+
+  if (!SID || SID.length < 6) { err('err-login', 'Enter a valid session ID (6-8 characters)'); return; }
+  if (!name) { err('err-login', 'Enter your name'); return; }
+
+  btnEl.disabled = true; btnEl.textContent = 'Connecting...';
+
+  try {
+    const data = await fbGet();
+    if (!data) throw new Error(`Session "${SID}" not found. Is the chair's session active?`);
+
+    // Check expiry
+    if (data.meta?.expiresAt && Date.now() > data.meta.expiresAt) throw new Error('This session has expired.');
+
+    // Check password
+    if (data.sessionPassword) {
+      if (!pw) throw new Error('This session requires a password. Ask the chair.');
+      if (data.sessionPassword !== pw) throw new Error('Incorrect password.');
+    }
+
+    // Check co-chair limit
+    const chairs = data.chairs || {};
+    const activeCo = Object.values(chairs).filter(c =>
+      c.role === 'co-chair' && Date.now() - (c.lastSeen || 0) < 20000
+    ).length;
+    if (activeCo >= 3) throw new Error('Maximum 3 co-chairs already connected to this session.');
+
+    if (!data.delegates?.length) throw new Error('No delegates yet — ask the chair to start the session first.');
+
+    // Store state
+    myName = name;
+    sessionData = data;
+    delegates = [...(data.delegates || [])];
+    rollCall = { ...(data.attendance || {}) };
+
+    // Register as co-chair
+    await fbPut(`chairs/${myId}`, {
+      role: 'co-chair',
+      name: myName,
+      page: 'timer',
+      lastSeen: Date.now(),
+      canAI: true
+    });
+
+    // Init BroadcastChannel for same-machine instant sync
+    try {
+      bc = new BroadcastChannel('mun_live_' + SID);
+      bc.onmessage = (e) => {
+        if (e.data && typeof e.data === 'object') applyLiveState(e.data);
+      };
+    } catch(e) {}
+
+    // Update header
+    document.getElementById('ptop-name').textContent = name;
+    document.getElementById('ptop-session').textContent = SID + ' · ' + (data.state?.committee || '');
+
+    show('sc-portal');
+    renderSpeakers();
+    renderRollCall();
+    startPolling();
+    toast(`✅ Connected as co-chair`);
+
+  } catch(e) {
+    err('err-login', e.message || 'Connection failed.');
+  }
+
+  btnEl.disabled = false; btnEl.textContent = 'Join as Co-Chair →';
+}
+
+// ══════════════════════════════════════════════════════════
+// POLLING — read liveState every 1s
+// ══════════════════════════════════════════════════════════
+function startPolling() {
+  doPoll();
+  pollIv = setInterval(doPoll, 1000);
+  // Heartbeat every 5s
+  setInterval(sendHeartbeat, 5000);
+}
+
+async function doPoll() {
+  try {
+    const live = await fbGet('liveState');
+    if (!live) return;
+
+    const dot = document.getElementById('conn-dot');
+    if (dot) dot.className = 'conn-dot ok';
+
+    applyLiveState(live);
+
+    // Also poll full data occasionally (every 10s)
+    if (!doPoll._last || Date.now() - doPoll._last > 10000) {
+      doPoll._last = Date.now();
+      const full = await fbGet();
+      if (full) {
+        if (full.delegates?.length) delegates = [...full.delegates];
+        if (full.attendance) { rollCall = { ...full.attendance }; renderRollCall(); }
+        sessionData = full;
+        // Reload AI notes
+        loadAINotes();
+      }
+    }
+  } catch(e) {
+    const dot = document.getElementById('conn-dot');
+    if (dot) dot.className = 'conn-dot err';
+  }
+}
+
+function sendHeartbeat() {
+  fbPatch(`chairs/${myId}`, {
+    lastSeen: Date.now(),
+    page: document.querySelector('.tab.active')?.textContent?.trim().slice(0, 15) || 'timer'
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// APPLY LIVE STATE
+// ══════════════════════════════════════════════════════════
+function applyLiveState(live) {
+  if (!live || !live.t) return;
+  liveState = live;
+
+  // ── Timer ──
+  const secs = live.timerSecs ?? 0;
+  const total = live.totalSecs ?? 0;
+  const running = !!live.timerRunning;
+  const mode = live.curMode || '';
+
+  const clock = document.getElementById('t-clock');
+  const bar = document.getElementById('t-bar');
+  const modeEl = document.getElementById('t-mode');
+
+  if (clock) {
+    clock.textContent = fmtTime(secs);
+    clock.className = 'timer-clock' + (secs < 15 && secs > 0 ? ' danger' : running ? ' running' : '');
+  }
+  if (bar) {
+    const pct = total > 0 ? Math.max(0, Math.round(secs / total * 100)) : 100;
+    bar.style.width = pct + '%';
+    bar.className = 'timer-bar' + (secs < 15 && secs > 0 ? ' danger' : '');
+  }
+  const modeNames = { opening: 'Opening Speech', gsl: 'General Speakers List', motion: 'Moderated Caucus', unmod: 'Unmoderated Caucus' };
+  if (modeEl) modeEl.textContent = modeNames[mode] || mode || 'Waiting...';
+
+  // ── Timer buttons ──
+  const btnStart = document.getElementById('tbtn-start');
+  const btnPause = document.getElementById('tbtn-pause');
+  const btnResume = document.getElementById('tbtn-resume');
+  const btnStop = document.getElementById('tbtn-stop');
+  const btnNext = document.getElementById('tbtn-next');
+
+  if (running) {
+    if (btnStart) btnStart.style.display = 'none';
+    if (btnPause) btnPause.style.display = '';
+    if (btnResume) btnResume.style.display = 'none';
+  } else {
+    if (btnStart) btnStart.style.display = '';
+    if (btnPause) btnPause.style.display = 'none';
+    if (btnResume) {
+      btnResume.style.display = secs > 0 && secs < total ? '' : 'none';
+    }
+  }
+
+  // ── Speaker ──
+  const spkName = live.spkName || '';
+  const spkEl = document.getElementById('t-spk');
+  const spkSub = document.getElementById('t-spk-sub');
+  const aiCurSpk = document.getElementById('ai-cur-spk');
+
+  if (spkEl) spkEl.textContent = spkName || 'No active speaker';
+  if (aiCurSpk) aiCurSpk.textContent = spkName || 'No active speaker';
+  if (spkSub && live.spkTimeUsed != null) {
+    const usedSecs = live.spkTimeUsed || 0;
+    spkSub.textContent = spkName ? `Total speaking time: ${fmtTime(usedSecs)}` : '';
+  }
+
+  // ── Stats ──
+  const queue = Array.isArray(live.queue) ? live.queue : [];
+  const spkIdx = live.spkIdx ?? -1;
+  const remaining = spkIdx >= 0 ? queue.slice(spkIdx + 1).length : queue.length;
+  safe('stat-queue', el => el.textContent = remaining);
+  safe('stat-done', el => el.textContent = live.speechesDone || 0);
+  safe('stat-present', el => el.textContent = live.rcPresent || 0);
+
+  // ── Speakers queue ──
+  if (Array.isArray(live.queue)) {
+    renderSpeakersFromLive(live.queue, live.spkIdx ?? -1);
+  }
+
+  // ── Roll call from live ──
+  if (live.rollCall) {
+    let changed = false;
+    Object.entries(live.rollCall).forEach(([c, v]) => {
+      if (rollCall[c] !== v) { rollCall[c] = v; changed = true; }
+    });
+    if (changed) renderRollCall();
+  }
+
+  // ── Quorum ──
+  const pres = live.rcPresent || 0;
+  const tot = live.rcTotal || delegates.length || 1;
+  const quorumPct = Math.round(pres / tot * 100);
+  const hasQuorum = pres >= Math.ceil(tot * 0.5);
+  safe('qb-label', el => el.textContent = hasQuorum ? `✅ Quorum (${pres}/${tot})` : `⚠ No Quorum (${pres}/${tot})`);
+  safe('qb-val', el => { el.textContent = quorumPct + '%'; el.style.color = hasQuorum ? 'var(--green)' : 'var(--red)'; });
+}
+
+function safe(id, fn) {
+  try { const el = document.getElementById(id); if (el) fn(el); } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════
+// TIMER ACTIONS — write commands to Firebase instantly
+// Chair's MUN Chair app polls /cochairCmds and executes them
+// ══════════════════════════════════════════════════════════
+function doTimerStart() {
+  fbWriteCmd('timer_start');
+  toast('▶ Start sent');
+}
+function doTimerPause() {
+  fbWriteCmd('timer_pause');
+  toast('⏸ Pause sent');
+}
+function doTimerResume() {
+  fbWriteCmd('timer_resume');
+  toast('▶ Resume sent');
+}
+function doTimerStop() {
+  fbWriteCmd('timer_stop');
+  toast('⏹ Stop sent');
+}
+function doNextSpeaker() {
+  fbWriteCmd('next_speaker');
+  toast('› Next speaker sent');
+}
+
+// ══════════════════════════════════════════════════════════
+// SPEAKERS
+// ══════════════════════════════════════════════════════════
+function filterSpkSearch() {
+  const q = (document.getElementById('spk-search')?.value || '').toLowerCase();
+  const drop = document.getElementById('spk-drop');
+  if (!drop) return;
+  const filtered = delegates.filter(d => d.n.toLowerCase().includes(q) || d.c.toLowerCase().includes(q));
+  drop.innerHTML = filtered.slice(0, 12).map(d => `
+    <div class="drop-item" onmousedown="addSpeaker('${d.c}','${d.n.replace(/'/g,"\\'")}')">
+      <img class="di-flag" src="${flagUrl(d.c)}" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span>${d.n}</span>
+    </div>`).join('');
+  if (!filtered.length) drop.innerHTML = '<div style="padding:12px;color:var(--text3);font-size:12px">No results.</div>';
+}
+
+function addSpeaker(code, name) {
+  document.getElementById('spk-search').value = '';
+  document.getElementById('spk-drop').classList.remove('open');
+
+  // Write to Firebase /cochairCmds
+  fbWriteCmd('add_speaker', { speakerCode: code, speakerName: name });
+  // Also add to local queue display optimistically
+  const queue = Array.isArray(liveState.queue) ? [...liveState.queue] : [];
+  queue.push({ c: code, n: name });
+  // Write the full queue to Firebase immediately
+  fbPatch('', { cochairSpeakers: queue.map(s => ({ c: s.c || s, n: s.n || s })) });
+  toast(`➕ ${name} added to queue`);
+}
+
+function removeSpeakerAt(idx) {
+  fbWriteCmd('remove_speaker', { index: idx });
+  toast('Removed from queue');
+}
+
+function renderSpeakers() {
+  if (Array.isArray(liveState.queue)) {
+    renderSpeakersFromLive(liveState.queue, liveState.spkIdx ?? -1);
+  } else {
+    safe('spk-list', el => el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">No speakers in queue.</div>');
+    safe('queue-count', el => el.textContent = '0');
+  }
+}
+
+function renderSpeakersFromLive(queue, spkIdx) {
+  safe('queue-count', el => el.textContent = queue.length);
+  const el = document.getElementById('spk-list');
+  if (!el) return;
+  if (!queue.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">No speakers in queue.</div>';
+    return;
+  }
+  el.innerHTML = queue.map((s, i) => {
+    const code = s.c || s;
+    const name = s.n || delegates.find(d => d.c === code)?.n || code;
+    const isCur = i === spkIdx;
+    const isDone = i < spkIdx;
+    return `<div class="spk-row ${isCur ? 'current' : isDone ? 'done' : ''}">
+      <img class="spk-flag" src="${flagUrl(code)}" onerror="this.style.display='none'" alt="${code}"/>
+      <span class="spk-name">${name}</span>
+      <span class="spk-badge ${isCur ? 'badge-current' : isDone ? 'badge-done' : 'badge-waiting'}">
+        ${isCur ? '🎤 Speaking' : isDone ? 'Done' : `#${i + 1}`}
+      </span>
+      ${!isDone && !isCur ? `<button onclick="removeSpeakerAt(${i})" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:16px;padding:2px 4px;flex-shrink:0">×</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// ROLL CALL
+// ══════════════════════════════════════════════════════════
+function setRC(code, val) {
+  rollCall[code] = val;
+  renderRollCall();
+  // Write to Firebase immediately
+  fbPatch('attendance', { [code]: val });
+  // Also write to liveState via cmd
+  fbWriteCmd('rollcall_update', { code, val });
+  toast(val === 'present' ? `✅ ${delegates.find(d=>d.c===code)?.n||code}` : val === 'present+voting' ? `✋ P+V` : `✗ Absent`);
+}
+
+function rcMarkAll(val) {
+  const bulk = {};
+  delegates.forEach(d => { rollCall[d.c] = val; bulk[d.c] = val; });
+  renderRollCall();
+  fbPut('attendance', rollCall);
+  toast(val === 'present' ? '✅ All marked present' : '✗ All marked absent');
+}
+
+function renderRollCall() {
+  const el = document.getElementById('rc-list');
+  const sumEl = document.getElementById('rc-summary');
+  if (!el) return;
+
+  const present = Object.values(rollCall).filter(v => v === 'present' || v === 'present+voting').length;
+  const pv = Object.values(rollCall).filter(v => v === 'present+voting').length;
+  const absent = delegates.length - present;
+
+  if (sumEl) {
+    sumEl.innerHTML = `
+      <div class="rc-chip rcs-p">✅ Present: ${present}</div>
+      <div class="rc-chip rcs-pv">✋ P+V: ${pv}</div>
+      <div class="rc-chip rcs-a">✗ Absent: ${absent}</div>`;
+  }
+
+  // Quorum
+  const tot = delegates.length || 1;
+  const qPct = Math.round(present / tot * 100);
+  const hasQ = present >= Math.ceil(tot * 0.5);
+  safe('qb-label', el => el.textContent = hasQ ? `✅ Quorum (${present}/${tot})` : `⚠ No Quorum (${present}/${tot})`);
+  safe('qb-val', el => { el.textContent = qPct + '%'; el.style.color = hasQ ? 'var(--green)' : 'var(--red)'; });
+
+  if (!delegates.length) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">No delegates.</div>';
+    return;
+  }
+
+  el.innerHTML = delegates.map(d => {
+    const status = rollCall[d.c] || 'absent';
+    return `<div class="rc-row">
+      <img class="rc-flag" src="${flagUrl(d.c)}" onerror="this.style.display='none'" alt="${d.c}"/>
+      <span class="rc-name">${d.n}</span>
+      <div class="rc-btns">
+        <button class="rcbtn ${status === 'present' ? 'active-p' : ''}" onclick="setRC('${d.c}','present')">P</button>
+        <button class="rcbtn ${status === 'present+voting' ? 'active-pv' : ''}" onclick="setRC('${d.c}','present+voting')">P+V</button>
+        <button class="rcbtn ${status === 'absent' ? 'active-a' : ''}" onclick="setRC('${d.c}','absent')">✗</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// AI FLAG
+// ══════════════════════════════════════════════════════════
+function doFlagAI() {
+  const spkName = liveState.spkName || '';
+  const spkCode = liveState.spkCode || '';
+  if (!spkName) { toast('No active speaker to flag', 1800); return; }
+
+  const note = {
+    type: 'ai_flag',
+    from: myName,
+    fromId: myId,
+    delegate: spkName,
+    delegateCode: spkCode,
+    text: `⚠️ AI detected: ${spkName} may be using AI`,
+    time: new Date().toLocaleTimeString(),
+    t: Date.now()
+  };
+
+  // Write to both aiNotes (chair sees in co-chair panel) and aiFlags
+  fbPost('aiNotes', note);
+  fbPost('aiFlags', note);
+  fbWriteCmd('ai_flag', { delegate: spkName, delegateCode: spkCode });
+
+  toast(`🤖 AI flagged: ${spkName}`, 3000);
+  setTimeout(loadAINotes, 500);
+}
+
+function doSendNote() {
+  const txt = (document.getElementById('ai-note-text')?.value || '').trim();
+  if (!txt) { toast('Enter a note', 1800); return; }
+
+  const note = {
+    type: 'note',
+    from: myName,
+    fromId: myId,
+    delegate: liveState.spkName || '',
+    text: txt,
+    time: new Date().toLocaleTimeString(),
+    t: Date.now()
+  };
+
+  fbPost('aiNotes', note);
+  fbWriteCmd('ai_note', { text: txt });
+  document.getElementById('ai-note-text').value = '';
+  toast('📤 Note sent to chair');
+  setTimeout(loadAINotes, 500);
+}
+
+async function loadAINotes() {
+  try {
+    const notes = await fbGet('aiNotes');
+    const el = document.getElementById('ai-notes-list');
+    if (!el) return;
+    if (!notes) { el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px">No notes yet.</div>'; return; }
+
+    const list = Object.values(notes).sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, 20);
+    el.innerHTML = list.map(n => `
+      <div style="padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+          <span style="font-size:12px">${n.type === 'ai_flag' ? '🤖' : '📤'}</span>
+          <span style="font-size:11px;font-weight:700;color:${n.type === 'ai_flag' ? 'var(--red)' : 'var(--blue)'}">${n.from || 'Co-Chair'}</span>
+          ${n.delegate ? `<span style="font-size:10px;color:var(--text3)">re: ${n.delegate}</span>` : ''}
+          <span style="font-size:10px;color:var(--text3);margin-left:auto">${n.time || ''}</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.5">${n.text || ''}</div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab)?.classList.add('active');
+  document.getElementById('p-' + tab)?.classList.add('active');
+  if (tab === 'rc') renderRollCall();
+  if (tab === 'spk') renderSpeakers();
+  if (tab === 'ai') { loadAINotes(); document.getElementById('ai-cur-spk').textContent = liveState.spkName || 'No active speaker'; }
+  // Update heartbeat page
+  fbPatch(`chairs/${myId}`, { page: tab, lastSeen: Date.now() }).catch(() => {});
+}
+
+// ══════════════════════════════════════════════════════════
+// CLEANUP on close
+// ══════════════════════════════════════════════════════════
+window.addEventListener('beforeunload', () => {
+  clearInterval(pollIv);
+  if (SID && myId) {
+    // Remove presence
+    fetch(`${FB}/mun_${SID}/chairs/${myId}.json`, { method: 'DELETE' }).catch(() => {});
+  }
+  try { if (bc) bc.close(); } catch(e) {}
+});
+</script>
+</body>
+</html>
