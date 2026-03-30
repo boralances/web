@@ -12526,6 +12526,7 @@ function _buildLiveState() {
 // ════════════════════════════════════════════════════════════
 function _applyLiveState(live) {
   if (!live) return;
+  if (!isCoChair()) return; // ONLY co-chairs apply remote live state
 
   // ── Timer ──
   if (typeof live.timerSecs === 'number') {
@@ -12535,15 +12536,20 @@ function _applyLiveState(live) {
 
   if (live.timerRunning && !timerRunning) {
     timerRunning = true;
-    clearInterval(timerInterval);
+    clearInterval(timerInterval); // always clear before setting
     timerInterval = setInterval(tick, 1000);
     safe('btn-pause', el => el.style.display = '');
     safe('btn-start', el => el.style.display = 'none');
     safe('btn-resume', el => el.style.display = 'none');
+  } else if (live.timerRunning && timerRunning) {
+    // Already running — just sync the seconds, don't restart interval
+    // (timer counts down locally, only resync if >2s drift)
+    if (Math.abs((live.timerSecs || 0) - timerSecs) > 2) timerSecs = live.timerSecs;
   } else if (!live.timerRunning && timerRunning) {
-    clearInterval(timerInterval); timerRunning = false;
+    clearInterval(timerInterval); timerInterval = null; timerRunning = false;
     safe('btn-pause', el => el.style.display = 'none');
     safe('btn-start', el => el.style.display = '');
+    safe('btn-resume', el => el.style.display = timerSecs > 0 && timerSecs < totalSecs ? '' : 'none');
   }
 
   if (live.curMode !== undefined && live.curMode !== curMode) curMode = live.curMode || null;
@@ -13312,6 +13318,19 @@ function startCochairCmdPoll() {
           case 'ai_note':
             showToast(`📤 ${from}: "${(cmd.text || '').slice(0, 60)}"`, 5000);
             if (document.getElementById('page-cochair')?.classList.contains('active')) loadAINotes();
+            break;
+          case 'add_warning':
+            if (cmd.code) {
+              const warnDel = delegates.find(x => x.c === cmd.code);
+              if (warnDel) {
+                if (!warnings[cmd.code]) warnings[cmd.code] = [];
+                warnings[cmd.code].push({ reason: cmd.reason || 'Co-chair warning', time: new Date().toLocaleTimeString() });
+                try { renderWarnings(); updateStats(); } catch(e) {}
+                logEvent('warning', warnDel, `Warning (${from}): ${cmd.reason || ''}`, 0);
+                showToast(`⚠ ${from} warned ${warnDel.n}`);
+                _fbPushNow();
+              }
+            }
             break;
         }
       }
