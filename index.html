@@ -12,7 +12,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
 
         body {
             font-family: 'Rajdhani', sans-serif;
@@ -113,7 +112,7 @@
             transform: translateY(-3px);
         }
 
-        /* MUN CHAIR NAV BUTTON */
+        /* MUN CHAIR NAV BUTTON — distinct style */
         .nav-mun {
             background: linear-gradient(135deg, rgba(56,139,253,0.15), rgba(56,139,253,0.05));
             border: 2px solid rgba(56,139,253,0.6) !important;
@@ -131,26 +130,6 @@
             box-shadow: 0 0 20px rgba(56,139,253,0.5), inset 0 0 10px rgba(56,139,253,0.15) !important;
             text-shadow: 0 0 10px #388bfd !important;
             background: linear-gradient(135deg, rgba(56,139,253,0.25), rgba(56,139,253,0.1)) !important;
-        }
-
-        /* ŞİFRELEME NAV BUTTON */
-        .nav-sifre {
-            background: linear-gradient(135deg, rgba(255,160,0,0.12), rgba(255,160,0,0.04));
-            border: 2px solid rgba(255,160,0,0.55) !important;
-            color: #ffa000 !important;
-            font-size: 15px !important;
-            letter-spacing: 1px !important;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-        .nav-sifre:hover {
-            color: #ffc107 !important;
-            border-color: #ffa000 !important;
-            box-shadow: 0 0 20px rgba(255,160,0,0.5), inset 0 0 10px rgba(255,160,0,0.15) !important;
-            text-shadow: 0 0 10px #ffa000 !important;
-            background: linear-gradient(135deg, rgba(255,160,0,0.22), rgba(255,160,0,0.08)) !important;
         }
 
         main {
@@ -296,7 +275,7 @@
             line-height: 1.6;
         }
 
-        /* MUN CHAIR FEATURED SECTION */
+        /* ── MUN CHAIR FEATURED SECTION ── */
         .mun-section {
             background: rgba(10, 20, 45, 0.85);
             border: 2px solid rgba(56, 139, 253, 0.7);
@@ -430,8 +409,13 @@
             letter-spacing: 3px;
         }
 
-        .mun-launch-btn svg { transition: transform 0.3s; }
-        .mun-launch-btn:hover svg { transform: translateX(4px); }
+        .mun-launch-btn svg {
+            transition: transform 0.3s;
+        }
+
+        .mun-launch-btn:hover svg {
+            transform: translateX(4px);
+        }
 
         footer {
             position: relative;
@@ -455,7 +439,7 @@
             .content-section, .mun-section { padding: 20px; }
             .mun-features { grid-template-columns: 1fr 1fr; }
         }
-
+    
         /* DELEGATE PORTAL NAV BUTTON */
         .nav-portal {
             background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(63,185,80,0.04));
@@ -475,7 +459,7 @@
             text-shadow: 0 0 10px #3fb950 !important;
             background: linear-gradient(135deg, rgba(63,185,80,0.22), rgba(63,185,80,0.08)) !important;
         }
-    </style>
+</style>
 </head>
 <body>
     <div class="cyber-grid"></div>
@@ -490,11 +474,8 @@
                 <li><a href="studio.html">Studio</a></li>
                 <li><a href="blog.html">Blog</a></li>
                 <li>
-                    <a href="sifre.html" class="nav-sifre">
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                        </svg>
-                        Şifreleme
+                    <a href="mun-cochair-portal.html" style="background:linear-gradient(135deg,rgba(255,159,67,0.12),rgba(255,159,67,0.04));border:2px solid rgba(255,159,67,0.5)!important;color:#ff9f43!important;font-size:14px!important;letter-spacing:1px!important;border-radius:4px;display:flex;align-items:center;gap:7px" onmouseover="this.style.boxShadow='0 0 20px rgba(255,159,67,0.4)'" onmouseout="this.style.boxShadow=''">
+                        🪑 Co-Chair
                     </a>
                 </li>
                 <li>
@@ -506,14 +487,6 @@
                         MUN Chair
                     </a>
                 </li>
-                <li>
-    <a href="kesfet.html" class="nav-yonbul">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 16a8 8 0 1 1 0-16 8 8 0 0 1 0 16zM8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zM10.74 4.542l-1.04 4.538-4.538 1.04 1.04-4.538 4.538-1.04zM8.835 7.165L8 8l.835.835.835-.835-.835-.835z"/>
-        </svg>
-        YönBul
-    </a>
-</li>
             </ul>
         </nav>
     </header>
