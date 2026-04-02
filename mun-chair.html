@@ -1398,6 +1398,11 @@ window.makeQRUrl = function(data, size) {
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
               </button>
               <button class="btn btn-ghost" id="btn-ai-flag" onclick="flagCurrentSpeakerAI()"
+                title="Flag current speaker as using AI"
+                style="display:none;border-color:rgba(248,81,73,0.5);color:var(--red);font-size:12px;padding:6px 12px">
+                🤖 AI
+              </button>
+              <button class="btn btn-ghost" id="btn-ai-flag" onclick="flagCurrentSpeakerAI()"
                 title="Flag current speaker as using AI — sends alert to chair"
                 style="display:none;border-color:rgba(248,81,73,0.4);color:var(--red);gap:5px;font-size:12px;padding:7px 12px">
                 🤖 AI
@@ -1779,6 +1784,13 @@ window.makeQRUrl = function(data, size) {
               <label class="field-label">Title</label>
               <input type="text" id="res-title" placeholder="e.g. Resolution on Climate Finance"/>
             </div>
+            <div class="field" style="margin-bottom:10px">
+              <label class="field-label">Google Docs Link <span style="color:var(--text4);font-weight:400">(optional — delegates can view)</span></label>
+              <div style="display:flex;gap:6px">
+                <input type="text" id="res-gdocs-link" placeholder="https://docs.google.com/document/..." style="flex:1;font-size:12px"/>
+                <button class="btn btn-ghost btn-sm" onclick="(()=>{const v=document.getElementById('res-gdocs-link').value.trim();if(v)window.open(v,'_blank');else showToast('No link','error');})()" title="Preview">👁</button>
+              </div>
+            </div>
             <button class="btn btn-primary btn-sm" onclick="setupResolution()">Set Resolution</button>
           </div>
         </div>
@@ -1795,7 +1807,14 @@ window.makeQRUrl = function(data, size) {
             </div>
           </div>
           <div class="card-body">
-            <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:14px" id="res-display-title"></div>
+            <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:8px" id="res-display-title"></div>
+            <div id="res-gdocs-row" style="display:none;margin-bottom:10px">
+              <a id="res-gdocs-link-display" href="#" target="_blank"
+                style="display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--blue);text-decoration:none;background:rgba(56,139,253,0.08);border:1px solid rgba(56,139,253,0.2);border-radius:6px;padding:5px 12px">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>
+                View Resolution on Google Docs
+              </a>
+            </div>
             <div class="grid2">
               <div>
                 <div class="card-section">Signatories (In Committee)</div>
@@ -4028,16 +4047,16 @@ function onDurInput(mode){
 // ═══ TIMER ═══
 let unmodWin=null;
 function startTimer(){
-  if(!curMode) return;
+  if(!curMode||timerRunning) return; // guard double-start
+  clearInterval(timerInterval); timerInterval=null;
   if(timerSecs<=0) timerSecs=totalSecs;
   _recordTimerStart();
   timerRunning=true;
-  _fbPushNow();
   document.getElementById('btn-start').style.display='none';
   document.getElementById('btn-pause').style.display='';
   document.getElementById('btn-resume').style.display='none';
   timerInterval=setInterval(tick,1000);
-  // Open fullscreen unmod window for HDMI
+  _fbPushNow();
   if(curMode==='unmod') openUnmodWindow();
 }
 function tick(){
@@ -4060,10 +4079,11 @@ function tick(){
   }
 }
 function pauseTimer(){
-  stopTimer(); timerRunning=false;
-  _fbPushNow();
+  clearInterval(timerInterval); timerInterval=null;
+  timerRunning=false;
   document.getElementById('btn-pause').style.display='none';
   document.getElementById('btn-resume').style.display='';
+  _fbPushNow();
 }
 function resumeTimer(){
   if(timerRunning) return;
@@ -4718,6 +4738,12 @@ function setupResolution(){
   document.getElementById('res-info-card').style.display='';
   document.getElementById('res-display-id').textContent = resolution.id;
   document.getElementById('res-display-title').textContent = resolution.title;
+  const _gr=document.getElementById('res-gdocs-row');
+  const _gl=document.getElementById('res-gdocs-link-display');
+  if(gdocs&&_gr&&_gl){_gr.style.display='';_gl.href=gdocs;}
+  if(gdocs&&_fbAvailable&&_fbUrl&&_fbSessionId){
+    fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(gdocs)}).catch(()=>{});
+  }
   updateResStatusChip();
   renderResSigList();
   renderResCosponList();
@@ -12526,6 +12552,7 @@ function _buildLiveState() {
 // ════════════════════════════════════════════════════════════
 function _applyLiveState(live) {
   if (!live) return;
+  if (!isCoChair()) return; // ONLY for co-chairs — prevents chair double-interval
   if (!isCoChair()) return; // ONLY co-chairs apply remote live state
 
   // ── Timer ──
@@ -12534,22 +12561,22 @@ function _applyLiveState(live) {
   }
   if (typeof live.totalSecs === 'number') totalSecs = live.totalSecs;
 
+  // Timer sync — co-chair mirrors chair state
   if (live.timerRunning && !timerRunning) {
+    clearInterval(timerInterval); timerInterval=null;
     timerRunning = true;
-    clearInterval(timerInterval); // always clear before setting
     timerInterval = setInterval(tick, 1000);
     safe('btn-pause', el => el.style.display = '');
     safe('btn-start', el => el.style.display = 'none');
     safe('btn-resume', el => el.style.display = 'none');
   } else if (live.timerRunning && timerRunning) {
-    // Already running — just sync the seconds, don't restart interval
-    // (timer counts down locally, only resync if >2s drift)
-    if (Math.abs((live.timerSecs || 0) - timerSecs) > 2) timerSecs = live.timerSecs;
+    // Running on both — sync secs if drifted
+    if (Math.abs((live.timerSecs||0) - timerSecs) > 2) timerSecs = live.timerSecs;
   } else if (!live.timerRunning && timerRunning) {
-    clearInterval(timerInterval); timerInterval = null; timerRunning = false;
-    safe('btn-pause', el => el.style.display = 'none');
-    safe('btn-start', el => el.style.display = '');
-    safe('btn-resume', el => el.style.display = timerSecs > 0 && timerSecs < totalSecs ? '' : 'none');
+    clearInterval(timerInterval); timerInterval=null; timerRunning=false;
+    safe('btn-pause', el => el.style.display='none');
+    safe('btn-start', el => el.style.display='');
+    safe('btn-resume', el => el.style.display = (timerSecs>0&&timerSecs<totalSecs)?'':'none');
   }
 
   if (live.curMode !== undefined && live.curMode !== curMode) curMode = live.curMode || null;
@@ -13252,15 +13279,11 @@ function startCochairCmdPoll() {
         if (!cmd.t || cmd.t <= _lastCochairCmdT) continue;
         if (Date.now() - cmd.t > 10000) continue; // ignore old commands (>10s)
         _lastCochairCmdT = cmd.t;
+        _executedCmdTs.add(cmd.t); setTimeout(()=>_executedCmdTs.delete(cmd.t),15000);
         anyNew = true;
-
-        const from = cmd.from || 'Co-Chair';
-
-        switch (cmd.cmd) {
-          case 'timer_start':
-            if (typeof startTimer === 'function') startTimer();
-            showToast(`▶ ${from} started timer`);
-            break;
+        _runCmd(cmd);
+        if(false){
+          const from=''; switch(''){case 'timer_start': break;
           case 'timer_pause':
             if (typeof pauseTimer === 'function') pauseTimer();
             showToast(`⏸ ${from} paused timer`);
@@ -13319,20 +13342,7 @@ function startCochairCmdPoll() {
             showToast(`📤 ${from}: "${(cmd.text || '').slice(0, 60)}"`, 5000);
             if (document.getElementById('page-cochair')?.classList.contains('active')) loadAINotes();
             break;
-          case 'add_warning':
-            if (cmd.code) {
-              const warnDel = delegates.find(x => x.c === cmd.code);
-              if (warnDel) {
-                if (!warnings[cmd.code]) warnings[cmd.code] = [];
-                warnings[cmd.code].push({ reason: cmd.reason || 'Co-chair warning', time: new Date().toLocaleTimeString() });
-                try { renderWarnings(); updateStats(); } catch(e) {}
-                logEvent('warning', warnDel, `Warning (${from}): ${cmd.reason || ''}`, 0);
-                showToast(`⚠ ${from} warned ${warnDel.n}`);
-                _fbPushNow();
-              }
-            }
-            break;
-        }
+        }}
       }
 
       // Clean up old commands (keep Firebase tidy)
@@ -13346,31 +13356,99 @@ function startCochairCmdPoll() {
   }, 1000); // poll every 1 second
 }
 
-// Also listen for BroadcastChannel (same machine, instant)
+// BroadcastChannel for same-machine instant co-chair commands
+// Dedup with Firebase poll via _executedCmdTs set
+const _executedCmdTs = new Set();
 (function() {
   let _bcCmd = null;
   function _initBCCmd() {
     if (!_fbSessionId) return;
     try {
-      if (_bcCmd) _bcCmd.close();
-      _bcCmd = new BroadcastChannel('mun_live_' + _fbSessionId);
+      if (_bcCmd) { try{_bcCmd.close();}catch(e2){} }
+      _bcCmd = new BroadcastChannel('mun_cc_' + _fbSessionId);
       _bcCmd.onmessage = (e) => {
         if (!e.data || e.data.type !== 'cochair_cmd') return;
-        // Execute immediately without Firebase round-trip
         const cmd = e.data;
-        switch(cmd.cmd) {
-          case 'timer_start':  if(typeof startTimer==='function') startTimer(); break;
-          case 'timer_pause':  if(typeof pauseTimer==='function') pauseTimer(); break;
-          case 'timer_resume': if(typeof resumeTimer==='function') resumeTimer(); break;
-          case 'timer_stop':   if(typeof stopTimer==='function'){stopTimer();timerRunning=false;} break;
-          case 'next_speaker': if(typeof nextSpeaker==='function') nextSpeaker(); break;
-        }
+        if (cmd.t && _executedCmdTs.has(cmd.t)) return; // already handled by FB poll
+        if (cmd.t) { _executedCmdTs.add(cmd.t); setTimeout(()=>_executedCmdTs.delete(cmd.t), 15000); }
+        _runCmd(cmd);
       };
     } catch(e) {}
   }
-  setTimeout(_initBCCmd, 1000);
-  setInterval(() => { if (_fbSessionId && (!_bcCmd)) _initBCCmd(); }, 3000);
+  setTimeout(_initBCCmd, 800);
+  setInterval(() => { if (_fbSessionId && !_bcCmd) _initBCCmd(); }, 4000);
 })();
+
+function _runCmd(cmd) {
+  const from = cmd.from || 'Co-Chair';
+  switch(cmd.cmd) {
+    case 'timer_start':
+      if (!timerRunning) { startTimer(); showToast(`▶ ${from} started timer`); }
+      break;
+    case 'timer_pause':
+      if (timerRunning) { pauseTimer(); showToast(`⏸ ${from} paused timer`); }
+      break;
+    case 'timer_resume':
+      if (!timerRunning && timerSecs > 0) { resumeTimer(); showToast(`▶ ${from} resumed`); }
+      break;
+    case 'timer_stop':
+      clearInterval(timerInterval); timerInterval=null; timerRunning=false;
+      safe('btn-start', el=>el.style.display='');
+      safe('btn-pause', el=>el.style.display='none');
+      safe('btn-resume', el=>el.style.display='none');
+      _fbPushNow();
+      showToast(`⏹ ${from} stopped timer`);
+      break;
+    case 'next_speaker':
+      if(typeof nextSpeaker==='function') nextSpeaker();
+      showToast(`› ${from}: next speaker`);
+      break;
+    case 'add_speaker': {
+      const _d=delegates.find(x=>x.c===cmd.speakerCode)||COUNTRIES.find(x=>x.c===cmd.speakerCode);
+      if(_d){speakers.push({..._d});if(currentSpkIdx===-1)currentSpkIdx=0;try{renderAllSpk();updateStats();updateSpkPanel();}catch(e){}showToast(`➕ ${from}: ${cmd.speakerName||_d.n}`);_fbPushNow();}
+      break;
+    }
+    case 'remove_speaker': {
+      if(typeof cmd.index==='number'&&cmd.index>=0&&cmd.index<speakers.length){
+        const _rn=speakers[cmd.index]?.n||'';
+        speakers.splice(cmd.index,1);
+        if(currentSpkIdx>=speakers.length)currentSpkIdx=speakers.length-1;
+        if(!speakers.length)currentSpkIdx=-1;
+        try{renderAllSpk();updateStats();updateSpkPanel();}catch(e){}
+        showToast(`${from} removed ${_rn}`);_fbPushNow();
+      }
+      break;
+    }
+    case 'rollcall_update': {
+      if(cmd.code&&cmd.val){
+        rollCallData[cmd.code]=cmd.val;
+        try{renderRollCall();updateQuorumCheck();updateStats();}catch(e){}
+        const _rd=delegates.find(x=>x.c===cmd.code);
+        showToast(`${from}: ${_rd?.n||cmd.code} → ${cmd.val}`);_fbPushNow();
+      }
+      break;
+    }
+    case 'add_warning': {
+      const _wd=delegates.find(x=>x.c===cmd.code);
+      if(_wd){
+        if(!warnings[cmd.code])warnings[cmd.code]=[];
+        warnings[cmd.code].push({reason:cmd.reason||'Warning',time:new Date().toLocaleTimeString()});
+        try{renderWarnings();updateStats();}catch(e){}
+        try{logEvent('warning',_wd,`Warning (${from}): ${cmd.reason||''}`,0);}catch(e){}
+        showToast(`⚠ ${from} warned ${_wd.n}`);_fbPushNow();
+      }
+      break;
+    }
+    case 'ai_flag':
+      showToast(`🤖 ${from}: AI — ${cmd.delegate||''}`, 6000);
+      try{if(document.getElementById('page-cochair')?.classList.contains('active'))loadAINotes();}catch(e){}
+      break;
+    case 'ai_note':
+      showToast(`📤 ${from}: "${(cmd.text||'').slice(0,60)}"`, 5000);
+      try{if(document.getElementById('page-cochair')?.classList.contains('active'))loadAINotes();}catch(e){}
+      break;
+  }
+}
 
 // ═══ STATS ═══
 function updateStats(){
