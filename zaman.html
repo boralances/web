@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MUN Timer Display</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060a12;--bg2:#0d1520;
+  --blue:#6ab0ff;--green:#3de8a0;--red:#ff6b6b;--yellow:#ffd060;
+  --text:#ddeeff;--text2:#8aaccc;--text3:#4a6580;
+  --border:rgba(255,255,255,0.07);
+}
+html,body{height:100%;background:var(--bg);color:var(--text);overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif}
+
+/* ── LOGIN SCREEN ── */
+#sc-login{
+  position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:24px;z-index:100;background:var(--bg);
+}
+#sc-login h1{font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
+#sc-login p{font-size:13px;color:var(--text3);margin-bottom:24px}
+.login-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;
+  padding:24px;width:100%;max-width:340px}
+.fl{display:block;font-size:10px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:5px}
+input{width:100%;padding:11px 13px;border-radius:10px;background:rgba(0,0,0,0.4);
+  border:1px solid var(--border);color:var(--text);font-size:15px;font-family:inherit;
+  outline:none;margin-bottom:12px;transition:border-color 0.15s}
+input:focus{border-color:rgba(106,176,255,0.5)}
+.mono-in{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:700;
+  text-align:center;letter-spacing:0.12em}
+.btn-login{width:100%;padding:12px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,#6ab0ff,#3b8fee);color:#fff;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-login:hover{box-shadow:0 4px 20px rgba(59,143,238,0.5)}
+.btn-login:disabled{opacity:0.4;cursor:not-allowed}
+.err{color:var(--red);font-size:12px;margin-top:8px;text-align:center;display:none}
+
+/* ── MAIN DISPLAY ── */
+#sc-main{
+  position:fixed;inset:0;display:none;flex-direction:column;
+  background:var(--bg);
+}
+
+/* Top bar */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 24px;border-bottom:1px solid var(--border);
+  background:rgba(6,10,18,0.95);backdrop-filter:blur(10px);
+  flex-shrink:0;
+}
+.tb-left{display:flex;flex-direction:column;gap:2px}
+.tb-committee{font-size:13px;font-weight:800;color:var(--text);letter-spacing:0.04em}
+.tb-agenda{font-size:11px;color:var(--text3);max-width:500px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-sid{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;
+  color:var(--text3);letter-spacing:0.12em}
+.conn{width:8px;height:8px;border-radius:50%;background:var(--text3);transition:background 0.3s}
+.conn.ok{background:var(--green)} .conn.err{background:var(--red)}
+
+/* Main content */
+.main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;position:relative;overflow:hidden}
+
+/* Arc clock */
+.timer-wrap{position:relative;width:min(45vw,340px);height:min(45vw,340px);
+  margin-bottom:32px;flex-shrink:0}
+svg.arc-svg{width:100%;height:100%}
+.arc-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:8;stroke-linecap:round}
+.arc-fill{fill:none;stroke:var(--green);stroke-width:8;stroke-linecap:round;
+  stroke-dasharray:0 1000;transition:stroke-dasharray 0.8s ease,stroke 0.5s ease}
+.arc-fill.danger{stroke:var(--red)}
+.arc-fill.paused{stroke:var(--yellow)}
+.timer-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.timer-time{font-family:'JetBrains Mono',monospace;font-size:clamp(42px,9vw,88px);
+  font-weight:800;color:var(--text);line-height:1;letter-spacing:-0.02em;
+  transition:color 0.3s}
+.timer-time.danger{color:var(--red)}
+.timer-time.paused{color:var(--yellow)}
+.timer-time.stopped{color:var(--text3)}
+.timer-mode{font-size:clamp(10px,1.4vw,14px);font-weight:700;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--text3);margin-top:6px}
+.timer-mode.running{color:var(--green)}
+.timer-status{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Speaker section */
+.speaker-section{text-align:center;max-width:700px;width:100%}
+.spk-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:10px}
+.spk-row{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:8px}
+.spk-flag{width:72px;height:50px;object-fit:cover;border-radius:8px;
+  border:2px solid rgba(255,255,255,0.1);box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+.spk-name{font-size:clamp(22px,4vw,42px);font-weight:800;color:var(--text);line-height:1.1}
+.spk-time{font-size:12px;color:var(--text3);margin-top:4px;font-family:'JetBrains Mono',monospace}
+
+/* Queue */
+.queue-bar{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;max-width:600px;margin-top:16px}
+.q-chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);font-size:11px;color:var(--text3)}
+.q-chip img{width:20px;height:14px;object-fit:cover;border-radius:2px}
+.q-chip.q-current{background:rgba(61,232,160,0.1);border-color:rgba(61,232,160,0.3);color:var(--green);font-weight:700}
+
+/* No speaker */
+.waiting{text-align:center;color:var(--text3)}
+.waiting-icon{font-size:60px;margin-bottom:12px;opacity:0.4}
+.waiting-text{font-size:20px;font-weight:600;opacity:0.5}
+
+/* Status bar */
+.statusbar{
+  padding:8px 24px;border-top:1px solid var(--border);
+  background:rgba(6,10,18,0.9);display:flex;gap:20px;
+  justify-content:center;flex-shrink:0;
+}
+.sb-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)}
+.sb-val{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--text2)}
+
+/* Animations */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.blink{animation:pulse 1s ease-in-out infinite}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade{animation:fadeIn 0.4s ease}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="sc-login">
+  <h1>🏛 MUN Timer Display</h1>
+  <p>Enter your session ID to show the live timer</p>
+  <div class="login-card">
+    <label class="fl">Session ID</label>
+    <input type="text" class="mono-in" id="inp-sid" placeholder="ABC12DEF" maxlength="8"
+      autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false"
+      oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+      onkeydown="if(event.key==='Enter')doConnect()"/>
+    <button class="btn-login" id="btn-connect" onclick="doConnect()">Connect →</button>
+    <div class="err" id="err-msg"></div>
+  </div>
+</div>
+
+<!-- MAIN DISPLAY -->
+<div id="sc-main">
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-committee" id="d-committee">Model United Nations</div>
+      <div class="tb-agenda" id="d-agenda">—</div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-sid" id="d-sid"></div>
+      <div class="conn" id="d-conn"></div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Timer arc -->
+    <div class="timer-wrap">
+      <svg class="arc-svg" viewBox="0 0 120 120">
+        <circle class="arc-bg" cx="60" cy="60" r="52"
+          transform="rotate(-90 60 60)"/>
+        <circle class="arc-fill" id="arc-fill" cx="60" cy="60" r="52"
+          transform="rotate(-90 60 60)"
+          stroke-dashoffset="0"/>
+      </svg>
+      <div class="timer-center">
+        <div class="timer-time stopped" id="d-clock">—:——</div>
+        <div class="timer-mode" id="d-mode">Waiting</div>
+        <div class="timer-status" id="d-status"></div>
+      </div>
+    </div>
+
+    <!-- Speaker / Waiting -->
+    <div class="speaker-section" id="d-speaker-section">
+      <div class="waiting">
+        <div class="waiting-icon">⏳</div>
+        <div class="waiting-text">Waiting for session to start...</div>
+      </div>
+    </div>
+
+    <!-- Queue -->
+    <div class="queue-bar" id="d-queue"></div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="statusbar">
+    <div class="sb-item">👥 <span class="sb-val" id="sb-del">—</span> delegates</div>
+    <div class="sb-item">✅ <span class="sb-val" id="sb-present">—</span> present</div>
+    <div class="sb-item">🎤 <span class="sb-val" id="sb-done">—</span> speeches</div>
+    <div class="sb-item">📋 <span class="sb-val" id="sb-queue">—</span> in queue</div>
+  </div>
+</div>
+
+<script>
+const FB='https://boralances-mun-default-rtdb.europe-west1.firebasedatabase.app';
+let SID='',pollIv=null,localIv=null,live={},timerSecs=0,totalSecs=0,running=false,localT=null;
+
+const CIRC=2*Math.PI*52; // circumference
+
+// ── UTILS ──
+function fmt(s){if(s==null||isNaN(s))return'—:——';const m=Math.floor(Math.abs(s)/60),sec=Math.abs(s)%60;return(s<0?'-':'')+m+':'+(sec<10?'0':'')+sec;}
+function flagUrl(c){return'https://flagcdn.com/w160/'+(c||'un').toLowerCase()+'.png';}
+function safe(id,fn){try{const e=document.getElementById(id);if(e)fn(e);}catch(e){}}
+
+// ── LOGIN ──
+async function doConnect(){
+  const btn=document.getElementById('btn-connect');
+  const errEl=document.getElementById('err-msg');
+  SID=(document.getElementById('inp-sid').value||'').trim().toUpperCase();
+  if(SID.length<6){showErr('Enter a valid session ID (6-8 chars)');return;}
+  btn.disabled=true;btn.textContent='Connecting...';errEl.style.display='none';
+  try{
+    const r=await fetch(`${FB}/mun_${SID}/liveState.json`);
+    if(!r.ok)throw new Error('Firebase error '+r.status);
+    const data=await r.json();
+    if(!data)throw new Error(`Session "${SID}" not found. Is the chair's session active?`);
+    document.getElementById('sc-login').style.display='none';
+    document.getElementById('sc-main').style.display='flex';
+    safe('d-sid',el=>el.textContent='ID: '+SID);
+    startPolling();
+  }catch(e){showErr(e.message||'Connection failed');}
+  btn.disabled=false;btn.textContent='Connect →';
+}
+
+function showErr(msg){const e=document.getElementById('err-msg');e.textContent=msg;e.style.display='block';}
+
+// ── POLLING ──
+function startPolling(){
+  doPoll();
+  pollIv=setInterval(doPoll,1000);
+  // Local tick for smooth countdown
+  localIv=setInterval(localTick,1000);
+}
+
+async function doPoll(){
+  try{
+    const r=await fetch(`${FB}/mun_${SID}/liveState.json`);
+    if(!r.ok)return;
+    const data=await r.json();
+    if(!data){safe('d-conn',el=>el.className='conn err');return;}
+    safe('d-conn',el=>el.className='conn ok');
+    live=data;
+    applyLiveState(data);
+  }catch(e){safe('d-conn',el=>el.className='conn err');}
+}
+
+function localTick(){
+  if(!running||timerSecs<=0)return;
+  timerSecs=Math.max(0,timerSecs-1);
+  renderClock();
+}
+
+// ── APPLY STATE ──
+function applyLiveState(d){
+  if(!d)return;
+
+  // Sync timer
+  const wasRunning=running;
+  timerSecs=d.timerSecs??timerSecs;
+  totalSecs=d.totalSecs??totalSecs;
+  running=!!d.timerRunning;
+
+  // Committee / agenda
+  safe('d-committee',el=>el.textContent=d.committee||'Model United Nations');
+  safe('d-agenda',el=>el.textContent=d.agenda||(d.agendaItem?'📌 '+d.agendaItem:'—'));
+
+  renderClock();
+  renderSpeaker(d);
+  renderQueue(d);
+  renderStatusBar(d);
+}
+
+function renderClock(){
+  const clockEl=document.getElementById('d-clock');
+  const modeEl=document.getElementById('d-mode');
+  const statusEl=document.getElementById('d-status');
+  const arcEl=document.getElementById('arc-fill');
+
+  if(!clockEl)return;
+
+  const danger=timerSecs<15&&timerSecs>0&&running;
+  const paused=!running&&timerSecs>0&&timerSecs<totalSecs;
+  const stopped=!running&&(timerSecs===0||timerSecs===totalSecs);
+
+  clockEl.textContent=fmt(timerSecs);
+  clockEl.className='timer-time'+(danger?' danger blink':paused?' paused':stopped?' stopped':running?' running':'');
+
+  const modeNames={opening:'Opening Speech',gsl:'General Speakers List',motion:'Moderated Caucus',unmod:'Unmoderated Caucus'};
+  modeEl.textContent=modeNames[live.curMode]||live.curMode||'Waiting';
+  modeEl.className='timer-mode'+(running?' running':'');
+  statusEl.textContent=running?'● Running':paused?'⏸ Paused':stopped&&timerSecs===0?'⏰ Time Up':'';
+
+  // Arc
+  if(arcEl&&totalSecs>0){
+    const pct=Math.max(0,Math.min(1,timerSecs/totalSecs));
+    const dash=pct*CIRC;
+    arcEl.style.strokeDasharray=dash+' '+CIRC;
+    arcEl.className='arc-fill'+(danger?' danger':paused?' paused':'');
+  }
+}
+
+function renderSpeaker(d){
+  const sec=document.getElementById('d-speaker-section');
+  if(!sec)return;
+  const spkName=d.spkName||'';
+  const spkCode=d.spkCode||'';
+  const spkTimeUsed=d.spkTimeUsed||0;
+
+  if(!spkName){
+    sec.innerHTML=`<div class="waiting"><div class="waiting-icon">⏳</div>
+      <div class="waiting-text">${running?'Timer running...':'No active speaker'}</div></div>`;
+    return;
+  }
+
+  sec.innerHTML=`<div class="fade">
+    <div class="spk-label">Now Speaking</div>
+    <div class="spk-row">
+      <img class="spk-flag" src="${flagUrl(spkCode)}" onerror="this.style.display='none'" alt="${spkCode}"/>
+      <div class="spk-name">${spkName}</div>
+    </div>
+    ${spkTimeUsed>0?`<div class="spk-time">Total speaking time: ${fmt(spkTimeUsed)}</div>`:''}
+  </div>`;
+}
+
+function renderQueue(d){
+  const el=document.getElementById('d-queue');
+  if(!el)return;
+  const queue=Array.isArray(d.queue)?d.queue:[];
+  const spkIdx=d.spkIdx??-1;
+  // Show up to 8 upcoming speakers (after current)
+  const upcoming=queue.slice(spkIdx+1,spkIdx+9);
+  if(!upcoming.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="spk-label" style="width:100%;text-align:center;margin-bottom:6px">Next up</div>`+
+    upcoming.map((s,i)=>{
+      const code=s.c||s;
+      const name=s.n||(typeof s==='string'?s:code);
+      return`<div class="q-chip">
+        <img src="${flagUrl(code)}" onerror="this.style.display='none'" alt="${code}"/>
+        ${name}
+      </div>`;
+    }).join('');
+}
+
+function renderStatusBar(d){
+  safe('sb-del',el=>el.textContent=d.delegateCount||'—');
+  safe('sb-present',el=>el.textContent=(d.rcPresent??'—')+(d.rcPV?'+'+d.rcPV+' P+V':''));
+  safe('sb-done',el=>el.textContent=d.speechesDone??'—');
+  const queue=Array.isArray(d.queue)?d.queue:[];
+  const remaining=queue.length-(d.spkIdx??-1)-1;
+  safe('sb-queue',el=>el.textContent=Math.max(0,remaining));
+}
+
+// ── URL PARAMS ──
+(function(){
+  const p=new URLSearchParams(location.search);
+  const s=p.get('s');
+  if(s){document.getElementById('inp-sid').value=s.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,8);}
+})();
+</script>
+</body>
+</html>
