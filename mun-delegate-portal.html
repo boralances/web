@@ -564,12 +564,7 @@ async function poll(){
     const pc=document.getElementById('p-committee');if(pc)pc.textContent=com;
     // Check-in sync
     if(!checkedIn&&D.attendance?.[CODE])setCheckedIn(D.attendance[CODE]);
-    // Show resolution link if available
-    if(D.resolutionLink){
-      const rl=document.getElementById('res-link-row');
-      const ra=document.getElementById('res-link-a');
-      if(rl&&ra){rl.style.display='';ra.href=D.resolutionLink;}
-    }
+    // Resolution link handled in renderAgenda
     // Meeting ended
     const wasEnded=ended;
     ended=!!(D.state?.meetingEnded||D.meta?.endTime);
@@ -738,7 +733,15 @@ function renderAgenda(){
   const agendaItems=state.agendaItems||[];
   const res=D.resolutions||[];
   const vh=D.voteHistory||[];
+  const resLink=D.resolutionLink||'';
   let html='';
+  // Resolution Google Docs Link
+  if(resLink){
+    html+=`<a href="${resLink}" target="_blank" style="display:flex;align-items:center;gap:9px;padding:12px 14px;background:rgba(56,139,253,0.08);border:1px solid rgba(56,139,253,0.25);border-radius:12px;color:var(--blue);text-decoration:none;font-size:13px;font-weight:700;margin-bottom:12px">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>
+      📄 View Resolution on Google Docs →
+    </a>`;
+  }
   // Agenda
   if(agenda){
     html+=`<div class="sec-title">📋 Agenda</div>
