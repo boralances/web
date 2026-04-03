@@ -4741,8 +4741,9 @@ function setupResolution(){
   const _gr=document.getElementById('res-gdocs-row');
   const _gl=document.getElementById('res-gdocs-link-display');
   if(gdocs&&_gr&&_gl){_gr.style.display='';_gl.href=gdocs;}
-  if(gdocs&&_fbAvailable&&_fbUrl&&_fbSessionId){
-    fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(gdocs)}).catch(()=>{});
+  if(_fbAvailable&&_fbUrl&&_fbSessionId){
+    const _link=gdocs||'';
+    fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(_link)}).catch(()=>{});
   }
   updateResStatusChip();
   renderResSigList();
@@ -10893,23 +10894,23 @@ function startFbPoll() {
           if (delegates.find(d=>d.c===code) && rollCallData[code] !== val) {
             rollCallData[code] = val; changed = true;
             const d = delegates.find(x=>x.c===code);
-            showToast((d?d.n:code) + (val==='present+voting'?' ✋ P+V':' ✅ Present'));
+            if(val&&val!=='absent') showToast((d?d.n:code) + (val==='present+voting'?' ✋ P+V':' ✅ Present'));
           }
         });
-        if (changed) { renderRollCall(); updateQuorumCheck(); }
+        if (changed) { try{renderRollCall();updateQuorumCheck();}catch(e){} _fbPushNow(); }
       }
 
       // Sync votes (from portal + other chairs)
       if (data.votes) {
         let voteChanged = false;
         Object.entries(data.votes).forEach(([code, val]) => {
-          if (delegates.find(d=>d.c===code) && !votes[code] && ['yes','no','abstain'].includes(val)) {
+          if (delegates.find(d=>d.c===code) && votes[code] !== val && ['yes','no','abstain'].includes(val)) {
             votes[code] = val; voteChanged = true;
             const d = delegates.find(x=>x.c===code);
             showToast((d?d.n:code)+' → '+(val==='yes'?'✅ Favor':val==='no'?'❌ Against':'🟡 Abstain'));
           }
         });
-        if (voteChanged) { renderVoteList(); updateVoteStats(); if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
+        if (voteChanged) { try{renderVoteList();updateVoteStats();}catch(e){} if(typeof updateVoteWindow==='function'&&voteDisplayWin&&!voteDisplayWin.closed)updateVoteWindow(); }
       }
 
       // ── MULTI-CHAIR: sync scores from other chairs ──
@@ -12303,6 +12304,7 @@ function _fbPushNow() {
     attendance: { ...rollCallData },
     votes: { ...votes },
     delegatePins: { ...delegatePins },
+    resolutionLink: (typeof resolution!=='undefined'&&resolution?.gdocsLink)||'',
     state: {
       committee: session.committee || '',
       agenda: session.agenda || '',
