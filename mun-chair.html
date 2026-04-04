@@ -4743,7 +4743,9 @@ function setupResolution(){
   if(gdocs&&_gr&&_gl){_gr.style.display='';_gl.href=gdocs;}
   if(_fbAvailable&&_fbUrl&&_fbSessionId){
     const _link=gdocs||'';
+    // Write to both /resolutionLink and /state/resolutionLink for redundancy
     fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(_link)}).catch(()=>{});
+    fetch(_fbUrl+'/mun_'+_fbSessionId+'/state/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(_link)}).catch(()=>{});
   }
   updateResStatusChip();
   renderResSigList();
@@ -10879,7 +10881,7 @@ function fbPost(path, data) {
 
 function startFbPoll() {
   clearInterval(_fbPollIv);
-  _fbPollIv = setInterval(async () => {
+  _fbPollIv = setInterval(async () => { // 1s for near-instant sync
     if (!_fbAvailable || !_fbUrl || !_fbSessionId) return;
     try {
       const r = await fetch(`${_fbUrl}/mun_${_fbSessionId}.json`);
@@ -10949,7 +10951,7 @@ function startFbPoll() {
       }
 
     } catch(e) {}
-  }, 2000);
+  }, 1000);
 }
 
 // Update vote active state in Firebase
@@ -12301,9 +12303,12 @@ function _fbPushNow() {
   const topLevel = {
     scores: { ...scores },
     warnings: Object.fromEntries(Object.entries(warnings).filter(([,v])=>Array.isArray(v)&&v.length)),
-    attendance: { ...rollCallData },
-    votes: { ...votes },
+    // DO NOT write attendance here — delegates write to /attendance directly
+    // Only write when chair explicitly uses roll call
+    // votes merged from Firebase — don't overwrite portal votes
+    votes: { ...votes }, // will be merged by startFbPoll, not overwritten
     delegatePins: { ...delegatePins },
+    // attendance written separately via setRollCall — not overwritten here
     resolutionLink: (typeof resolution!=='undefined'&&resolution?.gdocsLink)||'',
     state: {
       committee: session.committee || '',
@@ -12538,6 +12543,7 @@ function _buildLiveState() {
     committee: session.committee || '',
     agenda: session.agenda || '',
     agendaItem: (typeof agendaItems !== 'undefined' ? agendaItems.find(a => a.status === 'current')?.text : '') || '',
+    resolutionLink: (typeof resolution!=='undefined'&&resolution?.gdocsLink)||'',
     // ── Delegates ──
     delegateCount: delegates.length,
     // ── Chair identity ──
