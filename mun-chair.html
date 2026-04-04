@@ -4726,10 +4726,11 @@ function switchResTab(tab){
 }
 
 function setupResolution(){
-  const id = document.getElementById('res-id').value.trim();
-  const title = document.getElementById('res-title').value.trim();
+  const id    = (document.getElementById('res-id')?.value||'').trim();
+  const title = (document.getElementById('res-title')?.value||'').trim();
+  const gdocs = (document.getElementById('res-gdocs-link')?.value||'').trim();
   if(!id && !title){ showToast('Enter a Resolution ID or title.','error'); return; }
-  resolution = { id: id||'DR 1.1', title: title||'Untitled', status:'draft' };
+  resolution = { id: id||'DR 1.1', title: title||'Untitled', status:'draft', gdocsLink: gdocs };
   resSignatories = [];
   coSponsors = [];
   votes = {};
@@ -4741,18 +4742,41 @@ function setupResolution(){
   const _gr=document.getElementById('res-gdocs-row');
   const _gl=document.getElementById('res-gdocs-link-display');
   if(gdocs&&_gr&&_gl){_gr.style.display='';_gl.href=gdocs;}
-  if(_fbAvailable&&_fbUrl&&_fbSessionId){
-    const _link=gdocs||'';
-    // Write to both /resolutionLink and /state/resolutionLink for redundancy
-    fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(_link)}).catch(()=>{});
-    fetch(_fbUrl+'/mun_'+_fbSessionId+'/state/resolutionLink.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(_link)}).catch(()=>{});
-  }
+  // Push EVERYTHING to Firebase immediately
+  _pushResolutionToFirebase();
   updateResStatusChip();
   renderResSigList();
   renderResCosponList();
   const nb = document.getElementById('nav-res-badge');
   if(nb) nb.textContent='1';
   showToast('Resolution set: '+resolution.id);
+}
+
+function _pushResolutionToFirebase(){
+  if(!_fbAvailable||!_fbUrl||!_fbSessionId||!resolution) return;
+  const resData = {
+    id:         resolution.id,
+    title:      resolution.title,
+    status:     resolution.status||'draft',
+    gdocsLink:  resolution.gdocsLink||'',
+    signatories: (resSignatories||[]).map(d=>d.n),
+    coSponsors:  (coSponsors||[]).map(d=>d.n),
+    updatedAt:   Date.now()
+  };
+  // Write to /currentResolution (delegates read this)
+  fetch(_fbUrl+'/mun_'+_fbSessionId+'/currentResolution.json',{
+    method:'PUT',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(resData)
+  }).catch(()=>{});
+  // Write link to /resolutionLink (backwards compat)
+  if(resolution.gdocsLink){
+    fetch(_fbUrl+'/mun_'+_fbSessionId+'/resolutionLink.json',{
+      method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(resolution.gdocsLink)
+    }).catch(()=>{});
+  }
+  // Also include in liveState via _fbPushNow
+  _fbPushNow();
 }
 
 function resetResolution(){
@@ -4764,6 +4788,9 @@ function resetResolution(){
   const nb=document.getElementById('nav-res-badge'); if(nb) nb.textContent='0';
 }
 
+function _onResolutionStatusChange(){
+  _pushResolutionToFirebase();
+}
 function updateResStatusChip(){
   const chip = document.getElementById('res-display-status');
   if(!chip||!resolution) return;
