@@ -94,6 +94,7 @@ body.light-theme .session-pill{background:#f4f6f9}
   box-shadow:0 3px 14px rgba(60,143,238,0.5),0 1px 3px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.25),inset 0 -1px 0 rgba(0,0,0,0.2);
 }
 .sb-logo-text{font-size:14px;font-weight:600;color:var(--text)}
+.sidebar-overlay{display:none;position:fixed;inset:0;z-index:499;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px)}
 .sb-logo-ver{font-size:10px;color:var(--text3);margin-top:1px}
 .sb-section{
   padding:16px 12px 6px;
@@ -213,7 +214,7 @@ body.photo-mode .card{box-shadow:none!important;border-color:transparent!importa
 body.photo-mode .photo-hide{display:none!important}
 body.photo-mode .page{padding:24px!important}
 body.photo-mode .card-head button{display:none!important}
-body.photo-mode .sb-nav,.body.photo-mode .sb-footer{display:none!important}
+body.photo-mode .sb-nav, body.photo-mode .sb-footer{display:none!important}
 body.photo-mode .preset-row{display:none!important}
 body.presentation-mode #yield-row{display:none!important}
 body.presentation-mode #placard-queue-row{display:none!important}
@@ -295,6 +296,7 @@ input[type=text],input[type=number],select,textarea{
   padding:8px 11px;border-radius:var(--radius);outline:none;
   transition:border-color var(--transition),box-shadow var(--transition);width:100%;
   -webkit-appearance:none;
+  appearance:none;
 }
 input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-glow),0 0 0 1px rgba(91,156,246,0.3);outline:none}
 input::placeholder{color:var(--text3)}
@@ -850,6 +852,10 @@ window.makeQRUrl = function(data, size) {
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>
       Profiles
     </button>
+    <button class="nav-item disabled" id="nav-statsdash" onclick="showPage('statsdash')">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h1v15h15v1H0V0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5z"/></svg>
+      Fairness & Analytics
+    </button>
     <button class="nav-item disabled" id="nav-summary" onclick="showPage('summary')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/></svg>
       Summary
@@ -882,7 +888,7 @@ window.makeQRUrl = function(data, size) {
       Caucus Log
       <span class="nav-badge" id="nav-caucus-count">0</span>
     </button>
-    <button class="nav-item disabled" id="nav-statsdash" onclick="showPage('statsdash')">
+    <button class="nav-item disabled" id="nav-dashboard" onclick="showPage('statsdash')">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M0 0h1v15h15v1H0V0zm10 3.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 .5.5v4a.5.5 0 0 1-1 0V4.9l-3.613 4.417a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61L13.445 4H10.5a.5.5 0 0 1-.5-.5z"/></svg>
       Dashboard
     </button>
@@ -1107,55 +1113,75 @@ window.makeQRUrl = function(data, size) {
 
 
       <!-- Co-Chair Quick Login -->
-      <div class="card" style="margin-bottom:12px;border-color:rgba(219,109,40,0.3);background:rgba(219,109,40,0.04)">
-        <div class="card-head">
+      <div class="card" style="margin-bottom:12px;border:1px solid rgba(219,109,40,0.25);background:linear-gradient(135deg,rgba(219,109,40,0.04),rgba(219,109,40,0.01));position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(219,109,40,0.5),transparent)"></div>
+        <div class="card-head" style="border-bottom:1px solid rgba(219,109,40,0.12)">
           <div class="card-head-left">
-            <div class="card-title">🪑 Join as Co-Chair</div>
-            <span class="chip chip-gray">Session password only</span>
+            <div class="card-title" style="display:flex;align-items:center;gap:8px">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(219,109,40,0.12);font-size:14px">🪑</span>
+              Join as Co-Chair
+            </div>
+            <span class="chip" style="background:rgba(219,109,40,0.1);border-color:rgba(219,109,40,0.25);color:var(--orange);font-size:10px">🔐 Password Required</span>
           </div>
         </div>
-        <div class="card-body" style="padding:14px 16px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:10px">
-            Co-chairs enter the session password to join instantly. The chair sets the password in the session settings below.
+        <div class="card-body" style="padding:16px 18px">
+          <div style="font-size:11px;color:var(--text3);margin-bottom:14px;line-height:1.6">
+            Enter the <strong style="color:var(--text2)">Session ID</strong> and <strong style="color:var(--text2)">password</strong> provided by the primary chair to join their session as a co-chair.
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:end">
-            <div>
-              <label class="field-label">Session ID</label>
-              <input type="text" id="cochair-quick-id" placeholder="ABC12DEF"
-                style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+            <div class="field">
+              <label class="field-label" style="display:flex;align-items:center;gap:5px">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" style="opacity:0.5"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>
+                Session ID
+              </label>
+              <input type="text" id="cochair-quick-id" placeholder="e.g. A1B2C3D4"
+                style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;text-align:center"
                 maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
             </div>
-            <div>
-              <label class="field-label">Session Password</label>
-              <input type="password" id="cochair-quick-pw" placeholder="Password from chair"
-                style="font-size:13px" maxlength="32"
-                onkeydown="if(event.key==='Enter')quickJoinAsCoChair()"/>
+            <div class="field">
+              <label class="field-label" style="display:flex;align-items:center;gap:5px">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor" style="opacity:0.5"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+                Password
+              </label>
+              <div style="position:relative">
+                <input type="password" id="cochair-quick-pw" placeholder="From your chair"
+                  style="font-size:13px;padding-right:36px" maxlength="32"
+                  onkeydown="if(event.key==='Enter')quickJoinAsCoChair()"/>
+                <button type="button" onclick="const i=document.getElementById('cochair-quick-pw');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🔒'" style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:13px;padding:2px;opacity:0.5">👁</button>
+              </div>
             </div>
-            <button class="btn btn-success btn-sm" onclick="quickJoinAsCoChair()" style="padding:9px 16px">
-              Join →
-            </button>
           </div>
-          <div id="cochair-quick-status" style="font-size:11px;margin-top:8px;display:none"></div>
+          <button class="btn btn-sm" onclick="quickJoinAsCoChair()" style="width:100%;padding:10px;background:linear-gradient(135deg,rgba(219,109,40,0.15),rgba(219,109,40,0.08));border:1px solid rgba(219,109,40,0.35);color:var(--orange);font-weight:700;font-size:12px;letter-spacing:0.05em;transition:all 0.2s">
+            🪑 Connect as Co-Chair →
+          </button>
+          <div id="cochair-quick-status" style="font-size:11px;margin-top:8px;display:none;padding:8px 12px;border-radius:8px;background:var(--bg3)"></div>
         </div>
       </div>
 
       <!-- Join existing committee -->
-      <div class="card" style="margin-bottom:12px;border-color:rgba(61,232,160,0.3);background:rgba(61,232,160,0.04)">
-        <div class="card-body" style="padding:14px 16px">
-          <div style="display:flex;align-items:flex-start;gap:12px">
-            <span style="font-size:22px;flex-shrink:0">🔗</span>
+      <div class="card" style="margin-bottom:12px;border:1px solid rgba(61,232,160,0.2);background:linear-gradient(135deg,rgba(61,232,160,0.03),rgba(61,232,160,0.01));position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(61,232,160,0.4),transparent)"></div>
+        <div class="card-body" style="padding:16px 18px">
+          <div style="display:flex;align-items:flex-start;gap:14px">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.2);font-size:18px;flex-shrink:0">🔗</span>
             <div style="flex:1">
-              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">Join Existing Committee</div>
-              <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Enter a session ID to join as co-chair. The primary chair controls roles.</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <input type="text" id="join-session-id-input" placeholder="Session ID (e.g. ABC12DEF)"
-                  style="width:180px;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
-                  maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
-                <input type="password" id="join-session-password" placeholder="Session password"
-                  style="width:160px;font-size:13px" maxlength="32"/>
-                <button class="btn btn-success btn-sm" onclick="joinCommitteeFromSetup()">Join →</button>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px">Join Existing Committee</div>
+              <div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5">Enter a session ID to join as co-chair. The primary chair controls roles and permissions.</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">
+                <div class="field">
+                  <label class="field-label" style="font-size:9px">Session ID</label>
+                  <input type="text" id="join-session-id-input" placeholder="ABC12DEF"
+                    style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em"
+                    maxlength="8" oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"/>
+                </div>
+                <div class="field">
+                  <label class="field-label" style="font-size:9px">Password</label>
+                  <input type="password" id="join-session-password" placeholder="••••••"
+                    style="font-size:13px" maxlength="32"/>
+                </div>
+                <button class="btn btn-success btn-sm" onclick="joinCommitteeFromSetup()" style="padding:9px 16px;white-space:nowrap">Join →</button>
               </div>
-              <div id="join-setup-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
+              <div id="join-setup-status" style="font-size:11px;color:var(--text3);margin-top:8px"></div>
             </div>
           </div>
         </div>
@@ -1217,9 +1243,12 @@ window.makeQRUrl = function(data, size) {
         <div class="card-head">
           <div class="card-head-left">
             <div class="card-num">2</div>
-            <div><div class="card-title">Delegates</div><div class="card-desc">Add countries to the committee roster (all 195+ nations available)</div></div>
+            <div><div class="card-title">Delegates & Blocs</div><div class="card-desc">Add countries and manage geopolitical groups</div></div>
           </div>
-          <button class="btn btn-danger btn-sm" onclick="clearDelegates()">Clear All</button>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-secondary btn-sm" onclick="openBlocBuilder()">🌍 Manage Blocs</button>
+            <button class="btn btn-danger btn-sm" onclick="clearDelegates()">Clear All</button>
+          </div>
         </div>
         <div class="card-body">
           <div class="field" style="margin-bottom:10px">
@@ -1289,11 +1318,78 @@ window.makeQRUrl = function(data, size) {
         </div>
       </div>
 
+      <!-- Session Security -->
+      <div class="card" style="border:1px solid rgba(219,109,40,0.2);position:relative;overflow:hidden">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(219,109,40,0.5),rgba(56,139,253,0.5))"></div>
+        <div class="card-head">
+          <div class="card-head-left">
+            <div class="card-num" style="background:rgba(219,109,40,0.12);color:var(--orange);border-color:rgba(219,109,40,0.3)">4</div>
+            <div>
+              <div class="card-title">Session Security</div>
+              <div class="card-desc">Set a password for co-chairs to join your session</div>
+            </div>
+          </div>
+          <span class="chip" style="background:rgba(219,109,40,0.08);border-color:rgba(219,109,40,0.2);color:var(--orange);font-size:10px">
+            <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor" style="margin-right:3px"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+            Recommended
+          </span>
+        </div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end">
+            <div class="field">
+              <label class="field-label" style="display:flex;align-items:center;gap:6px">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="opacity:0.45"><path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/><path d="M9.5 6.5a1.5 1.5 0 0 1-1 1.415l.385 1.99a.5.5 0 0 1-.491.595h-.788a.5.5 0 0 1-.49-.595l.384-1.99a1.5 1.5 0 1 1 2-1.415z"/></svg>
+                Co-Chair Password
+              </label>
+              <div style="position:relative">
+                <input type="password" id="setup-session-password" placeholder="Set a session password for co-chairs"
+                  style="font-size:13px;padding-right:40px;letter-spacing:0.05em" maxlength="32"
+                  oninput="_updatePasswordStrength(this.value)" onchange="pushSessionPassword()"/>
+                <button type="button" onclick="const i=document.getElementById('setup-session-password');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🔒'" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:14px;padding:2px;opacity:0.5" title="Show/hide password">👁</button>
+              </div>
+              <div id="pw-strength-bar" style="height:3px;border-radius:2px;margin-top:5px;background:var(--border);overflow:hidden;transition:all 0.3s">
+                <div id="pw-strength-fill" style="height:100%;width:0%;border-radius:2px;transition:all 0.4s ease"></div>
+              </div>
+              <div id="pw-strength-text" style="font-size:10px;color:var(--text4);margin-top:3px;transition:color 0.3s"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <button class="btn btn-ghost btn-sm" onclick="_autoGeneratePassword()" title="Generate random password" style="white-space:nowrap;font-size:11px">
+                🎲 Generate
+              </button>
+              <button class="btn btn-ghost btn-sm" onclick="pushSessionPassword()" title="Save password to server" style="white-space:nowrap;font-size:11px">
+                💾 Save
+              </button>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+            <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:6px">How co-chairs join</div>
+            <div style="display:flex;gap:14px;align-items:flex-start">
+              <div style="font-size:11px;color:var(--text2);line-height:1.6;flex:1">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(56,139,253,0.12);color:var(--blue);font-size:9px;font-weight:800;flex-shrink:0">1</span>
+                  Share the <strong>Session ID</strong> and <strong>password</strong> with your co-chair
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(56,139,253,0.12);color:var(--blue);font-size:9px;font-weight:800;flex-shrink:0">2</span>
+                  They open MUN Chair → use "<strong>Join as Co-Chair</strong>" above
+                </div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:rgba(56,139,253,0.12);color:var(--blue);font-size:9px;font-weight:800;flex-shrink:0">3</span>
+                  You'll see them appear in the <strong>Co-Chair Panel</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="page-actions">
         <button class="btn btn-secondary" onclick="resetSetup()">Reset</button>
-        <button class="btn btn-primary btn-lg" onclick="beginSession()">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/></svg>
-          Convene Session
+        <button class="btn btn-primary btn-lg" onclick="beginSession()" style="position:relative;overflow:hidden">
+          <span style="position:relative;z-index:1;display:flex;align-items:center;gap:8px">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/></svg>
+            Convene Session
+          </span>
         </button>
       </div>
     </div>
@@ -1416,6 +1512,14 @@ window.makeQRUrl = function(data, size) {
               <button class="btn btn-secondary btn-sm" id="btn-ror" onclick="openRightOfReply()" title="Right of Reply">🎤 Right of Reply</button>
               <button class="btn btn-secondary btn-sm" onclick="showPage('placard')" title="View placard queue">🏳 Placard Queue <span id="placard-badge" style="font-size:10px;margin-left:2px;color:var(--blue)"></span></button>
             </div>
+            <!-- Chair Soundboard -->
+            <div id="soundboard-row" style="padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;justify-content:center">
+              <button class="btn btn-ghost btn-sm" onclick="playTimerSound('gavel')" title="3 knocks">🔨 Gavel</button>
+              <button class="btn btn-ghost btn-sm" onclick="playTimerSound('bell')" title="Resonant chime">🔔 Chime</button>
+              <button class="btn btn-ghost btn-sm" onclick="playTimerSound('buzz')" title="Short buzzer">📳 Buzz</button>
+              <button class="btn btn-ghost btn-sm" onclick="playTimerSound('horn')" title="Warning airhorn">🎺 Horn</button>
+              <button class="btn btn-ghost btn-sm" onclick="playTimerSound('drumroll')" title="Suspense buildup">🥁 Drumroll</button>
+            </div>
           </div>
 
           <div class="stats-row">
@@ -1464,6 +1568,13 @@ window.makeQRUrl = function(data, size) {
             <button class="btn btn-secondary btn-sm" onclick="shuffleSpeakers()">
               <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3v1c-1.798 0-3.173 1.01-4.126 2.082A9.624 9.624 0 0 0 7.556 8a9.624 9.624 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12v1c-2.202 0-3.827-1.24-4.874-2.418A10.595 10.595 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.624 9.624 0 0 0 6.444 8a9.624 9.624 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5z"/><path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192zm0 9v-3.932a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192z"/></svg>
               Shuffle Queue
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="startRoundRobin()">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/></svg>
+              Round Robin
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="openMapWindow()">
+              🗺️ HDMI Map
             </button>
           </div>
         </div>
@@ -3059,14 +3170,35 @@ window.makeQRUrl = function(data, size) {
           </div>
 
           <!-- Share section -->
-          <div style="margin-top:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px">
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Share with co-chairs</div>
-            <div style="font-size:11px;color:var(--text2);margin-bottom:8px">They open MUN Chair → Setup → "Join Existing Committee"</div>
-            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--text);background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;letter-spacing:0.15em" id="cochair-share-id">—</div>
-              <button class="btn btn-ghost btn-sm" onclick="copySessionId()">📋 Copy</button>
+          <div style="margin-top:12px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,rgba(56,139,253,0.4),rgba(219,109,40,0.4))"></div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Share with Co-Chairs</div>
+            <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.5">Co-chairs open MUN Chair → use "<strong>Join as Co-Chair</strong>" on the Setup page</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+              <div style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 14px">
+                <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text4);margin-bottom:5px">Session ID</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:800;color:var(--blue);letter-spacing:0.15em;flex:1" id="cochair-share-id">—</div>
+                  <button class="btn btn-ghost btn-sm" onclick="copySessionId()" style="font-size:11px;padding:4px 8px">📋</button>
+                </div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:10px 14px">
+                <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text4);margin-bottom:5px">Password</div>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--orange);flex:1;overflow:hidden;text-overflow:ellipsis" id="cochair-pw-display">Not set</div>
+                  <button class="btn btn-ghost btn-sm" onclick="_copySessionPassword()" style="font-size:11px;padding:4px 8px">📋</button>
+                </div>
+              </div>
             </div>
-            <div id="cochair-pw-row" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
+            <div id="cochair-pw-row" style="font-size:10px;color:var(--text3)"></div>
+            <!-- Quick password set if none is set -->
+            <div id="cochair-pw-inline-set" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(219,109,40,0.06);border:1px solid rgba(219,109,40,0.15);border-radius:8px">
+              <div style="font-size:10px;font-weight:600;color:var(--orange);margin-bottom:6px">⚠ No password set — co-chairs can't join securely</div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input type="text" id="cochair-inline-pw" placeholder="Set a password" style="flex:1;font-size:12px;padding:5px 10px" maxlength="32"/>
+                <button class="btn btn-ghost btn-sm" onclick="_setInlinePassword()" style="font-size:11px;color:var(--orange)">Set & Save</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -3275,78 +3407,104 @@ const MODE_NAMES = {opening:'Opening Speech',gsl:'General Speakers List',motion:
 
 // ═══ NAV ═══
 function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  document.getElementById('nav-'+id).classList.add('active');
-  const m=PAGES_META[id];
-  document.getElementById('tb-title').textContent=m.title;
-  document.getElementById('tb-crumb').textContent=m.crumb;
-  if(id==='delegates') renderFullDelegates();
-  if(id==='speakers'){ renderAllSpk(); renderDelegatePicker(); }
-  if(id==='rollcall') renderRollCall();
-  if(id==='resolutions') renderResolutions();
-  if(id==='history') renderHistory();
-  if(id==='placard') renderPlacardPage();
-  if(id==='notes'){ const ta=document.getElementById('chair-notes-area');if(ta)ta.value=chairNotes; }
-  if(id==='amendments') renderAmendments();
-  if(id==='profiles') renderProfiles();
-  if(id==='modlog') renderModLog();
-  if(id==='gslbank') renderGslBank();
-  if(id==='workpapers') renderWorkPapers();
-  if(id==='blocs') renderBlocs();
-  if(id==='caucuslog') renderCaucusLog();
-  if(id==='speakstats') renderSpeakStats();
-  if(id==='postracker') renderPosTracker();
-  if(id==='lobbyroom') initLobbyRoom();
-  if(id==='seating') renderSeating();
-  if(id==='comreport') renderComReport();
-  if(id==='motionvotes'){ renderMotionVotes(); renderMotionCounter(); }
-  if(id==='feedback') renderFeedback();
-  if(id==='summary') renderSummary();
-  if(id==='delnotes') renderDelNotes();
-  if(id==='appeals') renderAppeals();
-  if(id==='statsdash') renderStatsDashboard();
-  if(id==='delanalysis') renderDelegateAnalysis();
-  if(id==='timerlog') renderTimerHistory();
-  if(id==='blocs') { renderBlocs(); renderBlocHeatmap(); }
-  if(id==='aispeech') {
-    renderAIHistory();
-    const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||'';
-    // Co-chair: show current speaker banner and hide delegate search
-    if(isCoChair()) {
-      const spk = currentSpkIdx>=0 && speakers[currentSpkIdx] ? speakers[currentSpkIdx] : null;
-      if(spk) {
-        _aiDelegate = spk;
-        const srch = document.getElementById('ai-delegate-search');
-        if(srch) srch.value = spk.n;
-        _showCoChairAIButton(spk);
-      }
-      // Add a banner showing current speaker
-      let banner = document.getElementById('cochair-ai-banner');
-      if(!banner) {
-        banner = document.createElement('div');
-        banner.id = 'cochair-ai-banner';
-        banner.style.cssText = 'background:rgba(219,109,40,0.1);border:1px solid rgba(219,109,40,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--orange);margin-bottom:10px';
-        const aiBody = document.querySelector('#page-aispeech .card-body');
-        if(aiBody) aiBody.insertBefore(banner, aiBody.firstChild);
-      }
-      banner.innerHTML = spk
-        ? `🪑 Co-Chair AI · Current speaker: <strong>${spk.n}</strong> — Run analysis then send to chair`
-        : `🪑 Co-Chair AI · Waiting for a speaker to start...`;
+  try {
+    const pages = document.querySelectorAll('.page');
+    const navs = document.querySelectorAll('.nav-item');
+    
+    pages.forEach(p => p.classList.remove('active'));
+    navs.forEach(n => n.classList.remove('active'));
+
+    const targetPage = document.getElementById('page-' + id);
+    if (targetPage) {
+      targetPage.classList.add('active');
+    } else {
+      console.warn("showPage: Missing page-" + id);
+      // Fallback to setup if target is missing to avoid black screen
+      const setupPage = document.getElementById('page-setup');
+      if (setupPage) setupPage.classList.add('active');
     }
+
+    const targetNav = document.getElementById('nav-' + id);
+    if (targetNav) targetNav.classList.add('active');
+
+    const m = PAGES_META[id] || {title: 'MUN Chair', crumb: ''};
+    const titleEl = document.getElementById('tb-title');
+    const crumbEl = document.getElementById('tb-crumb');
+    if (titleEl) titleEl.textContent = m.title || 'MUN Chair';
+    if (crumbEl) crumbEl.textContent = m.crumb || '';
+
+    // Wrap render calls in try-catch to ensure one failure doesn't kill navigation
+    try {
+      if(id==='delegates') renderFullDelegates();
+      if(id==='speakers'){ renderAllSpk(); renderDelegatePicker(); }
+      if(id==='awards') renderAwardsPage(computeAwardsFromScores(), session.committee);
+      if(id==='rollcall') renderRollCall();
+      if(id==='resolutions') renderResolutions();
+      if(id==='history') renderHistory();
+      if(id==='placard') renderPlacardPage();
+      if(id==='notes'){ const ta=document.getElementById('chair-notes-area');if(ta)ta.value=chairNotes; }
+      if(id==='amendments') renderAmendments();
+      if(id==='profiles') renderProfiles();
+      if(id==='modlog') renderModLog();
+      if(id==='gslbank') renderGslBank();
+      if(id==='workpapers') renderWorkPapers();
+      if(id==='blocs') { renderBlocs(); if(typeof renderBlocHeatmap==='function') renderBlocHeatmap(); }
+      if(id==='caucuslog') renderCaucusLog();
+      if(id==='speakstats') renderSpeakStats();
+      if(id==='postracker') renderPosTracker();
+      if(id==='lobbyroom') initLobbyRoom();
+      if(id==='seating') renderSeating();
+      if(id==='comreport') renderComReport();
+      if(id==='motionvotes'){ renderMotionVotes(); renderMotionCounter(); }
+      if(id==='feedback') renderFeedback();
+      if(id==='summary') renderSummary();
+      if(id==='delnotes') renderDelNotes();
+      if(id==='appeals') renderAppeals();
+      if(id==='statsdash') renderStatsDashboard();
+      if(id==='delanalysis') renderDelegateAnalysis();
+      if(id==='timerlog') renderTimerHistory();
+      if(id==='aispeech') {
+        renderAIHistory();
+        const kf=document.getElementById('ai-key-field'); if(kf) kf.value=localStorage.getItem('mun_ai_key')||'';
+        if(typeof isCoChair === 'function' && isCoChair()) {
+          const spk = currentSpkIdx>=0 && speakers[currentSpkIdx] ? speakers[currentSpkIdx] : null;
+          if(spk) {
+            _aiDelegate = spk;
+            const srch = document.getElementById('ai-delegate-search');
+            if(srch) srch.value = spk.n;
+            if(typeof _showCoChairAIButton === 'function') _showCoChairAIButton(spk);
+          }
+          let banner = document.getElementById('cochair-ai-banner');
+          if(!banner) {
+            banner = document.createElement('div');
+            banner.id = 'cochair-ai-banner';
+            banner.style.cssText = 'background:rgba(219,109,40,0.1);border:1px solid rgba(219,109,40,0.3);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--orange);margin-bottom:10px';
+            const aiBody = document.querySelector('#page-aispeech .card-body');
+            if(aiBody) aiBody.insertBefore(banner, aiBody.firstChild);
+          }
+          banner.innerHTML = spk
+            ? `🪑 Co-Chair AI · Current speaker: <strong>${spk.n}</strong> — Run analysis then send to chair`
+            : `🪑 Co-Chair AI · Waiting for a speaker to start...`;
+        }
+      }
+      if(id==='agenda') renderAgenda();
+      if(id==='cochair') refreshCoChairPanel();
+      if(id==='tournament') renderTournament();
+      if(id==='pins') renderPinsPage();
+      if(id==='spktime') renderSpkTime();
+      if(id==='scorehistory') renderScoreHistory();
+      if(id==='chairscript') renderChairScript();
+      if(id==='comrules') renderComRules();
+      if(id==='scoretab') renderScoreTab();
+      if(id==='nameplate') renderNameplates();
+    } catch (e) {
+      console.error("showPage: Error rendering page " + id, e);
+    }
+  } catch (err) {
+    console.error("showPage: Fatal error", err);
   }
-  if(id==='agenda') renderAgenda();
-  if(id==='cochair') refreshCoChairPanel();
-  if(id==='tournament') renderTournament();
-  if(id==='pins') renderPinsPage();
-  if(id==='spktime') renderSpkTime();
-  if(id==='scorehistory') renderScoreHistory();
-  if(id==='chairscript') renderChairScript();
-  if(id==='comrules') renderComRules();
-  if(id==='scoretab') renderScoreTab();
-  if(id==='nameplate') renderNameplates();
 }
+
 
 // ═══ SETUP ═══
 function onCommitteeChange(){
@@ -3410,6 +3568,40 @@ function addPreset(key){
   if(typeof pushSessionToFirebase==='function') setTimeout(pushSessionToFirebase,300);
 }
 
+function openBlocBuilder(){
+  const existing=document.getElementById('bloc-popup'); if(existing) existing.remove();
+  const popup=document.createElement('div');
+  popup.id='bloc-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:500px;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);max-height:80vh;display:flex;flex-direction:column">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:10px;color:var(--blue);text-transform:uppercase;letter-spacing:0.1em;font-weight:600;margin-bottom:2px">🌍 Manage Blocs</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">Assign Geopolitical Groups</div>
+        </div>
+        <button onclick="document.getElementById('bloc-popup').remove(); renderDelegates(); renderFullDelegates(); renderAllSpk(); updateSpkPanel();" class="btn btn-ghost btn-sm">Done</button>
+      </div>
+      <div style="padding:16px 20px;overflow-y:auto;flex:1">
+        ${delegates.length===0?'<div class="empty-state">No delegates added yet. Add delegates first.</div>':
+          delegates.map(d=>`
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            ${flagImg(d.c,'flag-img-sm')}
+            <span style="flex:1;font-size:13px">${d.n}</span>
+            <input type="text" placeholder="e.g. EU, Western, African" style="width:160px;padding:6px 8px;font-size:12px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text)" value="${d.bloc||''}" onchange="setBloc('${d.c}', this.value)"/>
+          </div>
+          `).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+}
+
+function setBloc(c, val) {
+  const d = delegates.find(x=>x.c===c);
+  if(d) d.bloc = val.trim();
+  speakers.forEach(s=>{ if(s.c===c) s.bloc=val.trim(); });
+}
+
 function renderDelegates(){
   const grid=document.getElementById('del-grid');
   if(!delegates.length){grid.innerHTML='';return;}
@@ -3431,7 +3623,7 @@ function renderFullDelegates(){
   grid.innerHTML=delegates.map(d=>
     `<div class="del-chip" style="padding:6px 12px 6px 8px;font-size:13px">
       ${flagImg(d.c)}
-      <span style="color:var(--text)">${d.n}</span>
+      <span style="color:var(--text)">${d.n} ${d.bloc?`<span style="margin-left:5px;font-size:9px;background:var(--blue-dim);color:var(--blue);padding:2px 5px;border-radius:3px;vertical-align:middle">${d.bloc}</span>`:''}</span>
     </div>`
   ).join('');
 }
@@ -3544,6 +3736,9 @@ function endSession(){
   };
 }
 
+// Global safe helper — safely apply a function to an element by ID
+function safe(id, fn) { const el=document.getElementById(id); if(el) fn(el); }
+
 function doEndSession(){
   // Clear all timers safely
   clearInterval(timerInterval); timerRunning = false;
@@ -3552,8 +3747,6 @@ function doEndSession(){
   stopTimer();
   curMode=null; timerSecs=0; totalSecs=0; timerRunning=false;
   speakers=[]; currentSpkIdx=-1; speechesDone=0;
-
-  const safe = (id, fn) => { const el=document.getElementById(id); if(el) fn(el); };
 
   safe('arc-clock', el => { el.textContent='--:--'; el.className='arc-clock idle'; });
   safe('arc-label', el => el.textContent='SELECT MODE');
@@ -3767,7 +3960,7 @@ function renderAllSpk(){
     return `<div class="spk-row ${cur?'current':''} ${done?'done':''}">
       <span class="spk-num">${String(i+1).padStart(2,'0')}</span>
       ${flagImg(s.c,'flag-img-sm')}
-      <span class="spk-name">${s.n}</span>
+      <span class="spk-name">${s.n} ${s.bloc?`<span style="font-size:9px;background:var(--blue-dim);color:var(--blue);padding:1px 4px;border-radius:3px;margin-left:5px;vertical-align:middle;font-weight:600">${s.bloc}</span>`:''}</span>
       ${cur?'<span class="spk-badge">Speaking</span>':''}
       <button class="spk-rm" data-idx="${i}">×</button>
     </div>`;
@@ -3811,6 +4004,26 @@ function nextSpeaker(){
   stopTimer(); timerRunning=false;
   // Score the current speaker before advancing
   const spk = (currentSpkIdx>=0 && currentSpkIdx<speakers.length) ? speakers[currentSpkIdx] : null;
+
+  if (spk && spk._isRor) {
+    const doAdvance = () => {
+      speechesDone=currentSpkIdx+1;
+      currentSpkIdx=Math.min(currentSpkIdx+1, speakers.length-1);
+      renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer();
+      _fbPushNow();
+    };
+    if (confirm(`Right of Reply by ${spk.n} finished.\n\nIssue an official Warning to the instigating delegate (the previous speaker)?`)) {
+      const prev = speakers[currentSpkIdx-1];
+      if (prev) {
+        logEvent('warning', prev, 'Warning issued following Right of Reply', -2);
+        showToast(`Warning issued to ${prev.n} (-2 pts)`);
+        scores[prev.c] = (scores[prev.c]||0) - 2;
+        warnings[prev.c] = (warnings[prev.c]||0) + 1;
+      }
+    }
+    doAdvance();
+    return;
+  }
   if(spk && (curMode==='opening'||curMode==='gsl')){
     logEvent('speech',spk,'Speech completed',0);
     showScorePopup(spk, ()=>{
@@ -3828,7 +4041,7 @@ function nextSpeaker(){
 
 // ═══ MODE SELECTION ═══
 function openMotionSetup(){
-  // show motion config popup
+  // New: collect multiple motions, then vote
   const existing = document.getElementById('motion-setup-popup');
   if(existing){ existing.remove(); return; }
 
@@ -3868,17 +4081,97 @@ function openMotionSetup(){
             <input type="number" id="mot-spk-dur" value="90" min="10" max="600" style="font-family:'JetBrains Mono',monospace"/>
           </div>
         </div>
+        <div class="field">
+          <label class="field-label">Points for Raiser <span style="color:var(--text4);font-weight:400">(if motion passes)</span></label>
+          <input type="number" id="mot-score" value="0" min="-10" max="20" step="0.5" style="font-family:'JetBrains Mono',monospace"/>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label class="field-label">First Speaker <span style="color:var(--text4);font-weight:400">(optional)</span></label>
+            <div class="csearch-wrap">
+              <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              <input type="text" id="mot-first-search" placeholder="First speaker..." autocomplete="off"
+                oninput="filterMotSpkPick('first')" onfocus="filterMotSpkPick('first');document.getElementById('mot-first-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('mot-first-drop').classList.remove('open'),200)"/>
+              <div class="cdropdown" id="mot-first-drop"></div>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">Set as: <span id="mot-first-display">None</span></div>
+          </div>
+          <div class="field">
+            <label class="field-label">Last Speaker <span style="color:var(--text4);font-weight:400">(optional)</span></label>
+            <div class="csearch-wrap">
+              <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+              <input type="text" id="mot-last-search" placeholder="Last speaker..." autocomplete="off"
+                oninput="filterMotSpkPick('last')" onfocus="filterMotSpkPick('last');document.getElementById('mot-last-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('mot-last-drop').classList.remove('open'),200)"/>
+              <div class="cdropdown" id="mot-last-drop"></div>
+            </div>
+            <div style="font-size:10px;color:var(--text3);margin-top:3px">Set as: <span id="mot-last-display">None</span></div>
+          </div>
+        </div>
       </div>
-      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end" id="mot-setup-actions-default">
         <button onclick="document.getElementById('motion-setup-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
-        <button onclick="confirmMotionSetup()" class="btn btn-primary btn-sm">Open Motion →</button>
+        <button onclick="addMotionToQueue()" class="btn btn-ghost btn-sm" title="Add to multi-motion queue">+ Queue</button>
+        <button onclick="quickVoteMotionSetup()" class="btn btn-success btn-sm" style="background:rgba(61,232,160,0.15);color:var(--green);border-color:rgba(61,232,160,0.4)">🗳 Quick Vote</button>
+        <button onclick="confirmMotionSetup()" class="btn btn-primary btn-sm" title="Bypass voting, just open it">Open →</button>
+      </div>
+      <div style="padding:14px 20px;border-top:1px solid var(--border);display:none;gap:10px;align-items:center;background:var(--bg3);border-radius:0 0 var(--radius-lg) var(--radius-lg)" id="mot-setup-actions-vote">
+        <div style="font-size:12px;font-weight:700;color:var(--text);flex:1">Did this motion pass?</div>
+        <button onclick="_quickVoteResult(true)" class="btn btn-success btn-sm" style="padding:6px 14px">✅ Passed</button>
+        <button onclick="_quickVoteResult(false)" class="btn btn-danger btn-sm" style="padding:6px 14px">❌ Failed</button>
+        <button onclick="document.getElementById('mot-setup-actions-vote').style.display='none';document.getElementById('mot-setup-actions-default').style.display='flex'" class="btn btn-ghost btn-sm">Cancel</button>
       </div>
     </div>
   `;
   document.body.appendChild(popup);
 }
 
-let motionRaisedBy = null; // { country delegate }
+// ── Quick Vote Logic ──
+function quickVoteMotionSetup() {
+  const topic = document.getElementById('mot-topic')?.value?.trim();
+  if(!topic){ showToast('Please enter a topic to vote on.','error'); return; }
+  document.getElementById('mot-setup-actions-default').style.display = 'none';
+  document.getElementById('mot-setup-actions-vote').style.display = 'flex';
+}
+
+function _quickVoteResult(passed) {
+  const { topic, raisedBy, score } = typeof _getMotionFormData === 'function' ? _getMotionFormData() : { topic: document.getElementById('mot-topic').value, raisedBy: motionRaisedBy, score: parseFloat(document.getElementById('mot-score')?.value)||0 };
+  
+  // Record vote
+  const result = passed ? 'passed' : 'failed';
+  motionVotes.push({
+    motion: topic, 
+    raisedBy: raisedBy, 
+    yes: passed?1:0, no: passed?0:1, abs: 0, 
+    result, 
+    time: new Date().toLocaleTimeString()
+  });
+  if(typeof renderMotionVotes==='function') renderMotionVotes();
+  if(typeof _fbPushNow==='function') _fbPushNow();
+
+  if (passed) {
+    if (score && raisedBy) {
+      scores[raisedBy.c] = (scores[raisedBy.c]||0) + score;
+      logEvent('motion', raisedBy, `Motion passed: ${topic} (+${score})`, score);
+      showToast(`🎉 ${raisedBy.n} +${score} pts — motion passed!`);
+    } else {
+      showToast(`✅ Motion passed: ${topic}`);
+    }
+    // Launch it
+    document.getElementById('mot-setup-actions-vote').style.display='none';
+    confirmMotionSetup();
+  } else {
+    showToast(`❌ Motion failed: ${topic}`);
+    document.getElementById('motion-setup-popup').remove();
+  }
+}
+
+
+
+// ── Multi-motion state ──
+let _pendingMotions = []; // [{id, topic, totalDur, spkDur, raisedBy, score}]
+let _currentMotionId = null;
+let _motionQueueMode = false; // collecting motions before vote
+let motionRaisedBy = null;
 let motionSpeakers = []; // list of delegates
 let motionCurrentIdx = -1;
 
@@ -4096,7 +4389,25 @@ function resumeTimer(){
 }
 function resetTimer(){
   stopTimer(); timerRunning=false;
-  if(curMode){timerSecs=totalSecs;renderClock();setArc(1);}
+  if(curMode){
+    const spk = (currentSpkIdx>=0 && currentSpkIdx<speakers.length) ? speakers[currentSpkIdx] : null;
+    if (spk && spk._isRor) {
+      totalSecs = 30;
+      timerSecs = 30;
+      showToast('🎤 Right of Reply — Locked to 30s', 'info');
+    } else if (spk && spk._isRr) {
+      totalSecs = spk._isRr;
+      timerSecs = spk._isRr;
+    } else if (window._yieldedTime !== undefined && window._yieldedTime > 0) {
+      totalSecs = window._yieldedTime;
+      timerSecs = window._yieldedTime;
+      window._yieldedTime = 0;
+    } else {
+      totalSecs = parseInt(document.getElementById('t-'+curMode)?.value) || session.timers[curMode] || 90;
+      timerSecs = totalSecs;
+    }
+    renderClock();setArc(1);
+  }
   document.getElementById('arc-clock').className='arc-clock';
   document.getElementById('timer-wrap').classList.remove('gong');
   document.getElementById('btn-start').style.display='';
@@ -4639,16 +4950,37 @@ function mcSpkTick(){
   document.getElementById('mc-spk-bar').style.width=(r*100)+'%';
   document.getElementById('mc-spk-bar').style.background=r<=0.1?'var(--red)':r<=0.25?'var(--orange)':'var(--blue)';
 }
-function mcSpkPause(){ clearInterval(mcSpkInterval); mcSpkRunning=false; document.getElementById('mc-spk-pause').style.display='none'; document.getElementById('mc-spk-start').style.display=''; }
+function mcSpkPause(){
+  clearInterval(mcSpkInterval); mcSpkRunning=false;
+  // Also pause total timer when speaker stops
+  if(mcTotRunning) mcTotPause();
+  document.getElementById('mc-spk-pause').style.display='none';
+  document.getElementById('mc-spk-start').style.display='';
+}
 function mcNextSpeaker(){
   clearInterval(mcSpkInterval); mcSpkRunning=false;
-  document.getElementById('mc-spk-start').style.display='';
+  // Also pause total timer
+  if(mcTotRunning) mcTotPause();
   document.getElementById('mc-spk-pause').style.display='none';
-  if(motionSpeakers.length>0 && motionCurrentIdx < motionSpeakers.length-1){
-    motionCurrentIdx++;
-    renderMotionSpeakers();
+
+  // Show score popup for current speaker (like opening speech)
+  const curSpk = motionSpeakers[motionCurrentIdx];
+  const _advance = () => {
+    if(motionSpeakers.length>0 && motionCurrentIdx < motionSpeakers.length-1){
+      motionCurrentIdx++;
+      renderMotionSpeakers();
+    }
+    document.getElementById('mc-spk-start').style.display='';
+    mcSpkReset();
+    // Resume total timer for next speaker
+    if(!mcTotRunning && mcTotSecs > 0) mcTotStart();
+  };
+  if(curSpk){
+    logEvent('speech', curSpk, 'Motion speech completed', 0);
+    showScorePopup(curSpk, _advance);
+  } else {
+    _advance();
   }
-  mcSpkReset();
 }
 function mcSpkReset(){ clearInterval(mcSpkInterval); mcSpkRunning=false; const _sd=document.getElementById('mc-spk-dur'); mcSpkSecs=_sd?parseInt(_sd.value)||90:90; mcSpkTotal=mcSpkSecs; document.getElementById('mc-spk-clock').textContent=mcFmtTime(mcSpkSecs); document.getElementById('mc-spk-clock').style.color='var(--text)'; document.getElementById('mc-spk-bar').style.width='100%'; document.getElementById('mc-spk-bar').style.background='var(--blue)'; document.getElementById('mc-spk-start').style.display=''; document.getElementById('mc-spk-pause').style.display='none'; }
 
@@ -5131,6 +5463,7 @@ function openYieldDelegate(){
       if(!target) return;
       popup.remove();
       if(spk) logEvent('yield_delegate',spk,`Yielded to ${target.n}`,0);
+      window._yieldedTime = timerSecs; // Capture remaining time for the next speaker
       stopTimer(); timerRunning=false;
       // Insert yielded-to delegate at next position
       speakers.splice(currentSpkIdx+1,0,{...target});
@@ -5252,7 +5585,7 @@ function openRightOfReply(){
     const dd=document.getElementById('ror-drop');
     if(!res.length){dd.innerHTML='<div class="cdrop-empty">No results</div>';return;}
     dd.innerHTML=res.map(d=>{const gi=COUNTRIES.findIndex(x=>x.c===d.c);return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`}).join('');
-    dd.querySelectorAll('.cdrop-item').forEach(el=>{el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;popup.remove();speakers.splice(currentSpkIdx+1,0,{...d});logEvent('ror',d,'Right of Reply granted',0);renderAllSpk();updateStats();showToast(`Right of Reply: ${d.n} added next in queue`);});});
+    dd.querySelectorAll('.cdrop-item').forEach(el=>{el.addEventListener('mousedown',e=>{e.preventDefault();const d=COUNTRIES[parseInt(el.dataset.gidx)];if(!d)return;popup.remove();speakers.splice(currentSpkIdx+1,0,{...d, _isRor: true});logEvent('ror',d,'Right of Reply granted',0);renderAllSpk();updateStats();showToast(`Right of Reply: ${d.n} added next (locked 30s)`);});});
     dd.classList.add('open');
   }
   filterRorSearch();
@@ -5351,13 +5684,14 @@ function updateQuorumCheck(){
 
 // ═══ GAVEL SOUND ═══
 // ─── Sound engine ───
-function playGavel(){ playTimerSound(); }
-function playTimerSound(){
+function playGavel(){ playTimerSound('gavel'); }
+function playTimerSound(forceType=null){
   try{
     const ctx=new(window.AudioContext||window.webkitAudioContext)();
     const t=ctx.currentTime;
-    if(timerSound==='none') return;
-    if(timerSound==='gavel'){
+    const type = forceType || timerSound;
+    if(type==='none') return;
+    if(type==='gavel'){
       // Three heavy wooden knocks
       [0,0.18,0.36].forEach(d=>{
         const o=ctx.createOscillator(),g=ctx.createGain();
@@ -5368,7 +5702,7 @@ function playTimerSound(){
         g.gain.exponentialRampToValueAtTime(0.001,t+d+0.14);
         o.start(t+d);o.stop(t+d+0.15);
       });
-    } else if(timerSound==='bell'){
+    } else if(type==='bell'){
       // Single resonant bell ring
       [0,0.01].forEach((d,i)=>{
         const o=ctx.createOscillator(),g=ctx.createGain();
@@ -5380,7 +5714,7 @@ function playTimerSound(){
         g.gain.exponentialRampToValueAtTime(0.001,t+d+1.4);
         o.start(t+d);o.stop(t+d+1.5);
       });
-    } else if(timerSound==='chime'){
+    } else if(type==='chime'){
       // Ascending 3-note chime
       [[523,0],[659,0.18],[784,0.36]].forEach(([freq,d])=>{
         const o=ctx.createOscillator(),g=ctx.createGain();
@@ -5390,7 +5724,7 @@ function playTimerSound(){
         g.gain.exponentialRampToValueAtTime(0.001,t+d+0.6);
         o.start(t+d);o.stop(t+d+0.7);
       });
-    } else if(timerSound==='buzz'){
+    } else if(type==='buzz'){
       // Buzzer / alert
       const o=ctx.createOscillator(),g=ctx.createGain();
       o.connect(g);g.connect(ctx.destination);
@@ -5399,6 +5733,29 @@ function playTimerSound(){
       g.gain.setValueAtTime(0.3,t+0.1);
       g.gain.exponentialRampToValueAtTime(0.001,t+0.4);
       o.start(t);o.stop(t+0.5);
+    } else if(type==='horn'){
+      // Airhorn style blast
+      [[300,0],[450,0],[600,0]].forEach(([freq,d])=>{
+        const o=ctx.createOscillator(),g=ctx.createGain();
+        o.connect(g);g.connect(ctx.destination);
+        o.type='sawtooth';o.frequency.value=freq;
+        g.gain.setValueAtTime(0.3,t+d);
+        g.gain.exponentialRampToValueAtTime(0.001,t+d+0.8);
+        o.start(t+d);o.stop(t+d+1.0);
+      });
+    } else if(type==='drumroll'){
+      // Low rumble drumroll
+      const bufferSize = ctx.sampleRate * 2.0; // 2 seconds
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+      const noise = ctx.createBufferSource(); noise.buffer = buffer;
+      const filter = ctx.createBiquadFilter(); filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(100, t); filter.frequency.linearRampToValueAtTime(800, t+1.8);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.01, t); g.gain.linearRampToValueAtTime(1.0, t+1.8); g.gain.exponentialRampToValueAtTime(0.001, t+2.0);
+      noise.connect(filter); filter.connect(g); g.connect(ctx.destination);
+      noise.start(t);
     }
   }catch(e){}
 }
@@ -5514,6 +5871,23 @@ function showVoteDelegate(){
   const pct=Math.round(voteRollIdx/voteRollPool.length*100);
   document.getElementById('vote-roll-progress').textContent=`${voteRollIdx} / ${voteRollPool.length} voted`;
   document.getElementById('vote-roll-bar').style.width=pct+'%';
+
+  // P&V Lock Logic
+  const abstainBtn = [...document.querySelectorAll('button')].find(b => b.getAttribute('onclick')?.includes("'abstain'"));
+  const status = rollCallData[d.c] || 'absent';
+  if (abstainBtn) {
+    if (status === 'present+voting') {
+      abstainBtn.disabled = true;
+      abstainBtn.style.opacity = '0.2';
+      abstainBtn.style.cursor = 'not-allowed';
+      abstainBtn.querySelector('span:last-child').textContent = 'LOCKED (P&V)';
+    } else {
+      abstainBtn.disabled = false;
+      abstainBtn.style.opacity = '1';
+      abstainBtn.style.cursor = 'pointer';
+      abstainBtn.querySelector('span:last-child').textContent = 'Abstain';
+    }
+  }
 }
 
 let voteDisplayWin=null, voteDisplayBlobUrl=null;
@@ -5887,7 +6261,7 @@ function renderSummary(){
   const h=Math.floor(elapsed/3600), m=Math.floor((elapsed%3600)/60), s=elapsed%60;
   const durStr=(h?h+'h ':'')+m+'m '+s+'s';
   const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
-  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+(Array.isArray(l)?l.length:(parseInt(l)||0)),0);
   const ranked=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]);
   const top3=ranked.slice(0,3).map(([code,pts])=>{
     const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
@@ -7869,7 +8243,7 @@ function exportStatsPDF(){
 
   const ranked=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]);
   const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
-  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+(Array.isArray(l)?l.length:(parseInt(l)||0)),0);
   const present=Object.values(rollCallData).filter(v=>v!=='absent').length;
 
   const scoreRows=ranked.map(([code,pts],i)=>{
@@ -8484,7 +8858,7 @@ function exportComReportDocx(){
   const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
   const dur=h?`${h}h ${m}m`:`${m}m`;
   const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
-  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+(Array.isArray(l)?l.length:(parseInt(l)||0)),0);
   const present=Object.values(rollCallData).filter(v=>v!=='absent').length;
 
   const scoreRows=Object.entries(scores).filter(([,p])=>p!==0).sort((a,b)=>b[1]-a[1]).map(([code,pts],i)=>{
@@ -9665,7 +10039,7 @@ function showSessionEndedModal(){
   const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
   const dur=h?`${h}h ${m}m`:`${m}m`;
   const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
-  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+(Array.isArray(l)?l.length:(parseInt(l)||0)),0);
 
   const ranked=Object.entries(scores).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([code,pts])=>{
     const d=delegates.find(x=>x.c===code)||COUNTRIES.find(x=>x.c===code);
@@ -9789,12 +10163,26 @@ function renderStatsDashboard(){
 
   const ranked=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
   const totalSpeeches=sessionHistory.filter(e=>e.type==='speech').length;
-  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+l.length,0);
+  const totalWarnings=Object.values(warnings).reduce((a,l)=>a+(Array.isArray(l)?l.length:(parseInt(l)||0)),0);
   const elapsed=sessionStartTime?Math.floor((Date.now()-sessionStartTime)/1000):0;
   const h=Math.floor(elapsed/3600),m=Math.floor((elapsed%3600)/60);
 
   const maxScore=ranked.length?Math.max(1,Math.abs(ranked[0][1]),Math.abs(ranked[ranked.length-1][1])):1;
   const maxSpeeches=Math.max(1,...Object.values(speechCounts));
+
+  let fairnessAlertHtml = '';
+  const maxSpeechesCounts = Object.values(speechCounts);
+  if (delegates.length > 0 && maxSpeechesCounts.length > 0) {
+    const highestSpkCount = Math.max(...maxSpeechesCounts);
+    const zeroes = delegates.filter(d => !speechCounts[d.c] || speechCounts[d.c] === 0).length;
+    const highestDels = Object.keys(speechCounts).filter(c=>speechCounts[c]===highestSpkCount).map(c=>delegates.find(d=>d.c===c)?.n||c);
+    if (highestSpkCount >= 3 && zeroes > 0) {
+      fairnessAlertHtml = `<div style="background:rgba(210,153,34,0.1); border:1px solid rgba(210,153,34,0.5); border-left:3px solid #d29922; padding:12px 16px; margin-bottom:16px; border-radius:8px">
+          <div style="font-weight:700; color:#d29922; font-size:12px; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em">⚠️ Chair Fairness Alert</div>
+          <div style="font-size:13px; color:var(--text)"><b>${highestDels.join(', ')}</b> ${highestDels.length>1?'have':'has'} spoken <b>${highestSpkCount} times</b>, while <b>${zeroes} countr${zeroes>1?'ies':'y'}</b> ${zeroes>1?'have':'has'} not spoken at all. Consider calling on silent delegates.</div>
+       </div>`;
+    }
+  }
 
   el.innerHTML=`
     <!-- Summary chips -->
@@ -9811,6 +10199,8 @@ function renderStatsDashboard(){
           <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:3px">${l}</div>
         </div>`).join('')}
     </div>
+    
+    ${fairnessAlertHtml}
 
     <!-- Score chart -->
     ${ranked.length?`
@@ -10529,7 +10919,7 @@ button:active{transform:scale(.97)}
 <div id=cs><button class=p onclick=ci()>👋 Mark Myself Present</button></div>
 <div id=vs><div style="font-size:11px;color:rgba(255,255,255,.3);margin-bottom:8px">🗳 VOTING OPEN</div>
 <button class=y onclick=vote('yes')>✅ In Favor</button>
-<button class=a onclick=vote('abstain')>🟡 Abstain</button>
+<button class=a onclick=vote('abstain') ${rollCallData[code]==='present+voting'?'disabled style="opacity:0.2"':''}>${rollCallData[code]==='present+voting'?'🔒 P&V LOCKED':'🟡 Abstain'}</button>
 <button class=n onclick=vote('no')>❌ Against</button></div>
 </div>
 <div id=msg></div>
@@ -11116,6 +11506,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if(window.innerWidth <= 768) closeMobileSidebar();
     });
   });
+  if(!document.querySelector('.page.active')){
+    showPage('setup');
+  }
 });
 
 // ─── AI Speech Analysis ───
@@ -12772,7 +13165,45 @@ function pushSessionPassword() {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(pw)
-  }).then(() => showToast(pw ? 'Password saved ✓' : 'Password cleared')).catch(() => showToast('Save failed', 'error'));
+  }).then(() => showToast(pw ? '🔒 Password saved ✓' : 'Password cleared')).catch(() => showToast('Save failed', 'error'));
+}
+
+// ── Password strength indicator ──
+function _updatePasswordStrength(pw) {
+  const fill = document.getElementById('pw-strength-fill');
+  const text = document.getElementById('pw-strength-text');
+  if (!fill || !text) return;
+  if (!pw) { fill.style.width = '0%'; text.textContent = ''; return; }
+  let score = 0;
+  if (pw.length >= 4) score++;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const levels = [
+    { w: '20%', c: '#f85149', t: 'Weak — too short' },
+    { w: '40%', c: '#f0883e', t: 'Fair' },
+    { w: '60%', c: '#d29922', t: 'Moderate' },
+    { w: '80%', c: '#58a6ff', t: 'Strong' },
+    { w: '100%', c: '#3fb950', t: 'Excellent ✓' },
+  ];
+  const l = levels[Math.min(score, levels.length) - 1] || levels[0];
+  fill.style.width = l.w;
+  fill.style.background = l.c;
+  text.style.color = l.c;
+  text.textContent = l.t;
+}
+
+// ── Auto-generate password ──
+function _autoGeneratePassword() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let pw = '';
+  for (let i = 0; i < 8; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+  const el = document.getElementById('setup-session-password');
+  if (el) { el.value = pw; el.type = 'text'; _updatePasswordStrength(pw); }
+  // Copy to clipboard
+  navigator.clipboard?.writeText(pw).then(() => showToast('🔑 Password generated & copied: ' + pw, 4000));
+  pushSessionPassword();
 }
 
 
@@ -13068,6 +13499,22 @@ function copySessionId() {
   navigator.clipboard?.writeText(_fbSessionId||'').then(()=>showToast('Session ID copied ✓'));
 }
 
+function _copySessionPassword() {
+  const pw = document.getElementById('setup-session-password')?.value?.trim() || '';
+  if (!pw) { showToast('No password set', 'error'); return; }
+  navigator.clipboard?.writeText(pw).then(() => showToast('🔒 Password copied ✓'));
+}
+
+function _setInlinePassword() {
+  const inlineEl = document.getElementById('cochair-inline-pw');
+  const pw = inlineEl?.value?.trim();
+  if (!pw) { showToast('Enter a password', 'error'); return; }
+  const setupEl = document.getElementById('setup-session-password');
+  if (setupEl) setupEl.value = pw;
+  pushSessionPassword();
+  refreshCoChairPanel();
+}
+
 async function refreshCoChairPanel() {
   const chip = document.getElementById('cochair-role-chip');
   const bigId = document.getElementById('cochair-session-id-big');
@@ -13079,7 +13526,9 @@ async function refreshCoChairPanel() {
 
   if(bigId) bigId.textContent = _fbSessionId || '—';
   if(shareId) shareId.textContent = _fbSessionId || '—';
-  // Pull and show live state immediately
+  
+  if(!window.cochairChatInterval && typeof startCochairChatPoll === 'function') startCochairChatPoll();
+
   if (isCoChair() && _fbAvailable && _fbUrl && _fbSessionId) {
     fetch(`${_fbUrl}/mun_${_fbSessionId}/liveState.json`)
       .then(r => r.ok ? r.json() : null)
@@ -13093,7 +13542,17 @@ async function refreshCoChairPanel() {
   if(roleDesc) roleDesc.textContent = `${_fbSessionId} · ${roleLbl}`;
   if(pwRow){
     const pw = document.getElementById('setup-session-password')?.value?.trim();
-    pwRow.textContent = pw ? `Password: ${pw}` : 'No password set';
+    const pwDisp = document.getElementById('cochair-pw-display');
+    const pwInline = document.getElementById('cochair-pw-inline-set');
+    if (pw) {
+      if (pwDisp) { pwDisp.textContent = pw; pwDisp.style.color = 'var(--orange)'; }
+      if (pwInline) pwInline.style.display = 'none';
+      pwRow.textContent = '';
+    } else {
+      if (pwDisp) { pwDisp.textContent = 'Not set'; pwDisp.style.color = 'var(--text4)'; }
+      if (pwInline && isChair()) pwInline.style.display = '';
+      pwRow.textContent = '';
+    }
   }
 
   if (!_fbAvailable || !_fbUrl || !_fbSessionId) {
@@ -13485,6 +13944,563 @@ function _runCmd(cmd) {
   }
 }
 
+
+// ══════════════════════════════════════════════════════════════════
+// MULTI-MOTION QUEUE & VOTING SYSTEM
+// ══════════════════════════════════════════════════════════════════
+
+function _getMotionFormData() {
+  const topic    = (document.getElementById('mot-topic')?.value||'').trim();
+  const raisedBy = motionRaisedBy ? {...motionRaisedBy} : null;
+  const totalDur = parseInt(document.getElementById('mot-total-dur')?.value)||600;
+  const spkDur   = parseInt(document.getElementById('mot-spk-dur')?.value)||90;
+  const score    = parseFloat(document.getElementById('mot-score')?.value)||0;
+  const firstSpk = window._motFirstSpeaker ? {...window._motFirstSpeaker} : null;
+  const lastSpk  = window._motLastSpeaker  ? {...window._motLastSpeaker}  : null;
+  return { topic, raisedBy, totalDur, spkDur, score, firstSpeaker: firstSpk, lastSpeaker: lastSpk };
+}
+
+function addMotionToQueue() {
+  const { topic, raisedBy, totalDur, spkDur, score, firstSpeaker, lastSpeaker } = _getMotionFormData();
+  if (!topic) { showToast('Enter a topic first', 'error'); return; }
+  const id = 'mot_' + Date.now().toString(36);
+  _pendingMotions.push({ id, topic, raisedBy, totalDur, spkDur, score, firstSpeaker, lastSpeaker, votes: {} });
+  // Reset form for next motion
+  if(document.getElementById('mot-topic')) document.getElementById('mot-topic').value = '';
+  if(document.getElementById('mot-raised-search')) document.getElementById('mot-raised-search').value = '';
+  if(document.getElementById('mot-raised-display')) document.getElementById('mot-raised-display').style.display = 'none';
+  motionRaisedBy = null;
+  window._motFirstSpeaker = null; window._motLastSpeaker = null;
+  if(document.getElementById('mot-first-display')) document.getElementById('mot-first-display').textContent='None';
+  if(document.getElementById('mot-last-display')) document.getElementById('mot-last-display').textContent='None';
+  showToast(`Motion "${topic}" added to queue (${_pendingMotions.length} total)`);
+  renderMotionQueue();
+}
+
+function renderMotionQueue() {
+  // Show motion queue panel inside the setup popup
+  let qEl = document.getElementById('mot-queue-panel');
+  if (!_pendingMotions.length) {
+    if (qEl) qEl.remove();
+    return;
+  }
+  if (!qEl) {
+    qEl = document.createElement('div');
+    qEl.id = 'mot-queue-panel';
+    qEl.style.cssText = 'margin:0 20px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px';
+    const footer = document.querySelector('#motion-setup-popup [style*="border-top"]');
+    if (footer) footer.parentNode.insertBefore(qEl, footer);
+  }
+  qEl.innerHTML = `
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:8px">Motion Queue (${_pendingMotions.length}) <button onclick="openMotionVote()" class="btn btn-primary btn-sm" style="float:right;padding:3px 10px;font-size:10px">🗳 Vote to Decide</button></div>
+    ${_pendingMotions.map((m, i) => `
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:11px;color:var(--text3)">${i+1}.</span>
+        ${m.raisedBy ? flagImg(m.raisedBy.c, 'flag-img-sm') : ''}
+        <span style="flex:1;font-size:12px;font-weight:600;color:var(--text)">${m.topic}</span>
+        <span style="font-size:10px;color:var(--text3)">${Math.floor(m.totalDur/60)}m · ${m.spkDur}s/spk</span>
+        <button onclick="_removePendingMotion('${m.id}')" style="background:none;border:none;color:var(--text4);cursor:pointer;font-size:14px">×</button>
+      </div>`).join('')}`;
+}
+
+function _removePendingMotion(id) {
+  _pendingMotions = _pendingMotions.filter(m => m.id !== id);
+  renderMotionQueue();
+}
+
+function openMotionVote() {
+  if (_pendingMotions.length < 2) {
+    showToast('Add at least 2 motions to vote', 'error');
+    return;
+  }
+  document.getElementById('motion-setup-popup')?.remove();
+  const modal = document.createElement('div');
+  modal.id = 'motion-vote-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease;backdrop-filter:blur(8px)';
+
+  modal.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+      <div style="padding:18px 22px;border-bottom:1px solid var(--border)">
+        <div style="font-size:15px;font-weight:700">🗳 Motion Vote</div>
+        <div style="font-size:11px;color:var(--text3)">Vote on each motion — most support wins</div>
+      </div>
+      <div style="padding:18px 22px">
+        ${_pendingMotions.map((m, i) => `
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+              ${m.raisedBy ? flagImg(m.raisedBy.c, 'flag-img-sm') : '<span></span>'}
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:700;color:var(--text)">${m.topic}</div>
+                <div style="font-size:10px;color:var(--text3)">${m.raisedBy ? 'By ' + m.raisedBy.n + ' · ' : ''}${Math.floor(m.totalDur/60)}m total · ${m.spkDur}s/speaker</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+              <button onclick="_voteMotion('${m.id}','yes',this)" style="padding:8px;border-radius:8px;border:1px solid rgba(61,232,160,0.3);background:rgba(61,232,160,0.06);color:var(--green);font-weight:700;cursor:pointer;font-size:12px" data-vote="yes">✅ Favor</button>
+              <button onclick="_voteMotion('${m.id}','no',this)" style="padding:8px;border-radius:8px;border:1px solid rgba(255,107,107,0.3);background:rgba(255,107,107,0.06);color:var(--red);font-weight:700;cursor:pointer;font-size:12px" data-vote="no">❌ Against</button>
+              <button onclick="_voteMotion('${m.id}','abstain',this)" style="padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text3);font-weight:700;cursor:pointer;font-size:12px" data-vote="abs">🟡 Abstain</button>
+            </div>
+            <div id="mvote-tally-${m.id}" style="font-size:10px;color:var(--text3);margin-top:6px;text-align:center"></div>
+          </div>`).join('')}
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button onclick="_closeMotionVote()" class="btn btn-ghost btn-sm" style="flex:1">Cancel</button>
+          <button onclick="_finalizeMotionVote()" class="btn btn-primary btn-sm" style="flex:1">✓ Finalize & Select Winner</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.onclick = e => { if(e.target===modal) _closeMotionVote(); };
+}
+
+function _voteMotion(id, vote, btn) {
+  const m = _pendingMotions.find(x => x.id === id);
+  if (!m) return;
+  // Toggle
+  if (!m.votes) m.votes = {};
+  if (m.votes['_chair'] === vote) {
+    delete m.votes['_chair'];
+  } else {
+    m.votes['_chair'] = vote;
+  }
+  // Update button styles
+  const row = btn.closest('div');
+  row.querySelectorAll('button').forEach(b => {
+    const v = b.dataset.vote;
+    const isSelected = m.votes['_chair'] === v || (v === 'yes' && m.votes['_chair'] === 'yes') || (v === 'no' && m.votes['_chair'] === 'no') || (v === 'abs' && m.votes['_chair'] === 'abstain');
+    const sel = b.getAttribute('data-vote') === (m.votes['_chair'] === 'abstain' ? 'abs' : m.votes['_chair']);
+    b.style.opacity = sel ? '1' : '0.4';
+    b.style.transform = sel ? 'scale(1.04)' : 'scale(1)';
+  });
+  const tally = document.getElementById('mvote-tally-' + id);
+  if (tally && m.votes['_chair']) tally.textContent = 'Chair: ' + m.votes['_chair'];
+}
+
+function _closeMotionVote() {
+  document.getElementById('motion-vote-modal')?.remove();
+}
+
+function _finalizeMotionVote() {
+  if (!_pendingMotions.length) return;
+  // Find winner: most 'yes' votes (by chair so far, in real use you'd collect from delegates)
+  const ranked = [..._pendingMotions].sort((a, b) => {
+    const aYes = a.votes?.['_chair'] === 'yes' ? 1 : 0;
+    const bYes = b.votes?.['_chair'] === 'yes' ? 1 : 0;
+    return bYes - aYes;
+  });
+  const winner = ranked[0];
+  _closeMotionVote();
+  _launchWinnerMotion(winner);
+}
+
+function _launchWinnerMotion(winner) {
+  if (!winner) return;
+  // Award points to raiser if specified
+  if (winner.score && winner.raisedBy) {
+    scores[winner.raisedBy.c] = (scores[winner.raisedBy.c]||0) + winner.score;
+    logEvent('motion', winner.raisedBy, `Motion passed: ${winner.topic} (+${winner.score})`, winner.score);
+    showToast(`🎉 ${winner.raisedBy.n} +${winner.score} pts — motion passed!`);
+  }
+  // Remove winner from pending, keep others
+  _pendingMotions = _pendingMotions.filter(m => m.id !== winner.id);
+  _currentMotionId = winner.id;
+
+  // Show remaining motions panel if any
+  if (_pendingMotions.length > 0) {
+    setTimeout(() => _showPendingMotionsPanel(), 1000);
+  }
+
+  // Launch motion directly (popup is already closed, bypass form)
+  motionRaisedBy = winner.raisedBy;
+  _launchMotionDirectly(winner.topic, winner.totalDur, winner.spkDur,
+    winner.firstSpeaker||null, winner.lastSpeaker||null);
+
+  // Record in motion votes
+  const yes = 1, no = 0, abs = 0;
+  const result = 'passed';
+  motionVotes.push({motion: winner.topic, raisedBy: winner.raisedBy, yes, no, abs, result, time: new Date().toLocaleTimeString()});
+  renderMotionVotes();
+  _fbPushNow();
+}
+
+function _showPendingMotionsPanel() {
+  const existing = document.getElementById('pending-motions-bar');
+  if (existing) existing.remove();
+  if (!_pendingMotions.length) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'pending-motions-bar';
+  bar.style.cssText = 'position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:400;background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:10px 16px;box-shadow:0 8px 32px rgba(0,0,0,0.6);display:flex;gap:10px;align-items:center;max-width:600px';
+  bar.innerHTML = `
+    <div style="font-size:12px;font-weight:700;color:var(--text)">📋 ${_pendingMotions.length} pending motion${_pendingMotions.length!==1?'s':''}</div>
+    <div style="display:flex;gap:6px">
+      ${_pendingMotions.map(m => `<button onclick="_launchWinnerMotion(${JSON.stringify(m).replace(/"/g,'&quot;')})" class="btn btn-ghost btn-sm" style="font-size:11px">▶ ${m.topic.slice(0,20)}</button>`).join('')}
+    </div>
+    <button onclick="_pendingMotions=[];document.getElementById('pending-motions-bar')?.remove()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;margin-left:6px">×</button>`;
+  document.body.appendChild(bar);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// MOTION FIRE & LAST SPEAKER
+// ══════════════════════════════════════════════════════════════════
+function openMotionFirePopup() {
+  // Fire button on motion page — add all delegates or selected to speakers list
+  const existing = document.getElementById('motion-fire-popup');
+  if (existing) { existing.remove(); return; }
+  const popup = document.createElement('div');
+  popup.id = 'motion-fire-popup';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:440px;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:700">🔥 Fire Motion</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">Add all or selected delegates to speakers list</div>
+      </div>
+      <div style="padding:16px 20px;display:flex;flex-direction:column;gap:10px">
+        <button onclick="_fireMotionAll();document.getElementById('motion-fire-popup').remove()" class="btn btn-primary btn-sm">
+          🔥 Add All Delegates (${delegates.length})
+        </button>
+        <button onclick="_fireMotionPresent();document.getElementById('motion-fire-popup').remove()" class="btn btn-ghost btn-sm">
+          ✅ Add Present Delegates Only (${Object.values(rollCallData).filter(v=>v==='present'||v==='present+voting').length})
+        </button>
+        <button onclick="document.getElementById('motion-fire-popup').remove()" class="btn btn-ghost btn-sm">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.onclick = e => { if(e.target===popup) popup.remove(); };
+}
+
+function _fireMotionAll() {
+  const pool = delegates.length ? delegates : [];
+  pool.forEach(d => {
+    if (!motionSpeakers.find(s => s.c === d.c)) motionSpeakers.push({...d});
+  });
+  renderMotionSpeakers();
+  showToast(`🔥 ${pool.length} delegates added`);
+}
+function _fireMotionPresent() {
+  const present = delegates.filter(d => ['present','present+voting'].includes(rollCallData[d.c]));
+  present.forEach(d => {
+    if (!motionSpeakers.find(s => s.c === d.c)) motionSpeakers.push({...d});
+  });
+  renderMotionSpeakers();
+  showToast(`✅ ${present.length} present delegates added`);
+}
+
+function setLastSpeaker() {
+  // Opens picker to set the last speaker of the motion
+  const existing = document.getElementById('last-spk-popup');
+  if (existing) { existing.remove(); return; }
+  const popup = document.createElement('div');
+  popup.id = 'last-spk-popup';
+  popup.style.cssText = 'position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.78);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML = `
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,0.7)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+        <div style="font-size:14px;font-weight:700">🎤 Last Speaker</div>
+        <div style="font-size:11px;color:var(--text3)">Select who speaks last in this motion</div>
+      </div>
+      <div style="padding:14px 20px">
+        <div class="csearch-wrap">
+          <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+          <input type="text" id="last-spk-search" placeholder="Search delegate..." autocomplete="off"
+            oninput="filterLastSpkSearch()" onfocus="filterLastSpkSearch();document.getElementById('last-spk-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('last-spk-drop').classList.remove('open'),200)"/>
+          <div class="cdropdown" id="last-spk-drop"></div>
+        </div>
+      </div>
+      <div style="padding:10px 20px;border-top:1px solid var(--border)">
+        <button onclick="document.getElementById('last-spk-popup').remove()" class="btn btn-ghost btn-sm" style="width:100%">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  popup.onclick = e => { if(e.target===popup) popup.remove(); };
+}
+
+function filterLastSpkSearch() {
+  const q = (document.getElementById('last-spk-search')?.value||'').toLowerCase();
+  const dd = document.getElementById('last-spk-drop');
+  if (!dd) return;
+  const pool = motionSpeakers.length ? motionSpeakers : (delegates.length ? delegates : COUNTRIES);
+  const res = pool.filter(d => d.n.toLowerCase().includes(q)).slice(0, 12);
+  dd.innerHTML = res.map(d => {
+    const gi = COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gi}" onmousedown="e.preventDefault();_setLastSpeaker(${gi});document.getElementById('last-spk-popup').remove()">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('') || '<div class="cdrop-empty">No results</div>';
+  dd.querySelectorAll('.cdrop-item').forEach(el => {
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const gi = parseInt(el.dataset.gidx);
+      _setLastSpeaker(gi);
+      document.getElementById('last-spk-popup')?.remove();
+    });
+  });
+  if (res.length) dd.classList.add('open');
+}
+
+function _setLastSpeaker(gidx) {
+  const d = COUNTRIES[gidx]; if (!d) return;
+  // Move this delegate to the end of motionSpeakers
+  motionSpeakers = motionSpeakers.filter(s => s.c !== d.c);
+  motionSpeakers.push({...d});
+  renderMotionSpeakers();
+  // Also put at end of speakers queue
+  speakers = speakers.filter(s => s.c !== d.c);
+  speakers.push({...d});
+  renderAllSpk(); updateStats();
+  showToast(`🎤 ${d.n} set as last speaker`);
+  _fbPushNow();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CO-CHAIR: add all delegates to speakers list
+// ══════════════════════════════════════════════════════════════════
+function coChairAddAllDelegates() {
+  delegates.forEach(d => {
+    if (!speakers.find(s=>s.c===d.c)) speakers.push({...d});
+  });
+  if (currentSpkIdx === -1 && speakers.length > 0) currentSpkIdx = 0;
+  renderAllSpk(); updateStats(); updateSpkPanel();
+  showToast(`👥 All ${delegates.length} delegates added to speakers`);
+  _fbPushNow();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// OPEN TO QUESTIONS — Delegate acceptance flow
+// ══════════════════════════════════════════════════════════════════
+function openQuestionsMode(){
+  const spk=currentSpkIdx>=0&&currentSpkIdx<speakers.length?speakers[currentSpkIdx]:null;
+  if(!spk) return;
+  stopTimer(); timerRunning=false;
+  const existing=document.getElementById('questions-popup'); if(existing) existing.remove();
+  const popup=document.createElement('div');
+  popup.id='questions-popup';
+  popup.style.cssText='position:fixed;inset:0;z-index:700;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;animation:fadeIn 0.2s ease';
+  popup.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);width:100%;max-width:500px;max-height:88vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.7);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        ${flagImg(spk.c,'flag-img-lg')}
+        <div>
+          <div style="font-size:10px;color:var(--orange);text-transform:uppercase;letter-spacing:0.1em;font-weight:600">Open to Questions</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text)">${spk.n}</div>
+        </div>
+      </div>
+      <div style="padding:16px 20px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Select a questioner, then decide if the speaker accepts or rejects:</div>
+        <div class="csearch-wrap" style="margin-bottom:10px">
+          <svg class="csearch-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.856a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+          <input type="text" id="q-asker-search" placeholder="Search questioner..." autocomplete="off"
+            oninput="filterQAskerSearch('${spk.c}')" onfocus="filterQAskerSearch('${spk.c}');document.getElementById('q-asker-drop').classList.add('open')" onblur="setTimeout(()=>document.getElementById('q-asker-drop').classList.remove('open'),200)"/>
+          <div class="cdropdown" id="q-asker-drop"></div>
+        </div>
+        <!-- Question outcome buttons — shown after selecting questioner -->
+        <div id="q-outcome-area" style="display:none;margin-bottom:10px"></div>
+        <!-- Questions log -->
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--text3);margin-bottom:6px">Questions Log</div>
+        <div id="q-log-list" style="max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px"></div>
+      </div>
+      <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="document.getElementById('questions-popup').remove()" class="btn btn-ghost btn-sm">Close</button>
+        <button onclick="document.getElementById('questions-popup').remove();nextSpeaker()" class="btn btn-primary btn-sm">Done → Next Speaker</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popup);
+  window._questionLog = []; // [{questioner, accepted, pts}]
+  window._selectedQuestioner = null;
+  _renderQLog(spk);
+}
+
+function filterQAskerSearch(spkCode){
+  const q=(document.getElementById('q-asker-search')?.value||'').toLowerCase();
+  const dd=document.getElementById('q-asker-drop');
+  if(!dd)return;
+  const pool=delegates.length?delegates:COUNTRIES;
+  const res=pool.filter(c=>c.n.toLowerCase().includes(q)&&c.c!==spkCode).slice(0,12);
+  dd.innerHTML=res.map(d=>{
+    const gi=COUNTRIES.findIndex(x=>x.c===d.c);
+    return`<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('')||'<div class="cdrop-empty">No results</div>';
+  dd.querySelectorAll('.cdrop-item').forEach(el=>{
+    el.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      const d=COUNTRIES[parseInt(el.dataset.gidx)];
+      if(!d)return;
+      window._selectedQuestioner=d;
+      document.getElementById('q-asker-search').value=d.n;
+      dd.classList.remove('open');
+      _showQuestionOutcome(d, spkCode);
+    });
+  });
+  if(res.length) dd.classList.add('open');
+}
+
+function _showQuestionOutcome(questioner, spkCode) {
+  const area = document.getElementById('q-outcome-area');
+  if (!area) return;
+  area.style.display = '';
+  area.innerHTML = `
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px">
+        ${flagImg(questioner.c,'flag-img-sm')} <strong>${questioner.n}</strong> wants to ask a question.<br/>
+        Does the speaker accept?
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="_questionAccepted('${questioner.c}','${questioner.n}','${spkCode}')" 
+          style="padding:10px;border-radius:9px;border:1px solid rgba(61,232,160,0.35);background:rgba(61,232,160,0.08);color:var(--green);font-weight:700;cursor:pointer;font-size:13px">
+          ✅ Accept <span style="font-size:10px;opacity:0.7">(+0.8 each)</span>
+        </button>
+        <button onclick="_questionRejected('${questioner.c}','${questioner.n}','${spkCode}')"
+          style="padding:10px;border-radius:9px;border:1px solid rgba(255,107,107,0.35);background:rgba(255,107,107,0.08);color:var(--red);font-weight:700;cursor:pointer;font-size:13px">
+          ❌ Reject <span style="font-size:10px;opacity:0.7">(questioner +1)</span>
+        </button>
+      </div>
+    </div>`;
+}
+
+function _questionAccepted(qCode, qName, spkCode) {
+  const questioner = delegates.find(x=>x.c===qCode)||COUNTRIES.find(x=>x.c===qCode);
+  const speaker    = delegates.find(x=>x.c===spkCode)||COUNTRIES.find(x=>x.c===spkCode);
+  // +0.8 to questioner, +0.8 to speaker
+  scores[qCode]   = (scores[qCode]||0) + 0.8;
+  scores[spkCode] = (scores[spkCode]||0) + 0.8;
+  logEvent('questions', questioner, `Question to ${speaker?.n||spkCode} — accepted (+0.8)`, 0.8);
+  logEvent('questions', speaker,    `Accepted question from ${qName} (+0.8)`, 0.8);
+  window._questionLog.push({ questioner: qName, qCode, accepted: true, qPts: 0.8, spkPts: 0.8 });
+  _renderQLog({ c: spkCode });
+  _resetQOutcome();
+  showToast(`✅ ${qName} +0.8 · ${speaker?.n||spkCode} +0.8`);
+  _fbPushNow();
+}
+
+function _questionRejected(qCode, qName, spkCode) {
+  const questioner = delegates.find(x=>x.c===qCode)||COUNTRIES.find(x=>x.c===qCode);
+  // +1 to questioner (speaker rejected — questioner's bravery rewarded)
+  scores[qCode] = (scores[qCode]||0) + 1;
+  logEvent('questions', questioner, `Question rejected by ${spkCode} — questioner +1`, 1);
+  window._questionLog.push({ questioner: qName, qCode, accepted: false, qPts: 1, spkPts: 0 });
+  _renderQLog({ c: spkCode });
+  _resetQOutcome();
+  showToast(`${qName} +1 pt (question rejected)`);
+  _fbPushNow();
+}
+
+function _resetQOutcome() {
+  const area = document.getElementById('q-outcome-area');
+  if (area) area.style.display = 'none';
+  const srch = document.getElementById('q-asker-search');
+  if (srch) srch.value = '';
+  window._selectedQuestioner = null;
+}
+
+function _renderQLog(spk) {
+  const el = document.getElementById('q-log-list');
+  if (!el) return;
+  const log = window._questionLog || [];
+  if (!log.length) {
+    el.innerHTML = '<div style="text-align:center;padding:10px;color:var(--text3);font-size:11px">No questions yet.</div>';
+    return;
+  }
+  el.innerHTML = log.map(q => `
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+      <span style="font-size:14px">${q.accepted?'✅':'❌'}</span>
+      <span style="font-size:12px;font-weight:600;color:var(--text);flex:1">${q.questioner}</span>
+      <span style="font-size:11px;color:${q.accepted?'var(--green)':'var(--yellow)'}">+${q.qPts}</span>
+      ${q.accepted?`<span style="font-size:10px;color:var(--text3)">spk +${q.spkPts}</span>`:'<span style="font-size:10px;color:var(--red)">rejected</span>'}
+    </div>`).join('');
+}
+
+
+// ── filterMotSpkPick — first/last speaker picker in motion setup ──
+window._motFirstSpeaker = null;
+window._motLastSpeaker  = null;
+
+function filterMotSpkPick(which) {
+  const searchId = 'mot-' + which + '-search';
+  const dropId   = 'mot-' + which + '-drop';
+  const displayId = 'mot-' + which + '-display';
+  const q = (document.getElementById(searchId)?.value||'').toLowerCase();
+  const dd = document.getElementById(dropId);
+  if (!dd) return;
+  const pool = delegates.length ? delegates : COUNTRIES;
+  const res = pool.filter(d => d.n.toLowerCase().includes(q)).slice(0, 10);
+  dd.innerHTML = res.map(d => {
+    const gi = COUNTRIES.findIndex(x=>x.c===d.c);
+    return `<div class="cdrop-item" data-gidx="${gi}">${flagImg(d.c)}<span class="cdrop-name">${d.n}</span></div>`;
+  }).join('') || '<div class="cdrop-empty">No results</div>';
+  dd.querySelectorAll('.cdrop-item').forEach(el => {
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      const d = COUNTRIES[parseInt(el.dataset.gidx)];
+      if (!d) return;
+      if (which === 'first') window._motFirstSpeaker = {...d};
+      else window._motLastSpeaker = {...d};
+      if(document.getElementById(searchId)) document.getElementById(searchId).value = d.n;
+      if(document.getElementById(displayId)) document.getElementById(displayId).textContent = d.n;
+      dd.classList.remove('open');
+    });
+  });
+  if (res.length) dd.classList.add('open');
+}
+
+// ── _launchMotionDirectly — launch motion without form (after vote) ──
+function _launchMotionDirectly(topic, totalDur, spkDur, firstSpeaker, lastSpeaker) {
+  // Set timer values
+  mcTotSecs = mcTotTotal = totalDur;
+  mcSpkSecs = mcSpkTotal = spkDur;
+  safe('mc-tot-dur', el => el.value = totalDur);
+  safe('mc-spk-dur', el => el.value = spkDur);
+  mcTotReset(); mcSpkReset();
+
+  // Show motion info bar
+  motionSpeakers = [];
+  motionCurrentIdx = -1;
+  const bar = document.getElementById('motion-info-bar');
+  if (bar) bar.style.display = '';
+  safe('mot-info-topic', el => el.textContent = topic);
+  safe('mot-info-flag', el => el.innerHTML = motionRaisedBy ? flagImg(motionRaisedBy.c,'flag-img') : '');
+  safe('mot-info-meta', el => el.textContent =
+    (motionRaisedBy ? 'Raised by ' + motionRaisedBy.n + '  ·  ' : '') +
+    'Total: ' + Math.floor(totalDur/60) + 'm  ·  Per speaker: ' + spkDur + 's' +
+    (firstSpeaker ? '  ·  First: ' + firstSpeaker.n : '') +
+    (lastSpeaker  ? '  ·  Last: '  + lastSpeaker.n  : ''));
+  safe('mot-spk-count', el => el.textContent = '0');
+  safe('mot-spk-list', el => el.innerHTML = '<div class="empty-state">Add speakers to this motion.</div>');
+
+  // Set first/last speaker globals
+  window._motFirstSpeaker = firstSpeaker;
+  window._motLastSpeaker  = lastSpeaker;
+
+  // If first speaker defined, add to front
+  if (firstSpeaker) {
+    motionSpeakers.unshift({...firstSpeaker});
+    if (lastSpeaker && lastSpeaker.c !== firstSpeaker.c) motionSpeakers.push({...lastSpeaker});
+  } else if (lastSpeaker) {
+    motionSpeakers.push({...lastSpeaker});
+  }
+
+  curMode = 'motion';
+  ['opening','gsl','motion','unmod'].forEach(m => {
+    const el = document.getElementById('mc-'+m);
+    if (el) el.classList.toggle('active', m==='motion');
+  });
+  showPage('modcaucus');
+  renderMotionSpeakers();
+}
+
+// ── Also hook first/last speaker into confirmMotionSetup ──
+const _origConfirmMotionSetup = confirmMotionSetup;
+confirmMotionSetup = function() {
+  const topic    = (document.getElementById('mot-topic')?.value||'').trim();
+  const totalDur = parseInt(document.getElementById('mot-total-dur')?.value)||600;
+  const spkDur   = parseInt(document.getElementById('mot-spk-dur')?.value)||90;
+  const firstSpk = window._motFirstSpeaker;
+  const lastSpk  = window._motLastSpeaker;
+  if (firstSpk || lastSpk) {
+    // Use direct launch to handle first/last speaker
+    document.getElementById('motion-setup-popup')?.remove();
+    _launchMotionDirectly(topic, totalDur, spkDur, firstSpk, lastSpk);
+  } else {
+    _origConfirmMotionSetup();
+  }
+};
+
 // ═══ STATS ═══
 function updateStats(){
   document.getElementById('s-del').textContent=delegates.length;
@@ -13513,9 +14529,238 @@ function showToast(msg, type='info'){
   setTimeout(()=>t.remove(),3000);
 }
 
+// ═══ COMMAND LINE ENGINE / SPOTLIGHT ═══
+window.addEventListener('keydown', e => {
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    const cmd = document.getElementById('cmd-spotlight');
+    if(cmd.style.display==='none'){
+      cmd.style.display='flex';
+      setTimeout(()=>document.getElementById('cmd-input').focus(), 50);
+    } else {
+      cmd.style.display='none';
+    }
+  }
+  if(e.key==='Escape'){
+    const cmd = document.getElementById('cmd-spotlight');
+    if(cmd) cmd.style.display='none';
+  }
+});
+
+function executeCmd() {
+  const input = document.getElementById('cmd-input');
+  const val = input.value.trim().toLowerCase();
+  input.value = '';
+  document.getElementById('cmd-spotlight').style.display='none';
+
+  if (!val) return;
+  if (val.startsWith('nav ')) { const p = val.split(' ')[1]; if(PAGES_META[p]) { showPage(p); } else { showToast('Page not found','error'); } return; }
+  if (val==='vote') { startRollVote(); return; }
+  if (val==='map') { if(typeof openMapWindow==='function') openMapWindow(); return; }
+  if (val.startsWith('add ')) {
+    const term = val.slice(4).trim();
+    const d = delegates.find(x=>x.n.toLowerCase().includes(term) || x.c.toLowerCase()===term) || COUNTRIES.find(x=>x.n.toLowerCase().includes(term) || x.c.toLowerCase()===term);
+    if(d) { 
+      if(!delegates.find(x=>x.c===d.c)) delegates.push(d); // auto-add to roster if not present
+      speakers.push({...d}); 
+      renderAllSpk(); updateStats(); updateSpkPanel(); 
+      showToast(`Added ${d.n}`); 
+    } else {
+      showToast('Country not found', 'error');
+    }
+    return;
+  }
+  if (val.startsWith('warn ')) {
+    const term = val.slice(5).trim();
+    const d = delegates.find(x=>x.n.toLowerCase().includes(term) || x.c.toLowerCase()===term);
+    if(d) { 
+      logEvent('warning', d, 'Warning issued via CMD', -2);
+      scores[d.c] = (scores[d.c]||0) - 2;
+      if(!Array.isArray(warnings[d.c])) warnings[d.c]=[];
+      warnings[d.c].push({reason: 'Warning issued via CMD', time: new Date().toLocaleTimeString()});
+      showToast(`Warning issued to ${d.n} (-2 pts)`);
+      renderAllSpk(); updateStats();
+    } else { showToast('Delegate not in roster', 'error'); }
+    return;
+  }
+  if (val.startsWith('ror ')) {
+    const term = val.slice(4).trim();
+    const d = delegates.find(x=>x.n.toLowerCase().includes(term) || x.c.toLowerCase()===term);
+    if(d) { 
+      speakers.splice(currentSpkIdx+1,0,{...d, _isRor: true});
+      logEvent('ror',d,'Right of Reply granted via CMD',0);
+      renderAllSpk();updateStats();showToast(`Right of Reply: ${d.n} added next (locked 30s)`);
+    } else { showToast('Delegate not in roster', 'error'); }
+    return;
+  }
+  if (val==='roundrobin') { if(typeof startRoundRobin==='function') startRoundRobin(); return; }
+  
+  showToast(`Command not recognized: ${val}`, 'error');
+}
+
+// Stubs for future phases
+let hdmiMapWin = null;
+function openMapWindow() {
+  if (hdmiMapWin && !hdmiMapWin.closed) { hdmiMapWin.focus(); return; }
+  hdmiMapWin = window.open('', 'MapWindow', 'width=1000,height=600');
+  hdmiMapWin.document.write(`<html>
+  <head>
+    <title>Active Speaker Map</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"><\\/script>
+    <style>body{margin:0;background:#18181b;overflow:hidden;display:flex;align-items:center;justify-content:center}</style>
+  </head>
+  <body>
+    <div id="regions_div" style="width:100vw; height:100vh;"></div>
+    <script>
+      google.charts.load('current', {'packages':['geochart']});
+      google.charts.setOnLoadCallback(drawRegionsMap);
+      var chart, options;
+      function drawRegionsMap() {
+        options = {
+          backgroundColor: '#18181b',
+          datalessRegionColor: '#27272a',
+          defaultColor: '#f4f4f5',
+          colorAxis: {colors: ['#3b82f6']},
+          legend: 'none',
+          tooltip: {trigger: 'none'}
+        };
+        chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+        chart.draw(google.visualization.arrayToDataTable([['Country', 'Status'],['US', 0]]), options);
+        
+        window.updateMap = function(c) {
+          if(!c) { chart.draw(google.visualization.arrayToDataTable([['Country', 'Status'],['US', 0]]), options); return; }
+          var dt = google.visualization.arrayToDataTable([
+            ['Country', 'Status'],
+            [c, 1]
+          ]);
+          chart.draw(dt, options);
+        }
+      }
+    <\\/script>
+  </body></html>`);
+  hdmiMapWin.document.close();
+  
+  window.mapInterval = setInterval(() => {
+    if(!hdmiMapWin || hdmiMapWin.closed) { clearInterval(window.mapInterval); return; }
+    if(hdmiMapWin.updateMap) {
+      if(timerRunning && currentSpkIdx>=0 && speakers.length > 0) {
+        hdmiMapWin.updateMap(speakers[currentSpkIdx].c);
+      } else {
+        hdmiMapWin.updateMap('');
+      }
+    }
+  }, 1000);
+}
+
+function startRoundRobin(){
+  if(delegates.length===0) { showToast('No delegates in roster.','error'); return; }
+  let timeStr = prompt('Enter Round Robin time per speaker (in seconds):', '15');
+  if(timeStr===null) return;
+  const time = parseInt(timeStr);
+  if(isNaN(time) || time<1) { showToast('Invalid time.','error'); return; }
+  
+  if(speakers.length>0) {
+    if(!confirm('This will wipe your current queue and add all delegates in a shuffled Round Robin. Proceed?')) return;
+  }
+  
+  const pool = [...delegates];
+  for(let i=pool.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [pool[i],pool[j]]=[pool[j],pool[i]];
+  }
+  
+  speakers = pool.map(d => ({...d, _isRr: time}));
+  currentSpkIdx = 0; speechesDone = 0;
+  
+  if(!curMode) curMode = 'gsl';
+  
+  renderAllSpk(); updateStats(); updateSpkPanel(); resetTimer(); _fbPushNow();
+  showToast(`Round Robin started: ${speakers.length} speakers at ${time}s`);
+}
+
+// Co-Chair Chat
+let cochairChatInterval = null;
+function startCochairChatPoll() {
+  if (cochairChatInterval) clearInterval(cochairChatInterval);
+  cochairChatInterval = setInterval(() => {
+    if(!_fbUrl || !_fbSessionId) return;
+    if(document.getElementById('page-cochair').classList.contains('active')) {
+      fetch(`${_fbUrl}/mun_${_fbSessionId}/chat.json`)
+        .then(r => r.ok ? r.json() : null)
+        .then(chatData => {
+          if(chatData) {
+            session.chat = chatData;
+            renderCoChairChat();
+          }
+        }).catch(()=>{});
+    }
+  }, 2000);
+}
+
+function sendCoChairChat() {
+  const i = document.getElementById('cochair-chat-input');
+  if(!i) return;
+  const txt = i.value.trim();
+  if(!txt) return;
+  i.value = '';
+  if(!session.chat) session.chat = [];
+  const senderName = isCoChair() ? ('Co-Chair ' + (coChairId||'')) : 'Main Chair';
+  session.chat.push({
+    n: senderName,
+    t: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+    m: txt
+  });
+  if(session.chat.length > 50) session.chat.shift();
+  
+  if(_fbUrl && _fbSessionId) {
+    fetch(`${_fbUrl}/mun_${_fbSessionId}/chat.json`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(session.chat)
+    }).catch(()=>{});
+  }
+  renderCoChairChat();
+}
+
+function renderCoChairChat() {
+  const box = document.getElementById('cochair-chat-box');
+  if(!box) return;
+  if(!session.chat || session.chat.length===0) {
+    box.innerHTML = '<div style="color:var(--text4);text-align:center;font-style:italic;margin-top:auto;margin-bottom:auto">Messages sync across all chairs instantly.</div>';
+    return;
+  }
+  const myName = isCoChair() ? ('Co-Chair ' + (coChairId||'')) : 'Main Chair';
+  box.innerHTML = session.chat.map(c => `
+    <div style="display:flex;flex-direction:column;align-items:${c.n===myName?'flex-end':'flex-start'}">
+      <span style="font-size:9px;color:var(--text4);margin-bottom:2px">${c.n} • ${c.t}</span>
+      <div style="background:${c.n===myName?'var(--blue)':'var(--bg2)'};color:${c.n===myName?'#fff':'var(--text)'};padding:5px 10px;border-radius:6px;max-width:85%;word-wrap:break-word">
+        ${c.m}
+      </div>
+    </div>
+  `).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
 // init
 updateStats();
 renderAllSpk();
 </script>
+<div id="cmd-spotlight" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:var(--bg2);width:100%;max-width:500px;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.8);border:1px solid var(--border)">
+    <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px">
+      <span style="font-size:20px;color:var(--blue)">⚡</span>
+      <input type="text" id="cmd-input" placeholder="Type a command (e.g. warn us, vote)" style="flex:1;background:transparent;border:none;color:var(--text);font-size:18px;font-family:'Inter',sans-serif;outline:none" autocomplete="off" onkeyup="if(event.key==='Enter') executeCmd()"/>
+    </div>
+    <div id="cmd-results" style="padding:12px 16px;font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;display:flex;flex-wrap:wrap;gap:8px">
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">add [country]</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">warn [country]</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">ror [country]</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">vote</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">map</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">nav [page]</span>
+      <span style="background:var(--bg3);padding:2px 6px;border-radius:4px">roundrobin</span>
+    </div>
+  </div>
+</div>
 </body>
 </html>
