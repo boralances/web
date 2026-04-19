@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boralances · Giriş</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060a12;--bg2:#0c1422;--bg3:#111d2e;
+  --cyan:#0ff;--magenta:#f0f;--blue:#388bfd;
+  --text:#e8f0fe;--text2:#8aaccc;--text3:#4a6580;
+  --green:#3de8a0;--red:#f85149;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.15);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);
+  font-family:'Inter',sans-serif;overflow-x:hidden}
+
+/* Grid */
+.cyber-grid{position:fixed;inset:0;
+  background:linear-gradient(90deg,rgba(0,255,255,0.025) 1px,transparent 1px),
+             linear-gradient(rgba(0,255,255,0.025) 1px,transparent 1px);
+  background-size:60px 60px;pointer-events:none;z-index:0}
+
+/* Scan line */
+.scanline{position:fixed;inset:0;pointer-events:none;z-index:1;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,255,0.015) 2px,rgba(0,255,255,0.015) 4px)}
+
+/* Glow orbs */
+.orb{position:fixed;border-radius:50%;pointer-events:none;filter:blur(80px);opacity:0.15}
+.orb1{width:500px;height:500px;background:var(--cyan);top:-100px;left:-100px}
+.orb2{width:400px;height:400px;background:var(--magenta);bottom:-100px;right:-100px}
+
+/* Center wrapper */
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+
+/* Logo */
+.logo-wrap{text-align:center;margin-bottom:40px;position:relative;z-index:5}
+.logo{font-family:'Orbitron',sans-serif;font-size:32px;font-weight:900;
+  color:var(--cyan);text-shadow:0 0 20px var(--cyan),0 0 40px var(--cyan);
+  letter-spacing:4px;animation:logoGlow 3s ease-in-out infinite;display:block;margin-bottom:6px}
+@keyframes logoGlow{0%,100%{text-shadow:0 0 20px #0ff,0 0 40px #0ff}50%{text-shadow:0 0 30px #0ff,0 0 60px #0ff,0 0 80px #f0f}}
+.logo-sub{font-size:11px;color:var(--text3);letter-spacing:0.2em;text-transform:uppercase}
+
+/* Card */
+.login-card{
+  position:relative;z-index:5;
+  background:rgba(12,20,34,0.95);
+  border:1px solid rgba(0,255,255,0.2);
+  border-radius:16px;padding:36px;
+  width:100%;max-width:400px;
+  box-shadow:0 0 60px rgba(0,255,255,0.08),0 20px 60px rgba(0,0,0,0.6);
+  backdrop-filter:blur(20px);
+}
+.login-card::before{
+  content:'';position:absolute;inset:-1px;border-radius:17px;
+  background:linear-gradient(135deg,rgba(0,255,255,0.15),transparent,rgba(255,0,255,0.1));
+  z-index:-1;pointer-events:none;
+}
+
+/* Title */
+.card-title{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;
+  letter-spacing:0.2em;text-transform:uppercase;color:var(--cyan);
+  margin-bottom:28px;text-align:center;opacity:0.9}
+
+/* Fields */
+.field{margin-bottom:16px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.field input{
+  width:100%;padding:13px 16px;border-radius:10px;
+  background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);font-size:15px;font-family:'Inter',sans-serif;
+  outline:none;transition:all 0.2s;
+}
+.field input:focus{
+  border-color:rgba(0,255,255,0.4);
+  box-shadow:0 0 0 3px rgba(0,255,255,0.06),0 0 16px rgba(0,255,255,0.1);
+}
+.field input::placeholder{color:var(--text3)}
+
+/* Password toggle */
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;
+  transition:color 0.2s;padding:2px}
+.pw-toggle:hover{color:var(--cyan)}
+
+/* Submit */
+.btn-login{
+  width:100%;padding:14px;border-radius:10px;border:none;margin-top:8px;
+  background:linear-gradient(135deg,rgba(0,255,255,0.15),rgba(56,139,253,0.2));
+  border:1px solid rgba(0,255,255,0.35);
+  color:var(--cyan);font-family:'Orbitron',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.btn-login::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,255,255,0.2),rgba(56,139,253,0.25));
+  opacity:0;transition:opacity 0.2s;
+}
+.btn-login:hover{box-shadow:0 0 24px rgba(0,255,255,0.25),inset 0 0 12px rgba(0,255,255,0.08)}
+.btn-login:hover::before{opacity:1}
+.btn-login:active{transform:scale(0.98)}
+.btn-login:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+
+/* Error / success */
+.msg{margin-top:14px;padding:10px 14px;border-radius:8px;font-size:12px;
+  font-weight:600;text-align:center;display:none;letter-spacing:0.04em}
+.msg-err{background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);color:var(--red)}
+.msg-ok{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);color:var(--green)}
+
+/* Divider */
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,255,255,0.15),transparent);
+  margin:24px 0}
+
+/* Footer links */
+.card-footer{text-align:center;font-size:11px;color:var(--text3)}
+.card-footer a{color:var(--text2);text-decoration:none;transition:color 0.2s}
+.card-footer a:hover{color:var(--cyan)}
+
+/* Loading spinner */
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(0,255,255,0.3);
+  border-top-color:var(--cyan);border-radius:50%;animation:spin 0.7s linear infinite;
+  vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Page footer */
+.page-footer{position:relative;z-index:5;margin-top:24px;font-size:11px;
+  color:var(--text3);text-align:center;letter-spacing:0.08em}
+</style>
+</head>
+<body>
+<div class="cyber-grid"></div>
+<div class="scanline"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="logo-wrap">
+  <span class="logo">BORALANCES</span>
+  <div class="logo-sub">Secure Access Portal</div>
+</div>
+
+<div class="login-card">
+  <div class="card-title">◈ Giriş Yap</div>
+
+  <div class="field">
+    <label>Kullanıcı Adı</label>
+    <input type="text" id="inp-user" placeholder="kullanıcı adı"
+      autocomplete="username" autocorrect="off" autocapitalize="none" spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('inp-pw').focus()"/>
+  </div>
+
+  <div class="field">
+    <label>Şifre</label>
+    <div class="pw-wrap">
+      <input type="password" id="inp-pw" placeholder="••••••••"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+      <button class="pw-toggle" onclick="togglePw()" title="Şifreyi göster" type="button">👁</button>
+    </div>
+  </div>
+
+  <button class="btn-login" id="btn-login" onclick="doLogin()">Giriş Yap →</button>
+
+  <div class="msg msg-err" id="msg-err"></div>
+  <div class="msg msg-ok"  id="msg-ok"></div>
+
+  <div class="divider"></div>
+  <div class="card-footer">
+    <a href="index.html">← Ana Sayfa</a>
+    &nbsp;·&nbsp;
+    <a href="mun-panel.html">MUN Panel</a>
+  </div>
+</div>
+
+<div class="page-footer">© 2026 Boralances · Tüm hakları saklıdır</div>
+
+<script>
+const FB = 'https://hcca-6cb53-default-rtdb.europe-west1.firebasedatabase.app';
+
+// ── Setup admin on first load ──
+async function ensureAdminExists() {
+  try {
+    const r = await fetch(`${FB}/users/boralances.json`);
+    const data = await r.json();
+    if (!data) {
+      // Create admin
+      await fetch(`${FB}/users/boralances.json`, {
+        method: 'PUT',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          password: 'Bora*2013',
+          role: 'admin',
+          displayName: 'Boralances'
+        })
+      });
+    }
+  } catch(e) {}
+}
+ensureAdminExists();
+
+// ── Auth helpers ──
+function authSet(user, role) {
+  const session = { user, role, expires: Date.now() + 7*24*60*60*1000 };
+  localStorage.setItem('bora_auth', JSON.stringify(session));
+}
+function authGet() {
+  try {
+    const s = JSON.parse(localStorage.getItem('bora_auth') || 'null');
+    if (!s) return null;
+    if (Date.now() > s.expires) { localStorage.removeItem('bora_auth'); return null; }
+    return s;
+  } catch(e) { return null; }
+}
+
+// ── If already logged in, redirect ──
+(function() {
+  const s = authGet();
+  if (s) {
+    const redir = new URLSearchParams(location.search).get('r') || 'index.html';
+    location.href = redir;
+  }
+})();
+
+// ── Toggle password visibility ──
+function togglePw() {
+  const inp = document.getElementById('inp-pw');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// ── Login ──
+async function doLogin() {
+  const user = document.getElementById('inp-user').value.trim().toLowerCase();
+  const pw   = document.getElementById('inp-pw').value;
+  const btn  = document.getElementById('btn-login');
+  const errEl = document.getElementById('msg-err');
+  const okEl  = document.getElementById('msg-ok');
+
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  if (!user || !pw) {
+    showErr('Kullanıcı adı ve şifre giriniz.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Giriş yapılıyor...';
+
+  try {
+    const r = await fetch(`${FB}/users/${user}.json`);
+    if (!r.ok) throw new Error('Sunucu hatası');
+    const data = await r.json();
+
+    if (!data) {
+      showErr('Kullanıcı bulunamadı.');
+      reset();
+      return;
+    }
+    if (data.password !== pw) {
+      showErr('Şifre yanlış.');
+      reset();
+      return;
+    }
+
+    // Success
+    authSet(user, data.role || 'user');
+    okEl.textContent = '✓ Giriş başarılı, yönlendiriliyor...';
+    okEl.style.display = 'block';
+
+    setTimeout(() => {
+      const redir = new URLSearchParams(location.search).get('r') || 'index.html';
+      location.href = redir;
+    }, 800);
+
+  } catch(e) {
+    showErr('Bağlantı hatası: ' + (e.message || 'Bilinmeyen hata'));
+    reset();
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('msg-err');
+  el.textContent = '✗ ' + msg;
+  el.style.display = 'block';
+}
+function reset() {
+  const btn = document.getElementById('btn-login');
+  btn.disabled = false;
+  btn.innerHTML = 'Giriş Yap →';
+}
+
+// Auto-focus
+document.getElementById('inp-user').focus();
+</script>
+</body>
+</html>
