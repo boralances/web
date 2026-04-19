@@ -493,6 +493,9 @@
                 <li><a href="studio.html">Studio</a></li>
                 <li><a href="blog.html">Blog</a></li>
                 <li style="width:1px;height:24px;background:rgba(255,255,255,0.1);margin:0 4px;align-self:center"></li>
+                <li id="nav-login-li">
+                    <a href="login.html" id="nav-login-btn" style="font-size:13px;color:rgba(0,255,255,0.6);padding:6px 14px;border:1px solid rgba(0,255,255,0.2);border-radius:6px;letter-spacing:0.05em">Giriş</a>
+                </li>
                 <li>
                     <a href="sifre.html" class="nav-sifre">
                         <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
@@ -601,5 +604,16 @@
     <footer>
         <p>&copy; 2026 BORALANCES - All Rights Reserved in the Digital Realm</p>
     </footer>
+<script>
+(function(){
+  try{
+    const s=JSON.parse(localStorage.getItem('bora_auth')||'null');
+    if(s&&Date.now()<s.expires){
+      const el=document.getElementById('nav-login-li');
+      if(el) el.innerHTML='<span style="font-size:12px;color:rgba(0,255,255,0.5);padding:4px 10px">'+s.user+'</span><button onclick="localStorage.removeItem("bora_auth");location.reload()" style="font-size:11px;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);padding:4px 8px;border-radius:5px;cursor:pointer;margin-left:4px">Çıkış</button>';
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
