@@ -1,412 +1,544 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boralances - Blog</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Rajdhani',sans-serif;background:#0a0e27;color:#fff;overflow-x:hidden;line-height:1.6}
-        .cyber-grid{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(90deg,rgba(0,255,255,0.03) 1px,transparent 1px),linear-gradient(rgba(0,255,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:1}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boralances · Blog</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Rajdhani',sans-serif;background:#0a0e27;color:#fff;overflow-x:hidden;line-height:1.6}
+.cyber-grid{position:fixed;inset:0;background:linear-gradient(90deg,rgba(0,255,255,0.03) 1px,transparent 1px),linear-gradient(rgba(0,255,255,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:1}
 
-        /* ── NAV ── */
-        header{position:relative;z-index:10;padding:20px 0;background:rgba(10,14,39,0.85);backdrop-filter:blur(10px);border-bottom:2px solid #0ff;box-shadow:0 0 20px rgba(0,255,255,0.5)}
-        nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px}
-        .logo{font-size:28px;font-weight:900;font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 10px #0ff,0 0 20px #0ff;letter-spacing:3px;animation:logoGlow 3s ease-in-out infinite;text-decoration:none}
-        @keyframes logoGlow{0%,100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff}50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px #0ff}}
-        .nav-links{display:flex;gap:24px;list-style:none;align-items:center}
-        .nav-links a{color:#fff;text-decoration:none;font-size:16px;font-weight:600;padding:8px 16px;border:2px solid transparent;transition:all 0.4s;position:relative;text-transform:uppercase;letter-spacing:2px}
-        .nav-links a::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(45deg,#0ff,#f0f);opacity:0;transition:opacity 0.3s;z-index:-1;filter:blur(20px)}
-        .nav-links a:hover::before{opacity:0.7}
-        .nav-links a:hover{color:#0ff;border:2px solid #0ff;box-shadow:0 0 20px #0ff,inset 0 0 10px rgba(0,255,255,0.3);text-shadow:0 0 10px #0ff;transform:translateY(-3px)}
-        .nav-mun{background:linear-gradient(135deg,rgba(56,139,253,0.15),rgba(56,139,253,0.05));border:2px solid rgba(56,139,253,0.6)!important;color:#388bfd!important;font-size:14px!important;letter-spacing:1px!important;border-radius:4px;display:flex!important;align-items:center;gap:6px}
-        .nav-mun:hover{color:#6db3ff!important;border-color:#388bfd!important;box-shadow:0 0 20px rgba(56,139,253,0.5)!important;text-shadow:0 0 10px #388bfd!important;background:linear-gradient(135deg,rgba(56,139,253,0.25),rgba(56,139,253,0.1))!important}
+/* ── NAV ── */
+header{position:relative;z-index:10;padding:20px 0;background:rgba(10,14,39,0.85);backdrop-filter:blur(10px);border-bottom:2px solid #0ff;box-shadow:0 0 20px rgba(0,255,255,0.5)}
+nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px}
+.logo{font-size:28px;font-weight:900;font-family:'Orbitron',sans-serif;color:#0ff;text-shadow:0 0 10px #0ff;letter-spacing:3px;text-decoration:none;animation:logoGlow 3s ease-in-out infinite}
+@keyframes logoGlow{0%,100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff}50%{text-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px #0ff}}
+.nav-links{display:flex;gap:16px;list-style:none;align-items:center}
+.nav-links a{color:#fff;text-decoration:none;font-size:15px;font-weight:600;padding:8px 16px;border:2px solid transparent;transition:all 0.3s;text-transform:uppercase;letter-spacing:1px}
+.nav-links a:hover{color:#0ff;border-color:#0ff;box-shadow:0 0 16px #0ff;text-shadow:0 0 8px #0ff;transform:translateY(-2px)}
+.nav-mun{background:linear-gradient(135deg,rgba(56,139,253,0.15),rgba(56,139,253,0.05));border:2px solid rgba(56,139,253,0.6)!important;color:#388bfd!important;font-size:13px!important;border-radius:4px;display:flex!important;align-items:center;gap:6px}
+.nav-mun:hover{color:#6db3ff!important;border-color:#388bfd!important;box-shadow:0 0 20px rgba(56,139,253,0.5)!important;background:linear-gradient(135deg,rgba(56,139,253,0.25),rgba(56,139,253,0.1))!important}
+.nav-user{font-size:12px;color:rgba(0,255,255,0.6);font-weight:600;letter-spacing:0.08em}
+.btn-logout{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all 0.2s;letter-spacing:0.05em}
+.btn-logout:hover{border-color:rgba(248,81,73,0.4);color:#f85149}
 
-        /* ── LAYOUT ── */
-        main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:40px 20px}
+/* ── LAYOUT ── */
+main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:40px 20px}
 
-        /* ── HERO ── */
-        .blog-hero{text-align:center;padding:60px 20px 40px}
-        .blog-hero h1{font-size:clamp(2rem,6vw,4rem);font-family:'Orbitron',sans-serif;font-weight:900;color:#0ff;text-shadow:0 0 20px #0ff,0 0 40px #0ff;letter-spacing:4px;animation:glow 2s ease-in-out infinite alternate;margin-bottom:12px}
-        @keyframes glow{from{text-shadow:0 0 20px #0ff,0 0 40px #0ff}to{text-shadow:0 0 30px #0ff,0 0 60px #0ff,0 0 80px #f0f}}
-        .blog-hero p{font-size:1.1em;color:#f0f;text-shadow:0 0 10px #f0f;letter-spacing:3px}
+/* ── HERO ── */
+.blog-hero{text-align:center;padding:60px 20px 40px}
+.blog-hero h1{font-size:clamp(2rem,6vw,4rem);font-family:'Orbitron',sans-serif;font-weight:900;color:#0ff;text-shadow:0 0 20px #0ff;letter-spacing:4px;animation:glow 2s ease-in-out infinite alternate;margin-bottom:12px}
+@keyframes glow{from{text-shadow:0 0 20px #0ff,0 0 40px #0ff}to{text-shadow:0 0 30px #0ff,0 0 60px #0ff,0 0 80px #f0f}}
+.blog-hero p{font-size:1.1em;color:#f0f;text-shadow:0 0 10px #f0f;letter-spacing:3px}
 
-        /* ── LOADING STATE ── */
-        #loader{text-align:center;padding:60px 20px}
-        .loader-bar{width:100%;max-width:400px;height:4px;background:rgba(0,255,255,0.1);border-radius:2px;margin:20px auto;overflow:hidden}
-        .loader-fill{height:100%;background:linear-gradient(90deg,#0ff,#f0f);border-radius:2px;width:0%;transition:width 0.3s}
-        .loader-text{font-family:'Orbitron',sans-serif;font-size:0.8rem;color:#0ff;letter-spacing:0.15em;margin-bottom:8px}
-        .loader-sub{font-size:0.85rem;color:#555;margin-top:6px}
+/* ── ADMIN TOOLBAR ── */
+#admin-bar{display:none;background:rgba(56,139,253,0.08);border:1px solid rgba(56,139,253,0.25);border-radius:10px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-badge{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;background:rgba(56,139,253,0.2);border:1px solid rgba(56,139,253,0.4);color:#388bfd;padding:3px 10px;border-radius:6px}
+.btn-new-post{background:linear-gradient(135deg,rgba(0,255,255,0.15),rgba(56,139,253,0.15));border:1px solid rgba(0,255,255,0.35);color:#0ff;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.btn-new-post:hover{box-shadow:0 0 16px rgba(0,255,255,0.3);background:rgba(0,255,255,0.2)}
 
-        /* ── EMPTY STATE ── */
-        #empty-state{display:none;text-align:center;padding:80px 20px}
-        #empty-state h2{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#333;letter-spacing:3px;margin-bottom:16px}
-        #empty-state p{color:#555;font-size:1rem}
+/* ── WRITER ── */
+#writer{display:none;background:rgba(20,25,50,0.9);border:2px solid rgba(0,255,255,0.3);border-radius:12px;padding:28px;margin-bottom:32px}
+.writer-title-input{width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(0,255,255,0.2);color:#fff;font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:700;padding:14px 18px;border-radius:8px;margin-bottom:12px;outline:none;transition:border-color 0.2s;letter-spacing:1px}
+.writer-title-input:focus{border-color:rgba(0,255,255,0.5)}
+.writer-title-input::placeholder{color:rgba(255,255,255,0.2)}
+.writer-tags-input{width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:#f0f;font-size:13px;padding:9px 14px;border-radius:8px;margin-bottom:14px;outline:none;transition:border-color 0.2s}
+.writer-tags-input:focus{border-color:rgba(255,0,255,0.4)}
+.writer-tags-input::placeholder{color:rgba(255,255,255,0.2)}
+.writer-toolbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.wbtn{background:rgba(0,255,255,0.06);border:1px solid rgba(0,255,255,0.15);color:rgba(0,255,255,0.7);font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all 0.15s;font-family:monospace}
+.wbtn:hover{background:rgba(0,255,255,0.14);color:#0ff;border-color:rgba(0,255,255,0.35)}
+.writer-area{width:100%;min-height:300px;background:rgba(0,0,0,0.5);border:1px solid rgba(0,255,255,0.15);color:#ccc;font-size:15px;font-family:'Rajdhani',monospace;padding:16px;border-radius:8px;resize:vertical;outline:none;transition:border-color 0.2s;line-height:1.7}
+.writer-area:focus{border-color:rgba(0,255,255,0.4)}
+.writer-area::placeholder{color:rgba(255,255,255,0.15)}
+.writer-actions{display:flex;gap:10px;margin-top:14px;align-items:center;flex-wrap:wrap}
+.btn-publish{background:linear-gradient(135deg,#0ff,#3b8fee);border:none;color:#000;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;padding:11px 24px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.btn-publish:hover{box-shadow:0 0 24px rgba(0,255,255,0.5);transform:translateY(-1px)}
+.btn-cancel{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:13px;padding:10px 18px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.btn-cancel:hover{border-color:rgba(248,81,73,0.4);color:#f85149}
+.preview-pane{display:none;margin-top:16px;border-top:1px solid rgba(0,255,255,0.1);padding-top:16px}
+.preview-pane .post-content{font-size:0.95rem}
+.btn-preview{background:transparent;border:1px solid rgba(255,0,255,0.3);color:#f0f;font-size:12px;padding:8px 14px;border-radius:8px;cursor:pointer;transition:all 0.2s}
+.btn-preview:hover{background:rgba(255,0,255,0.1)}
 
-        /* ── POST LIST ── */
-        #posts-container{display:none}
-        .posts-count{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:28px;padding-bottom:12px;border-bottom:1px solid rgba(0,255,255,0.1)}
-        .posts-count span{color:#0ff}
+/* ── LOADING ── */
+#loader{text-align:center;padding:60px 20px}
+.loader-text{font-family:'Orbitron',sans-serif;font-size:0.85rem;color:#0ff;letter-spacing:0.15em;margin-bottom:10px}
+.loader-dot{display:inline-block;animation:dotPulse 1.4s ease-in-out infinite both}
+.loader-dot:nth-child(2){animation-delay:.2s}
+.loader-dot:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,80%,100%{opacity:0;transform:scale(0.6)}40%{opacity:1;transform:scale(1)}}
 
-        /* ── POST CARD (list view) ── */
-        .post-card{background:rgba(20,25,50,0.6);border:2px solid rgba(0,255,255,0.2);border-radius:4px;padding:28px 32px;margin-bottom:20px;cursor:pointer;transition:all 0.35s;position:relative;overflow:hidden}
-        .post-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,#0ff,#f0f);transform:scaleY(0);transform-origin:top;transition:transform 0.35s}
-        .post-card:hover::before{transform:scaleY(1)}
-        .post-card:hover{border-color:rgba(0,255,255,0.6);transform:translateX(6px);box-shadow:0 8px 30px rgba(0,255,255,0.15)}
-        .post-num{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:#444;letter-spacing:0.14em;margin-bottom:6px}
-        .post-title{font-family:'Orbitron',sans-serif;font-size:1.15rem;color:#0ff;text-shadow:0 0 8px rgba(0,255,255,0.4);letter-spacing:1px;margin-bottom:8px;line-height:1.3}
-        .post-excerpt{font-size:0.95rem;color:#888;font-weight:300;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-        .post-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-        .post-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px;background:rgba(255,0,255,0.1);border:1px solid rgba(255,0,255,0.3);color:#f0f}
-        .post-read{font-size:0.7rem;color:#555;letter-spacing:0.08em;margin-left:auto}
+/* ── EMPTY ── */
+#empty-state{display:none;text-align:center;padding:80px 20px}
+#empty-state h2{font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#333;letter-spacing:3px;margin-bottom:16px}
+#empty-state p{color:#555}
 
-        /* ── SINGLE POST VIEW ── */
-        #post-view{display:none}
-        .back-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(0,255,255,0.3);color:#0ff;font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:9px 18px;cursor:pointer;transition:all 0.3s;margin-bottom:32px}
-        .back-btn:hover{background:rgba(0,255,255,0.08);border-color:#0ff;box-shadow:0 0 16px rgba(0,255,255,0.2)}
-        .post-header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(0,255,255,0.15)}
-        .post-header .post-num{font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#555;letter-spacing:0.16em;margin-bottom:10px}
-        .post-header h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,4vw,2.4rem);color:#0ff;text-shadow:0 0 15px rgba(0,255,255,0.5);letter-spacing:2px;line-height:1.2;margin-bottom:14px}
-        .post-header .post-meta{display:flex;gap:10px;flex-wrap:wrap}
+/* ── POST LIST ── */
+#posts-container{display:none}
+.posts-count{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#555;margin-bottom:28px;padding-bottom:12px;border-bottom:1px solid rgba(0,255,255,0.1)}
+.posts-count span{color:#0ff}
 
-        /* ── MARKDOWN RENDERED CONTENT ── */
-        .post-content{font-size:1.05rem;line-height:1.85;color:#ccc;font-weight:300}
-        .post-content h1{font-family:'Orbitron',sans-serif;font-size:1.8rem;color:#0ff;text-shadow:0 0 10px rgba(0,255,255,0.4);letter-spacing:2px;margin:36px 0 16px;padding-bottom:10px;border-bottom:2px solid rgba(0,255,255,0.2)}
-        .post-content h2{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#f0f;text-shadow:0 0 8px rgba(255,0,255,0.3);letter-spacing:1px;margin:30px 0 14px}
-        .post-content h3{font-size:1.15rem;font-weight:700;color:#0ff;letter-spacing:0.5px;margin:24px 0 10px}
-        .post-content h4{font-size:1rem;font-weight:700;color:#aaa;margin:18px 0 8px}
-        .post-content p{margin-bottom:16px}
-        .post-content a{color:#0ff;text-decoration:none;border-bottom:1px solid rgba(0,255,255,0.3);transition:all 0.2s}
-        .post-content a:hover{text-shadow:0 0 8px #0ff;border-bottom-color:#0ff}
-        .post-content strong{color:#fff;font-weight:700}
-        .post-content em{color:#f0f;font-style:italic}
-        .post-content ul,.post-content ol{margin:12px 0 16px 24px}
-        .post-content li{margin-bottom:6px;color:#bbb}
-        .post-content li::marker{color:#0ff}
-        .post-content blockquote{border-left:3px solid #f0f;margin:20px 0;padding:14px 20px;background:rgba(255,0,255,0.05);color:#bbb;font-style:italic}
-        .post-content blockquote::before{content:'';display:block}
-        .post-content code{font-family:'Courier New',monospace;background:rgba(0,255,255,0.08);border:1px solid rgba(0,255,255,0.2);color:#0ff;padding:2px 7px;border-radius:2px;font-size:0.88em}
-        .post-content pre{background:rgba(0,0,0,0.6);border:1px solid rgba(0,255,255,0.2);border-left:3px solid #0ff;padding:20px;border-radius:4px;overflow-x:auto;margin:20px 0}
-        .post-content pre code{background:none;border:none;padding:0;font-size:0.9em;color:#0ff}
-        .post-content hr{border:none;border-top:1px solid rgba(0,255,255,0.15);margin:32px 0}
-        .post-content img{max-width:100%;border:2px solid rgba(0,255,255,0.2);border-radius:4px;margin:16px 0}
-        .post-content table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.95rem}
-        .post-content th{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.2);padding:10px 14px;color:#0ff;font-weight:700;text-align:left}
-        .post-content td{border:1px solid rgba(0,255,255,0.1);padding:9px 14px;color:#bbb}
-        .post-content tr:hover td{background:rgba(0,255,255,0.04)}
+/* ── POST CARD ── */
+.post-card{background:rgba(20,25,50,0.6);border:2px solid rgba(0,255,255,0.2);border-radius:4px;padding:28px 32px;margin-bottom:20px;cursor:pointer;transition:all 0.35s;position:relative;overflow:hidden}
+.post-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,#0ff,#f0f);transform:scaleY(0);transform-origin:top;transition:transform 0.35s}
+.post-card:hover::before{transform:scaleY(1)}
+.post-card:hover{border-color:rgba(0,255,255,0.6);transform:translateX(6px);box-shadow:0 8px 30px rgba(0,255,255,0.15)}
+.post-num{font-family:'Orbitron',sans-serif;font-size:0.65rem;color:#444;letter-spacing:0.14em;margin-bottom:6px}
+.post-title{font-family:'Orbitron',sans-serif;font-size:1.15rem;color:#0ff;text-shadow:0 0 8px rgba(0,255,255,0.4);letter-spacing:1px;margin-bottom:8px;line-height:1.3}
+.post-excerpt{font-size:0.95rem;color:#888;font-weight:300;line-height:1.6;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.post-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.post-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px;background:rgba(255,0,255,0.1);border:1px solid rgba(255,0,255,0.3);color:#f0f}
+.post-read{font-size:0.7rem;color:#555;letter-spacing:0.08em;margin-left:auto}
+.post-actions{display:flex;gap:6px;margin-left:auto}
+.btn-edit,.btn-del{font-size:11px;padding:3px 10px;border-radius:5px;cursor:pointer;border:none;transition:all 0.15s;font-family:'Rajdhani',sans-serif;font-weight:700}
+.btn-edit{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.25);color:#0ff}
+.btn-edit:hover{background:rgba(0,255,255,0.2)}
+.btn-del{background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.25);color:#f85149}
+.btn-del:hover{background:rgba(248,81,73,0.2)}
 
-        /* ── FOOTER ── */
-        footer{position:relative;z-index:10;text-align:center;padding:30px;background:rgba(10,14,39,0.9);border-top:2px solid #f0f;box-shadow:0 0 20px rgba(255,0,255,0.5);margin-top:60px}
-        footer p{color:#0ff;text-shadow:0 0 10px #0ff}
+/* ── SINGLE POST ── */
+#post-view{display:none}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:transparent;border:1px solid rgba(0,255,255,0.3);color:#0ff;font-family:'Orbitron',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:9px 18px;cursor:pointer;transition:all 0.3s;margin-bottom:32px;border-radius:4px}
+.back-btn:hover{background:rgba(0,255,255,0.08);box-shadow:0 0 16px rgba(0,255,255,0.2)}
+.post-header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid rgba(0,255,255,0.15)}
+.post-header .post-num{font-family:'Orbitron',sans-serif;font-size:0.7rem;color:#555;letter-spacing:0.16em;margin-bottom:10px}
+.post-header h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,4vw,2.4rem);color:#0ff;text-shadow:0 0 15px rgba(0,255,255,0.5);letter-spacing:2px;line-height:1.2;margin-bottom:14px}
+.post-header .post-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-        @media(max-width:768px){.nav-links{flex-direction:column;gap:10px}.post-card{padding:20px}}
-    
-        /* DELEGATE PORTAL NAV BUTTON */
-        .nav-portal {
-            background: linear-gradient(135deg, rgba(63,185,80,0.12), rgba(63,185,80,0.04));
-            border: 2px solid rgba(63,185,80,0.5) !important;
-            color: #3fb950 !important;
-            font-size: 14px !important;
-            letter-spacing: 1px !important;
-            border-radius: 4px;
-            display: flex !important;
-            align-items: center;
-            gap: 6px;
-        }
-        .nav-portal:hover {
-            color: #56d364 !important;
-            border-color: #3fb950 !important;
-            box-shadow: 0 0 20px rgba(63,185,80,0.4), inset 0 0 10px rgba(63,185,80,0.1) !important;
-            text-shadow: 0 0 10px #3fb950 !important;
-            background: linear-gradient(135deg, rgba(63,185,80,0.22), rgba(63,185,80,0.08)) !important;
-        }
+/* ── MARKDOWN CONTENT ── */
+.post-content{font-size:1.05rem;line-height:1.85;color:#ccc;font-weight:300}
+.post-content h1{font-family:'Orbitron',sans-serif;font-size:1.8rem;color:#0ff;letter-spacing:2px;margin:36px 0 16px;padding-bottom:10px;border-bottom:2px solid rgba(0,255,255,0.2)}
+.post-content h2{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:#f0f;letter-spacing:1px;margin:30px 0 14px}
+.post-content h3{font-size:1.15rem;font-weight:700;color:#0ff;margin:24px 0 10px}
+.post-content h4{font-size:1rem;font-weight:700;color:#aaa;margin:18px 0 8px}
+.post-content p{margin-bottom:16px}
+.post-content a{color:#0ff;text-decoration:none;border-bottom:1px solid rgba(0,255,255,0.3)}
+.post-content a:hover{text-shadow:0 0 8px #0ff;border-bottom-color:#0ff}
+.post-content strong{color:#fff;font-weight:700}
+.post-content em{color:#f0f;font-style:italic}
+.post-content ul,.post-content ol{margin:12px 0 16px 24px}
+.post-content li{margin-bottom:6px;color:#bbb}
+.post-content li::marker{color:#0ff}
+.post-content blockquote{border-left:3px solid #f0f;margin:20px 0;padding:14px 20px;background:rgba(255,0,255,0.05);color:#bbb;font-style:italic}
+.post-content code{font-family:'Courier New',monospace;background:rgba(0,255,255,0.08);border:1px solid rgba(0,255,255,0.2);color:#0ff;padding:2px 7px;border-radius:2px;font-size:0.88em}
+.post-content pre{background:rgba(0,0,0,0.6);border:1px solid rgba(0,255,255,0.2);border-left:3px solid #0ff;padding:20px;border-radius:4px;overflow-x:auto;margin:20px 0}
+.post-content pre code{background:none;border:none;padding:0;font-size:0.9em;color:#0ff}
+.post-content hr{border:none;border-top:1px solid rgba(0,255,255,0.15);margin:32px 0}
+.post-content img{max-width:100%;border:2px solid rgba(0,255,255,0.2);border-radius:4px;margin:16px 0}
+.post-content table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.95rem}
+.post-content th{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.2);padding:10px 14px;color:#0ff;font-weight:700;text-align:left}
+.post-content td{border:1px solid rgba(0,255,255,0.1);padding:9px 14px;color:#bbb}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:10;text-align:center;padding:30px;background:rgba(10,14,39,0.9);border-top:2px solid #f0f;box-shadow:0 0 20px rgba(255,0,255,0.5);margin-top:60px}
+footer p{color:#0ff;text-shadow:0 0 10px #0ff}
+@media(max-width:768px){.nav-links{flex-direction:column;gap:10px}.post-card{padding:20px}.writer-toolbar{gap:4px}}
 </style>
 </head>
 <body>
 <div class="cyber-grid"></div>
 
 <header>
-    <nav>
-        <a href="index.html" class="logo">BORALANCES</a>
-        <ul class="nav-links">
-            <li><a href="server.html">Server</a></li>
-            <li><a href="mods.html">Mods</a></li>
-            <li><a href="modpack.html">Modpack</a></li>
-            <li><a href="studio.html">Studio</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="mun-chair.html" class="nav-mun">
-                <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
-                MUN Chair
-            </a></li>
-                <li><a href="mun-delegate-portal.html" class="nav-portal"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg> Del. Portal</a></li>
-        </ul>
-    </nav>
+  <nav>
+    <a href="index.html" class="logo">BORALANCES</a>
+    <ul class="nav-links">
+      <li><a href="server.html">Server</a></li>
+      <li><a href="mods.html">Mods</a></li>
+      <li><a href="modpack.html">Modpack</a></li>
+      <li><a href="studio.html">Studio</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li>
+        <a href="mun-panel.html" class="nav-mun">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H3v1.5A1.5 1.5 0 0 0 4.5 14h7a1.5 1.5 0 0 0 1.5-1.5V11h-.5a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1H15v1.5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 3 12.5V11H2.5a.5.5 0 0 1-.5-.5z"/></svg>
+          MUN
+        </a>
+      </li>
+      <li id="nav-auth-area" style="display:flex;align-items:center;gap:8px"></li>
+    </ul>
+  </nav>
 </header>
 
 <main>
-    <div class="blog-hero">
-        <h1>BLOG</h1>
-        <p>&gt;&gt;&gt; Güncellemeler &amp; Yazılar &lt;&lt;&lt;</p>
-    </div>
+  <div class="blog-hero">
+    <h1>BLOG</h1>
+    <p>&gt;&gt;&gt; Güncellemeler &amp; Yazılar &lt;&lt;&lt;</p>
+  </div>
 
-    <!-- LOADING -->
-    <div id="loader">
-        <div class="loader-text" id="loader-text">TARANIY0R...</div>
-        <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
-        <div class="loader-sub" id="loader-sub">1.md okunuyor...</div>
-    </div>
+  <!-- Admin toolbar -->
+  <div id="admin-bar" style="display:none">
+    <span class="admin-badge">👑 Admin</span>
+    <button class="btn-new-post" onclick="openWriter()">+ Yeni Yazı</button>
+  </div>
 
-    <!-- EMPTY -->
-    <div id="empty-state">
-        <h2>HENÜZ YAZI YOK</h2>
-        <p>Blog yazıları için bu klasöre <code style="color:#0ff">1.md</code>, <code style="color:#0ff">2.md</code> ... şeklinde dosyalar ekle.</p>
+  <!-- Writer -->
+  <div id="writer">
+    <input class="writer-title-input" id="w-title" type="text" placeholder="Yazı başlığı..."/>
+    <input class="writer-tags-input" id="w-tags" type="text" placeholder="Etiketler (virgülle ayır): minecraft, duyuru, güncelleme"/>
+    <div class="writer-toolbar">
+      <button class="wbtn" onclick="wInsert('# ','')">H1</button>
+      <button class="wbtn" onclick="wInsert('## ','')">H2</button>
+      <button class="wbtn" onclick="wInsert('### ','')">H3</button>
+      <button class="wbtn" onclick="wInsert('**','**')"><b>B</b></button>
+      <button class="wbtn" onclick="wInsert('*','*')"><i>I</i></button>
+      <button class="wbtn" onclick="wInsert('`','`')">code</button>
+      <button class="wbtn" onclick="wInsert('```\n','\n```')">```</button>
+      <button class="wbtn" onclick="wInsert('> ','')">❝</button>
+      <button class="wbtn" onclick="wInsert('- ','')">list</button>
+      <button class="wbtn" onclick="wInsert('---\n','')">hr</button>
+      <button class="wbtn" onclick="wInsert('[text](','url)')">link</button>
+      <button class="btn-preview" onclick="togglePreview()">👁 Önizleme</button>
     </div>
+    <textarea class="writer-area" id="w-body" placeholder="Markdown ile yaz...&#10;&#10;# Başlık&#10;**Kalın**, *italik*, `kod`&#10;&#10;- Madde&#10;- Madde"></textarea>
+    <div class="preview-pane" id="preview-pane">
+      <div class="post-content" id="preview-content"></div>
+    </div>
+    <div class="writer-actions">
+      <button class="btn-publish" onclick="publishPost()">⚡ Yayınla</button>
+      <button class="btn-cancel" onclick="closeWriter()">İptal</button>
+      <span id="w-status" style="font-size:12px;color:#555;margin-left:auto"></span>
+    </div>
+  </div>
 
-    <!-- POST LIST -->
-    <div id="posts-container">
-        <div class="posts-count" id="posts-count"></div>
-        <div id="posts-list"></div>
-    </div>
+  <!-- Loading -->
+  <div id="loader">
+    <div class="loader-text">YÜKLENIYOR<span class="loader-dot">.</span><span class="loader-dot">.</span><span class="loader-dot">.</span></div>
+  </div>
 
-    <!-- SINGLE POST -->
-    <div id="post-view">
-        <button class="back-btn" onclick="showList()">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
-            Tüm Yazılar
-        </button>
-        <div class="post-header">
-            <div class="post-num" id="view-num"></div>
-            <h1 id="view-title"></h1>
-            <div class="post-meta" id="view-meta"></div>
-        </div>
-        <div class="post-content" id="view-body"></div>
+  <!-- Empty -->
+  <div id="empty-state">
+    <h2>HENÜZ YAZI YOK</h2>
+    <p style="color:#555">Admin ilk yazıyı yazdığında burada görünecek.</p>
+  </div>
+
+  <!-- Post list -->
+  <div id="posts-container">
+    <div class="posts-count" id="posts-count"></div>
+    <div id="posts-list"></div>
+  </div>
+
+  <!-- Single post -->
+  <div id="post-view">
+    <button class="back-btn" onclick="showList()">← Tüm Yazılar</button>
+    <div class="post-header">
+      <div class="post-num" id="view-num"></div>
+      <h1 id="view-title"></h1>
+      <div class="post-meta" id="view-meta"></div>
     </div>
+    <div class="post-content" id="view-body"></div>
+  </div>
 </main>
 
-<footer>
-    <p>&copy; 2026 BORALANCES — All Rights Reserved in the Digital Realm</p>
-</footer>
+<footer><p>© 2026 BORALANCES — All Rights Reserved in the Digital Realm</p></footer>
 
 <script>
-// ── CONFIG ──
-const GITHUB_USER   = 'boralances';
-const GITHUB_REPO   = 'web';
-const GITHUB_BRANCH = 'main';
-const POSTS_FOLDER  = 'posts'; // repo içindeki klasör adı
-const TOTAL         = 1000;
+// ══════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════
+const FB_AUTH = 'https://hcca-6cb53-default-rtdb.europe-west1.firebasedatabase.app';
+const FB_BLOG = 'https://hcca-6cb53-default-rtdb.europe-west1.firebasedatabase.app';
 
-// ── STATE ──
-let allPosts = []; // { num, title, excerpt, raw, tags, readTime }
+// ══════════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════════
+function authGet() {
+  try {
+    const s = JSON.parse(localStorage.getItem('bora_auth') || 'null');
+    if (!s || Date.now() > s.expires) { localStorage.removeItem('bora_auth'); return null; }
+    return s;
+  } catch(e) { return null; }
+}
+function isAdmin() { return authGet()?.role === 'admin'; }
 
-// ── MARKDOWN PARSER ── (lightweight, no dependency)
-function parseMarkdown(md) {
-    let html = md
-        // Escape HTML first
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        // Code blocks (before inline code)
-        .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-            `<pre><code class="lang-${lang}">${code.trim()}</code></pre>`)
-        // Inline code
-        .replace(/`([^`]+)`/g, '<code>$1</code>')
-        // Headers
-        .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-        // Bold + italic
-        .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        // Blockquote
-        .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>')
-        // Horizontal rule
-        .replace(/^---+$/gm, '<hr>')
-        // Images (before links)
-        .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img alt="$1" src="$2">')
-        // Links
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-        // Unordered lists
-        .replace(/^\s*[-*+] (.+)$/gm, '<li>$1</li>')
-        // Ordered lists
-        .replace(/^\s*\d+\. (.+)$/gm, '<li>$1</li>')
-        // Tables
-        .replace(/^\|(.+)\|\s*\n\|[-| :]+\|\s*\n((?:\|.+\|\s*\n?)*)/gm, (match, header, rows) => {
-            const th = header.split('|').filter(c=>c.trim()).map(c=>`<th>${c.trim()}</th>`).join('');
-            const trs = rows.trim().split('\n').map(row => {
-                const tds = row.split('|').filter(c=>c.trim()).map(c=>`<td>${c.trim()}</td>`).join('');
-                return `<tr>${tds}</tr>`;
-            }).join('');
-            return `<table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table>`;
-        });
-
-    // Wrap consecutive <li> tags in <ul>
-    html = html.replace(/(<li>[\s\S]*?<\/li>(\s*<li>[\s\S]*?<\/li>)*)/g, '<ul>$1</ul>');
-
-    // Paragraphs — lines not already wrapped in block tags
-    const blockTags = ['<h1','<h2','<h3','<h4','<ul','<ol','<li','<pre','<blockquote','<hr','<table','<img','<tr','<th','<td'];
-    html = html.split('\n').map(line => {
-        const trimmed = line.trim();
-        if (!trimmed) return '';
-        const isBlock = blockTags.some(tag => trimmed.startsWith(tag));
-        return isBlock ? trimmed : `<p>${trimmed}</p>`;
-    }).join('\n');
-
-    return html;
+function initAuthUI() {
+  const area = document.getElementById('nav-auth-area');
+  const auth = authGet();
+  if (auth) {
+    area.innerHTML = `<span class="nav-user">${auth.user}</span>
+      <button class="btn-logout" onclick="logout()">Çıkış</button>`;
+  } else {
+    area.innerHTML = `<a href="login.html?r=blog.html" style="font-size:12px;color:rgba(0,255,255,0.6);text-decoration:none;border:1px solid rgba(0,255,255,0.2);padding:5px 12px;border-radius:6px;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(0,255,255,0.5)'" onmouseout="this.style.borderColor='rgba(0,255,255,0.2)'">Giriş Yap</a>`;
+  }
+  if (isAdmin()) {
+    document.getElementById('admin-bar').style.display = 'flex';
+  }
 }
 
-// ── EXTRACT TITLE from markdown ──
-function extractTitle(raw, num) {
-    const h1 = raw.match(/^#\s+(.+)$/m);
-    if (h1) return h1[1].trim();
-    const firstLine = raw.trim().split('\n')[0].replace(/^#+\s*/, '').trim();
-    return firstLine || `Yazı #${num}`;
+function logout() {
+  localStorage.removeItem('bora_auth');
+  location.reload();
 }
 
-// ── EXTRACT EXCERPT ──
-function extractExcerpt(raw) {
-    const lines = raw.trim().split('\n');
-    for (const line of lines) {
-        const clean = line.replace(/^#+\s*/, '').replace(/[*_`]/g, '').trim();
-        if (clean.length > 30) return clean.slice(0, 160) + (clean.length > 160 ? '…' : '');
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let allPosts = [];
+let editingId = null;
+
+// ══════════════════════════════════════════════════════
+// FIREBASE HELPERS
+// ══════════════════════════════════════════════════════
+async function fbGet(path) {
+  const r = await fetch(`${FB_BLOG}/${path}.json`);
+  if (!r.ok) throw new Error('Firebase read failed');
+  return r.json();
+}
+async function fbPut(path, data) {
+  const r = await fetch(`${FB_BLOG}/${path}.json`, {
+    method: 'PUT', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('Firebase write failed');
+  return r.json();
+}
+async function fbDelete(path) {
+  await fetch(`${FB_BLOG}/${path}.json`, { method: 'DELETE' });
+}
+
+// ══════════════════════════════════════════════════════
+// MARKDOWN PARSER (no eval)
+// ══════════════════════════════════════════════════════
+function md(text) {
+  if (!text) return '';
+  let h = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,lang,code) =>
+      `<pre><code>${code.trim()}</code></pre>`)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/^#### (.+)$/gm,'<h4>$1</h4>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/\*\*\*(.+?)\*\*\*/g,'<strong><em>$1</em></strong>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^---+$/gm,'<hr>')
+    .replace(/!\[([^\]]*)\]\(([^)]+)\)/g,'<img alt="$1" src="$2">')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/^\s*[-*+] (.+)$/gm,'<li>$1</li>')
+    .replace(/^\s*\d+\. (.+)$/gm,'<li>$1</li>');
+
+  h = h.replace(/(<li>.*<\/li>(\s*<li>.*<\/li>)*)/gs, '<ul>$1</ul>');
+
+  const blockTags = ['<h1','<h2','<h3','<h4','<ul','<ol','<pre','<blockquote','<hr','<table','<img'];
+  h = h.split('\n').map(line => {
+    const t = line.trim();
+    if (!t) return '';
+    const isBlock = blockTags.some(tag => t.startsWith(tag));
+    return isBlock ? t : `<p>${t}</p>`;
+  }).join('\n');
+
+  return h;
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════════════════
+// LOAD POSTS
+// ══════════════════════════════════════════════════════
+async function loadPosts() {
+  document.getElementById('loader').style.display = 'block';
+  try {
+    const data = await fbGet('blog/posts');
+    if (!data) {
+      showEmpty();
+      return;
     }
-    return '';
-}
+    allPosts = Object.entries(data)
+      .map(([id, p]) => ({...p, id}))
+      .sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
 
-// ── EXTRACT TAGS from frontmatter or #hashtags ──
-function extractTags(raw) {
-    // frontmatter: tags: [a, b] or tags: a, b
-    const fm = raw.match(/^tags:\s*\[?([^\]\n]+)\]?/mi);
-    if (fm) return fm[1].split(',').map(t => t.trim().replace(/['"]/g, '')).filter(Boolean).slice(0, 4);
-    // inline hashtags
-    const ht = raw.match(/#(\w+)/g);
-    if (ht) return [...new Set(ht.map(h => h.slice(1)))].slice(0, 4);
-    return [];
-}
-
-// ── ESTIMATE READ TIME ──
-function readTime(raw) {
-    const words = raw.trim().split(/\s+/).length;
-    const mins = Math.max(1, Math.round(words / 200));
-    return `${mins} dk okuma`;
-}
-
-// ── FETCH A SINGLE .md FILE via GitHub API (CORS-safe) ──
-async function fetchPost(num) {
-    // GitHub Contents API returns base64-encoded content — always works on GitHub Pages
-    const apiUrl = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${POSTS_FOLDER}/${num}.md?ref=${GITHUB_BRANCH}`;
-    try {
-        const res = await fetch(apiUrl, {
-            headers: { 'Accept': 'application/vnd.github.v3.raw' }
-        });
-        if (!res.ok) return null;
-        const text = await res.text();
-        if (!text || text.trim().length === 0) return null;
-        return text;
-    } catch {
-        return null;
-    }
-}
-
-// ── LOAD ALL POSTS — stop at first missing/empty file ──
-async function loadAllPosts() {
-    const loaderText = document.getElementById('loader-text');
-    const loaderFill = document.getElementById('loader-fill');
-    const loaderSub  = document.getElementById('loader-sub');
-
-    // Show where we're reading from
-    const source = POSTS_DIR.includes('raw.githubusercontent') ? 'GitHub' : 'Yerel';
-    loaderText.textContent = source + " TARANIY0R...";
-
-    for (let i = 1; i <= TOTAL; i++) {
-        loaderSub.textContent  = source + ' — ' + i + '.md okunuyor...';
-        loaderFill.style.width = (i / TOTAL * 100) + '%';
-
-        const raw = await fetchPost(i);
-
-        if (!raw) break; // ilk boş veya bulunamayan dosyada dur
-
-        allPosts.push({
-            num:      i,
-            raw,
-            title:    extractTitle(raw, i),
-            excerpt:  extractExcerpt(raw),
-            tags:     extractTags(raw),
-            readTime: readTime(raw),
-        });
-
-        loaderText.textContent = allPosts.length + ' YAZI BULUNDU';
-        await new Promise(r => setTimeout(r, 0));
-    }
-
-    document.getElementById('loader').style.display = 'none';
-
-    if (allPosts.length === 0) {
-        document.getElementById('empty-state').style.display = 'block';
-        return;
-    }
-
+    if (!allPosts.length) { showEmpty(); return; }
     renderList();
+  } catch(e) {
+    document.getElementById('loader').innerHTML =
+      '<div style="color:#f85149;text-align:center;padding:40px;font-size:14px">❌ Blog yüklenemedi: ' + e.message + '</div>';
+  }
 }
 
-// ── RENDER LIST ──
+function showEmpty() {
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('empty-state').style.display = 'block';
+}
+
 function renderList() {
-    const container = document.getElementById('posts-container');
-    const list      = document.getElementById('posts-list');
-    const count     = document.getElementById('posts-count');
+  document.getElementById('loader').style.display = 'none';
+  const container = document.getElementById('posts-container');
+  const list = document.getElementById('posts-list');
+  const count = document.getElementById('posts-count');
 
-    count.innerHTML = `<span>${allPosts.length}</span> yazı bulundu`;
-    list.innerHTML  = [...allPosts].reverse().map(post => `
-        <div class="post-card" onclick="openPost(${post.num})">
-            <div class="post-num"># ${String(post.num).padStart(4, '0')}</div>
-            <div class="post-title">${escHtml(post.title)}</div>
-            ${post.excerpt ? `<div class="post-excerpt">${escHtml(post.excerpt)}</div>` : ''}
-            <div class="post-meta">
-                ${post.tags.map(t => `<span class="post-tag">${escHtml(t)}</span>`).join('')}
-                <span class="post-read">${post.readTime}</span>
-            </div>
-        </div>
-    `).join('');
+  count.innerHTML = `<span>${allPosts.length}</span> yazı`;
+  list.innerHTML = allPosts.map((p, i) => {
+    const excerpt = (p.content||'').replace(/[#*`>_\[\]]/g,'').split('\n')
+      .find(l => l.trim().length > 30) || '';
+    const tags = Array.isArray(p.tags) ? p.tags : (typeof p.tags==='string' ? p.tags.split(',').map(t=>t.trim()) : []);
+    const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '';
+    const words = (p.content||'').split(/\s+/).length;
+    const readT = Math.max(1, Math.round(words/200)) + ' dk';
 
-    container.style.display = 'block';
+    return `<div class="post-card" onclick="openPost('${p.id}')">
+      <div class="post-num"># ${String(allPosts.length - i).padStart(4,'0')} · ${escHtml(date)}</div>
+      <div class="post-title">${escHtml(p.title||'Başlıksız')}</div>
+      ${excerpt ? `<div class="post-excerpt">${escHtml(excerpt.slice(0,160))}</div>` : ''}
+      <div class="post-meta">
+        ${tags.map(t=>`<span class="post-tag">${escHtml(t)}</span>`).join('')}
+        <span class="post-read">${readT}</span>
+        ${isAdmin() ? `<div class="post-actions" onclick="event.stopPropagation()">
+          <button class="btn-edit" onclick="editPost('${p.id}')">✏ Düzenle</button>
+          <button class="btn-del" onclick="deletePost('${p.id}')">✕ Sil</button>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  container.style.display = 'block';
 }
 
-// ── OPEN SINGLE POST ──
-function openPost(num) {
-    const post = allPosts.find(p => p.num === num);
-    if (!post) return;
+// ══════════════════════════════════════════════════════
+// OPEN / SHOW LIST
+// ══════════════════════════════════════════════════════
+function openPost(id) {
+  const p = allPosts.find(x => x.id === id);
+  if (!p) return;
+  const tags = Array.isArray(p.tags) ? p.tags : (typeof p.tags==='string' ? p.tags.split(',').map(t=>t.trim()) : []);
+  const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
+  const words = (p.content||'').split(/\s+/).length;
 
-    document.getElementById('posts-container').style.display = 'none';
-    document.getElementById('post-view').style.display = 'block';
-    document.querySelector('.blog-hero').style.display = 'none';
+  document.getElementById('posts-container').style.display = 'none';
+  document.querySelector('.blog-hero').style.display = 'none';
+  document.getElementById('admin-bar').style.display = 'none';
+  document.getElementById('post-view').style.display = 'block';
 
-    document.getElementById('view-num').textContent   = `# ${String(post.num).padStart(4, '0')}`;
-    document.getElementById('view-title').textContent = post.title;
-    document.getElementById('view-meta').innerHTML    =
-        post.tags.map(t => `<span class="post-tag">${escHtml(t)}</span>`).join('') +
-        `<span class="post-read" style="margin-left:auto">${post.readTime}</span>`;
-    document.getElementById('view-body').innerHTML    = parseMarkdown(post.raw);
-
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const idx = allPosts.indexOf(p);
+  document.getElementById('view-num').textContent = `#${String(allPosts.length-idx).padStart(4,'0')} · ${date}`;
+  document.getElementById('view-title').textContent = p.title || 'Başlıksız';
+  document.getElementById('view-meta').innerHTML =
+    tags.map(t=>`<span class="post-tag">${escHtml(t)}</span>`).join('') +
+    `<span class="post-read" style="margin-left:auto">${Math.max(1,Math.round(words/200))} dk okuma · ${p.author||''}</span>` +
+    (isAdmin() ? `<button class="btn-edit" style="margin-left:8px" onclick="editPost('${p.id}');showList()">✏</button>` : '');
+  document.getElementById('view-body').innerHTML = md(p.content||'');
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── BACK TO LIST ──
 function showList() {
-    document.getElementById('post-view').style.display      = 'none';
-    document.getElementById('posts-container').style.display = 'block';
-    document.querySelector('.blog-hero').style.display       = 'block';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  document.getElementById('post-view').style.display = 'none';
+  document.getElementById('writer').style.display = 'none';
+  document.getElementById('posts-container').style.display = 'block';
+  document.querySelector('.blog-hero').style.display = 'block';
+  if (isAdmin()) document.getElementById('admin-bar').style.display = 'flex';
+  editingId = null;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── UTIL ──
-function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ══════════════════════════════════════════════════════
+// WRITER
+// ══════════════════════════════════════════════════════
+function openWriter() {
+  document.getElementById('writer').style.display = 'block';
+  document.getElementById('w-title').focus();
+  document.getElementById('writer').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-// ── BOOT ──
-loadAllPosts();
+function closeWriter() {
+  document.getElementById('writer').style.display = 'none';
+  document.getElementById('w-title').value = '';
+  document.getElementById('w-tags').value = '';
+  document.getElementById('w-body').value = '';
+  document.getElementById('preview-pane').style.display = 'none';
+  document.getElementById('w-status').textContent = '';
+  editingId = null;
+}
+
+function editPost(id) {
+  const p = allPosts.find(x => x.id === id);
+  if (!p) return;
+  editingId = id;
+  const tags = Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags||'');
+  document.getElementById('w-title').value = p.title || '';
+  document.getElementById('w-tags').value = tags;
+  document.getElementById('w-body').value = p.content || '';
+  openWriter();
+}
+
+function wInsert(before, after) {
+  const ta = document.getElementById('w-body');
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const selected = ta.value.slice(start, end);
+  const replacement = before + selected + after;
+  ta.value = ta.value.slice(0, start) + replacement + ta.value.slice(end);
+  ta.focus();
+  ta.setSelectionRange(start + before.length, start + before.length + selected.length);
+}
+
+let previewOn = false;
+function togglePreview() {
+  previewOn = !previewOn;
+  const pane = document.getElementById('preview-pane');
+  pane.style.display = previewOn ? 'block' : 'none';
+  if (previewOn) {
+    document.getElementById('preview-content').innerHTML = md(document.getElementById('w-body').value);
+  }
+}
+
+document.addEventListener('input', function(e) {
+  if (e.target.id === 'w-body' && previewOn) {
+    document.getElementById('preview-content').innerHTML = md(e.target.value);
+  }
+});
+
+async function publishPost() {
+  if (!isAdmin()) { alert('Yalnızca admin yazı yazabilir.'); return; }
+  const title   = document.getElementById('w-title').value.trim();
+  const content = document.getElementById('w-body').value.trim();
+  const tagsRaw = document.getElementById('w-tags').value.trim();
+  const tags    = tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+  const status  = document.getElementById('w-status');
+
+  if (!title || !content) { status.textContent = '⚠ Başlık ve içerik gerekli'; status.style.color='#f85149'; return; }
+
+  status.textContent = '⏳ Yayınlanıyor...'; status.style.color='#555';
+
+  const auth = authGet();
+  const post = {
+    title, content, tags,
+    author: auth?.user || 'Boralances',
+    createdAt: editingId ? (allPosts.find(p=>p.id===editingId)?.createdAt || Date.now()) : Date.now(),
+    updatedAt: Date.now()
+  };
+
+  try {
+    const id = editingId || ('post_' + Date.now().toString(36));
+    await fbPut(`blog/posts/${id}`, post);
+    status.textContent = '✓ Yayınlandı!'; status.style.color='#3de8a0';
+    setTimeout(() => {
+      closeWriter();
+      loadPosts();
+    }, 800);
+  } catch(e) {
+    status.textContent = '❌ Hata: ' + e.message; status.style.color='#f85149';
+  }
+}
+
+async function deletePost(id) {
+  if (!isAdmin()) return;
+  const p = allPosts.find(x=>x.id===id);
+  if (!confirm(`"${p?.title}" yazısını silmek istediğine emin misin?`)) return;
+  try {
+    await fbDelete(`blog/posts/${id}`);
+    await loadPosts();
+  } catch(e) { alert('Silme hatası: ' + e.message); }
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+initAuthUI();
+loadPosts();
 </script>
 </body>
 </html>
