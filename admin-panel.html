@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Boralances · Admin Panel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060a12;--bg2:#0c1422;--bg3:#111d2e;
+  --cyan:#0ff;--magenta:#f0f;--blue:#388bfd;
+  --gold:#ffd700;--orange:#f0a030;
+  --text:#e8f0fe;--text2:#8aaccc;--text3:#4a6580;
+  --green:#3de8a0;--red:#f85149;
+}
+body{font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+.cyber-grid{position:fixed;inset:0;background:linear-gradient(90deg,rgba(255,215,0,0.02) 1px,transparent 1px),linear-gradient(rgba(255,215,0,0.02) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+
+/* Header */
+header{position:relative;z-index:10;padding:16px 0;background:rgba(10,14,39,0.9);backdrop-filter:blur(10px);border-bottom:2px solid var(--gold);box-shadow:0 0 30px rgba(255,215,0,0.3)}
+nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 24px;flex-wrap:wrap;gap:12px}
+.logo{font-size:22px;font-weight:900;font-family:'Orbitron',sans-serif;color:var(--gold);text-shadow:0 0 15px var(--gold);letter-spacing:3px;text-decoration:none}
+.nav-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.nav-badge{font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:4px 12px;border-radius:6px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:var(--gold)}
+.nav-user{font-size:13px;color:var(--text2)}
+.btn-nav{font-size:12px;padding:6px 14px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:none;color:var(--text3);font-family:'Rajdhani',sans-serif;font-weight:600;transition:all 0.2s;text-decoration:none}
+.btn-nav:hover{border-color:rgba(0,255,255,0.3);color:var(--cyan)}
+.btn-logout{border-color:rgba(248,81,73,0.3);color:var(--red)}
+.btn-logout:hover{background:rgba(248,81,73,0.1);border-color:var(--red)}
+
+/* Layout */
+main{position:relative;z-index:5;max-width:1200px;margin:0 auto;padding:32px 24px}
+
+/* Page Title */
+.page-title{display:flex;align-items:center;gap:14px;margin-bottom:32px}
+.page-title h1{font-family:'Orbitron',sans-serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,0.5);letter-spacing:3px}
+.page-title .crown{font-size:2rem}
+
+/* Tabs */
+.panel-tabs{display:flex;gap:4px;margin-bottom:28px;border-bottom:1px solid rgba(255,215,0,0.15);padding-bottom:0;flex-wrap:wrap}
+.panel-tab{padding:12px 20px;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;background:none;border:none;color:var(--text3);transition:all 0.2s;
+  border-bottom:2px solid transparent;font-family:'Rajdhani',sans-serif;position:relative}
+.panel-tab:hover{color:var(--text2)}
+.panel-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.panel-tab .tab-count{font-size:10px;background:rgba(255,215,0,0.15);color:var(--gold);padding:1px 6px;border-radius:8px;margin-left:6px}
+
+/* Sections */
+.panel-section{display:none}
+.panel-section.active{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Stats Cards */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
+.stat-card{background:rgba(12,20,34,0.8);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:24px;transition:all 0.3s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(255,215,0,0.06),transparent);border-radius:50%}
+.stat-card:hover{border-color:rgba(255,215,0,0.35);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.stat-icon{font-size:28px;margin-bottom:8px}
+.stat-value{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,0.3)}
+.stat-label{font-size:12px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-top:4px}
+
+/* Table */
+.panel-table{width:100%;border-collapse:collapse;font-size:14px}
+.panel-table th{text-align:left;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);padding:10px 14px;border-bottom:1px solid rgba(255,215,0,0.15);background:rgba(0,0,0,0.2)}
+.panel-table td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:middle}
+.panel-table tr:hover td{background:rgba(255,215,0,0.03)}
+.role-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;display:inline-block}
+.role-admin{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.3);color:var(--gold)}
+.role-moderator{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.3);color:var(--cyan)}
+.role-user{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text3)}
+
+/* Action buttons */
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all 0.15s;margin:0 2px}
+.btn-role{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.25);color:var(--cyan)}
+.btn-role:hover{background:rgba(0,255,255,0.2)}
+.btn-delete{background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.25);color:var(--red)}
+.btn-delete:hover{background:rgba(248,81,73,0.2)}
+.btn-edit-sm{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.25);color:var(--gold)}
+.btn-edit-sm:hover{background:rgba(255,215,0,0.2)}
+.btn-pin{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.25);color:var(--green)}
+.btn-pin:hover{background:rgba(61,232,160,0.2)}
+
+/* Comment card */
+.comment-card{background:rgba(12,20,34,0.6);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:16px;margin-bottom:10px;transition:all 0.2s}
+.comment-card:hover{border-color:rgba(255,215,0,0.2)}
+.comment-card.pinned{border-color:rgba(61,232,160,0.3);background:rgba(61,232,160,0.03)}
+.comment-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.comment-author{font-weight:700;color:var(--cyan);font-size:13px}
+.comment-date{font-size:11px;color:var(--text3)}
+.comment-post{font-size:11px;color:var(--magenta);margin-bottom:6px}
+.comment-text{font-size:14px;color:var(--text2);line-height:1.5}
+.comment-actions{display:flex;gap:4px;margin-top:10px}
+.pin-indicator{font-size:10px;color:var(--green);font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+
+/* Search */
+.search-bar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.search-input{flex:1;min-width:200px;padding:10px 16px;border-radius:8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-size:14px;font-family:'Rajdhani',sans-serif;outline:none;transition:border-color 0.2s}
+.search-input:focus{border-color:rgba(255,215,0,0.4)}
+.search-input::placeholder{color:var(--text3)}
+.filter-select{padding:10px 14px;border-radius:8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-size:13px;font-family:'Rajdhani',sans-serif;outline:none;cursor:pointer}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(6px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:rgba(12,20,34,0.98);border:1px solid rgba(255,215,0,0.3);border-radius:14px;padding:28px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-title{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--gold);letter-spacing:0.12em;margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.modal-field textarea,.modal-field input,.modal-field select{width:100%;padding:10px 14px;border-radius:8px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);color:var(--text);font-size:14px;font-family:'Rajdhani',sans-serif;outline:none;resize:vertical}
+.modal-field textarea{min-height:100px}
+.modal-actions{display:flex;gap:10px;margin-top:16px}
+.btn-modal{padding:10px 20px;border-radius:8px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;cursor:pointer;border:none;transition:all 0.2s}
+.btn-modal-primary{background:linear-gradient(135deg,rgba(255,215,0,0.2),rgba(255,215,0,0.1));border:1px solid rgba(255,215,0,0.4);color:var(--gold)}
+.btn-modal-primary:hover{box-shadow:0 0 16px rgba(255,215,0,0.2)}
+.btn-modal-cancel{background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text3)}
+.btn-modal-cancel:hover{border-color:rgba(248,81,73,0.3);color:var(--red)}
+
+/* Empty */
+.empty-state{text-align:center;padding:60px 20px;color:var(--text3)}
+.empty-state .empty-icon{font-size:48px;margin-bottom:12px;opacity:0.5}
+.empty-state p{font-size:14px;letter-spacing:0.05em}
+
+/* Loading */
+.loading-spinner{text-align:center;padding:40px;font-family:'Orbitron',sans-serif;font-size:12px;color:var(--gold);letter-spacing:0.15em}
+
+/* Responsive */
+@media(max-width:768px){
+  .panel-tabs{gap:0}.panel-tab{padding:10px 12px;font-size:11px}
+  .panel-table{font-size:12px}.panel-table th,.panel-table td{padding:8px 10px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+
+/* Footer */
+footer{position:relative;z-index:10;text-align:center;padding:24px;background:rgba(10,14,39,0.9);border-top:2px solid var(--gold);box-shadow:0 0 20px rgba(255,215,0,0.3);margin-top:60px}
+footer p{color:var(--gold);font-size:13px;letter-spacing:0.1em}
+</style>
+</head>
+<body>
+<div class="cyber-grid"></div>
+
+<header>
+  <nav>
+    <a href="index.html" class="logo">BORALANCES</a>
+    <div class="nav-right">
+      <span class="nav-badge">👑 Admin</span>
+      <span class="nav-user" id="nav-user"></span>
+      <a href="blog.html" class="btn-nav">Blog</a>
+      <a href="index.html" class="btn-nav">Ana Sayfa</a>
+      <button class="btn-nav btn-logout" onclick="logout()">Çıkış</button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="page-title">
+    <span class="crown">👑</span>
+    <h1>ADMIN PANEL</h1>
+  </div>
+
+  <!-- TABS -->
+  <div class="panel-tabs">
+    <button class="panel-tab active" onclick="showSection('dashboard')">📊 Dashboard <span class="tab-count" id="tc-dash"></span></button>
+    <button class="panel-tab" onclick="showSection('users')">👥 Kullanıcılar <span class="tab-count" id="tc-users"></span></button>
+    <button class="panel-tab" onclick="showSection('comments')">💬 Yorumlar <span class="tab-count" id="tc-comments"></span></button>
+    <button class="panel-tab" onclick="showSection('posts')">📝 Yazılar <span class="tab-count" id="tc-posts"></span></button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="panel-section active" id="sec-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="s-users">-</div>
+        <div class="stat-label">Toplam Kullanıcı</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-value" id="s-posts">-</div>
+        <div class="stat-label">Blog Yazısı</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div class="stat-value" id="s-comments">-</div>
+        <div class="stat-label">Toplam Yorum</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🛡️</div>
+        <div class="stat-value" id="s-mods">-</div>
+        <div class="stat-label">Moderatör</div>
+      </div>
+    </div>
+
+    <h3 style="font-family:'Orbitron',sans-serif;font-size:14px;color:var(--gold);letter-spacing:0.15em;margin-bottom:16px">SON AKTİVİTELER</h3>
+    <div id="recent-activity" class="loading-spinner">Yükleniyor...</div>
+  </div>
+
+  <!-- USERS -->
+  <div class="panel-section" id="sec-users">
+    <div class="search-bar">
+      <input class="search-input" id="user-search" placeholder="Kullanıcı ara..." oninput="filterUsers()">
+      <select class="filter-select" id="user-role-filter" onchange="filterUsers()">
+        <option value="">Tüm Roller</option>
+        <option value="admin">Admin</option>
+        <option value="moderator">Moderatör</option>
+        <option value="user">Kullanıcı</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="panel-table" id="users-table">
+        <thead><tr><th>Kullanıcı</th><th>Görünen İsim</th><th>Rol</th><th>Kayıt</th><th>İşlemler</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMMENTS -->
+  <div class="panel-section" id="sec-comments">
+    <div class="search-bar">
+      <input class="search-input" id="comment-search" placeholder="Yorumlarda ara..." oninput="filterComments()">
+    </div>
+    <div id="comments-list"></div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="panel-section" id="sec-posts">
+    <div style="overflow-x:auto">
+      <table class="panel-table" id="posts-table">
+        <thead><tr><th>Başlık</th><th>Yazar</th><th>Tarih</th><th>Yorum</th><th>İşlemler</th></tr></thead>
+        <tbody id="posts-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- Edit Comment Modal -->
+<div class="modal-overlay" id="modal-edit-comment">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Yorumu Düzenle</div>
+    <input type="hidden" id="edit-comment-postid">
+    <input type="hidden" id="edit-comment-id">
+    <div class="modal-field">
+      <label>Yorum İçeriği</label>
+      <textarea id="edit-comment-content"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-modal btn-modal-primary" onclick="saveComment()">Kaydet</button>
+      <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-edit-comment')">İptal</button>
+    </div>
+  </div>
+</div>
+
+<footer><p>© 2026 BORALANCES — Admin Control Center</p></footer>
+
+<script>
+const FB = 'https://hcca-6cb53-default-rtdb.europe-west1.firebasedatabase.app';
+let allUsers = [], allPosts = [], allComments = [];
+
+// ── Auth ──
+function authGet() {
+  try {
+    const s = JSON.parse(localStorage.getItem('bora_auth') || 'null');
+    if (!s || Date.now() > s.expires) { localStorage.removeItem('bora_auth'); return null; }
+    return s;
+  } catch(e) { return null; }
+}
+
+function logout() {
+  localStorage.removeItem('bora_auth');
+  location.href = 'login.html';
+}
+
+// ── Guard ──
+(function() {
+  const auth = authGet();
+  if (!auth || auth.role !== 'admin') {
+    alert('Bu sayfaya erişim yetkiniz yok.');
+    location.href = 'login.html';
+    return;
+  }
+  document.getElementById('nav-user').textContent = auth.displayName || auth.user;
+})();
+
+// ── Firebase Helpers ──
+async function fbGet(path) {
+  const r = await fetch(`${FB}/${path}.json`);
+  return r.json();
+}
+async function fbPut(path, data) {
+  await fetch(`${FB}/${path}.json`, { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data) });
+}
+async function fbDelete(path) {
+  await fetch(`${FB}/${path}.json`, { method:'DELETE' });
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Tabs ──
+function showSection(name) {
+  document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('sec-' + name).classList.add('active');
+}
+
+// ── Load All Data ──
+async function loadAll() {
+  try {
+    const [usersData, postsData, commentsData] = await Promise.all([
+      fbGet('users'),
+      fbGet('blog/posts'),
+      fbGet('blog/comments')
+    ]);
+
+    // Users
+    allUsers = usersData ? Object.entries(usersData).map(([id, u]) => ({...u, id})) : [];
+    
+    // Posts
+    allPosts = postsData ? Object.entries(postsData).map(([id, p]) => ({...p, id})).sort((a,b) => (b.createdAt||0)-(a.createdAt||0)) : [];
+    
+    // Comments - flatten
+    allComments = [];
+    if (commentsData) {
+      for (const [postId, comments] of Object.entries(commentsData)) {
+        if (comments) {
+          for (const [cId, c] of Object.entries(comments)) {
+            allComments.push({...c, id: cId, postId});
+          }
+        }
+      }
+    }
+    allComments.sort((a,b) => (b.createdAt||0)-(a.createdAt||0));
+
+    renderDashboard();
+    renderUsers();
+    renderComments();
+    renderPosts();
+  } catch(e) {
+    console.error('Load error:', e);
+  }
+}
+
+// ── Dashboard ──
+function renderDashboard() {
+  document.getElementById('s-users').textContent = allUsers.length;
+  document.getElementById('s-posts').textContent = allPosts.length;
+  document.getElementById('s-comments').textContent = allComments.length;
+  document.getElementById('s-mods').textContent = allUsers.filter(u => u.role === 'moderator').length;
+
+  // Recent activity
+  const recent = allComments.slice(0, 8);
+  const actDiv = document.getElementById('recent-activity');
+  if (!recent.length) {
+    actDiv.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Henüz aktivite yok</p></div>';
+    return;
+  }
+  actDiv.innerHTML = recent.map(c => {
+    const post = allPosts.find(p => p.id === c.postId);
+    const date = c.createdAt ? new Date(c.createdAt).toLocaleString('tr-TR') : '';
+    return `<div class="comment-card${c.pinned ? ' pinned':''}">
+      <div class="comment-header">
+        <span class="comment-author">${escHtml(c.author)}</span>
+        <span class="comment-date">${date}</span>
+      </div>
+      <div class="comment-post">📝 ${escHtml(post?.title || 'Silinmiş yazı')}</div>
+      <div class="comment-text">${escHtml(c.content?.slice(0,120))}${(c.content?.length||0)>120?'...':''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Users ──
+function renderUsers(filtered) {
+  const users = filtered || allUsers;
+  document.getElementById('tc-users').textContent = users.length;
+  const tbody = document.getElementById('users-tbody');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:30px">Kullanıcı bulunamadı</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(u => {
+    const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('tr-TR') : '-';
+    const roleCls = u.role === 'admin' ? 'role-admin' : u.role === 'moderator' ? 'role-moderator' : 'role-user';
+    const roleLabel = u.role === 'admin' ? '👑 Admin' : u.role === 'moderator' ? '🛡️ Moderatör' : '👤 Kullanıcı';
+    const isMe = u.id === authGet()?.user;
+    return `<tr>
+      <td><strong>${escHtml(u.id)}</strong></td>
+      <td>${escHtml(u.displayName || u.id)}</td>
+      <td><span class="role-badge ${roleCls}">${roleLabel}</span></td>
+      <td>${date}</td>
+      <td>
+        ${!isMe && u.role !== 'admin' ? `
+          ${u.role === 'user' ? `<button class="btn-sm btn-role" onclick="changeRole('${u.id}','moderator')">🛡️ Mod Yap</button>` : ''}
+          ${u.role === 'moderator' ? `<button class="btn-sm btn-role" onclick="changeRole('${u.id}','user')">👤 Kullanıcıya Çevir</button>` : ''}
+          <button class="btn-sm btn-delete" onclick="deleteUser('${u.id}')">Sil</button>
+        ` : isMe ? '<span style="font-size:11px;color:var(--text3)">Sen</span>' : '<span style="font-size:11px;color:var(--gold)">Admin</span>'}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterUsers() {
+  const q = document.getElementById('user-search').value.toLowerCase();
+  const role = document.getElementById('user-role-filter').value;
+  const filtered = allUsers.filter(u => {
+    const matchQ = !q || u.id.includes(q) || (u.displayName||'').toLowerCase().includes(q);
+    const matchRole = !role || u.role === role;
+    return matchQ && matchRole;
+  });
+  renderUsers(filtered);
+}
+
+async function changeRole(userId, newRole) {
+  if (!confirm(`"${userId}" kullanıcısını ${newRole === 'moderator' ? 'moderatör' : 'normal kullanıcı'} yapmak istediğine emin misin?`)) return;
+  try {
+    const userData = await fbGet(`users/${userId}`);
+    if (!userData) return;
+    userData.role = newRole;
+    await fbPut(`users/${userId}`, userData);
+    await loadAll();
+  } catch(e) { alert('Hata: ' + e.message); }
+}
+
+async function deleteUser(userId) {
+  if (!confirm(`"${userId}" kullanıcısını SİLMEK istediğine emin misin? Bu geri alınamaz!`)) return;
+  try {
+    await fbDelete(`users/${userId}`);
+    await loadAll();
+  } catch(e) { alert('Silme hatası: ' + e.message); }
+}
+
+// ── Comments ──
+function renderComments(filtered) {
+  const comments = filtered || allComments;
+  document.getElementById('tc-comments').textContent = comments.length;
+  const container = document.getElementById('comments-list');
+  if (!comments.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">💬</div><p>Yorum bulunamadı</p></div>';
+    return;
+  }
+  container.innerHTML = comments.map(c => {
+    const post = allPosts.find(p => p.id === c.postId);
+    const date = c.createdAt ? new Date(c.createdAt).toLocaleString('tr-TR') : '';
+    return `<div class="comment-card${c.pinned ? ' pinned':''}">
+      <div class="comment-header">
+        <div>
+          <span class="comment-author">${escHtml(c.author)}</span>
+          ${c.pinned ? '<span class="pin-indicator" style="margin-left:8px">📌 Sabitlenmiş</span>' : ''}
+        </div>
+        <span class="comment-date">${date}</span>
+      </div>
+      <div class="comment-post">📝 ${escHtml(post?.title || 'Bilinmeyen yazı')} <span style="color:var(--text3)">(${escHtml(c.postId)})</span></div>
+      <div class="comment-text">${escHtml(c.content)}</div>
+      <div class="comment-actions">
+        <button class="btn-sm btn-edit-sm" onclick="openEditComment('${c.postId}','${c.id}')">✏️ Düzenle</button>
+        <button class="btn-sm btn-pin" onclick="togglePin('${c.postId}','${c.id}',${!c.pinned})">${c.pinned ? '📌 Sabiti Kaldır' : '📌 Sabitle'}</button>
+        <button class="btn-sm btn-delete" onclick="deleteComment('${c.postId}','${c.id}')">🗑 Sil</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterComments() {
+  const q = document.getElementById('comment-search').value.toLowerCase();
+  const filtered = allComments.filter(c => 
+    !q || (c.content||'').toLowerCase().includes(q) || (c.author||'').toLowerCase().includes(q)
+  );
+  renderComments(filtered);
+}
+
+function openEditComment(postId, cId) {
+  const c = allComments.find(x => x.id === cId && x.postId === postId);
+  if (!c) return;
+  document.getElementById('edit-comment-postid').value = postId;
+  document.getElementById('edit-comment-id').value = cId;
+  document.getElementById('edit-comment-content').value = c.content || '';
+  document.getElementById('modal-edit-comment').classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+async function saveComment() {
+  const postId = document.getElementById('edit-comment-postid').value;
+  const cId = document.getElementById('edit-comment-id').value;
+  const content = document.getElementById('edit-comment-content').value.trim();
+  if (!content) return;
+  
+  try {
+    const c = await fbGet(`blog/comments/${postId}/${cId}`);
+    if (!c) return;
+    c.content = content;
+    c.updatedAt = Date.now();
+    c.editedBy = authGet()?.user || 'admin';
+    await fbPut(`blog/comments/${postId}/${cId}`, c);
+    closeModal('modal-edit-comment');
+    await loadAll();
+  } catch(e) { alert('Kaydetme hatası: ' + e.message); }
+}
+
+async function togglePin(postId, cId, pin) {
+  try {
+    const c = await fbGet(`blog/comments/${postId}/${cId}`);
+    if (!c) return;
+    c.pinned = pin;
+    await fbPut(`blog/comments/${postId}/${cId}`, c);
+    await loadAll();
+  } catch(e) { alert('Hata: ' + e.message); }
+}
+
+async function deleteComment(postId, cId) {
+  if (!confirm('Bu yorumu silmek istediğine emin misin?')) return;
+  try {
+    await fbDelete(`blog/comments/${postId}/${cId}`);
+    await loadAll();
+  } catch(e) { alert('Silme hatası: ' + e.message); }
+}
+
+// ── Posts ──
+function renderPosts() {
+  document.getElementById('tc-posts').textContent = allPosts.length;
+  const tbody = document.getElementById('posts-tbody');
+  if (!allPosts.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:30px">Yazı bulunamadı</td></tr>';
+    return;
+  }
+  tbody.innerHTML = allPosts.map(p => {
+    const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '-';
+    const commentCount = allComments.filter(c => c.postId === p.id).length;
+    return `<tr>
+      <td><strong style="color:var(--cyan)">${escHtml(p.title || 'Başlıksız')}</strong></td>
+      <td>${escHtml(p.author || '-')}</td>
+      <td>${date}</td>
+      <td><span style="color:var(--magenta)">${commentCount}</span></td>
+      <td>
+        <button class="btn-sm btn-edit-sm" onclick="window.open('blog.html#edit-${p.id}','_self')">✏️ Düzenle</button>
+        <button class="btn-sm btn-delete" onclick="deletePost('${p.id}')">🗑 Sil</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function deletePost(id) {
+  const p = allPosts.find(x => x.id === id);
+  if (!confirm(`"${p?.title}" yazısını ve tüm yorumlarını silmek istediğine emin misin?`)) return;
+  try {
+    await fbDelete(`blog/posts/${id}`);
+    await fbDelete(`blog/comments/${id}`);
+    await loadAll();
+  } catch(e) { alert('Silme hatası: ' + e.message); }
+}
+
+// ── Init ──
+loadAll();
+</script>
+</body>
+</html>
