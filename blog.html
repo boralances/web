@@ -23,6 +23,8 @@ nav{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;al
 .nav-user{font-size:12px;color:rgba(0,255,255,0.6);font-weight:600;letter-spacing:0.08em}
 .btn-logout{background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:all 0.2s;letter-spacing:0.05em}
 .btn-logout:hover{border-color:rgba(248,81,73,0.4);color:#f85149}
+.btn-panel{font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,255,255,0.2);background:none;color:rgba(0,255,255,0.5);font-family:'Rajdhani',sans-serif;transition:all 0.2s;text-decoration:none}
+.btn-panel:hover{border-color:rgba(0,255,255,0.5);color:#0ff}
 
 /* ── LAYOUT ── */
 main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:40px 20px}
@@ -92,6 +94,7 @@ main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:40px 20px
 .post-meta{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .post-tag{font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:2px;background:rgba(255,0,255,0.1);border:1px solid rgba(255,0,255,0.3);color:#f0f}
 .post-read{font-size:0.7rem;color:#555;letter-spacing:0.08em;margin-left:auto}
+.post-comment-count{font-size:0.7rem;color:#0ff;letter-spacing:0.05em}
 .post-actions{display:flex;gap:6px;margin-left:auto}
 .btn-edit,.btn-del{font-size:11px;padding:3px 10px;border-radius:5px;cursor:pointer;border:none;transition:all 0.15s;font-family:'Rajdhani',sans-serif;font-weight:700}
 .btn-edit{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.25);color:#0ff}
@@ -131,6 +134,56 @@ main{position:relative;z-index:5;max-width:900px;margin:0 auto;padding:40px 20px
 .post-content table{width:100%;border-collapse:collapse;margin:20px 0;font-size:0.95rem}
 .post-content th{background:rgba(0,255,255,0.1);border:1px solid rgba(0,255,255,0.2);padding:10px 14px;color:#0ff;font-weight:700;text-align:left}
 .post-content td{border:1px solid rgba(0,255,255,0.1);padding:9px 14px;color:#bbb}
+
+/* ══ COMMENTS SECTION ══ */
+.comments-section{margin-top:48px;border-top:2px solid rgba(255,0,255,0.2);padding-top:32px}
+.comments-title{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:#f0f;letter-spacing:0.15em;margin-bottom:24px;display:flex;align-items:center;gap:10px}
+.comments-title .count{font-size:0.8rem;background:rgba(255,0,255,0.15);color:#f0f;padding:2px 8px;border-radius:8px}
+
+/* Comment Form */
+.comment-form{background:rgba(20,25,50,0.6);border:1px solid rgba(255,0,255,0.15);border-radius:10px;padding:20px;margin-bottom:28px}
+.comment-form-label{font-size:12px;color:rgba(255,255,255,0.3);margin-bottom:8px;letter-spacing:0.08em}
+.comment-textarea{width:100%;min-height:80px;padding:12px 14px;border-radius:8px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:#ccc;font-size:14px;font-family:'Rajdhani',sans-serif;outline:none;resize:vertical;transition:border-color 0.2s;line-height:1.5}
+.comment-textarea:focus{border-color:rgba(255,0,255,0.4)}
+.comment-textarea::placeholder{color:rgba(255,255,255,0.15)}
+.comment-form-actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.comment-form-user{font-size:12px;color:rgba(0,255,255,0.5)}
+.btn-comment{padding:8px 20px;border-radius:8px;border:1px solid rgba(255,0,255,0.35);background:linear-gradient(135deg,rgba(255,0,255,0.1),rgba(255,0,255,0.05));color:#f0f;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.btn-comment:hover{box-shadow:0 0 16px rgba(255,0,255,0.2);background:rgba(255,0,255,0.15)}
+.btn-comment:disabled{opacity:0.4;cursor:not-allowed}
+.comment-login-prompt{text-align:center;padding:20px;font-size:14px;color:#555}
+.comment-login-prompt a{color:#0ff;text-decoration:none;border-bottom:1px solid rgba(0,255,255,0.3)}
+.comment-login-prompt a:hover{text-shadow:0 0 8px #0ff}
+
+/* Comment Item */
+.comment-item{background:rgba(12,20,34,0.5);border:1px solid rgba(255,255,255,0.05);border-radius:8px;padding:16px;margin-bottom:10px;transition:all 0.2s}
+.comment-item:hover{border-color:rgba(255,0,255,0.15)}
+.comment-item.pinned{border-color:rgba(61,232,160,0.3);background:rgba(61,232,160,0.03);order:-1}
+.comment-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.comment-author{font-weight:700;font-size:13px;color:#0ff}
+.comment-author.is-admin{color:#ffd700}
+.comment-author.is-mod{color:#3de8a0}
+.comment-role-tag{font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle}
+.tag-admin{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.3);color:#ffd700}
+.tag-mod{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);color:#3de8a0}
+.comment-time{font-size:11px;color:#444}
+.comment-pin-badge{font-size:10px;color:#3de8a0;font-weight:700;letter-spacing:0.08em}
+.comment-body{font-size:14px;color:#aaa;line-height:1.55}
+.comment-edited{font-size:10px;color:#444;margin-top:4px;font-style:italic}
+.comment-btns{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+.cbtn{font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;border:none;font-family:'Rajdhani',sans-serif;font-weight:700;transition:all 0.15s}
+.cbtn-edit{background:rgba(0,255,255,0.08);border:1px solid rgba(0,255,255,0.2);color:#0ff}
+.cbtn-edit:hover{background:rgba(0,255,255,0.16)}
+.cbtn-del{background:rgba(248,81,73,0.08);border:1px solid rgba(248,81,73,0.2);color:#f85149}
+.cbtn-del:hover{background:rgba(248,81,73,0.16)}
+.cbtn-pin{background:rgba(61,232,160,0.08);border:1px solid rgba(61,232,160,0.2);color:#3de8a0}
+.cbtn-pin:hover{background:rgba(61,232,160,0.16)}
+
+/* Edit inline */
+.comment-edit-area{width:100%;min-height:60px;padding:8px 10px;border-radius:6px;background:rgba(0,0,0,0.4);border:1px solid rgba(0,255,255,0.2);color:#ccc;font-size:13px;font-family:'Rajdhani',sans-serif;outline:none;resize:vertical;margin-top:8px}
+.comment-edit-btns{display:flex;gap:6px;margin-top:6px}
+.cbtn-save{background:rgba(61,232,160,0.1);border:1px solid rgba(61,232,160,0.3);color:#3de8a0;font-size:11px;padding:4px 12px;border-radius:5px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700}
+.cbtn-cancel{background:none;border:1px solid rgba(255,255,255,0.1);color:#555;font-size:11px;padding:4px 12px;border-radius:5px;cursor:pointer;font-family:'Rajdhani',sans-serif}
 
 /* ── FOOTER ── */
 footer{position:relative;z-index:10;text-align:center;padding:30px;background:rgba(10,14,39,0.9);border-top:2px solid #f0f;box-shadow:0 0 20px rgba(255,0,255,0.5);margin-top:60px}
@@ -204,7 +257,7 @@ footer p{color:#0ff;text-shadow:0 0 10px #0ff}
 
   <!-- Loading -->
   <div id="loader">
-    <div class="loader-text">YÜKLENIYOR<span class="loader-dot">.</span><span class="loader-dot">.</span><span class="loader-dot">.</span></div>
+    <div class="loader-text">YÜKLENİYOR<span class="loader-dot">.</span><span class="loader-dot">.</span><span class="loader-dot">.</span></div>
   </div>
 
   <!-- Empty -->
@@ -228,6 +281,19 @@ footer p{color:#0ff;text-shadow:0 0 10px #0ff}
       <div class="post-meta" id="view-meta"></div>
     </div>
     <div class="post-content" id="view-body"></div>
+
+    <!-- Comments Section -->
+    <div class="comments-section" id="comments-section">
+      <div class="comments-title">
+        💬 YORUMLAR <span class="count" id="comment-count">0</span>
+      </div>
+
+      <!-- Comment Form (visible only to logged-in users) -->
+      <div id="comment-form-wrapper"></div>
+
+      <!-- Comments List -->
+      <div id="comments-list"></div>
+    </div>
   </div>
 </main>
 
@@ -251,12 +317,20 @@ function authGet() {
   } catch(e) { return null; }
 }
 function isAdmin() { return authGet()?.role === 'admin'; }
+function isMod() { const r = authGet()?.role; return r === 'moderator' || r === 'admin'; }
 
 function initAuthUI() {
   const area = document.getElementById('nav-auth-area');
   const auth = authGet();
   if (auth) {
-    area.innerHTML = `<span class="nav-user">${auth.user}</span>
+    // Determine panel link
+    let panelLink = 'kullanici-panel.html';
+    let panelLabel = '👤 Profil';
+    if (auth.role === 'admin') { panelLink = 'admin-panel.html'; panelLabel = '👑 Panel'; }
+    else if (auth.role === 'moderator') { panelLink = 'mod-panel.html'; panelLabel = '🛡️ Panel'; }
+
+    area.innerHTML = `<a href="${panelLink}" class="btn-panel">${panelLabel}</a>
+      <span class="nav-user">${auth.displayName || auth.user}</span>
       <button class="btn-logout" onclick="logout()">Çıkış</button>`;
   } else {
     area.innerHTML = `<a href="login.html?r=blog.html" style="font-size:12px;color:rgba(0,255,255,0.6);text-decoration:none;border:1px solid rgba(0,255,255,0.2);padding:5px 12px;border-radius:6px;transition:all 0.2s" onmouseover="this.style.borderColor='rgba(0,255,255,0.5)'" onmouseout="this.style.borderColor='rgba(0,255,255,0.2)'">Giriş Yap</a>`;
@@ -276,6 +350,8 @@ function logout() {
 // ══════════════════════════════════════════════════════
 let allPosts = [];
 let editingId = null;
+let currentPostId = null;
+let usersCache = {};
 
 // ══════════════════════════════════════════════════════
 // FIREBASE HELPERS
@@ -295,6 +371,14 @@ async function fbPut(path, data) {
 }
 async function fbDelete(path) {
   await fetch(`${FB_BLOG}/${path}.json`, { method: 'DELETE' });
+}
+async function fbPost(path, data) {
+  const r = await fetch(`${FB_BLOG}/${path}.json`, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  });
+  if (!r.ok) throw new Error('Firebase write failed');
+  return r.json();
 }
 
 // ══════════════════════════════════════════════════════
@@ -339,12 +423,31 @@ function escHtml(s) {
 }
 
 // ══════════════════════════════════════════════════════
+// LOAD USERS CACHE (for role badges in comments)
+// ══════════════════════════════════════════════════════
+async function loadUsersCache() {
+  try {
+    const data = await fbGet('users');
+    if (data) {
+      for (const [id, u] of Object.entries(data)) {
+        usersCache[id] = u;
+        if (u.displayName) usersCache[u.displayName] = u;
+      }
+    }
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════════════
 // LOAD POSTS
 // ══════════════════════════════════════════════════════
 async function loadPosts() {
   document.getElementById('loader').style.display = 'block';
   try {
-    const data = await fbGet('blog/posts');
+    const [data, commentsData] = await Promise.all([
+      fbGet('blog/posts'),
+      fbGet('blog/comments')
+    ]);
+    
     if (!data) {
       showEmpty();
       return;
@@ -352,6 +455,14 @@ async function loadPosts() {
     allPosts = Object.entries(data)
       .map(([id, p]) => ({...p, id}))
       .sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+
+    // Count comments per post
+    if (commentsData) {
+      for (const post of allPosts) {
+        const postComments = commentsData[post.id];
+        post._commentCount = postComments ? Object.keys(postComments).length : 0;
+      }
+    }
 
     if (!allPosts.length) { showEmpty(); return; }
     renderList();
@@ -380,6 +491,7 @@ function renderList() {
     const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR') : '';
     const words = (p.content||'').split(/\s+/).length;
     const readT = Math.max(1, Math.round(words/200)) + ' dk';
+    const commentCount = p._commentCount || 0;
 
     return `<div class="post-card" onclick="openPost('${p.id}')">
       <div class="post-num"># ${String(allPosts.length - i).padStart(4,'0')} · ${escHtml(date)}</div>
@@ -387,6 +499,7 @@ function renderList() {
       ${excerpt ? `<div class="post-excerpt">${escHtml(excerpt.slice(0,160))}</div>` : ''}
       <div class="post-meta">
         ${tags.map(t=>`<span class="post-tag">${escHtml(t)}</span>`).join('')}
+        ${commentCount > 0 ? `<span class="post-comment-count">💬 ${commentCount}</span>` : ''}
         <span class="post-read">${readT}</span>
         ${isAdmin() ? `<div class="post-actions" onclick="event.stopPropagation()">
           <button class="btn-edit" onclick="editPost('${p.id}')">✏ Düzenle</button>
@@ -405,6 +518,7 @@ function renderList() {
 function openPost(id) {
   const p = allPosts.find(x => x.id === id);
   if (!p) return;
+  currentPostId = id;
   const tags = Array.isArray(p.tags) ? p.tags : (typeof p.tags==='string' ? p.tags.split(',').map(t=>t.trim()) : []);
   const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
   const words = (p.content||'').split(/\s+/).length;
@@ -422,6 +536,11 @@ function openPost(id) {
     `<span class="post-read" style="margin-left:auto">${Math.max(1,Math.round(words/200))} dk okuma · ${p.author||''}</span>` +
     (isAdmin() ? `<button class="btn-edit" style="margin-left:8px" onclick="editPost('${p.id}');showList()">✏</button>` : '');
   document.getElementById('view-body').innerHTML = md(p.content||'');
+  
+  // Load comments
+  renderCommentForm();
+  loadComments(id);
+  
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -432,7 +551,190 @@ function showList() {
   document.querySelector('.blog-hero').style.display = 'block';
   if (isAdmin()) document.getElementById('admin-bar').style.display = 'flex';
   editingId = null;
+  currentPostId = null;
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════════════
+// COMMENTS
+// ══════════════════════════════════════════════════════
+function renderCommentForm() {
+  const wrapper = document.getElementById('comment-form-wrapper');
+  const auth = authGet();
+  
+  if (auth) {
+    wrapper.innerHTML = `<div class="comment-form">
+      <div class="comment-form-label">Yorum yaz</div>
+      <textarea class="comment-textarea" id="comment-input" placeholder="Düşüncelerini paylaş..." maxlength="2000"></textarea>
+      <div class="comment-form-actions">
+        <span class="comment-form-user">👤 ${escHtml(auth.displayName || auth.user)}</span>
+        <button class="btn-comment" id="btn-submit-comment" onclick="submitComment()">Gönder →</button>
+      </div>
+    </div>`;
+  } else {
+    wrapper.innerHTML = `<div class="comment-login-prompt">
+      Yorum yapmak için <a href="login.html?r=blog.html">giriş yapın</a> veya <a href="login.html?r=blog.html#register">kayıt olun</a>.
+    </div>`;
+  }
+}
+
+async function loadComments(postId) {
+  const listEl = document.getElementById('comments-list');
+  const countEl = document.getElementById('comment-count');
+  
+  try {
+    const data = await fbGet(`blog/comments/${postId}`);
+    if (!data) {
+      countEl.textContent = '0';
+      listEl.innerHTML = '<div style="text-align:center;padding:20px;color:#333;font-size:13px">Henüz yorum yok. İlk yorumu sen yap!</div>';
+      return;
+    }
+
+    let comments = Object.entries(data).map(([id, c]) => ({...c, id}));
+    comments.sort((a,b) => {
+      // Pinned first, then by date
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return (b.createdAt||0) - (a.createdAt||0);
+    });
+
+    countEl.textContent = comments.length;
+    const auth = authGet();
+    const myUser = auth?.user;
+    const myRole = auth?.role;
+
+    listEl.innerHTML = comments.map(c => {
+      const time = c.createdAt ? new Date(c.createdAt).toLocaleString('tr-TR') : '';
+      const isOwner = myUser && (c.author === myUser || c.author === auth?.displayName);
+      const canModerate = myRole === 'admin' || myRole === 'moderator';
+      
+      // Check author role
+      const authorData = usersCache[c.author] || {};
+      const authorRole = authorData.role || '';
+      let authorClass = '';
+      let roleTag = '';
+      if (authorRole === 'admin') { authorClass = ' is-admin'; roleTag = '<span class="comment-role-tag tag-admin">Admin</span>'; }
+      else if (authorRole === 'moderator') { authorClass = ' is-mod'; roleTag = '<span class="comment-role-tag tag-mod">Mod</span>'; }
+
+      return `<div class="comment-item${c.pinned ? ' pinned':''}" id="c-${c.id}">
+        <div class="comment-head">
+          <div>
+            <span class="comment-author${authorClass}">${escHtml(c.author)}</span>${roleTag}
+            ${c.pinned ? ' <span class="comment-pin-badge">📌 Sabitlenmiş</span>' : ''}
+          </div>
+          <span class="comment-time">${time}</span>
+        </div>
+        <div class="comment-body" id="cbody-${c.id}">${escHtml(c.content)}</div>
+        ${c.updatedAt ? `<div class="comment-edited">düzenlendi${c.editedBy ? ' · '+escHtml(c.editedBy) : ''}</div>` : ''}
+        <div class="comment-btns">
+          ${isOwner || canModerate ? `<button class="cbtn cbtn-edit" onclick="startEditComment('${postId}','${c.id}')">✏️ Düzenle</button>` : ''}
+          ${isOwner || canModerate ? `<button class="cbtn cbtn-del" onclick="deleteComment('${postId}','${c.id}')">🗑 Sil</button>` : ''}
+          ${canModerate ? `<button class="cbtn cbtn-pin" onclick="pinComment('${postId}','${c.id}',${!c.pinned})">${c.pinned ? '📌 Sabiti Kaldır' : '📌 Sabitle'}</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+  } catch(e) {
+    listEl.innerHTML = '<div style="color:#f85149;font-size:13px;padding:10px">Yorumlar yüklenemedi.</div>';
+  }
+}
+
+async function submitComment() {
+  const auth = authGet();
+  if (!auth) return;
+  
+  const input = document.getElementById('comment-input');
+  const content = input.value.trim();
+  const btn = document.getElementById('btn-submit-comment');
+  
+  if (!content) return;
+  if (content.length > 2000) { alert('Yorum çok uzun (max 2000 karakter)'); return; }
+
+  btn.disabled = true;
+  btn.textContent = '⏳...';
+
+  try {
+    const comment = {
+      author: auth.user,
+      content: content,
+      createdAt: Date.now(),
+      pinned: false
+    };
+    await fbPost(`blog/comments/${currentPostId}`, comment);
+    input.value = '';
+    await loadComments(currentPostId);
+  } catch(e) {
+    alert('Yorum gönderilemedi: ' + e.message);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Gönder →';
+}
+
+function startEditComment(postId, cId) {
+  const bodyEl = document.getElementById('cbody-' + cId);
+  const itemEl = document.getElementById('c-' + cId);
+  if (!bodyEl || !itemEl) return;
+  
+  const currentText = bodyEl.textContent;
+  
+  // Check if already editing
+  if (itemEl.querySelector('.comment-edit-area')) return;
+  
+  bodyEl.style.display = 'none';
+  const editHtml = `<textarea class="comment-edit-area" id="cedit-${cId}">${escHtml(currentText)}</textarea>
+    <div class="comment-edit-btns">
+      <button class="cbtn-save" onclick="saveEditComment('${postId}','${cId}')">💾 Kaydet</button>
+      <button class="cbtn-cancel" onclick="cancelEditComment('${cId}')">İptal</button>
+    </div>`;
+  bodyEl.insertAdjacentHTML('afterend', editHtml);
+}
+
+function cancelEditComment(cId) {
+  const bodyEl = document.getElementById('cbody-' + cId);
+  const itemEl = document.getElementById('c-' + cId);
+  if (!bodyEl || !itemEl) return;
+  
+  bodyEl.style.display = '';
+  const editArea = itemEl.querySelector('.comment-edit-area');
+  const editBtns = itemEl.querySelector('.comment-edit-btns');
+  if (editArea) editArea.remove();
+  if (editBtns) editBtns.remove();
+}
+
+async function saveEditComment(postId, cId) {
+  const textarea = document.getElementById('cedit-' + cId);
+  if (!textarea) return;
+  const content = textarea.value.trim();
+  if (!content) return;
+
+  try {
+    const c = await fbGet(`blog/comments/${postId}/${cId}`);
+    if (!c) return;
+    c.content = content;
+    c.updatedAt = Date.now();
+    const auth = authGet();
+    if (auth && c.author !== auth.user) c.editedBy = auth.user;
+    await fbPut(`blog/comments/${postId}/${cId}`, c);
+    await loadComments(postId);
+  } catch(e) { alert('Düzenleme hatası: ' + e.message); }
+}
+
+async function deleteComment(postId, cId) {
+  if (!confirm('Bu yorumu silmek istediğine emin misin?')) return;
+  try {
+    await fbDelete(`blog/comments/${postId}/${cId}`);
+    await loadComments(postId);
+  } catch(e) { alert('Silme hatası: ' + e.message); }
+}
+
+async function pinComment(postId, cId, pin) {
+  try {
+    const c = await fbGet(`blog/comments/${postId}/${cId}`);
+    if (!c) return;
+    c.pinned = pin;
+    await fbPut(`blog/comments/${postId}/${cId}`, c);
+    await loadComments(postId);
+  } catch(e) { alert('Hata: ' + e.message); }
 }
 
 // ══════════════════════════════════════════════════════
@@ -530,6 +832,7 @@ async function deletePost(id) {
   if (!confirm(`"${p?.title}" yazısını silmek istediğine emin misin?`)) return;
   try {
     await fbDelete(`blog/posts/${id}`);
+    await fbDelete(`blog/comments/${id}`);
     await loadPosts();
   } catch(e) { alert('Silme hatası: ' + e.message); }
 }
@@ -538,6 +841,7 @@ async function deletePost(id) {
 // INIT
 // ══════════════════════════════════════════════════════
 initAuthUI();
+loadUsersCache();
 loadPosts();
 </script>
 </body>
