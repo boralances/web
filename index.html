@@ -610,7 +610,23 @@
     const s=JSON.parse(localStorage.getItem('bora_auth')||'null');
     if(s&&Date.now()<s.expires){
       const el=document.getElementById('nav-login-li');
-      if(el) el.innerHTML='<span style="font-size:12px;color:rgba(0,255,255,0.5);padding:4px 10px">'+s.user+'</span><button onclick="localStorage.removeItem("bora_auth");location.reload()" style="font-size:11px;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);padding:4px 8px;border-radius:5px;cursor:pointer;margin-left:4px">Çıkış</button>';
+      if(!el) return;
+
+      // Determine panel link based on role
+      let panelLink = 'kullanici-panel.html';
+      let panelIcon = '👤';
+      let panelLabel = 'Profil';
+      if(s.role === 'admin'){ panelLink = 'admin-panel.html'; panelIcon = '👑'; panelLabel = 'Admin Panel'; }
+      else if(s.role === 'moderator'){ panelLink = 'mod-panel.html'; panelIcon = '🛡️'; panelLabel = 'Mod Panel'; }
+
+      el.innerHTML = '<a href="' + panelLink + '" style="font-size:11px;color:rgba(0,255,255,0.6);text-decoration:none;border:1px solid rgba(0,255,255,0.2);padding:4px 10px;border-radius:5px;transition:all 0.2s;margin-right:4px" onmouseover="this.style.borderColor=\'rgba(0,255,255,0.5)\'" onmouseout="this.style.borderColor=\'rgba(0,255,255,0.2)\'">' + panelIcon + ' ' + panelLabel + '</a>' +
+        '<span style="font-size:12px;color:rgba(0,255,255,0.5);padding:4px 6px">' + (s.displayName || s.user) + '</span>' +
+        '<button id="nav-logout-btn" style="font-size:11px;background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.3);padding:4px 8px;border-radius:5px;cursor:pointer;margin-left:4px;transition:all 0.2s">Çıkış</button>';
+      
+      document.getElementById('nav-logout-btn').addEventListener('click', function(){
+        localStorage.removeItem('bora_auth');
+        location.reload();
+      });
     }
   }catch(e){}
 })();
