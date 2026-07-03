@@ -1,1 +1,837 @@
-blank
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HCCA Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        :root {
+            --bg:#070b0e;--bg2:#0d1117;--card:#111820;--card-h:#162029;
+            --accent:#06d6a0;--accent-d:rgba(6,214,160,.15);--accent-g:rgba(6,214,160,.4);
+            --danger:#ef4444;--warn:#f59e0b;--text:#e0ece8;--muted:#6b8f80;--border:#1a2f28;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+        h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 0%,rgba(6,214,160,.07) 0%,transparent 50%),radial-gradient(ellipse at 80% 100%,rgba(6,214,160,.04) 0%,transparent 50%);pointer-events:none;z-index:0}
+        body::after{content:'';position:fixed;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+        #app,nav,.modal-overlay,.toast-box{position:relative;z-index:1}
+        ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+
+        .inp{background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:9px;font-size:14px;width:100%;transition:.3s;outline:none;font-family:'DM Sans',sans-serif}
+        .inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-d)}
+        .inp::placeholder{color:var(--muted);opacity:.5}
+        .lbl{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+
+        .btn-p{background:var(--accent);color:var(--bg);font-weight:700;padding:11px 22px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-family:'Space Grotesk',sans-serif;transition:.3s}
+        .btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 25px var(--accent-g)}
+        .btn-p:active{transform:translateY(0)}.btn-p:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+        .btn-s{background:transparent;color:var(--accent);font-weight:600;padding:10px 20px;border-radius:10px;border:1px solid var(--accent);cursor:pointer;font-size:13px;font-family:'Space Grotesk',sans-serif;transition:.3s}
+        .btn-s:hover{background:var(--accent-d);transform:translateY(-1px)}
+        .btn-d{background:var(--danger);color:#fff;font-weight:600;padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:.3s}
+        .btn-d:hover{opacity:.8}
+
+        .pcard{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:.4s cubic-bezier(.25,.46,.45,.94);position:relative}
+        .pcard:hover{transform:translateY(-8px);border-color:var(--accent);box-shadow:0 20px 40px rgba(0,0,0,.4),0 0 30px var(--accent-d)}
+        .pcard .cimg{width:100%;height:220px;object-fit:cover;transition:transform .6s ease}.pcard:hover .cimg{transform:scale(1.05)}
+        .pcard .img-w{overflow:hidden;border-radius:16px 16px 0 0}
+
+        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+        .modal-bg.on{display:flex}
+        .modal-box{background:var(--bg2);border:1px solid var(--border);border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:30px;animation:mIn .3s ease}
+        .modal-box.wide{max-width:680px}
+        @keyframes mIn{from{opacity:0;transform:scale(.92) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+
+        .toast-box{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px}
+        .toast{padding:13px 18px;border-radius:11px;font-size:13px;font-weight:600;color:#fff;animation:tIn .4s ease,tOut .4s ease 3s forwards;min-width:260px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+        .toast.ok{background:#059669}.toast.err{background:#dc2626}.toast.inf{background:#0891b2}.toast.wrn{background:#d97706}
+        @keyframes tIn{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes tOut{from{opacity:1}to{opacity:0;transform:translateY(-16px)}}
+
+        .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+        .auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:22px;padding:36px;max-width:440px;width:100%;position:relative;overflow:hidden}
+        .auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+        .atabs{display:flex;gap:3px;background:var(--bg);border-radius:11px;padding:3px;margin-bottom:24px}
+        .atab{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer;font-weight:700;font-size:13px;font-family:'Space Grotesk',sans-serif;transition:.3s;color:var(--muted);border:none;background:transparent}
+        .atab.on{background:var(--accent);color:var(--bg)}
+
+        .mnav{background:rgba(7,11,14,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:14px 28px;position:sticky;top:0;z-index:50}
+        .badge-f{background:var(--accent);color:var(--bg);font-size:10px;font-weight:800;padding:3px 9px;border-radius:18px;letter-spacing:.5px}
+        .badge-a{background:var(--warn);color:var(--bg);font-size:10px;font-weight:800;padding:3px 9px;border-radius:18px}
+
+        .ad-box{background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px dashed var(--accent);border-radius:14px;padding:28px;text-align:center;margin:18px 0;position:relative;overflow:hidden}
+        .ad-box::before{content:'SPONSORED';position:absolute;top:8px;right:10px;font-size:9px;color:var(--warn);letter-spacing:2px;font-weight:800}
+        .ad-timer{width:56px;height:56px;border-radius:50%;border:3px solid var(--border);border-top-color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;animation:spin 1s linear infinite;margin-bottom:8px;font-family:'Space Grotesk',sans-serif}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        .cc-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+        .cc-section .cc-icon{color:var(--warn);margin-right:6px}
+        .payment-note{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px 14px;font-size:12px;color:#fbbf24;margin-bottom:14px;line-height:1.5}
+
+        .view{display:none}.view.on{display:block;animation:fadeI .35s ease}
+        @keyframes fadeI{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px}
+        .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+        .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;transition:.3s}
+        .stat-card:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accent-d)}
+
+        .particle{position:fixed;width:2px;height:2px;background:var(--accent);border-radius:50%;pointer-events:none;opacity:0;z-index:0;animation:fp linear infinite}
+        @keyframes fp{0%{opacity:0;transform:translateY(100vh)}10%{opacity:.4}90%{opacity:.4}100%{opacity:0;transform:translateY(-10vh)}}
+
+        @media(max-width:640px){.mnav{padding:10px 14px}.auth-card{padding:22px}.modal-box{padding:18px}.pgrid{grid-template-columns:1fr}}
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}}
+    </style>
+</head>
+<body>
+
+<div id="particles" aria-hidden="true"></div>
+<div class="toast-box" id="toastBox"></div>
+
+<!-- ===== AUTH VIEW ===== -->
+<div id="authView" class="view on">
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-store text-2xl" style="color:var(--accent)"></i>
+                    <h1 class="text-2xl font-bold tracking-tight" style="color:var(--accent)">HCCA Market</h1>
+                </div>
+                <p class="text-sm" style="color:var(--muted)">Claim free products. Just register and start.</p>
+            </div>
+
+            <div class="atabs" role="tablist">
+                <button class="atab on" onclick="switchAuth('login')" role="tab" id="tabLogin">Sign In</button>
+                <button class="atab" onclick="switchAuth('register')" role="tab" id="tabReg">Register</button>
+            </div>
+
+            <!-- LOGIN -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div><label class="lbl">Email</label><input type="email" class="inp" id="lEmail" required placeholder="you@example.com"></div>
+                <div><label class="lbl">Password</label><input type="password" class="inp" id="lPass" required placeholder="Your password"></div>
+                <button type="submit" class="btn-p w-full" id="loginBtn">Sign In</button>
+            </form>
+
+            <!-- REGISTER -->
+            <form id="regForm" onsubmit="handleRegister(event)" class="space-y-4" style="display:none">
+                <div><label class="lbl">Display Name</label><input type="text" class="inp" id="rName" required placeholder="Your display name"></div>
+                <div><label class="lbl">Email</label><input type="email" class="inp" id="rEmail" required placeholder="you@example.com"></div>
+                <div><label class="lbl">Password</label><input type="password" class="inp" id="rPass" required minlength="6" placeholder="Min 6 characters"></div>
+                <div>
+                    <label class="lbl">Admin Key (optional)</label>
+                    <input type="text" class="inp" id="rAdmin" placeholder="Leave blank for buyer account">
+                </div>
+                <button type="submit" class="btn-p w-full" id="regBtn">Create Account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="appView" class="view">
+    <nav class="mnav">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-store" style="color:var(--accent)"></i>
+                <span class="font-bold text-lg tracking-tight" style="font-family:'Space Grotesk',sans-serif;color:var(--accent)">HCCA</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="btn-s text-xs py-2 px-3" onclick="showSection('shop')" id="navShop">
+                    <i class="fa-solid fa-bag-shopping mr-1"></i> Products
+                </button>
+                <button class="btn-s text-xs py-2 px-3" onclick="showSection('admin')" id="navAdmin" style="display:none">
+                    <i class="fa-solid fa-gauge-high mr-1"></i> Admin
+                </button>
+                <div class="flex items-center gap-2 ml-2">
+                    <span class="text-sm font-semibold" id="navUser"></span>
+                    <span class="badge-a" id="navBadge" style="display:none">ADMIN</span>
+                    <button onclick="handleLogout()" class="ml-2 text-xs" style="color:var(--danger);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif" aria-label="Sign out">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SHOP -->
+    <section id="shopSection" class="max-w-6xl mx-auto px-6 py-10">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold tracking-tight mb-2">Free Products</h2>
+            <p style="color:var(--muted)" class="text-sm">Pick any product, view a sponsor offer, enter your shipping details, and it ships to you.</p>
+        </div>
+        <div class="pgrid" id="productGrid"></div>
+        <div id="emptyShop" class="text-center py-20" style="display:none">
+            <i class="fa-solid fa-box-open text-5xl mb-4" style="color:var(--border)"></i>
+            <p class="text-lg font-semibold" style="color:var(--muted)">No products available yet</p>
+            <p class="text-sm" style="color:var(--border)">Check back soon for new free items!</p>
+        </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="adminSection" class="max-w-6xl mx-auto px-6 py-10" style="display:none">
+        <h2 class="text-3xl font-bold tracking-tight mb-8">Admin Dashboard</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+            <div class="stat-card"><p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--muted)">Products</p><p class="text-3xl font-bold mt-1" id="statProducts" style="color:var(--accent)">0</p></div>
+            <div class="stat-card"><p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--muted)">Users</p><p class="text-3xl font-bold mt-1" id="statUsers" style="color:var(--accent)">0</p></div>
+            <div class="stat-card"><p class="text-xs font-semibold uppercase tracking-wider" style="color:var(--muted)">Orders</p><p class="text-3xl font-bold mt-1" id="statOrders" style="color:var(--accent)">0</p></div>
+        </div>
+        <div class="stat-card mb-8">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-plus mr-2" style="color:var(--accent)"></i>Add New Product</h3>
+            <form id="addProductForm" onsubmit="handleAddProduct(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="lbl">Product Name</label><input class="inp" id="pName" required placeholder="e.g. Wireless Earbuds"></div>
+                <div><label class="lbl">Image URL</label><input class="inp" id="pImg" required placeholder="https://picsum.photos/seed/abc/600/400"></div>
+                <div class="sm:col-span-2"><label class="lbl">Description</label><input class="inp" id="pDesc" required placeholder="Short description"></div>
+                <div><label class="lbl">Ad Title</label><input class="inp" id="pAdTitle" required placeholder="Promo headline"></div>
+                <div><label class="lbl">Ad Link</label><input class="inp" id="pAdLink" placeholder="https://your-promo-page.com"></div>
+                <div class="sm:col-span-2"><label class="lbl">Ad Description</label><input class="inp" id="pAdDesc" required placeholder="What the sponsor ad says"></div>
+                <div class="sm:col-span-2"><button type="submit" class="btn-p" id="addProdBtn"><i class="fa-solid fa-plus mr-1"></i> Add Product</button></div>
+            </form>
+        </div>
+        <div class="stat-card mb-8">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-list mr-2" style="color:var(--accent)"></i>Your Products</h3>
+            <div id="adminProductList" class="space-y-3"></div>
+        </div>
+        <div class="stat-card">
+            <h3 class="text-lg font-bold mb-4"><i class="fa-solid fa-truck mr-2" style="color:var(--accent)"></i>Orders & Shipping</h3>
+            <div id="adminOrderList" class="space-y-3"></div>
+            <div id="noOrders" class="text-center py-8" style="color:var(--muted);display:none">
+                <i class="fa-solid fa-inbox text-3xl mb-2" style="color:var(--border)"></i>
+                <p class="text-sm">No orders yet</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ===== PRODUCT DETAIL + AD MODAL ===== -->
+<div class="modal-bg" id="productModal">
+    <div class="modal-box wide">
+        <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold" id="pmName"></h3>
+            <button onclick="closeModal('productModal')" style="color:var(--muted);background:none;border:none;cursor:pointer;font-size:20px" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-5">
+            <div class="sm:w-1/2">
+                <img id="pmImg" class="w-full h-48 object-cover rounded-xl" src="" alt="Product">
+                <p class="mt-3 text-sm" style="color:var(--muted)" id="pmDesc"></p>
+                <span class="badge-f inline-block mt-2">FREE</span>
+            </div>
+            <div class="sm:w-1/2">
+                <div class="ad-box" id="pmAdBox">
+                    <div class="ad-timer" id="pmTimer">5</div>
+                    <p class="text-xs font-bold uppercase tracking-wider mb-1" style="color:var(--warn)">Sponsor Offer</p>
+                    <h4 class="text-lg font-bold mb-2" id="pmAdTitle"></h4>
+                    <p class="text-sm mb-3" style="color:var(--muted)" id="pmAdDesc"></p>
+                    <a id="pmAdLink" href="#" target="_blank" class="btn-s text-xs py-2 px-4 inline-block" style="display:none">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Visit Sponsor
+                    </a>
+                </div>
+                <button class="btn-p w-full mt-4" id="pmContinue" disabled onclick="openShipping()">
+                    <i class="fa-solid fa-truck mr-1"></i> Continue to Shipping
+                </button>
+                <p class="text-xs text-center mt-2" style="color:var(--muted)" id="pmWait">Please wait to continue...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SHIPPING + CREDIT CARD MODAL ===== -->
+<div class="modal-bg" id="shippingModal">
+    <div class="modal-box">
+        <div class="flex justify-between items-start mb-4">
+            <h3 class="text-xl font-bold"><i class="fa-solid fa-truck-fast mr-2" style="color:var(--accent)"></i>Shipping & Payment</h3>
+            <button onclick="closeModal('shippingModal')" style="color:var(--muted);background:none;border:none;cursor:pointer;font-size:20px" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <form id="shippingForm" onsubmit="handleClaim(event)" class="space-y-3">
+            <!-- Credit card — first order only -->
+            <div id="ccSection" style="display:none">
+                <div class="payment-note">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    A one-time $1.00 verification payment is required on your first order to confirm your account. Your card details are securely stored.
+                </div>
+                <div class="cc-section">
+                    <p class="text-sm font-bold mb-3"><i class="fa-solid fa-credit-card cc-icon"></i>Card Details</p>
+                    <div class="space-y-3">
+                        <div><label class="lbl">Cardholder Name</label><input class="inp" id="ccName" placeholder="Name on card"></div>
+                        <div><label class="lbl">Card Number</label><input class="inp" id="ccNumber" placeholder="4242 4242 4242 4242" maxlength="19" oninput="formatCardNumber(this)"></div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="lbl">Expiry</label><input class="inp" id="ccExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
+                            <div><label class="lbl">CVV</label><input class="inp" id="ccCvv" placeholder="123" maxlength="4" type="password"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping — always shown -->
+            <div>
+                <p class="text-sm font-bold mb-3" id="shippingTitle"><i class="fa-solid fa-location-dot mr-1" style="color:var(--accent)"></i>Shipping Address</p>
+                <div class="space-y-3">
+                    <div><label class="lbl">Full Name</label><input class="inp" id="sName" required placeholder="Recipient name"></div>
+                    <div><label class="lbl">Address Line</label><input class="inp" id="sAddr" required placeholder="Street address, P.O. box"></div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="lbl">City</label><input class="inp" id="sCity" required placeholder="City"></div>
+                        <div><label class="lbl">ZIP / Postal</label><input class="inp" id="sZip" required placeholder="12345"></div>
+                    </div>
+                    <div><label class="lbl">Country</label><input class="inp" id="sCountry" required placeholder="Country"></div>
+                    <div><label class="lbl">Phone (optional)</label><input class="inp" id="sPhone" placeholder="+1 555 123 4567"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-p w-full" id="claimBtn">
+                <i class="fa-solid fa-gift mr-1"></i> <span id="claimBtnText">Claim Free Product</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== CONFIRMATION MODAL ===== -->
+<div class="modal-bg" id="confirmModal">
+    <div class="modal-box text-center">
+        <div class="mb-4">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4" style="background:var(--accent-d)">
+                <i class="fa-solid fa-check text-3xl" style="color:var(--accent)"></i>
+            </div>
+            <h3 class="text-2xl font-bold mb-2">Order Confirmed</h3>
+            <p class="text-sm" style="color:var(--muted)" id="confirmText"></p>
+        </div>
+        <button class="btn-p" onclick="closeModal('confirmModal')">Done</button>
+    </div>
+</div>
+
+<script>
+/* ================================================
+   HCCA Market — Firebase RTDB Integration
+   Database: europe-west1
+   ================================================ */
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCDr9xUcQlWLscgDCOZTAxbFTYnUZul8go",
+    authDomain: "hcca-6cb53.firebaseapp.com",
+    databaseURL: "https://hcca-6cb53-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "hcca-6cb53",
+    storageBucket: "hcca-6cb53.firebasestorage.app",
+    messagingSenderId: "978735539488",
+    appId: "1:978735539488:web:a6f6f1341d346e42542345"
+};
+
+const ADMIN_SECRET = "hcca2024admin";
+
+let db;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+} catch(e) {
+    console.error("Firebase init error:", e);
+}
+
+let currentUser = null;
+let currentProduct = null;
+let adTimerInterval = null;
+let isFirstOrder = true;
+
+// ---- Utilities ----
+function encodeKey(str) {
+    return btoa(str.toLowerCase().trim()).replace(/=/g, '');
+}
+
+function toast(msg, type = 'inf') {
+    const box = document.getElementById('toastBox');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.textContent = msg;
+    box.appendChild(t);
+    setTimeout(() => { if(t.parentNode) t.remove(); }, 3600);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('on'); }
+function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+function esc(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+function formatCardNumber(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+}
+
+function formatExpiry(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 4);
+    if(v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    input.value = v;
+}
+
+// ---- Auth Tab Switching ----
+function switchAuth(mode) {
+    document.getElementById('tabLogin').classList.toggle('on', mode === 'login');
+    document.getElementById('tabReg').classList.toggle('on', mode === 'register');
+    document.getElementById('loginForm').style.display = mode === 'login' ? 'block' : 'none';
+    document.getElementById('regForm').style.display = mode === 'register' ? 'block' : 'none';
+}
+
+// ---- Register ----
+function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('rName').value.trim();
+    const email = document.getElementById('rEmail').value.trim();
+    const pass = document.getElementById('rPass').value;
+    const adminKey = document.getElementById('rAdmin').value.trim();
+    const btn = document.getElementById('regBtn');
+
+    if(!db) { toast('Firebase not configured.', 'err'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+
+    const isAdmin = adminKey === ADMIN_SECRET;
+    const userKey = encodeKey(email);
+
+    db.ref('users/' + userKey).once('value').then(snap => {
+        if(snap.exists()) {
+            toast('This email is already registered.', 'err');
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            return null;
+        }
+        return db.ref('users/' + userKey).set({
+            displayName: name,
+            email: email,
+            password: pass,
+            isAdmin: isAdmin,
+            creditCard: null,
+            hasPaid: false,
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
+    }).then(() => {
+        if(btn.disabled) {
+            toast('Account created! You can now sign in.', 'ok');
+            switchAuth('login');
+            document.getElementById('lEmail').value = email;
+            document.getElementById('regForm').reset();
+        }
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+    }).catch(err => {
+        toast('Registration failed: ' + err.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+    });
+}
+
+// ---- Login ----
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('lEmail').value.trim();
+    const pass = document.getElementById('lPass').value;
+    const btn = document.getElementById('loginBtn');
+
+    if(!db) { toast('Firebase not configured.', 'err'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+
+    const userKey = encodeKey(email);
+
+    db.ref('users/' + userKey).once('value').then(snap => {
+        if(!snap.exists()) {
+            toast('Account not found. Please register first.', 'err');
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+            return;
+        }
+        const data = snap.val();
+        if(data.password !== pass) {
+            toast('Incorrect password.', 'err');
+            btn.disabled = false;
+            btn.textContent = 'Sign In';
+            return;
+        }
+        currentUser = {
+            key: userKey,
+            displayName: data.displayName,
+            email: data.email,
+            isAdmin: data.isAdmin || false,
+            hasPaid: data.hasPaid || false
+        };
+        localStorage.setItem('hcca_session', JSON.stringify(currentUser));
+        enterApp();
+        toast('Welcome back, ' + data.displayName + '!', 'ok');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+        document.getElementById('loginForm').reset();
+    }).catch(err => {
+        toast('Login error: ' + err.message, 'err');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+    });
+}
+
+// ---- Logout ----
+function handleLogout() {
+    currentUser = null;
+    localStorage.removeItem('hcca_session');
+    document.getElementById('authView').classList.add('on');
+    document.getElementById('appView').classList.remove('on');
+    toast('Signed out.', 'inf');
+}
+
+// ---- Enter App ----
+function enterApp() {
+    document.getElementById('authView').classList.remove('on');
+    document.getElementById('appView').classList.add('on');
+    document.getElementById('navUser').textContent = currentUser.displayName;
+    const badge = document.getElementById('navBadge');
+    const adminBtn = document.getElementById('navAdmin');
+    if(currentUser.isAdmin) {
+        badge.style.display = 'inline';
+        adminBtn.style.display = 'inline-flex';
+    } else {
+        badge.style.display = 'none';
+        adminBtn.style.display = 'none';
+    }
+    showSection('shop');
+    loadProducts();
+    if(currentUser.isAdmin) loadAdminData();
+}
+
+// ---- Section Nav ----
+function showSection(section) {
+    const shop = document.getElementById('shopSection');
+    const admin = document.getElementById('adminSection');
+    if(section === 'shop') {
+        shop.style.display = 'block';
+        admin.style.display = 'none';
+    } else {
+        shop.style.display = 'none';
+        admin.style.display = 'block';
+        loadAdminData();
+    }
+}
+
+// ---- Load Products ----
+function loadProducts() {
+    if(!db) return;
+    const grid = document.getElementById('productGrid');
+    const empty = document.getElementById('emptyShop');
+    grid.innerHTML = '<div class="text-center py-10" style="grid-column:1/-1"><span class="spinner"></span><p class="text-sm mt-2" style="color:var(--muted)">Loading products...</p></div>';
+
+    db.ref('products').on('value', snap => {
+        grid.innerHTML = '';
+        if(!snap.exists()) { empty.style.display = 'block'; return; }
+        empty.style.display = 'none';
+        snap.forEach(child => {
+            const p = child.val();
+            const key = child.key;
+            grid.innerHTML += `
+                <article class="pcard" data-key="${key}">
+                    <div class="img-w"><img class="cimg" src="${p.imageUrl || 'https://picsum.photos/seed/'+key+'/600/400'}" alt="${esc(p.name)}" onerror="this.src='https://picsum.photos/seed/fallback/600/400'"></div>
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-2"><span class="badge-f">FREE</span></div>
+                        <h4 class="font-bold text-lg mb-1">${esc(p.name)}</h4>
+                        <p class="text-sm mb-4" style="color:var(--muted)">${esc(p.description || '')}</p>
+                        <button class="btn-p w-full text-sm" onclick="openProductDetail('${key}')">
+                            <i class="fa-solid fa-gift mr-1"></i> Claim for Free
+                        </button>
+                    </div>
+                </article>`;
+        });
+    });
+}
+
+// ---- Product Detail + Ad ----
+function openProductDetail(key) {
+    if(!db) return;
+    db.ref('products/' + key).once('value').then(snap => {
+        if(!snap.exists()) { toast('Product not found.', 'err'); return; }
+        const p = snap.val();
+        currentProduct = { key, ...p };
+
+        document.getElementById('pmName').textContent = p.name;
+        document.getElementById('pmImg').src = p.imageUrl || 'https://picsum.photos/seed/'+key+'/600/400';
+        document.getElementById('pmDesc').textContent = p.description || '';
+        document.getElementById('pmAdTitle').textContent = p.adTitle || '';
+        document.getElementById('pmAdDesc').textContent = p.adDescription || '';
+
+        const linkEl = document.getElementById('pmAdLink');
+        if(p.adLink) { linkEl.href = p.adLink; linkEl.style.display = 'inline-block'; }
+        else { linkEl.style.display = 'none'; }
+
+        const continueBtn = document.getElementById('pmContinue');
+        const waitText = document.getElementById('pmWait');
+        const timerEl = document.getElementById('pmTimer');
+        continueBtn.disabled = true;
+        waitText.style.display = 'block';
+
+        let seconds = 5;
+        timerEl.textContent = seconds;
+        timerEl.style.animation = 'spin 1s linear infinite';
+        timerEl.style.borderColor = 'var(--border)';
+        timerEl.style.borderTopColor = 'var(--accent)';
+
+        if(adTimerInterval) clearInterval(adTimerInterval);
+        adTimerInterval = setInterval(() => {
+            seconds--;
+            timerEl.textContent = seconds;
+            if(seconds <= 0) {
+                clearInterval(adTimerInterval);
+                continueBtn.disabled = false;
+                waitText.style.display = 'none';
+                timerEl.innerHTML = '<i class="fa-solid fa-check"></i>';
+                timerEl.style.animation = 'none';
+                timerEl.style.borderColor = 'var(--accent)';
+                timerEl.style.borderTopColor = 'var(--accent)';
+            }
+        }, 1000);
+
+        openModal('productModal');
+    });
+}
+
+// ---- Open Shipping Form ----
+function openShipping() {
+    closeModal('productModal');
+    if(adTimerInterval) clearInterval(adTimerInterval);
+
+    db.ref('users/' + currentUser.key).once('value').then(snap => {
+        const userData = snap.val();
+        isFirstOrder = !userData.hasPaid;
+
+        const ccSection = document.getElementById('ccSection');
+        const claimBtnText = document.getElementById('claimBtnText');
+
+        if(isFirstOrder) {
+            ccSection.style.display = 'block';
+            claimBtnText.textContent = 'Pay $1.00 & Claim Free Product';
+            document.getElementById('ccName').required = true;
+            document.getElementById('ccNumber').required = true;
+            document.getElementById('ccExpiry').required = true;
+            document.getElementById('ccCvv').required = true;
+        } else {
+            ccSection.style.display = 'none';
+            claimBtnText.textContent = 'Claim Free Product';
+            document.getElementById('ccName').required = false;
+            document.getElementById('ccNumber').required = false;
+            document.getElementById('ccExpiry').required = false;
+            document.getElementById('ccCvv').required = false;
+        }
+
+        document.getElementById('sName').value = currentUser.displayName;
+        openModal('shippingModal');
+    });
+}
+
+// ---- Handle Claim ----
+function handleClaim(e) {
+    e.preventDefault();
+    if(!currentProduct || !db) return;
+
+    const btn = document.getElementById('claimBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+
+    const orderData = {
+        userId: currentUser.key,
+        userName: currentUser.displayName,
+        userEmail: currentUser.email,
+        productId: currentProduct.key,
+        productName: currentProduct.name,
+        shippingName: document.getElementById('sName').value.trim(),
+        shippingAddress: document.getElementById('sAddr').value.trim(),
+        shippingCity: document.getElementById('sCity').value.trim(),
+        shippingZip: document.getElementById('sZip').value.trim(),
+        shippingCountry: document.getElementById('sCountry').value.trim(),
+        shippingPhone: document.getElementById('sPhone').value.trim(),
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    const updates = {};
+    const orderKey = db.ref('orders').push().key;
+
+    if(isFirstOrder) {
+        const ccData = {
+            cardHolder: document.getElementById('ccName').value.trim(),
+            cardNumber: document.getElementById('ccNumber').value.trim(),
+            expiry: document.getElementById('ccExpiry').value.trim(),
+            cvv: document.getElementById('ccCvv').value.trim()
+        };
+        updates['users/' + currentUser.key + '/creditCard'] = ccData;
+        updates['users/' + currentUser.key + '/hasPaid'] = true;
+        orderData.creditCard = ccData;
+    }
+    updates['orders/' + orderKey] = orderData;
+
+    db.ref().update(updates).then(() => {
+        if(isFirstOrder) {
+            currentUser.hasPaid = true;
+            localStorage.setItem('hcca_session', JSON.stringify(currentUser));
+        }
+        closeModal('shippingModal');
+        document.getElementById('confirmText').textContent =
+            `${currentProduct.name} will be shipped to ${orderData.shippingCity}, ${orderData.shippingCountry}.`;
+        openModal('confirmModal');
+        document.getElementById('shippingForm').reset();
+        toast('Order placed successfully!', 'ok');
+        currentProduct = null;
+    }).catch(err => {
+        toast('Order failed: ' + err.message, 'err');
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-gift mr-1"></i> <span id="claimBtnText">Claim Free Product</span>';
+    });
+}
+
+// ---- Admin: Add Product ----
+function handleAddProduct(e) {
+    e.preventDefault();
+    if(!db) return;
+    const btn = document.getElementById('addProdBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>';
+
+    const product = {
+        name: document.getElementById('pName').value.trim(),
+        imageUrl: document.getElementById('pImg').value.trim(),
+        description: document.getElementById('pDesc').value.trim(),
+        adTitle: document.getElementById('pAdTitle').value.trim(),
+        adLink: document.getElementById('pAdLink').value.trim(),
+        adDescription: document.getElementById('pAdDesc').value.trim(),
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    db.ref('products').push(product).then(() => {
+        toast('Product added!', 'ok');
+        document.getElementById('addProductForm').reset();
+    }).catch(err => {
+        toast('Failed: ' + err.message, 'err');
+    }).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Add Product';
+    });
+}
+
+// ---- Admin: Delete Product ----
+function deleteProduct(key) {
+    if(!confirm('Delete this product?')) return;
+    db.ref('products/' + key).remove().then(() => toast('Product removed.', 'ok')).catch(err => toast('Failed: ' + err.message, 'err'));
+}
+
+// ---- Admin: Load Data ----
+function loadAdminData() {
+    if(!db || !currentUser || !currentUser.isAdmin) return;
+
+    db.ref('products').on('value', snap => {
+        document.getElementById('statProducts').textContent = snap.numChildren();
+        const list = document.getElementById('adminProductList');
+        list.innerHTML = '';
+        if(!snap.exists()) {
+            list.innerHTML = '<p class="text-sm" style="color:var(--muted)">No products yet. Add one above.</p>';
+            return;
+        }
+        snap.forEach(child => {
+            const p = child.val();
+            const k = child.key;
+            list.innerHTML += `
+                <div class="flex items-center justify-between p-3 rounded-xl" style="background:var(--bg);border:1px solid var(--border)">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.imageUrl || 'https://picsum.photos/seed/'+k+'/80/80'}" class="w-12 h-12 rounded-lg object-cover" alt="${esc(p.name)}">
+                        <div>
+                            <p class="font-semibold text-sm">${esc(p.name)}</p>
+                            <p class="text-xs" style="color:var(--muted)">${esc(p.adTitle || 'No ad')}</p>
+                        </div>
+                    </div>
+                    <button class="btn-d" onclick="deleteProduct('${k}')"><i class="fa-solid fa-trash-can mr-1"></i>Remove</button>
+                </div>`;
+        });
+    });
+
+    db.ref('users').on('value', snap => {
+        document.getElementById('statUsers').textContent = snap.numChildren();
+    });
+
+    db.ref('orders').on('value', snap => {
+        document.getElementById('statOrders').textContent = snap.numChildren();
+        const list = document.getElementById('adminOrderList');
+        const noOrders = document.getElementById('noOrders');
+        list.innerHTML = '';
+        if(!snap.exists()) { noOrders.style.display = 'block'; return; }
+        noOrders.style.display = 'none';
+        const orders = [];
+        snap.forEach(child => orders.push({ key: child.key, ...child.val() }));
+        orders.reverse();
+
+        orders.forEach(o => {
+            const date = o.createdAt ? new Date(o.createdAt).toLocaleDateString() : 'N/A';
+            const paid = o.creditCard ? '<span style="color:var(--warn);font-size:10px;font-weight:700"><i class="fa-solid fa-credit-card mr-1"></i>Card on file</span>' : '<span style="color:var(--muted);font-size:10px"><i class="fa-solid fa-check mr-1"></i>Verified</span>';
+            list.innerHTML += `
+                <div class="p-4 rounded-xl" style="background:var(--bg);border:1px solid var(--border)">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold text-sm">${esc(o.productName)}</p>
+                            <p class="text-xs" style="color:var(--muted)">Claimed by ${esc(o.userName)} (${esc(o.userEmail)}) ${paid}</p>
+                        </div>
+                        <span class="text-xs" style="color:var(--muted)">${date}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1 text-xs mt-2" style="color:var(--muted)">
+                        <p><i class="fa-solid fa-user mr-1" style="color:var(--accent)"></i>${esc(o.shippingName)}</p>
+                        <p><i class="fa-solid fa-phone mr-1" style="color:var(--accent)"></i>${esc(o.shippingPhone || 'N/A')}</p>
+                        <p><i class="fa-solid fa-location-dot mr-1" style="color:var(--accent)"></i>${esc(o.shippingAddress)}</p>
+                        <p><i class="fa-solid fa-city mr-1" style="color:var(--accent)"></i>${esc(o.shippingCity)} ${esc(o.shippingZip)}</p>
+                        <p><i class="fa-solid fa-globe mr-1" style="color:var(--accent)"></i>${esc(o.shippingCountry)}</p>
+                    </div>
+                </div>`;
+        });
+    });
+}
+
+// ---- Particles ----
+function createParticles() {
+    const container = document.getElementById('particles');
+    for(let i = 0; i < 15; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (8 + Math.random() * 12) + 's';
+        p.style.animationDelay = Math.random() * 10 + 's';
+        const size = (1 + Math.random() * 2) + 'px';
+        p.style.width = size;
+        p.style.height = size;
+        container.appendChild(p);
+    }
+}
+
+// ---- Session Check ----
+function checkSession() {
+    const saved = localStorage.getItem('hcca_session');
+    if(saved) {
+        try {
+            currentUser = JSON.parse(saved);
+            if(db && currentUser && currentUser.key) {
+                db.ref('users/' + currentUser.key).once('value').then(snap => {
+                    if(snap.exists()) {
+                        const d = snap.val();
+                        currentUser.isAdmin = d.isAdmin || false;
+                        currentUser.hasPaid = d.hasPaid || false;
+                        localStorage.setItem('hcca_session', JSON.stringify(currentUser));
+                        enterApp();
+                    } else {
+                        localStorage.removeItem('hcca_session');
+                        currentUser = null;
+                    }
+                }).catch(() => { enterApp(); });
+            }
+        } catch(e) { localStorage.removeItem('hcca_session'); }
+    }
+}
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', () => {
+    createParticles();
+    checkSession();
+});
+</script>
+</body>
+</html>
