@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+        }
+        .calculator {
+            background: #ffffff;
+            padding: 24px 24px 18px;
+            border-radius: 18px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+            width: 340px;
+        }
+        .display {
+            width: 100%;
+            height: 70px;
+            border-radius: 16px;
+            background: #f7f7fb;
+            border: 1px solid #d0d0d8;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 18px;
+            font-size: 2rem;
+            color: #222;
+            box-sizing: border-box;
+            margin-bottom: 18px;
+            overflow-wrap: anywhere;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        button {
+            border: none;
+            border-radius: 14px;
+            padding: 18px 0;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.1s ease;
+        }
+        button:hover {
+            transform: translateY(-1px);
+        }
+        .btn-control {
+            background: #ff6b6b;
+            color: white;
+        }
+        .btn-function {
+            background: #4d5bff;
+            color: white;
+        }
+        .btn-operator {
+            background: #373f8f;
+            color: white;
+        }
+        .btn-number {
+            background: #eef0ff;
+            color: #1f2160;
+        }
+        .btn-equal {
+            background: #1f2160;
+            color: white;
+            grid-column: span 2;
+        }
+        .hint {
+            margin-top: 12px;
+            font-size: 0.92rem;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div id="display" class="display">0</div>
+        <div class="buttons">
+            <button class="btn-control" data-action="clear">C</button>
+            <button class="btn-control" data-action="delete">DEL</button>
+            <button class="btn-function" data-action="sqrt">√</button>
+            <button class="btn-function" data-action="square">x²</button>
+            <button class="btn-function" data-action="absolute">|x|</button>
+            <button class="btn-function" data-action="percent">%</button>
+            <button class="btn-operator" data-value="/">÷</button>
+            <button class="btn-number" data-value="7">7</button>
+            <button class="btn-number" data-value="8">8</button>
+            <button class="btn-number" data-value="9">9</button>
+            <button class="btn-operator" data-value="*">×</button>
+            <button class="btn-number" data-value="4">4</button>
+            <button class="btn-number" data-value="5">5</button>
+            <button class="btn-number" data-value="6">6</button>
+            <button class="btn-operator" data-value="-">−</button>
+            <button class="btn-number" data-value="1">1</button>
+            <button class="btn-number" data-value="2">2</button>
+            <button class="btn-number" data-value="3">3</button>
+            <button class="btn-operator" data-value="+">+</button>
+            <button class="btn-number" data-value="0">0</button>
+            <button class="btn-number" data-value=".">.</button>
+            <button class="btn-operator" data-value="^">xʸ</button>
+            <button class="btn-equal" data-action="equals">=</button>
+        </div>
+        <p class="hint">Use only buttons. Unary functions apply to the current displayed value.</p>
+    </div>
+    <script>
+        const display = document.getElementById('display');
+        let currentValue = '0';
+        let isResult = false;
+
+        function updateDisplay() {
+            display.textContent = currentValue;
+        }
+
+        function appendValue(value) {
+            if (isResult && /[0-9.]/.test(value)) {
+                currentValue = '0';
+                isResult = false;
+            }
+            if (value === '.') {
+                const parts = currentValue.split(/[^0-9.]/);
+                const lastPart = parts[parts.length - 1];
+                if (lastPart.includes('.')) return;
+            }
+            if (/[+\-*/^]$/.test(currentValue) && /[+\-*/^]/.test(value)) {
+                currentValue = currentValue.slice(0, -1) + value;
+                return;
+            }
+            if (currentValue === '0' && value !== '.') {
+                currentValue = value;
+            } else {
+                currentValue += value;
+            }
+        }
+
+        function calculateExpression() {
+            try {
+                let expression = currentValue.replace(/×/g, '*').replace(/÷/g, '/').replace(/\^/g, '**').replace(/%/g, '/100');
+                if (/[+\-*/^]$/.test(expression)) {
+                    expression = expression.slice(0, -1);
+                }
+                const result = Function('return ' + expression)();
+                currentValue = String(result);
+                isResult = true;
+            } catch (error) {
+                currentValue = 'Error';
+                isResult = true;
+            }
+        }
+
+        function applyUnary(action) {
+            try {
+                let value = parseFloat(currentValue);
+                if (Number.isNaN(value)) {
+                    currentValue = 'Error';
+                    isResult = true;
+                    return;
+                }
+                switch (action) {
+                    case 'sqrt':
+                        currentValue = value < 0 ? 'Error' : String(Math.sqrt(value));
+                        break;
+                    case 'square':
+                        currentValue = String(value * value);
+                        break;
+                    case 'absolute':
+                        currentValue = String(Math.abs(value));
+                        break;
+                    case 'percent':
+                        currentValue = String(value / 100);
+                        break;
+                }
+                isResult = true;
+            } catch {
+                currentValue = 'Error';
+                isResult = true;
+            }
+        }
+
+        function clearAll() {
+            currentValue = '0';
+            isResult = false;
+        }
+
+        function deleteLast() {
+            if (isResult || currentValue.length === 1) {
+                clearAll();
+                return;
+            }
+            currentValue = currentValue.slice(0, -1);
+            if (currentValue === '' || currentValue === '-') {
+                currentValue = '0';
+            }
+        }
+
+        document.querySelectorAll('button').forEach(button => {
+            const value = button.dataset.value;
+            const action = button.dataset.action;
+            button.addEventListener('click', () => {
+                if (action === 'clear') {
+                    clearAll();
+                } else if (action === 'delete') {
+                    deleteLast();
+                } else if (action === 'equals') {
+                    calculateExpression();
+                } else if (action) {
+                    applyUnary(action);
+                } else if (value) {
+                    appendValue(value);
+                }
+                updateDisplay();
+            });
+        });
+    </script>
+</body>
+</html>
