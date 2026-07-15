@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Access Portal</title>
+<style>
+:root {
+  --bg-deep: #0a0e17;
+  --bg-glow-1: #6d5dfc;
+  --bg-glow-2: #14e8c4;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-border: rgba(255, 255, 255, 0.14);
+  --text-main: #eef1fb;
+  --text-dim: #97a1c2;
+  --accent: #6d5dfc;
+  --accent-2: #14e8c4;
+  --danger: #ff5d7a;
+  --success: #14e8c4;
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  position: relative;
+  padding: 24px;
+}
+
+.bg-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.35;
+  z-index: 0;
+  animation: float 14s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 480px;
+  height: 480px;
+  background: var(--bg-glow-1);
+  top: -180px;
+  left: -160px;
+}
+
+.orb-2 {
+  width: 420px;
+  height: 420px;
+  background: var(--bg-glow-2);
+  bottom: -160px;
+  right: -140px;
+  animation-delay: -6s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.08); }
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  perspective: 1600px;
+}
+
+.card {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 44px 36px 36px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: #0a0e17;
+  box-shadow: 0 8px 20px rgba(109, 93, 252, 0.4);
+}
+
+.brand-text {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+
+.panel-track {
+  position: relative;
+  width: 100%;
+}
+
+.form-panel {
+  width: 100%;
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.form-panel.hidden-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateX(-24px);
+  pointer-events: none;
+}
+
+.form-panel.hidden-right {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateX(24px);
+  pointer-events: none;
+}
+
+.form-panel.active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+
+.field {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+}
+
+.field input {
+  width: 100%;
+  padding: 13px 15px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  color: var(--text-main);
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.field input::placeholder {
+  color: #56608a;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  background: rgba(109, 93, 252, 0.08);
+  box-shadow: 0 0 0 4px rgba(109, 93, 252, 0.14);
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #060912;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 12px 28px rgba(109, 93, 252, 0.32);
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 16px 34px rgba(109, 93, 252, 0.42);
+}
+
+.submit-btn:active {
+  transform: translateY(0px) scale(0.98);
+  box-shadow: 0 8px 18px rgba(109, 93, 252, 0.3);
+}
+
+.submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.switch-line {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.switch-link {
+  color: var(--accent-2);
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 13.5px;
+  padding: 0;
+  margin-left: 4px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.switch-link:hover {
+  color: #6ffbe1;
+  text-decoration: underline;
+}
+
+.toast-layer {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  min-width: 260px;
+  max-width: 340px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(18, 22, 36, 0.9);
+  border: 1px solid var(--panel-border);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  font-size: 13.5px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transform: translateX(120%);
+  animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards, slideOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards 3.2s;
+}
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.info { border-left: 3px solid var(--accent); }
+
+@keyframes slideIn {
+  to { transform: translateX(0); }
+}
+
+@keyframes slideOut {
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.toast.success .dot { background: var(--success); }
+.toast.error .dot { background: var(--danger); }
+.toast.info .dot { background: var(--accent); }
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(6, 9, 18, 0.35);
+  border-top-color: #060912;
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+  .card { padding: 34px 24px 28px; }
+  h1 { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb orb-1"></div>
+<div class="bg-orb orb-2"></div>
+
+<div class="toast-layer" id="toastLayer"></div>
+
+<div class="stage">
+  <div class="card">
+    <div class="brand">
+      <div class="brand-mark">B</div>
+      <div class="brand-text">Boralances Access</div>
+    </div>
+
+    <div class="panel-track">
+      <div class="form-panel active" id="loginPanel">
+        <h1>Welcome back</h1>
+        <p class="subtitle">Sign in to continue to your account</p>
+
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+
+        <button class="submit-btn" id="loginBtn" onclick="handleLogin()">Sign In</button>
+
+        <p class="switch-line">
+          Don't have an account?
+          <button class="switch-link" onclick="showRegister()">Create one</button>
+        </p>
+      </div>
+
+      <div class="form-panel hidden-right" id="registerPanel">
+        <h1>Create account</h1>
+        <p class="subtitle">Join the platform in a few seconds</p>
+
+        <div class="field">
+          <label for="registerName">Full Name</label>
+          <input type="text" id="registerName" placeholder="Jane Doe" autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="registerGsm">Phone Number</label>
+          <input type="tel" id="registerGsm" placeholder="+1 555 000 0000" autocomplete="tel">
+        </div>
+
+        <div class="field">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+
+        <div class="field">
+          <label for="registerPassword">Password</label>
+          <input type="password" id="registerPassword" placeholder="••••••••" autocomplete="new-password">
+        </div>
+
+        <button class="submit-btn" id="registerBtn" onclick="handleRegister()">Create Account</button>
+
+        <p class="switch-line">
+          Already have an account?
+          <button class="switch-link" onclick="showLogin()">Sign in</button>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FIREBASE_BASE_URL = "https://boralancesstudios-default-rtdb.firebaseio.com";
+
+const loginPanel = document.getElementById("loginPanel");
+const registerPanel = document.getElementById("registerPanel");
+const loginBtn = document.getElementById("loginBtn");
+const registerBtn = document.getElementById("registerBtn");
+const toastLayer = document.getElementById("toastLayer");
+
+function showToast(message, type) {
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+  const dot = document.createElement("span");
+  dot.className = "dot";
+  const text = document.createElement("span");
+  text.textContent = message;
+  toast.appendChild(dot);
+  toast.appendChild(text);
+  toastLayer.appendChild(toast);
+  setTimeout(() => {
+    toast.remove();
+  }, 3700);
+}
+
+function showRegister() {
+  loginPanel.classList.remove("active");
+  loginPanel.classList.add("hidden-left");
+  registerPanel.classList.remove("hidden-right");
+  registerPanel.classList.add("active");
+}
+
+function showLogin() {
+  registerPanel.classList.remove("active");
+  registerPanel.classList.add("hidden-right");
+  loginPanel.classList.remove("hidden-left");
+  loginPanel.classList.add("active");
+}
+
+function sanitizeEmail(email) {
+  return email.replace(/\./g, "-");
+}
+
+function setButtonLoading(button, loading, originalText) {
+  if (loading) {
+    button.disabled = true;
+    button.innerHTML = "<span class=\"spinner\"></span>Please wait";
+  } else {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
+}
+
+async function handleRegister() {
+  const nameInput = document.getElementById("registerName");
+  const gsmInput = document.getElementById("registerGsm");
+  const emailInput = document.getElementById("registerEmail");
+  const passwordInput = document.getElementById("registerPassword");
+
+  const name = nameInput.value.trim();
+  const gsm = gsmInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!name || !gsm || !email || !password) {
+    showToast("Please fill in all fields!", "error");
+    return;
+  }
+
+  setButtonLoading(registerBtn, true);
+
+  const safeEmail = sanitizeEmail(email);
+  const userData = {
+    name: name,
+    gsm: gsm,
+    email: email,
+    password: password
+  };
+
+  try {
+    const response = await fetch(FIREBASE_BASE_URL + "/kullanicilar/" + safeEmail + ".json", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      throw new Error("Request failed");
+    }
+
+    showToast("Account created successfully!", "success");
+    nameInput.value = "";
+    gsmInput.value = "";
+    emailInput.value = "";
+    passwordInput.value = "";
+    setTimeout(showLogin, 900);
+  } catch (error) {
+    showToast("Something went wrong. Try again!", "error");
+  } finally {
+    setButtonLoading(registerBtn, false, "Create Account");
+  }
+}
+
+async function handleLogin() {
+  const emailInput = document.getElementById("loginEmail");
+  const passwordInput = document.getElementById("loginPassword");
+
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    showToast("Please fill in all fields!", "error");
+    return;
+  }
+
+  setButtonLoading(loginBtn, true);
+
+  const safeEmail = sanitizeEmail(email);
+
+  try {
+    const response = await fetch(FIREBASE_BASE_URL + "/kullanicilar/" + safeEmail + ".json", {
+      method: "GET"
+    });
+
+    const userData = await response.json();
+
+    if (userData === null) {
+      showToast("User not found!", "error");
+      return;
+    }
+
+    if (userData.password !== password) {
+      showToast("Incorrect password!", "error");
+      return;
+    }
+
+    showToast("Login successful!", "success");
+    console.log(userData.name);
+  } catch (error) {
+    showToast("Something went wrong. Try again!", "error");
+  } finally {
+    setButtonLoading(loginBtn, false, "Sign In");
+  }
+}
+</script>
+
+</body>
+</html>
