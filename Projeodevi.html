@@ -540,6 +540,10 @@ async function handleLogin() {
 
     showToast("Login successful!", "success");
     console.log(userData.name);
+
+    if (window.AppInventor) {
+      window.AppInventor.setWebViewString("success");
+    }
   } catch (error) {
     showToast("Something went wrong. Try again!", "error");
   } finally {
