@@ -1755,13 +1755,16 @@ document.getElementById('confirmJoinPassword').addEventListener('click', async (
    so links you send from the phone app actually work for whoever
    opens them. Leave it blank and the web version still works fine
    (it just uses its own real URL automatically). */
-const CANONICAL_APP_URL = '';
+const CANONICAL_APP_URL = 'https://boralances.github.io/web/chat.html';
 
 function isRunningNatively(){
   return !!(window.Capacitor) || location.protocol === 'capacitor:' || location.protocol === 'file:' || location.hostname === 'localhost';
 }
 function getShareBaseUrl(){
   if(isRunningNatively() && CANONICAL_APP_URL){
+    if (CANONICAL_APP_URL.endsWith('.html') || CANONICAL_APP_URL.endsWith('.htm')) {
+      return CANONICAL_APP_URL;
+    }
     return CANONICAL_APP_URL.replace(/\/?$/, '/');
   }
   return location.origin + location.pathname;
