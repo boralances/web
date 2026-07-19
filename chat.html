@@ -1,13 +1,59 @@
 <!DOCTYPE html>
+<!-- ============================================================
+     NEON // NEXUS — single-file deployment build
+
+     DEPLOY (pick one, all work with zero build step):
+       • Netlify / Vercel: drag this file into their web upload UI
+       • GitHub Pages: commit as index.html, enable Pages on the repo
+       • Firebase Hosting: `firebase init hosting`, drop this in /public
+         as index.html, `firebase deploy` (pairs naturally since the
+         app already talks to Firebase Realtime Database)
+
+     BEFORE GOING PUBLIC, READ THIS:
+       This file has no backend of its own — Firebase RTDB is the only
+       server, and every check (admin password, server session
+       passwords, party codes) is enforced in client JS, which anyone
+       can read via view-source. That's fine for a private friend
+       group. For a public deployment, lock down real security in the
+       Firebase console:
+         1. Realtime Database → Rules: replace the default open rules
+            with rules keyed off Firebase Authentication, not client
+            checks.
+         2. Swap the hardcoded admin/session passwords for real
+            Firebase Auth + custom claims.
+         3. Add App Check to stop non-browser clients hitting your DB.
+     ============================================================ -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+<meta name="description" content="NEON // NEXUS — a cyberpunk social hangout with servers, DMs, cross-play party codes, and a synced mini-game arcade.">
+<meta name="theme-color" content="#0a0a12">
+<meta name="color-scheme" content="dark light">
+<meta property="og:title" content="NEON // NEXUS">
+<meta property="og:description" content="A cyberpunk social hangout with live servers, DMs, and a synced mini-game arcade. Jack in with a party code.">
+<meta property="og:type" content="website">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NEON NEXUS">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230a0a12'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23ff2bd6'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230a0a12'/%3E%3Ctext x='50' y='68' font-size='58' text-anchor='middle' fill='%23ff2bd6'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href='data:application/json,{"name":"NEON // NEXUS","short_name":"NEON NEXUS","start_url":".","display":"standalone","background_color":"%230a0a12","theme_color":"%230a0a12"}'>
 <title>NEON // NEXUS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+/* Apply saved theme before first paint so there's no light/dark flash on load. */
+(function(){
+  try{
+    var t = localStorage.getItem('nn_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  }catch(e){}
+})();
+</script>
 <style>
 :root{
   --bg:#0a0a12;
@@ -23,6 +69,33 @@
   --text-dim:#8a8fb5;
   --radius:10px;
 }
+/* ---------- Light theme override ---------- */
+html[data-theme="light"]{
+  --bg:#f4f4fb;
+  --bg-panel:#ffffff;
+  --bg-panel-2:#ffffffcc;
+  --line:#e0e0ee;
+  --pink:#d6009e;
+  --cyan:#0090a8;
+  --purple:#7a1fd6;
+  --green:#00a862;
+  --gold:#b8860b;
+  --text:#1b1c2e;
+  --text-dim:#5c5f7c;
+}
+html[data-theme="light"] body{
+  background:
+    radial-gradient(ellipse at 20% -10%, #e8d9f7 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 0%, #cdeef5 0%, transparent 50%),
+    linear-gradient(var(--bg), var(--bg));
+}
+html[data-theme="light"] .bg-grid{ opacity:.35; }
+html[data-theme="light"] input[type=text], html[data-theme="light"] input[type=password],
+html[data-theme="light"] input[type=email], html[data-theme="light"] input[type=tel],
+html[data-theme="light"] input[type=search]{ background:#f0f0f8; }
+html[data-theme="light"] .icon-btn{ background:#ececf7; }
+html[data-theme="light"] .msg .txt{ background:#eef0fb; }
+body, .panel, .btn, .icon-btn, input{ transition:background .25s ease, color .25s ease, border-color .25s ease; }
 *{box-sizing:border-box;}
 html,body{height:100%;}
 body{
@@ -102,7 +175,7 @@ input[type=text], input[type=password], input[type=email], input[type=tel], inpu
   width:100%;
   outline:none;
   transition:.2s;
-  font-size:14px;
+  font-size:16px; /* >=16px prevents iOS Safari from auto-zooming the page on input focus */
 }
 input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); }
 
@@ -300,29 +373,222 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
   .mm-board{ grid-template-columns:repeat(3,74px); grid-template-rows:repeat(3,74px);}
   .wheel-wrap{ width:260px; height:260px;}
 }
+
+/* ============================================================
+   MOBILE-FIRST ADDITIONS: dvh/svh, touch targets, bottom sheets,
+   rich chat, profile customization, admin dashboard, new games
+============================================================ */
+:root{ --tap:48px; --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px); }
+body{ min-height:100dvh; min-height:100svh; }
+#authScreen, #appShell.active{ min-height:100dvh; min-height:100svh; }
+
+/* Touch targets: every tappable control gets a real 48px hit area */
+.icon-btn, .rail-btn, .rail-avatar, .btn, .list-item .req-actions button{ min-height:44px; }
+.icon-btn, .rail-btn{ min-width:44px; }
+.composer button, .composer .icon-btn{ min-height:var(--tap); min-width:var(--tap); }
+button, .tap-target{ touch-action:manipulation; }
+
+/* ---------- Bottom sheets (mobile-first pattern for menus) ---------- */
+.sheet-backdrop{ position:fixed; inset:0; background:rgba(4,4,10,.68); opacity:0; pointer-events:none; transition:opacity .28s cubic-bezier(.16,1,.3,1); z-index:600; }
+.sheet-backdrop.open{ opacity:1; pointer-events:auto; }
+.bottom-sheet{
+  position:fixed; left:0; right:0; bottom:0; max-height:86dvh;
+  background:linear-gradient(180deg,var(--bg-panel),var(--bg)); border-top:1px solid var(--line);
+  border-radius:20px 20px 0 0; box-shadow:0 -10px 36px rgba(0,0,0,.5);
+  transform:translateY(100%); transition:transform .3s cubic-bezier(.16,1,.3,1); z-index:601;
+  padding-bottom:calc(14px + var(--safe-bottom)); display:flex; flex-direction:column;
+}
+.bottom-sheet.open{ transform:translateY(0); }
+.sheet-handle{ width:38px; height:4px; border-radius:4px; background:var(--line); margin:10px auto 4px; }
+.sheet-header{ display:flex; align-items:center; justify-content:space-between; padding:8px 18px; border-bottom:1px solid var(--line); }
+.sheet-body{ padding:14px 18px; overflow-y:auto; }
+@media (min-width:640px){
+  .bottom-sheet{ left:50%; right:auto; width:440px; transform:translate(-50%,120%); border-radius:18px; bottom:20px; max-height:80dvh;}
+  .bottom-sheet.open{ transform:translate(-50%,0);}
+}
+
+/* ---------- Typing indicator + rich media chat ---------- */
+.typing-indicator{ font-size:11.5px; color:var(--text-dim); padding:2px 24px; min-height:16px; }
+.typing-dots span{ display:inline-block; width:4px; height:4px; border-radius:50%; background:var(--cyan); margin:0 1px; animation:typingBounce 1.1s infinite ease-in-out; }
+.typing-dots span:nth-child(2){ animation-delay:.15s; } .typing-dots span:nth-child(3){ animation-delay:.3s; }
+@keyframes typingBounce{ 0%,60%,100%{ transform:translateY(0); opacity:.4;} 30%{ transform:translateY(-3px); opacity:1;} }
+.msg img, .msg video{ max-width:220px; border-radius:10px; margin-top:4px; display:block;}
+#uploadErrorServer,#uploadErrorDM{ color:var(--pink); font-size:11px; padding:0 24px 4px; }
+.gif-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.gif-grid button{ aspect-ratio:4/3; border-radius:10px; padding:0; overflow:hidden; border:1px solid var(--line); background:#0e0e1a;}
+.gif-grid img{ width:100%; height:100%; object-fit:cover;}
+
+/* ---------- Profile / avatar grid / player card ---------- */
+.avatar-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
+.avatar-grid button{ aspect-ratio:1; border-radius:14px; padding:0; border:2px solid transparent; background:#12121f; overflow:hidden;}
+.avatar-grid button.selected{ border-color:var(--cyan); box-shadow:0 0 10px rgba(0,246,255,.5);}
+.avatar-grid img{ width:100%; height:100%; object-fit:cover;}
+.player-card{ display:flex; align-items:center; gap:10px; background:#12121f; border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+.player-card .avatar{ width:46px; height:46px; border-radius:14px; object-fit:cover; border:2px solid var(--purple); flex-shrink:0;}
+.player-card .stats{ display:flex; gap:12px; margin-top:3px;}
+.player-card .stat{ text-align:center;}
+.player-card .stat b{ display:block; font-family:Orbitron; font-size:13px; color:var(--cyan);}
+.player-card .stat span{ font-size:9px; color:var(--text-dim); text-transform:uppercase;}
+
+/* ---------- Admin dashboard ---------- */
+.admin-checkline{ display:flex; align-items:center; gap:8px; color:var(--text-dim); font-size:12.5px; margin:2px 0 4px;}
+.admin-checkline input{ width:20px; height:20px; accent-color:var(--pink);}
+.admin-fab{
+  position:fixed; right:14px; bottom:calc(14px + var(--safe-bottom)); width:var(--tap); height:var(--tap); border-radius:50%;
+  background:linear-gradient(135deg,#ff3d3d,#ff8a3d); color:#1a0a00; font-weight:900; display:none; align-items:center; justify-content:center;
+  z-index:550; box-shadow:0 0 16px rgba(255,61,61,.6); border:none;
+}
+.admin-fab.visible{ display:flex; }
+.admin-row{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13px;}
+.admin-row select{ min-height:40px; background:#12121f; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:0 8px;}
+
+/* ---------- Card-flip reveal (Truth or Dare) ---------- */
+.tod-flip{ perspective:1000px; }
+.tod-flip-inner{ transition:transform .55s cubic-bezier(.16,1,.3,1); transform-style:preserve-3d; }
+.tod-flip.flipped .tod-flip-inner{ transform:rotateY(360deg); }
+
+/* ---------- Never Have I Ever / Would You Rather views ---------- */
+.nhie-wrap, .wyr-wrap{ max-width:340px; width:100%; margin:0 auto; text-align:center; padding:6px;}
+.wyr-btn{ width:100%; min-height:60px; white-space:normal; margin-bottom:8px;}
+
+@media(prefers-reduced-motion:reduce){ *{ animation-duration:.001ms !important; transition-duration:.001ms !important; } }
+
+/* ============================================================
+   MOBILE: convert the left icon rail into a bottom tab bar
+   (thumb-reachable app-like navigation on small screens)
+============================================================ */
+@media (max-width: 860px){
+  #appShell.active{ flex-direction:column-reverse; }
+  .rail{
+    width:100%; height:auto; flex-direction:row; justify-content:space-around; align-items:center;
+    border-right:none; border-top:1px solid var(--line);
+    padding:8px 6px calc(8px + var(--safe-bottom)); gap:4px;
+    position:fixed; left:0; right:0; bottom:0; z-index:300; background:#08080fee; backdrop-filter:blur(10px);
+  }
+  .rail-logo{ display:none; }
+  .rail-spacer{ display:none; }
+  .rail-btn{ width:44px; height:44px; }
+  .main{ padding-bottom:calc(64px + var(--safe-bottom)); }
+  .sidebar{ left:0; }
+}
+
+/* ---------- Weather + clock widget (apiless: Open-Meteo, no key required) ---------- */
+.wc-widget{ display:flex; align-items:center; gap:10px; font-size:11.5px; color:var(--text-dim); white-space:nowrap;}
+.wc-widget .wc-time{ font-family:Orbitron; font-size:13px; color:var(--cyan); text-shadow:0 0 6px rgba(0,246,255,.5);}
+.wc-widget .wc-weather{ display:flex; align-items:center; gap:4px;}
+@media (max-width:640px){ .wc-widget .wc-date{ display:none; } }
+
+/* ---------- Language selector ---------- */
+.lang-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.lang-btn{ padding:0 14px; border-radius:20px; border:1px solid var(--line); background:#12121f; color:var(--text-dim); font-size:12.5px; font-weight:700;}
+.lang-btn.active{ border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 8px rgba(0,246,255,.35);}
+
+/* ---------- Theme toggle ---------- */
+.theme-toggle{ display:flex; gap:8px; }
+.theme-btn{ flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:#12121f; color:var(--text-dim); font-weight:700; font-size:12.5px;}
+.theme-btn.active{ border-color:var(--pink); color:var(--pink); box-shadow:0 0 8px rgba(255,43,214,.3);}
+
+/* ---------- Accent color picker ---------- */
+.accent-grid{ display:flex; gap:10px; flex-wrap:wrap; }
+.accent-swatch{ width:36px; height:36px; border-radius:50%; border:2px solid transparent; padding:0;}
+.accent-swatch.selected{ border-color:#fff; box-shadow:0 0 0 2px var(--sw-color, var(--cyan));}
+
+/* ---------- Server links / share sheet ---------- */
+.share-row{ display:flex; gap:8px; margin-top:10px; }
+.share-row .btn{ flex:1; }
+#serverLinkBox{ font-family:'Share Tech Mono',monospace; font-size:11.5px; word-break:break-all; padding:10px; background:#0c0c18; border:1px solid var(--line); border-radius:8px; color:var(--cyan);}
+.session-lock{ display:flex; align-items:center; gap:6px; color:var(--gold); font-size:11px; }
+
+/* ============================================================
+   PARTY CODES — short cross-play join codes
+============================================================ */
+.party-code-display{
+  font-family:'Orbitron',sans-serif; font-size:34px; font-weight:900; text-align:center; letter-spacing:6px;
+  color:var(--gold); text-shadow:0 0 14px rgba(255,210,63,.7), 0 0 30px rgba(255,210,63,.35);
+  padding:14px; border:1px dashed var(--gold); border-radius:12px; background:rgba(255,210,63,.06); margin:10px 0;
+  animation:codeGlow 2.4s ease-in-out infinite;
+}
+@keyframes codeGlow{ 0%,100%{ box-shadow:0 0 8px rgba(255,210,63,.15);} 50%{ box-shadow:0 0 22px rgba(255,210,63,.45);} }
+.party-code-chip{ font-family:'Orbitron'; font-size:11px; letter-spacing:2px; color:var(--gold); background:rgba(255,210,63,.1); border:1px solid rgba(255,210,63,.4); padding:2px 8px; border-radius:6px;}
+
+/* ============================================================
+   VIEW TRANSITIONS — smoother than a hard display swap
+============================================================ */
+.view.active{ animation:viewIn .32s cubic-bezier(.16,1,.3,1); }
+@keyframes viewIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+.list-item{ animation:listIn .3s cubic-bezier(.16,1,.3,1) backwards; }
+@keyframes listIn{ from{ opacity:0; transform:translateX(-6px);} to{ opacity:1; transform:translateX(0);} }
+.game-card{ animation:cardPop .35s cubic-bezier(.16,1,.3,1) backwards; }
+@keyframes cardPop{ from{ opacity:0; transform:translateY(10px) scale(.96);} to{ opacity:1; transform:translateY(0) scale(1);} }
+
+/* ---------- Ripple-style tap feedback ---------- */
+.btn, .icon-btn, .rail-btn, .game-card, .list-item{ position:relative; overflow:hidden; }
+.ripple{
+  position:absolute; border-radius:50%; background:rgba(255,255,255,.35); transform:scale(0);
+  animation:rippleAnim .55s ease-out; pointer-events:none;
+}
+@keyframes rippleAnim{ to{ transform:scale(3.2); opacity:0; } }
+
+/* ---------- Confetti burst ---------- */
+.confetti-piece{ position:fixed; top:-10px; width:8px; height:14px; z-index:9998; pointer-events:none; border-radius:2px; }
+@keyframes confettiFall{
+  0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+  100%{ transform:translateY(100vh) rotate(540deg); opacity:0; }
+}
+
+/* ---------- Boot / glitch intro for the auth screen ---------- */
+@keyframes bootGlitch{
+  0%{ opacity:0; transform:translateY(10px); filter:blur(3px);}
+  40%{ opacity:.7; transform:translateX(-2px); filter:blur(1px);}
+  55%{ opacity:.7; transform:translateX(2px);}
+  100%{ opacity:1; transform:translateY(0) translateX(0); filter:blur(0);}
+}
+.boot-glitch{ animation:bootGlitch .7s cubic-bezier(.16,1,.3,1); }
+
+/* ---------- Connection status banner ---------- */
+#connBanner{
+  position:fixed; top:0; left:0; right:0; z-index:9997; text-align:center; font-size:12px; font-weight:700;
+  padding:7px; background:linear-gradient(90deg,#3d1010,#3d2010); color:#ffb4b4; transform:translateY(-100%);
+  transition:transform .3s cubic-bezier(.16,1,.3,1); border-bottom:1px solid #7a2a2a;
+}
+#connBanner.show{ transform:translateY(0); }
+
+/* ---------- Achievement badges ---------- */
+.badge-row{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.achievement-badge{
+  font-size:10.5px; font-weight:800; padding:4px 9px; border-radius:14px; display:flex; align-items:center; gap:4px;
+  background:rgba(155,48,255,.12); border:1px solid var(--purple); color:var(--purple);
+}
+
+/* ---------- Sound toggle ---------- */
+.sound-toggle{ display:flex; gap:8px; }
+.sound-btn{ flex:1; padding:10px; border-radius:10px; border:1px solid var(--line); background:#12121f; color:var(--text-dim); font-weight:700; font-size:12.5px;}
+.sound-btn.active{ border-color:var(--green); color:var(--green); box-shadow:0 0 8px rgba(57,255,136,.3);}
 </style>
 </head>
 <body>
 <div class="bg-grid"></div>
+<div id="connBanner">📡 Reconnecting to the grid...</div>
 <div class="toast-wrap" id="toastWrap"></div>
 
 <!-- ============ AUTH SCREEN ============ -->
 <div id="authScreen">
-  <div class="auth-card panel">
+  <div class="auth-card panel boot-glitch">
     <div class="brand-row">
       <div class="brand">NEON<span>//</span><em>NEXUS</em></div>
     </div>
-    <div class="tagline">Jack in. Connect. Play.</div>
+    <div class="tagline" data-i18n="tagline">Jack in. Connect. Play.</div>
 
     <div class="auth-toggle">
-      <button id="tabLogin" class="active">Login</button>
-      <button id="tabRegister">Register</button>
+      <button id="tabLogin" class="active" data-i18n="tabLogin">Login</button>
+      <button id="tabRegister" data-i18n="tabRegister">Register</button>
     </div>
 
     <form id="loginForm" class="auth-form active">
       <div class="field"><label>Username</label><input type="text" id="loginUsername" autocomplete="username" required></div>
       <div class="field"><label>Password</label><input type="password" id="loginPassword" autocomplete="current-password" required></div>
-      <button type="submit" class="btn btn-solid auth-submit">Enter the Grid</button>
+      <label class="admin-checkline"><input type="checkbox" id="adminLoginCheckbox"> Log in as Admin</label>
+      <button type="submit" class="btn btn-solid auth-submit" data-i18n="enterGrid">Enter the Grid</button>
       <div class="auth-err" id="loginErr"></div>
     </form>
 
@@ -336,7 +602,7 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
         <div class="field"><label>Phone Number</label><input type="tel" id="regPhone" required></div>
         <div class="field"><label>Password</label><input type="password" id="regPassword" required></div>
       </div>
-      <button type="submit" class="btn btn-solid auth-submit">Create Identity</button>
+      <button type="submit" class="btn btn-solid auth-submit" data-i18n="createIdentity">Create Identity</button>
       <div class="auth-err" id="registerErr"></div>
     </form>
   </div>
@@ -350,39 +616,43 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
     <button class="rail-btn" id="navFriends" title="Friends">👥<span class="badge hidden" id="reqBadge">0</span></button>
     <button class="rail-btn" id="navGames" title="Games">🎮</button>
     <div class="rail-spacer"></div>
-    <button class="icon-btn" id="mobileMenuBtn" title="Menu" style="display:none;">☰</button>
-    <div class="rail-avatar" id="myAvatar" title="Logout">?</div>
+    <button class="icon-btn" id="openSettingsBtn" title="Profile &amp; Settings">⚙️</button>
+    <div class="rail-avatar" id="myAvatar" title="Profile / Logout">?</div>
   </div>
 
   <div class="sidebar" id="sidebar">
     <!-- SERVERS PANE -->
     <div id="paneServers">
       <div class="sidebar-header">
-        <div class="sidebar-title">Servers</div>
+        <div class="sidebar-title" data-i18n="servers">Servers</div>
         <button class="icon-btn" id="btnCreateServer" title="Create server">＋</button>
+      </div>
+      <div style="padding:0 10px 8px; display:flex; gap:6px;">
+        <input type="text" id="joinServerCode" placeholder="Paste invite link or code" data-i18n-placeholder="joinPlaceholder" style="font-size:12px; padding:9px 10px;">
+        <button class="btn btn-sm" id="btnJoinServer" data-i18n="join" style="flex-shrink:0;">Join</button>
       </div>
       <div class="sidebar-body" id="serverList"></div>
     </div>
     <!-- FRIENDS PANE -->
     <div id="paneFriends" class="hidden" style="display:flex; flex-direction:column; height:100%;">
       <div class="sidebar-header">
-        <div class="sidebar-title">Friends</div>
+        <div class="sidebar-title" data-i18n="friends">Friends</div>
         <button class="icon-btn" id="btnAddFriend" title="Add friend">＋</button>
       </div>
       <div class="sidebar-body">
         <div class="sidebar-section">
-          <div class="sidebar-section-label">Incoming Requests <span id="reqCount">0</span></div>
+          <div class="sidebar-section-label"><span data-i18n="incomingRequests">Incoming Requests</span> <span id="reqCount">0</span></div>
           <div id="requestList"></div>
         </div>
         <div class="sidebar-section">
-          <div class="sidebar-section-label">All Friends</div>
+          <div class="sidebar-section-label" data-i18n="allFriends">All Friends</div>
           <div id="friendList"></div>
         </div>
       </div>
     </div>
     <!-- GAMES PANE (placeholder, uses main view) -->
     <div id="paneGames" class="hidden">
-      <div class="sidebar-header"><div class="sidebar-title">Arcade</div></div>
+      <div class="sidebar-header"><div class="sidebar-title" data-i18n="arcade">Arcade</div></div>
       <div class="sidebar-body" style="color:var(--text-dim); font-size:13px; padding:10px;">Pick a mini-game from the main panel. Player pools for Truth or Dare are pulled from your active server's members.</div>
     </div>
   </div>
@@ -390,27 +660,43 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
   <div class="main">
     <div class="topbar">
       <button class="icon-btn hidden" id="hamburger">☰</button>
-      <div class="ttl" id="topTitle">Select a server</div>
+      <div class="ttl" id="topTitle" data-i18n="selectServer">Select a server</div>
       <div class="spacer"></div>
+      <div class="wc-widget" id="wcWidget">
+        <span class="wc-time" id="wcTime">--:--</span>
+        <span class="wc-date" id="wcDate"></span>
+        <span class="wc-weather" id="wcWeather"></span>
+      </div>
+      <button class="icon-btn hidden" id="shareServerBtn" title="Share server">🔗</button>
       <div class="sub" id="topSub"></div>
     </div>
 
     <!-- SERVER CHAT VIEW -->
     <div class="view active" id="viewServerChat">
       <div class="chat-scroll" id="serverMessages"><div class="empty-hint"><span class="big">🖧</span>Create or select a server to start chatting.</div></div>
+      <div class="typing-indicator" id="typingIndicatorServer"></div>
+      <div id="uploadErrorServer"></div>
       <div class="composer">
-        <input type="text" id="serverMsgInput" placeholder="Send a transmission..." disabled>
-        <button class="btn btn-pink" id="serverMsgSend" disabled>Send</button>
-        <button class="btn btn-purple" id="btnInviteFriend" disabled>Invite</button>
+        <button class="icon-btn" id="serverUploadBtn" title="Upload image/video" disabled>📎</button>
+        <button class="icon-btn" id="serverGifBtn" title="Search GIFs" disabled>GIF</button>
+        <input type="text" id="serverMsgInput" placeholder="Send a transmission..." data-i18n-placeholder="typingPlaceholderServer" disabled>
+        <button class="btn btn-pink" id="serverMsgSend" data-i18n="send" disabled>Send</button>
+        <button class="btn btn-purple" id="btnInviteFriend" data-i18n="invite" disabled>Invite</button>
+        <input type="file" id="serverUploadInput" accept="image/*,video/*" class="hidden">
       </div>
     </div>
 
     <!-- DM CHAT VIEW -->
     <div class="view" id="viewDM">
       <div class="chat-scroll" id="dmMessages"></div>
+      <div class="typing-indicator" id="typingIndicatorDM"></div>
+      <div id="uploadErrorDM"></div>
       <div class="composer">
-        <input type="text" id="dmMsgInput" placeholder="Message...">
-        <button class="btn btn-cyan btn" id="dmMsgSend">Send</button>
+        <button class="icon-btn" id="dmUploadBtn" title="Upload image/video">📎</button>
+        <button class="icon-btn" id="dmGifBtn" title="Search GIFs">GIF</button>
+        <input type="text" id="dmMsgInput" placeholder="Message..." data-i18n-placeholder="typingPlaceholderDM">
+        <button class="btn btn-cyan btn" id="dmMsgSend" data-i18n="send">Send</button>
+        <input type="file" id="dmUploadInput" accept="image/*,video/*" class="hidden">
       </div>
     </div>
 
@@ -420,13 +706,18 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
         <div class="panel game-card" id="cardWheel"><span class="emo">🎡</span><h3 class="glow-text-pink">Cyber Truth or Dare</h3><p>A neon wheel picks your Asker &amp; Answerer from the active server's roster.</p></div>
         <div class="panel game-card" id="cardTTT"><span class="emo">✕⭘</span><h3 class="glow-text-cyan">Cyberpunk Tic-Tac-Toe</h3><p>Classic 3x3 grid, glowing X/O, local 2-player score tracking.</p></div>
         <div class="panel game-card" id="cardMM"><span class="emo">🧠</span><h3 class="glow-text-purple">Memory Matrix</h3><p>Repeat the flashing neon sequence. Speed &amp; length ramp every round.</p></div>
+        <div class="panel game-card" id="cardNHIE"><span class="emo">🙅</span><h3 class="glow-text-green">Never Have I Ever</h3><p>Synced statement rounds — vote live with everyone in the active server.</p></div>
+        <div class="panel game-card" id="cardWYR"><span class="emo">🤔</span><h3 class="glow-text-cyan">Would You Rather</h3><p>Pick a side, watch the room's live vote tally update in real time.</p></div>
+        <div class="panel game-card" id="cardMLT"><span class="emo">👉</span><h3 class="glow-text-gold" style="color:var(--gold);">Most Likely To</h3><p>Vote who in the server fits the prompt best — live tally, synced.</p></div>
+        <div class="panel game-card" id="cardRPS"><span class="emo">✊✋✌️</span><h3 class="glow-text-pink">Rock · Paper · Scissors</h3><p>Quick local best-of duel with score tracking and win animation.</p></div>
+        <div class="panel game-card" id="cardScoreboard"><span class="emo">🏆</span><h3 style="color:var(--gold);">Scoreboard</h3><p>Live-ranked leaderboard for the active server — games, dares, truths, and total score.</p></div>
       </div>
     </div>
 
     <!-- WHEEL GAME VIEW -->
     <div class="view" id="viewWheel">
       <div class="game-view">
-        <a class="back-link" data-back="games">← Back to Arcade</a>
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
         <h2 class="glow-text-pink" style="margin:0;">Cyber Truth or Dare</h2>
         <div class="sub" id="wheelPoolInfo" style="color:var(--text-dim); font-size:13px; text-align:center;"></div>
         <div class="wheel-wrap">
@@ -434,15 +725,96 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
           <div class="wheel" id="wheelEl"></div>
           <div class="wheel-center">🎯</div>
         </div>
-        <button class="btn btn-solid" id="btnSpinWheel">Spin the Wheel</button>
-        <div class="panel tod-result hidden" id="todResult"></div>
+        <button class="btn btn-solid" id="btnSpinWheel" data-i18n="spin">Spin the Wheel</button>
+        <div class="tod-flip" id="todFlipWrap"><div class="tod-flip-inner">
+          <div class="panel tod-result hidden" id="todResult"></div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- NEVER HAVE I EVER VIEW -->
+    <div class="view" id="viewNHIE">
+      <div class="game-view">
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
+        <h2 class="glow-text-green" style="margin:0;">Never Have I Ever</h2>
+        <div class="panel nhie-wrap" style="padding:22px;">
+          <p id="nhieStatement" style="font-size:16px; min-height:56px;">Waiting for the first statement...</p>
+          <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn btn-green" id="nhieHaveBtn">I have 🙋</button>
+            <button class="btn btn-purple" id="nhieHaveNotBtn">I haven't 🙅</button>
+          </div>
+          <div id="nhieVotes" style="margin-top:10px; font-size:12px; color:var(--text-dim);"></div>
+          <button class="btn btn-solid" id="nhieNextBtn" style="margin-top:16px; width:100%;">Next Statement</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WOULD YOU RATHER VIEW -->
+    <div class="view" id="viewWYR">
+      <div class="game-view">
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
+        <h2 class="glow-text-cyan" style="margin:0;">Would You Rather</h2>
+        <div class="panel wyr-wrap" style="padding:22px;">
+          <button class="btn wyr-btn" id="wyrOptionA"></button>
+          <div style="color:var(--text-dim); font-size:11px; margin:6px 0;">OR</div>
+          <button class="btn btn-pink wyr-btn" id="wyrOptionB"></button>
+          <div id="wyrVotes" style="margin-top:10px; font-size:12px; color:var(--text-dim);"></div>
+          <button class="btn btn-solid" id="wyrNextBtn" style="margin-top:10px; width:100%;">Next Question</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOST LIKELY TO VIEW -->
+    <div class="view" id="viewMLT">
+      <div class="game-view">
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
+        <h2 style="margin:0; color:var(--gold);">Most Likely To</h2>
+        <div class="panel" style="padding:22px; max-width:340px; width:100%; text-align:center;">
+          <p id="mltPrompt" style="font-size:16px; min-height:56px;">...</p>
+          <div id="mltPlayerButtons" style="display:flex; flex-wrap:wrap; gap:8px; justify-content:center;"></div>
+          <div id="mltVotes" style="margin-top:12px; font-size:12px; color:var(--text-dim);"></div>
+          <button class="btn btn-solid" id="mltNextBtn" style="margin-top:14px; width:100%;">Next Prompt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROCK PAPER SCISSORS VIEW -->
+    <div class="view" id="viewRPS">
+      <div class="game-view">
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
+        <h2 class="glow-text-pink" style="margin:0;">Rock · Paper · Scissors</h2>
+        <div class="ttt-score">
+          <div><div class="glow-text-cyan n" id="rpsScoreP1">0</div><div style="font-size:11px;color:var(--text-dim);">PLAYER 1</div></div>
+          <div><div class="n" style="color:var(--text-dim);" id="rpsScoreD">0</div><div style="font-size:11px;color:var(--text-dim);">TIES</div></div>
+          <div><div class="glow-text-pink n" id="rpsScoreP2">0</div><div style="font-size:11px;color:var(--text-dim);">PLAYER 2</div></div>
+        </div>
+        <div id="rpsArena" style="font-size:56px; display:flex; gap:30px;"><span id="rpsP1Choice">❔</span><span id="rpsP2Choice">❔</span></div>
+        <div class="ttt-status" id="rpsStatus">Player 1: choose your move</div>
+        <div style="display:flex; gap:10px;">
+          <button class="btn" id="rpsRock">✊</button>
+          <button class="btn" id="rpsPaper">✋</button>
+          <button class="btn btn-pink" id="rpsScissors">✌️</button>
+        </div>
+        <button class="btn btn-purple" id="btnResetRPS">Reset Score</button>
+      </div>
+    </div>
+
+    <!-- SCOREBOARD VIEW -->
+    <div class="view" id="viewScoreboard">
+      <div class="game-view" style="align-items:stretch; max-width:420px; margin:0 auto; width:100%;">
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h2 style="margin:0; color:var(--gold);">🏆 Scoreboard</h2>
+          <button class="icon-btn" id="scoreboardRefreshBtn" title="Refresh">↻</button>
+        </div>
+        <div id="scoreboardList" style="display:flex; flex-direction:column; gap:10px;"></div>
       </div>
     </div>
 
     <!-- TIC TAC TOE VIEW -->
     <div class="view" id="viewTTT">
       <div class="game-view">
-        <a class="back-link" data-back="games">← Back to Arcade</a>
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
         <h2 class="glow-text-cyan" style="margin:0;">Cyberpunk Tic-Tac-Toe</h2>
         <div class="ttt-score">
           <div><div class="glow-text-cyan n" id="tttScoreX">0</div><div style="font-size:11px;color:var(--text-dim);">PLAYER X</div></div>
@@ -458,7 +830,7 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
     <!-- MEMORY MATRIX VIEW -->
     <div class="view" id="viewMM">
       <div class="game-view">
-        <a class="back-link" data-back="games">← Back to Arcade</a>
+        <a class="back-link" data-back="games" data-i18n="backArcade">← Back to Arcade</a>
         <h2 class="glow-text-purple" style="margin:0;">Memory Matrix</h2>
         <div class="mm-stats">
           <div><div class="glow-text-purple n" id="mmLevel">0</div><div style="font-size:11px;color:var(--text-dim);">LEVEL</div></div>
@@ -472,17 +844,125 @@ input:focus{ border-color:var(--cyan); box-shadow:0 0 12px rgba(0,246,255,.35); 
   </div>
 </div>
 
+<!-- ============ BOTTOM SHEETS (mobile-first) ============ -->
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+
+<div class="bottom-sheet" id="settingsSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><strong data-i18n="profileSettings">Profile &amp; Settings</strong><button class="icon-btn" data-sheet-close="settingsSheet">✕</button></div>
+  <div class="sheet-body">
+    <div style="text-align:center; margin-bottom:12px;">
+      <img id="avatarPreview" style="width:76px; height:76px; border-radius:20px; border:2px solid var(--cyan); object-fit:cover;" alt="your avatar">
+    </div>
+    <button class="btn" id="avatarUploadBtn" style="width:100%; margin-bottom:10px;" data-i18n="uploadPhoto">Upload Photo</button>
+    <input type="file" id="avatarUploadInput" accept="image/*" class="hidden">
+    <div id="avatarError" style="color:var(--pink); font-size:11px; margin-bottom:6px;"></div>
+    <div class="avatar-grid" id="avatarGrid"></div>
+    <div style="margin-top:14px;">
+      <label style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase;" data-i18n="displayName">Display name</label>
+      <input type="text" id="settingsDisplayName" style="margin-top:6px;">
+    </div>
+    <div style="margin-top:12px;">
+      <label style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase;" data-i18n="statusMsg">Status / bio</label>
+      <input type="text" id="settingsStatus" maxlength="80" placeholder="What's on your mind?" style="margin-top:6px;">
+    </div>
+    <div style="margin-top:14px;">
+      <label style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase;" data-i18n="accentColor">Accent Color</label>
+      <div class="accent-grid" id="accentGrid" style="margin-top:8px;"></div>
+    </div>
+    <button class="btn btn-solid" id="settingsSaveBtn" style="width:100%; margin-top:14px;" data-i18n="saveProfile">Save Profile</button>
+    <div id="settingsSavedMsg" style="text-align:center; color:var(--green); font-size:12px; margin-top:6px;"></div>
+
+    <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:12px;">
+      <div style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px;" data-i18n="yourStats">Your Stats</div>
+      <div id="myPlayerCard"></div>
+      <div class="badge-row" id="myBadgeRow"></div>
+    </div>
+
+    <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:12px;">
+      <div style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px;" data-i18n="theme">Theme</div>
+      <div class="theme-toggle">
+        <button class="theme-btn" id="themeDarkBtn" data-i18n="dark">🌙 Dark</button>
+        <button class="theme-btn" id="themeLightBtn" data-i18n="light">☀️ Light</button>
+      </div>
+    </div>
+
+    <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:12px;">
+      <div style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px;">Sound Effects</div>
+      <div class="sound-toggle">
+        <button class="sound-btn" id="soundOnBtn">🔊 On</button>
+        <button class="sound-btn" id="soundOffBtn">🔇 Off</button>
+      </div>
+    </div>
+
+    <div style="margin-top:18px; border-top:1px solid var(--line); padding-top:12px;">
+      <div style="font-size:10.5px; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px;" data-i18n="language">Language</div>
+      <div class="lang-row" id="langRow"></div>
+    </div>
+
+    <button class="btn btn-pink" id="settingsLogoutBtn" style="width:100%; margin-top:18px;" data-i18n="logout">Logout</button>
+  </div>
+</div>
+
+<div class="bottom-sheet" id="gifSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><strong>GIF Search</strong><button class="icon-btn" data-sheet-close="gifSheet">✕</button></div>
+  <div class="sheet-body">
+    <input type="text" id="gifSearchInput" placeholder="Search GIFs..." style="margin-bottom:10px;">
+    <div class="gif-grid" id="gifGrid"></div>
+  </div>
+</div>
+
+<button class="admin-fab" id="adminFab" title="Admin dashboard">⚠</button>
+<div class="bottom-sheet" id="adminSheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header"><strong class="glow-text-pink">Admin Dashboard</strong><button class="icon-btn" data-sheet-close="adminSheet">✕</button></div>
+  <div class="sheet-body" id="adminSheetBody"></div>
+</div>
+
 <!-- ============ MODALS ============ -->
 <div class="modal-bg hidden" id="modalCreateServer">
   <div class="modal panel">
     <button class="icon-btn modal-close" data-close>✕</button>
     <h3 class="glow-text-cyan">Create Server</h3>
     <div class="field"><label>Server Name</label><input type="text" id="newServerName" placeholder="e.g. Night City Crew"></div>
+    <div class="field">
+      <label>Session Password <span style="color:var(--text-dim); text-transform:none; font-weight:400;">(optional — required to join)</span></label>
+      <input type="password" id="newServerPassword" placeholder="Leave blank for open access">
+    </div>
     <button class="btn btn-solid" id="confirmCreateServer" style="width:100%;">Deploy Server</button>
   </div>
 </div>
 
+<div class="modal-bg hidden" id="modalServerPassword">
+  <div class="modal panel">
+    <button class="icon-btn modal-close" data-close>✕</button>
+    <h3 class="glow-text-pink">🔒 Session Password Required</h3>
+    <div class="field"><label>Password</label><input type="password" id="joinServerPasswordInput"></div>
+    <button class="btn btn-pink" id="confirmJoinPassword" style="width:100%;">Unlock &amp; Join</button>
+    <div class="auth-err" id="joinPasswordErr"></div>
+  </div>
+</div>
+
+<div class="modal-bg hidden" id="modalShareServer">
+  <div class="modal panel">
+    <button class="icon-btn modal-close" data-close>✕</button>
+    <h3 class="glow-text-purple">Share Server</h3>
+    <div style="text-align:center; color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:2px;">Party Code — for cross-play on any device</div>
+    <div class="party-code-display" id="partyCodeDisplay">------</div>
+    <button class="btn btn-sm" id="copyPartyCodeBtn" style="width:100%; margin-bottom:14px;">Copy Code</button>
+    <div style="color:var(--text-dim); font-size:11px; text-transform:uppercase; letter-spacing:1.5px; margin-bottom:4px;">Or share the full link</div>
+    <div id="serverLinkBox"></div>
+    <div class="share-row">
+      <button class="btn" id="copyServerLinkBtn">Copy Link</button>
+      <button class="btn btn-green" id="whatsappShareBtn">WhatsApp</button>
+    </div>
+    <button class="btn btn-solid" id="nativeShareBtn" style="width:100%; margin-top:8px;">Share via...</button>
+  </div>
+</div>
+
 <div class="modal-bg hidden" id="modalAddFriend">
+
   <div class="modal panel">
     <button class="icon-btn modal-close" data-close>✕</button>
     <h3 class="glow-text-pink">Add Friend</h3>
@@ -539,6 +1019,33 @@ function fmtTime(ts){
   const d = new Date(ts);
   return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
+
+/* ============================================================
+   ⚠ ADMIN CREDENTIALS
+   This is a static, client-only file — there is no server to hide a
+   secret behind, so anyone who views this page's source can read the
+   password below. Treat it as a party-host toggle, not real security.
+============================================================ */
+const ADMIN_USERNAME = 'Admin';
+const ADMIN_PASSWORD = 'Admin*2013';
+let IS_ADMIN = false;
+
+const DEFAULT_AVATARS = ['🟣','🔵','🟢','🟡','🟠','🔴','🟤','⚪'].map((emoji,i)=>({
+  id:'default-'+i,
+  url:`data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" rx="20" fill="#12121f"/><text x="50" y="62" font-size="46" text-anchor="middle">${emoji}</text></svg>`)}`
+}));
+
+/* ---------- Generic bottom sheet controls (mobile-first pattern) ---------- */
+function openSheet(id){ document.getElementById('sheetBackdrop').classList.add('open'); document.getElementById(id).classList.add('open'); }
+function closeSheet(id){ document.getElementById(id).classList.remove('open'); document.getElementById('sheetBackdrop').classList.remove('open'); }
+document.addEventListener('click', (e)=>{
+  const closeBtn = e.target.closest('[data-sheet-close]');
+  if(closeBtn) closeSheet(closeBtn.dataset.sheetClose);
+});
+document.getElementById('sheetBackdrop').addEventListener('click', ()=>{
+  document.querySelectorAll('.bottom-sheet.open').forEach(s=>s.classList.remove('open'));
+  document.getElementById('sheetBackdrop').classList.remove('open');
+});
 
 /* ============================================================
    SESSION / STATE
@@ -636,6 +1143,17 @@ loginForm.addEventListener('submit', async (e)=>{
   const username = document.getElementById('loginUsername').value.trim();
   const password = document.getElementById('loginPassword').value;
   const usernameLower = username.toLowerCase();
+  const wantsAdmin = document.getElementById('adminLoginCheckbox').checked;
+
+  if(wantsAdmin){
+    if(username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD){
+      errEl.textContent = 'Incorrect admin username or password.'; return;
+    }
+    IS_ADMIN = true;
+    toast('Admin override granted.', 'ok');
+    startSession({ uid: 'admin-' + (localStorage.getItem('nn_admin_uid') || (localStorage.setItem('nn_admin_uid', 'a'+Date.now().toString(36)), localStorage.getItem('nn_admin_uid'))), name:'Admin', username:'Admin', email:'' });
+    return;
+  }
 
   const btn = loginForm.querySelector('.auth-submit');
   btn.disabled = true; btn.textContent = 'Verifying...';
@@ -664,9 +1182,11 @@ loginForm.addEventListener('submit', async (e)=>{
 function startSession(user){
   CURRENT_USER = user;
   localStorage.setItem('nn_session', JSON.stringify(user));
+  localStorage.setItem('nn_is_admin', IS_ADMIN ? '1' : '0');
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appShell').classList.add('active');
   document.getElementById('myAvatar').textContent = initials(user.name || user.username);
+  document.getElementById('adminFab').classList.toggle('visible', IS_ADMIN);
   db.ref('users/'+user.uid+'/presence').set('online');
   db.ref('.info/connected').on('value', (snap)=>{
     if(snap.val()===true){
@@ -675,22 +1195,36 @@ function startSession(user){
   });
   initFriendsListeners();
   initServersListeners();
+  initProfileSettings();
+  if(IS_ADMIN) initAdminPanel();
+  checkUrlForJoin();
+  startClock();
+  initWeather();
+  initThemeControls();
+  initLanguageControls();
+  initSoundControls();
 }
 function logout(){
   if(CURRENT_USER){ db.ref('users/'+CURRENT_USER.uid+'/presence').set('offline'); }
   Object.keys(listenerRefs).forEach(detachListener);
   localStorage.removeItem('nn_session');
+  localStorage.removeItem('nn_is_admin');
   CURRENT_USER = null;
   location.reload();
 }
-document.getElementById('myAvatar').addEventListener('click', ()=>{
+document.getElementById('myAvatar').addEventListener('click', ()=> openSheet('settingsSheet'));
+document.getElementById('openSettingsBtn').addEventListener('click', ()=> openSheet('settingsSheet'));
+document.getElementById('settingsLogoutBtn').addEventListener('click', ()=>{
   if(confirm('Log out of NEON // NEXUS?')) logout();
 });
 
 (function restoreSession(){
   const raw = localStorage.getItem('nn_session');
   if(raw){
-    try{ startSession(JSON.parse(raw)); }catch(e){ localStorage.removeItem('nn_session'); }
+    try{
+      IS_ADMIN = localStorage.getItem('nn_is_admin') === '1';
+      startSession(JSON.parse(raw));
+    }catch(e){ localStorage.removeItem('nn_session'); }
   }
 })();
 
@@ -914,6 +1448,8 @@ function openDM(uid, username){
     if(items.length===0){
       msgsEl.innerHTML = '<div class="empty-hint"><span class="big">💬</span>Say hi to @'+esc(username)+'!</div>';
     }
+    if(items.length > (openDM._lastCount||0) && items.length && items[items.length-1].uid !== CURRENT_USER.uid) playMessageChime();
+    openDM._lastCount = items.length;
     items.forEach(m=> msgsEl.appendChild(renderMsg(m)));
     msgsEl.scrollTop = msgsEl.scrollHeight;
   });
@@ -992,6 +1528,7 @@ function renderServerEmpty(){
   document.getElementById('serverMsgInput').disabled = true;
   document.getElementById('serverMsgSend').disabled = true;
   document.getElementById('btnInviteFriend').disabled = true;
+  document.getElementById('shareServerBtn').classList.add('hidden');
 }
 
 function openServer(sid, name){
@@ -1002,6 +1539,7 @@ function openServer(sid, name){
   document.getElementById('serverMsgInput').disabled = false;
   document.getElementById('serverMsgSend').disabled = false;
   document.getElementById('btnInviteFriend').disabled = false;
+  document.getElementById('shareServerBtn').classList.remove('hidden');
   updateTopbar();
   const msgsEl = document.getElementById('serverMessages');
   msgsEl.innerHTML='';
@@ -1012,6 +1550,8 @@ function openServer(sid, name){
     if(items.length===0){
       msgsEl.innerHTML = '<div class="empty-hint"><span class="big">📡</span>No transmissions yet. Break the silence.</div>';
     }
+    if(items.length > (openServer._lastCount||0) && items.length && items[items.length-1].uid !== CURRENT_USER.uid) playMessageChime();
+    openServer._lastCount = items.length;
     items.forEach(m=> msgsEl.appendChild(renderMsg(m)));
     msgsEl.scrollTop = msgsEl.scrollHeight;
   });
@@ -1032,25 +1572,159 @@ async function sendServerMsg(){
 
 document.getElementById('btnCreateServer').addEventListener('click', ()=>{
   document.getElementById('newServerName').value='';
+  document.getElementById('newServerPassword').value='';
   openModal('modalCreateServer');
 });
+
+/* ---------- Party codes: short, human-friendly cross-play join codes ---------- */
+const PARTY_CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I — avoids visual ambiguity
+function randomPartyCode(){
+  let code = '';
+  for(let i=0;i<6;i++) code += PARTY_CODE_CHARS[Math.floor(Math.random()*PARTY_CODE_CHARS.length)];
+  return code;
+}
+async function generateUniquePartyCode(){
+  for(let attempt=0; attempt<8; attempt++){
+    const code = randomPartyCode();
+    const snap = await db.ref('partyCodes/'+code).get();
+    if(!snap.exists()) return code;
+  }
+  return randomPartyCode() + Math.floor(Math.random()*9); // astronomically unlikely fallback
+}
+
 document.getElementById('confirmCreateServer').addEventListener('click', async ()=>{
   const name = document.getElementById('newServerName').value.trim();
+  const password = document.getElementById('newServerPassword').value;
   if(!name){ toast('Enter a server name.', 'err'); return; }
   try{
     const ref = db.ref('servers').push();
-    await ref.set({
+    const partyCode = await generateUniquePartyCode();
+    const data = {
       name, ownerUid: CURRENT_USER.uid, createdAt: Date.now(),
-      members: { [CURRENT_USER.uid]: true }
-    });
-    toast('Server "'+name+'" deployed!', 'ok');
+      members: { [CURRENT_USER.uid]: true }, partyCode
+    };
+    if(password){ data.hasPassword = true; data.passwordHash = await sha256(password); }
+    await ref.set(data);
+    await db.ref('partyCodes/'+partyCode).set(ref.key);
+    toast('Server "'+name+'" deployed! Party code: '+partyCode, 'ok');
     closeModal('modalCreateServer');
     openServer(ref.key, name);
   }catch(err){ toast('Failed: '+(err.message||err), 'err'); }
 });
 
+/* ---------- Join a server by party code, pasted link, or raw ID — honors session passwords ---------- */
+let pendingJoinServerId = null;
+function extractServerIdFromInput(raw){
+  raw = raw.trim();
+  const match = raw.match(/[?&]join=([^&]+)/);
+  return match ? decodeURIComponent(match[1]) : raw;
+}
+function looksLikePartyCode(raw){
+  return /^[A-Z2-9]{5,8}$/i.test(raw) && !raw.includes('-'); // party codes are short; Firebase push keys are ~20 chars
+}
+async function resolveToServerId(rawInput){
+  const extracted = extractServerIdFromInput(rawInput);
+  if(looksLikePartyCode(extracted)){
+    const codeSnap = await db.ref('partyCodes/'+extracted.toUpperCase()).get();
+    if(codeSnap.exists()) return codeSnap.val();
+    return null; // looked like a code but didn't resolve — treat as not found rather than a raw ID
+  }
+  return extracted;
+}
+async function attemptJoinServer(rawInput){
+  if(!rawInput) return;
+  const serverId = await resolveToServerId(rawInput);
+  if(!serverId){ toast('No server found for that party code/link.', 'err'); return; }
+  const snap = await db.ref('servers/'+serverId).get();
+  if(!snap.exists()){ toast('No server found for that party code/link.', 'err'); return; }
+  const server = snap.val();
+  if(server.members && server.members[CURRENT_USER.uid]){ openServer(serverId, server.name); return; }
+  if(server.hasPassword){
+    pendingJoinServerId = serverId;
+    document.getElementById('joinServerPasswordInput').value='';
+    document.getElementById('joinPasswordErr').textContent='';
+    openModal('modalServerPassword');
+    return;
+  }
+  await db.ref('servers/'+serverId+'/members/'+CURRENT_USER.uid).set(true);
+  toast('Joined "'+server.name+'"!', 'ok');
+  fireConfetti();
+  openServer(serverId, server.name);
+}
+document.getElementById('btnJoinServer').addEventListener('click', ()=>{
+  attemptJoinServer(document.getElementById('joinServerCode').value);
+});
+document.getElementById('joinServerCode').addEventListener('keydown', (e)=>{
+  if(e.key==='Enter') attemptJoinServer(document.getElementById('joinServerCode').value);
+});
+document.getElementById('confirmJoinPassword').addEventListener('click', async ()=>{
+  const errEl = document.getElementById('joinPasswordErr');
+  const pass = document.getElementById('joinServerPasswordInput').value;
+  const snap = await db.ref('servers/'+pendingJoinServerId).get();
+  const server = snap.val();
+  if(!server){ errEl.textContent = 'Server no longer exists.'; return; }
+  const hash = await sha256(pass);
+  if(hash !== server.passwordHash){ errEl.textContent = 'Incorrect session password.'; return; }
+  await db.ref('servers/'+pendingJoinServerId+'/members/'+CURRENT_USER.uid).set(true);
+  closeModal('modalServerPassword');
+  toast('Joined "'+server.name+'"!', 'ok');
+  fireConfetti();
+  openServer(pendingJoinServerId, server.name);
+});
+
+/* ---------- Auto-join from a shared link (?join=serverId or ?join=PARTYCODE) ---------- */
+function checkUrlForJoin(){
+  const params = new URLSearchParams(location.search);
+  const joinId = params.get('join');
+  if(joinId) attemptJoinServer(joinId);
+}
+
+/* ---------- Share server: party code, link, copy, WhatsApp, native share ---------- */
+document.getElementById('shareServerBtn').addEventListener('click', async ()=>{
+  if(!state.activeServerId) return;
+  let server = state.servers[state.activeServerId];
+  let partyCode = server?.partyCode;
+  if(!partyCode){
+    // Legacy server created before party codes existed — mint one now so it can still cross-play.
+    partyCode = await generateUniquePartyCode();
+    await db.ref('servers/'+state.activeServerId+'/partyCode').set(partyCode);
+    await db.ref('partyCodes/'+partyCode).set(state.activeServerId);
+  }
+  document.getElementById('partyCodeDisplay').textContent = partyCode;
+  const link = location.origin + location.pathname + '?join=' + encodeURIComponent(partyCode);
+  document.getElementById('serverLinkBox').textContent = link;
+  openModal('modalShareServer');
+});
+document.getElementById('copyPartyCodeBtn').addEventListener('click', async ()=>{
+  const code = document.getElementById('partyCodeDisplay').textContent;
+  try{ await navigator.clipboard.writeText(code); toast('Party code copied!', 'ok'); }
+  catch(e){ toast('Could not copy — select the code manually.', 'err'); }
+});
+document.getElementById('copyServerLinkBtn').addEventListener('click', async ()=>{
+  const link = document.getElementById('serverLinkBox').textContent;
+  try{ await navigator.clipboard.writeText(link); toast('Link copied!', 'ok'); }
+  catch(e){ toast('Could not copy — long-press the link to copy manually.', 'err'); }
+});
+document.getElementById('whatsappShareBtn').addEventListener('click', ()=>{
+  const link = document.getElementById('serverLinkBox').textContent;
+  const code = document.getElementById('partyCodeDisplay').textContent;
+  const text = encodeURIComponent(`Join me on NEON // NEXUS — server "${state.activeServerName}"! Party code: ${code}\n${link}`);
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+});
+document.getElementById('nativeShareBtn').addEventListener('click', async ()=>{
+  const link = document.getElementById('serverLinkBox').textContent;
+  const code = document.getElementById('partyCodeDisplay').textContent;
+  if(navigator.share){
+    try{ await navigator.share({ title:'NEON // NEXUS', text:`Join "${state.activeServerName}" on NEON // NEXUS — party code ${code}`, url:link }); }
+    catch(e){ /* user cancelled */ }
+  } else {
+    toast('Native share isn\'t supported on this browser — use Copy Link instead.', 'err');
+  }
+});
+
 /* Invite friends into active server */
 document.getElementById('btnInviteFriend').addEventListener('click', ()=>{
+
   if(!state.activeServerId) return;
   const listEl = document.getElementById('invitePickList');
   const members = state.servers[state.activeServerId]?.members || {};
@@ -1079,77 +1753,138 @@ document.getElementById('confirmInvite').addEventListener('click', async ()=>{
 
 /* ============================================================
    GAMES HUB NAVIGATION
+   Truth or Dare / Never Have I Ever / Would You Rather all share the
+   same synced-room architecture: state lives at /servers/{id}/game
+   and every client in that server watches it via one listener. A
+   game needs an active server (so "the room" is well-defined) —
+   Tic-Tac-Toe and Memory Matrix stay local/offline mini-games.
 ============================================================ */
-document.getElementById('cardWheel').addEventListener('click', ()=>{ showView('viewWheel'); setupWheel(); });
+function requireServerThen(fn){
+  if(!state.activeServerId){ toast('Select or create a server first — synced games need a room.', 'err'); return; }
+  fn();
+}
+document.getElementById('cardWheel').addEventListener('click', ()=> requireServerThen(()=>{ showView('viewWheel'); mountSyncedGame('truthOrDare'); }));
 document.getElementById('cardTTT').addEventListener('click', ()=>{ showView('viewTTT'); });
 document.getElementById('cardMM').addEventListener('click', ()=>{ showView('viewMM'); });
+document.getElementById('cardNHIE').addEventListener('click', ()=> requireServerThen(()=>{ showView('viewNHIE'); mountSyncedGame('neverHaveIEver'); }));
+document.getElementById('cardWYR').addEventListener('click', ()=> requireServerThen(()=>{ showView('viewWYR'); mountSyncedGame('wouldYouRather'); }));
+document.getElementById('cardMLT').addEventListener('click', ()=> requireServerThen(()=>{ showView('viewMLT'); mountSyncedGame('mostLikelyTo'); }));
+document.getElementById('cardRPS').addEventListener('click', ()=>{ showView('viewRPS'); });
 
 /* ============================================================
-   GAME 1: CYBER TRUTH OR DARE WHEEL
+   SYNCED GAME ENGINE — plug-in registry over /servers/{id}/game
 ============================================================ */
-let wheelPlayers = [];
-let wheelRotation = 0;
-let wheelSpinning = false;
 const wheelColors = ['#ff2bd6','#00f6ff','#9b30ff','#39ff88','#ffd23f','#ff6b3d','#3dd2ff','#ff3d7f'];
+let ACTIVE_SYNCED_GAME = null;
 
-function getActivePlayerPool(){
-  // Prefer active server roster (resolved usernames), fallback to friends + self.
-  if(state.activeServerId && state.servers[state.activeServerId]){
-    return null; // resolved async below
-  }
-  const pool = [CURRENT_USER.username];
-  Object.values(state.friends).forEach(f=> pool.push(f.username));
-  return pool;
-}
-
-async function resolveServerRoster(sid){
-  const members = state.servers[sid]?.members || {};
+function resolveRosterUsernames(){
+  const members = state.servers[state.activeServerId]?.members || {};
   const uids = Object.keys(members);
   const names = [];
-  for(const uid of uids){
-    if(uid === CURRENT_USER.uid){ names.push(CURRENT_USER.username); continue; }
+  const promises = uids.map(async (uid)=>{
+    if(uid === CURRENT_USER.uid){ names.push(CURRENT_USER.username); return; }
     const snap = await db.ref('users/'+uid+'/username').get();
     if(snap.exists()) names.push(snap.val());
+  });
+  return Promise.all(promises).then(()=> names);
+}
+function writeGameState(newState){
+  db.ref(`servers/${state.activeServerId}/game/state`).set(newState);
+}
+async function bumpPlayerStat(username, statKey){
+  const members = state.servers[state.activeServerId]?.members || {};
+  for(const uid of Object.keys(members)){
+    const uSnap = await db.ref('users/'+uid+'/username').get();
+    if(uSnap.exists() && uSnap.val() === username){
+      const statSnap = await db.ref('users/'+uid+'/stats/'+statKey).get();
+      db.ref('users/'+uid+'/stats/'+statKey).set((statSnap.val()||0)+1);
+      return;
+    }
   }
-  return names;
 }
 
-async function setupWheel(){
+async function mountSyncedGame(gameId){
+  ACTIVE_SYNCED_GAME = gameId;
+  const gameRef = db.ref(`servers/${state.activeServerId}/game`);
+  const snap = await gameRef.get();
+  if(!snap.exists() || snap.val().gameId !== gameId){
+    const roster = await resolveRosterUsernames();
+    await gameRef.set({ gameId, state: GAME_INIT[gameId](roster) });
+  }
+  attachListener('syncedGame', gameRef, 'value', (s)=>{
+    const g = s.val();
+    if(!g || g.gameId !== ACTIVE_SYNCED_GAME) return;
+    GAME_RENDER[g.gameId](g.state);
+  });
+}
+
+/* ---------- GAME 1: CYBER TRUTH OR DARE (wheel, synced) ---------- */
+function initTodState(roster){ return { phase:'idle', players: roster, asker:null, answerer:null, mode:null, prompt:null, spinSeed:0 }; }
+function renderTod(gstate){
+  const players = (gstate.players && gstate.players.length) ? gstate.players : [];
   const infoEl = document.getElementById('wheelPoolInfo');
-  document.getElementById('todResult').classList.add('hidden');
-  document.getElementById('todResult').innerHTML='';
-  wheelRotation = 0;
-  document.getElementById('wheelEl').style.transition='none';
-  document.getElementById('wheelEl').style.transform='rotate(0deg)';
-
-  if(state.activeServerId){
-    infoEl.textContent = 'Loading roster from "'+state.activeServerName+'"...';
-    wheelPlayers = await resolveServerRoster(state.activeServerId);
-    infoEl.textContent = 'Players pulled from server "'+state.activeServerName+'"';
+  infoEl.textContent = players.length < 2 ? 'Need at least 2 members in this server.' : `Players pulled from server "${state.activeServerName}"`;
+  drawWheel(players);
+  document.getElementById('btnSpinWheel').disabled = players.length < 2 || gstate.phase==='spinning';
+  if(gstate.spinSeed && gstate.spinSeed !== renderTod._lastSeed){
+    renderTod._lastSeed = gstate.spinSeed;
+    animateWheelTo(players, gstate.asker);
+  }
+  const box = document.getElementById('todResult');
+  const flipWrap = document.getElementById('todFlipWrap');
+  if(gstate.phase !== 'result'){ box.classList.add('hidden'); flipWrap.classList.remove('flipped'); return; }
+  box.classList.remove('hidden');
+  flipWrap.classList.add('flipped');
+  const iAmAnswerer = CURRENT_USER.username === gstate.answerer;
+  const iAmAsker = CURRENT_USER.username === gstate.asker;
+  let inner = `<div style="margin-bottom:10px;">
+      <span class="player-tag a">🎤 ASKER: ${esc(gstate.asker)}</span>
+      <span class="player-tag b">🎯 ANSWERER: ${esc(gstate.answerer)}</span>
+    </div>`;
+  if(!gstate.mode){
+    inner += iAmAnswerer
+      ? `<div style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">Choose your fate:</div>
+         <div style="display:flex; gap:10px; justify-content:center;">
+           <button class="btn btn-cyan btn" id="chooseTruth">Truth</button>
+           <button class="btn btn-pink" id="chooseDare">Dare</button>
+         </div>`
+      : `<div style="color:var(--text-dim); font-size:13px;">Waiting for ${esc(gstate.answerer)} to choose Truth or Dare...</div>`;
+  } else if(!gstate.prompt){
+    inner += iAmAsker
+      ? `<div style="color:var(--text-dim); font-size:13px; margin-bottom:8px;" id="todPrompt">Type a ${esc(gstate.mode)} for ${esc(gstate.answerer)}:</div>
+         <input type="text" id="todInput" placeholder="Type it here...">
+         <button class="btn btn-solid" id="todSubmit" style="margin-top:10px; width:100%;">Reveal to ${esc(gstate.answerer)}</button>`
+      : `<div style="color:var(--text-dim); font-size:13px;">${esc(gstate.answerer)} picked <b style="color:var(--pink);">${esc(gstate.mode.toUpperCase())}</b>. Waiting for ${esc(gstate.asker)} to write it...</div>`;
   } else {
-    wheelPlayers = [CURRENT_USER.username, ...Object.values(state.friends).map(f=>f.username)];
-    infoEl.textContent = 'No active server — using you + your friends list.';
+    inner += `<div class="glow-text-green" style="font-weight:800; margin-bottom:6px;">${esc(gstate.mode.toUpperCase())}</div>
+      <div style="font-size:15px;">${esc(gstate.prompt)}</div>
+      <button class="btn btn-purple" id="todAgain" style="margin-top:14px; width:100%;">Spin Again</button>`;
+    if(renderTod._lastPromptFired !== gstate.prompt){
+      renderTod._lastPromptFired = gstate.prompt;
+      if(iAmAnswerer || iAmAsker) fireConfetti();
+    }
   }
-  if(wheelPlayers.length < 2){
-    infoEl.textContent += ' (Need at least 2 players — add friends or join a server with members.)';
-  }
-  drawWheel();
-  document.getElementById('btnSpinWheel').disabled = wheelPlayers.length < 2;
+  box.innerHTML = inner;
+  box.querySelector('#chooseTruth')?.addEventListener('click', ()=> db.ref(`servers/${state.activeServerId}/game/state/mode`).set('truth'));
+  box.querySelector('#chooseDare')?.addEventListener('click', ()=> db.ref(`servers/${state.activeServerId}/game/state/mode`).set('dare'));
+  box.querySelector('#todSubmit')?.addEventListener('click', ()=>{
+    const val = document.getElementById('todInput').value.trim();
+    if(!val) return;
+    db.ref(`servers/${state.activeServerId}/game/state/prompt`).set(val);
+    bumpPlayerStat(gstate.answerer, gstate.mode==='dare' ? 'daresCompleted' : 'truthsAnswered');
+  });
+  box.querySelector('#todAgain')?.addEventListener('click', ()=>{
+    writeGameState({ phase:'idle', players: gstate.players, asker:null, answerer:null, mode:null, prompt:null, spinSeed: gstate.spinSeed });
+  });
 }
-
-function drawWheel(){
+function drawWheel(players){
   const wheelEl = document.getElementById('wheelEl');
   wheelEl.innerHTML = '';
-  const n = Math.max(wheelPlayers.length, 1);
+  const n = Math.max(players.length, 1);
   const slice = 360/n;
-  let gradientParts = [];
-  wheelPlayers.forEach((p, i)=>{
-    const color = wheelColors[i % wheelColors.length];
-    const start = i*slice, end = (i+1)*slice;
-    gradientParts.push(`${color} ${start}deg ${end}deg`);
-  });
-  wheelEl.style.background = `conic-gradient(${gradientParts.join(',')})`;
-  wheelPlayers.forEach((p, i)=>{
+  const parts = players.map((p,i)=> `${wheelColors[i%wheelColors.length]} ${i*slice}deg ${(i+1)*slice}deg`);
+  wheelEl.style.background = `conic-gradient(${parts.join(',')})`;
+  players.forEach((p,i)=>{
     const mid = slice*i + slice/2;
     const label = document.createElement('div');
     label.className = 'wheel-label';
@@ -1158,75 +1893,150 @@ function drawWheel(){
     wheelEl.appendChild(label);
   });
 }
-
-document.getElementById('btnSpinWheel').addEventListener('click', ()=>{
-  if(wheelSpinning || wheelPlayers.length < 2) return;
-  wheelSpinning = true;
-  document.getElementById('todResult').classList.add('hidden');
-  const n = wheelPlayers.length;
-  const slice = 360/n;
-  const targetIndex = Math.floor(Math.random()*n);
-  // We want the pointer (top, 0deg) to land in the middle of targetIndex slice after spin.
-  const extraSpins = 5 + Math.floor(Math.random()*3);
-  const targetAngleWithinSlice = slice/2;
-  const finalRotation = extraSpins*360 + (360 - (targetIndex*slice + targetAngleWithinSlice));
-  wheelRotation = finalRotation;
+async function spinWheel(){
+  const players = await resolveRosterUsernames();
+  if(players.length < 2) return;
+  const targetIndex = Math.floor(Math.random()*players.length);
+  let bIndex = Math.floor(Math.random()*players.length), tries=0;
+  while(bIndex===targetIndex && tries<20){ bIndex = Math.floor(Math.random()*players.length); tries++; }
+  playSpinChime();
+  writeGameState({ phase:'spinning', players, asker: players[targetIndex], answerer: players[bIndex], mode:null, prompt:null, spinSeed: Date.now() });
+}
+document.getElementById('btnSpinWheel').addEventListener('click', spinWheel);
+function animateWheelTo(players, targetUsername){
   const wheelEl = document.getElementById('wheelEl');
+  const n = players.length;
+  const idx = Math.max(players.indexOf(targetUsername), 0);
+  const slice = 360/n;
+  const extraSpins = 5 + Math.floor(Math.random()*3);
+  const finalRotation = extraSpins*360 + (360 - (idx*slice + slice/2));
   wheelEl.style.transition = 'transform 4.2s cubic-bezier(.17,.87,.28,1)';
-  wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
-
+  wheelEl.style.transform = `rotate(${finalRotation}deg)`;
   setTimeout(()=>{
-    wheelSpinning = false;
-    const playerA = wheelPlayers[targetIndex]; // Asker
-    let bIndex = Math.floor(Math.random()*n);
-    let tries=0;
-    while(bIndex===targetIndex && n>1 && tries<20){ bIndex = Math.floor(Math.random()*n); tries++; }
-    const playerB = wheelPlayers[bIndex];
-    showTodResult(playerA, playerB);
+    db.ref(`servers/${state.activeServerId}/game/state`).transaction(s=>{
+      if(s && s.phase==='spinning'){ s.phase='result'; }
+      return s;
+    });
   }, 4300);
+}
+
+/* ---------- GAME: NEVER HAVE I EVER (synced) ---------- */
+const NHIE_STATEMENTS = ["...gone skinny dipping.","...pretended to be sick to skip work or school.","...sent a text to the wrong person.","...stayed up all night for a video game.","...cried during a movie.","...forgotten someone's name right after meeting them.","...eaten food off the floor.","...ghosted someone."];
+function initNhieState(){ return { statement: NHIE_STATEMENTS[Math.floor(Math.random()*NHIE_STATEMENTS.length)], votes:{} }; }
+function renderNhie(gstate){
+  document.getElementById('nhieStatement').textContent = gstate.statement || '...';
+  const votes = gstate.votes || {};
+  const have = Object.values(votes).filter(v=>v==='have').length;
+  const haveNot = Object.values(votes).filter(v=>v==='haveNot').length;
+  document.getElementById('nhieVotes').textContent = `🙋 ${have}   ·   🙅 ${haveNot}`;
+}
+document.getElementById('nhieHaveBtn').addEventListener('click', ()=>{
+  db.ref(`servers/${state.activeServerId}/game/state/votes/${sanitizeKey(CURRENT_USER.username)}`).set('have');
+  bumpPlayerStat(CURRENT_USER.username, 'gamesPlayed');
+});
+document.getElementById('nhieHaveNotBtn').addEventListener('click', ()=>{
+  db.ref(`servers/${state.activeServerId}/game/state/votes/${sanitizeKey(CURRENT_USER.username)}`).set('haveNot');
+  bumpPlayerStat(CURRENT_USER.username, 'gamesPlayed');
+});
+document.getElementById('nhieNextBtn').addEventListener('click', ()=>{
+  writeGameState(initNhieState());
 });
 
-function showTodResult(playerA, playerB){
-  const box = document.getElementById('todResult');
-  box.classList.remove('hidden');
-  box.innerHTML = `
-    <div style="margin-bottom:10px;">
-      <span class="player-tag a">🎤 ASKER: ${esc(playerA)}</span>
-      <span class="player-tag b">🎯 ANSWERER: ${esc(playerB)}</span>
-    </div>
-    <div id="todStep2">
-      <div style="color:var(--text-dim); font-size:13px; margin-bottom:10px;">${esc(playerB)}, choose your fate:</div>
-      <div style="display:flex; gap:10px; justify-content:center;">
-        <button class="btn btn-cyan btn" id="chooseTruth">Truth</button>
-        <button class="btn btn-pink" id="chooseDare">Dare</button>
-      </div>
-    </div>
-    <div id="todStep3" class="hidden" style="margin-top:16px;">
-      <div style="color:var(--text-dim); font-size:13px; margin-bottom:8px;" id="todPrompt"></div>
-      <input type="text" id="todInput" placeholder="Type it here...">
-      <button class="btn btn-solid" id="todSubmit" style="margin-top:10px; width:100%;">Reveal to ${esc(playerB)}</button>
-    </div>
-    <div id="todStep4" class="hidden" style="margin-top:16px;"></div>
-  `;
-  document.getElementById('chooseTruth').onclick = ()=> promptForContent('Truth', playerA, playerB);
-  document.getElementById('chooseDare').onclick = ()=> promptForContent('Dare', playerA, playerB);
+/* ---------- GAME: WOULD YOU RATHER (synced) ---------- */
+const WYR_PAIRS = [["Have the ability to fly","Have the ability to turn invisible"],["Always be 10 minutes late","Always be 20 minutes early"],["Give up your phone for a month","Give up your car for a month"],["Only be able to whisper","Only be able to shout"],["Live without music","Live without movies"]];
+function initWyrState(){ const [a,b] = WYR_PAIRS[Math.floor(Math.random()*WYR_PAIRS.length)]; return { optionA:a, optionB:b, votes:{A:0,B:0}, voted:{} }; }
+function renderWyr(gstate){
+  document.getElementById('wyrOptionA').textContent = gstate.optionA || '...';
+  document.getElementById('wyrOptionB').textContent = gstate.optionB || '...';
+  document.getElementById('wyrVotes').textContent = `A: ${gstate.votes?.A||0} votes  ·  B: ${gstate.votes?.B||0} votes`;
 }
-function promptForContent(mode, playerA, playerB){
-  document.getElementById('todStep2').classList.add('hidden');
-  const step3 = document.getElementById('todStep3');
-  step3.classList.remove('hidden');
-  document.getElementById('todPrompt').textContent = `${playerA}, type a ${mode} for ${playerB}:`;
-  document.getElementById('todSubmit').onclick = ()=>{
-    const val = document.getElementById('todInput').value.trim();
-    if(!val) return;
-    step3.classList.add('hidden');
-    const step4 = document.getElementById('todStep4');
-    step4.classList.remove('hidden');
-    step4.innerHTML = `<div class="glow-text-green" style="font-weight:800; margin-bottom:6px;">${esc(mode.toUpperCase())}</div><div style="font-size:15px;">${esc(val)}</div>
-      <button class="btn btn-purple" id="todAgain" style="margin-top:14px;">Spin Again</button>`;
-    document.getElementById('todAgain').onclick = ()=>{ document.getElementById('todResult').classList.add('hidden'); };
-  };
+function voteWYR(option){
+  db.ref(`servers/${state.activeServerId}/game/state`).transaction(s=>{
+    if(!s) return s;
+    s.voted = s.voted || {};
+    const key = sanitizeKey(CURRENT_USER.username);
+    if(s.voted[key]) return s;
+    s.voted[key] = option;
+    s.votes = s.votes || {A:0,B:0};
+    s.votes[option] = (s.votes[option]||0) + 1;
+    return s;
+  });
+  bumpPlayerStat(CURRENT_USER.username, 'gamesPlayed');
 }
+document.getElementById('wyrOptionA').addEventListener('click', ()=> voteWYR('A'));
+document.getElementById('wyrOptionB').addEventListener('click', ()=> voteWYR('B'));
+document.getElementById('wyrNextBtn').addEventListener('click', ()=> writeGameState(initWyrState()));
+
+/* ---------- GAME: MOST LIKELY TO (synced) ---------- */
+const MLT_PROMPTS = ["...become famous?","...survive a zombie apocalypse?","...win the lottery and go broke in a year?","...become the next big influencer?","...forget their own birthday?","...start a business on a whim?","...cry during a Pixar movie?","...get lost using GPS?"];
+function initMltState(roster){ return { prompt: MLT_PROMPTS[Math.floor(Math.random()*MLT_PROMPTS.length)], players: roster, votes:{} }; }
+function renderMlt(gstate){
+  document.getElementById('mltPrompt').textContent = 'Most likely to ' + (gstate.prompt || '...');
+  const btnWrap = document.getElementById('mltPlayerButtons');
+  const players = gstate.players || [];
+  if(btnWrap.dataset.rendered !== players.join(',')){
+    btnWrap.innerHTML = players.map(p=>`<button class="btn btn-sm" data-vote="${esc(p)}">${esc(p)}</button>`).join('');
+    btnWrap.dataset.rendered = players.join(',');
+    btnWrap.querySelectorAll('[data-vote]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        db.ref(`servers/${state.activeServerId}/game/state/votes/${sanitizeKey(CURRENT_USER.username)}`).set(b.dataset.vote);
+        bumpPlayerStat(CURRENT_USER.username, 'gamesPlayed');
+      });
+    });
+  }
+  const votes = gstate.votes || {};
+  const tally = {};
+  Object.values(votes).forEach(v=> tally[v] = (tally[v]||0)+1);
+  const parts = Object.entries(tally).sort((a,b)=>b[1]-a[1]).map(([name,count])=> `${esc(name)}: ${count}`);
+  document.getElementById('mltVotes').textContent = parts.join('  ·  ') || 'No votes yet';
+}
+document.getElementById('mltNextBtn').addEventListener('click', async ()=>{
+  const roster = await resolveRosterUsernames();
+  writeGameState(initMltState(roster));
+});
+
+const GAME_INIT = { truthOrDare: initTodState, neverHaveIEver: initNhieState, wouldYouRather: initWyrState, mostLikelyTo: initMltState };
+const GAME_RENDER = { truthOrDare: renderTod, neverHaveIEver: renderNhie, wouldYouRather: renderWyr, mostLikelyTo: renderMlt };
+
+/* ---------- GAME: ROCK PAPER SCISSORS (local, same-device duel) ---------- */
+const RPS_EMOJI = { rock:'✊', paper:'✋', scissors:'✌️' };
+const RPS_BEATS = { rock:'scissors', paper:'rock', scissors:'paper' };
+let rpsTurn = 1, rpsP1Choice = null, rpsScores = { p1:0, p2:0, draw:0 };
+function rpsPick(choice){
+  if(rpsTurn === 1){
+    rpsP1Choice = choice;
+    document.getElementById('rpsP1Choice').textContent = '🤫';
+    rpsTurn = 2;
+    document.getElementById('rpsStatus').textContent = 'Player 2: choose your move';
+    return;
+  }
+  const p2Choice = choice;
+  document.getElementById('rpsP1Choice').textContent = RPS_EMOJI[rpsP1Choice];
+  document.getElementById('rpsP2Choice').textContent = RPS_EMOJI[p2Choice];
+  let resultText;
+  if(rpsP1Choice === p2Choice){ rpsScores.draw++; resultText = "It's a tie!"; playBeep(440,0.15,'square'); }
+  else if(RPS_BEATS[rpsP1Choice] === p2Choice){ rpsScores.p1++; resultText = 'Player 1 wins!'; playSpinChime(); fireConfetti(); }
+  else { rpsScores.p2++; resultText = 'Player 2 wins!'; playSpinChime(); fireConfetti(); }
+  document.getElementById('rpsScoreP1').textContent = rpsScores.p1;
+  document.getElementById('rpsScoreP2').textContent = rpsScores.p2;
+  document.getElementById('rpsScoreD').textContent = rpsScores.draw;
+  document.getElementById('rpsStatus').textContent = resultText;
+  rpsTurn = 1; rpsP1Choice = null;
+  setTimeout(()=>{
+    document.getElementById('rpsP1Choice').textContent = '❔';
+    document.getElementById('rpsP2Choice').textContent = '❔';
+    document.getElementById('rpsStatus').textContent = 'Player 1: choose your move';
+  }, 1600);
+}
+document.getElementById('rpsRock').addEventListener('click', ()=> rpsPick('rock'));
+document.getElementById('rpsPaper').addEventListener('click', ()=> rpsPick('paper'));
+document.getElementById('rpsScissors').addEventListener('click', ()=> rpsPick('scissors'));
+document.getElementById('btnResetRPS').addEventListener('click', ()=>{
+  rpsScores = { p1:0, p2:0, draw:0 };
+  document.getElementById('rpsScoreP1').textContent = '0';
+  document.getElementById('rpsScoreP2').textContent = '0';
+  document.getElementById('rpsScoreD').textContent = '0';
+});
 
 /* ============================================================
    GAME 2: TIC TAC TOE
@@ -1260,6 +2070,7 @@ function tttMove(i){
     tttScores[tttTurn]++;
     document.getElementById('tttStatus').innerHTML = `<span class="glow-text-${tttTurn==='X'?'cyan':'pink'}">Player ${tttTurn} wins!</span>`;
     highlightWin(win);
+    playSpinChime(); fireConfetti();
   } else if(tttBoard.every(c=>c)){
     tttActive = false;
     tttScores.D++;
@@ -1372,9 +2183,526 @@ function mmCellClick(i){
 }
 
 /* ============================================================
+   DEEP PROFILE CUSTOMIZATION + PLAYER CARD
+============================================================ */
+function renderPlayerCard(p){
+  const el = document.createElement('div');
+  el.className = 'player-card';
+  el.innerHTML = `
+    <img class="avatar" src="${p.avatarUrl || DEFAULT_AVATARS[0].url}" alt="${esc(p.username)}">
+    <div style="flex:1;">
+      <div style="font-weight:800; font-size:13.5px;">${esc(p.name||p.username)}</div>
+      ${p.status ? `<div style="font-size:11px; color:var(--text-dim); margin:2px 0 4px; font-style:italic;">"${esc(p.status)}"</div>` : ''}
+      <div class="stats">
+        <div class="stat"><b>${p.stats?.gamesPlayed??0}</b><span>Games</span></div>
+        <div class="stat"><b>${p.stats?.daresCompleted??0}</b><span>Dares</span></div>
+        <div class="stat"><b>${p.stats?.truthsAnswered??0}</b><span>Truths</span></div>
+      </div>
+    </div>`;
+  return el;
+}
+
+async function initProfileSettings(){
+  const grid = document.getElementById('avatarGrid');
+  const preview = document.getElementById('avatarPreview');
+  let mySnap = await db.ref('users/'+CURRENT_USER.uid).get();
+  let myData = mySnap.val() || {};
+  let selected = myData.avatarUrl || DEFAULT_AVATARS[0].url;
+  let selectedAccent = myData.accentColor || ACCENT_COLORS[0];
+
+  grid.innerHTML = '';
+  DEFAULT_AVATARS.forEach(a=>{
+    const btn = document.createElement('button');
+    btn.innerHTML = `<img src="${a.url}" alt="avatar option">`;
+    if(a.url === selected) btn.classList.add('selected');
+    btn.addEventListener('click', ()=>{
+      selected = a.url; preview.src = a.url;
+      [...grid.children].forEach(c=>c.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+    grid.appendChild(btn);
+  });
+  preview.src = selected;
+  preview.style.borderColor = selectedAccent;
+  document.getElementById('settingsDisplayName').value = myData.name || CURRENT_USER.name || CURRENT_USER.username;
+  document.getElementById('settingsStatus').value = myData.status || '';
+  document.getElementById('myPlayerCard').innerHTML = '';
+  document.getElementById('myPlayerCard').appendChild(renderPlayerCard({
+    username: CURRENT_USER.username, name: myData.name || CURRENT_USER.name, avatarUrl: selected, stats: myData.stats, status: myData.status
+  }));
+  renderBadges(document.getElementById('myBadgeRow'), myData.stats);
+
+  const accentGrid = document.getElementById('accentGrid');
+  accentGrid.innerHTML = ACCENT_COLORS.map(c=>`<button class="accent-swatch${c===selectedAccent?' selected':''}" style="background:${c}; --sw-color:${c};" data-accent="${c}"></button>`).join('');
+  accentGrid.querySelectorAll('[data-accent]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      selectedAccent = btn.dataset.accent;
+      accentGrid.querySelectorAll('.accent-swatch').forEach(s=>s.classList.remove('selected'));
+      btn.classList.add('selected');
+      preview.style.borderColor = selectedAccent;
+    });
+  });
+
+  document.getElementById('avatarUploadBtn').onclick = ()=> document.getElementById('avatarUploadInput').click();
+  document.getElementById('avatarUploadInput').onchange = (e)=>{
+    const file = e.target.files[0];
+    const errEl = document.getElementById('avatarError');
+    errEl.textContent = '';
+    if(!file) return;
+    if(!/^image\/(png|jpe?g|webp|gif)$/.test(file.type)){ errEl.textContent = 'Please choose a PNG, JPG, WEBP, or GIF image.'; return; }
+    if(file.size > 5*1024*1024){ errEl.textContent = 'Image must be under 5MB.'; return; }
+    const reader = new FileReader();
+    reader.onload = ()=>{ selected = reader.result; preview.src = selected; [...grid.children].forEach(c=>c.classList.remove('selected')); };
+    reader.readAsDataURL(file);
+  };
+  document.getElementById('settingsSaveBtn').onclick = async ()=>{
+    const name = document.getElementById('settingsDisplayName').value.trim() || CURRENT_USER.username;
+    const status = document.getElementById('settingsStatus').value.trim();
+    await db.ref('users/'+CURRENT_USER.uid).update({ avatarUrl: selected, name, status, accentColor: selectedAccent });
+    CURRENT_USER.name = name;
+    localStorage.setItem('nn_session', JSON.stringify(CURRENT_USER));
+    applyAccentColor(selectedAccent);
+    document.getElementById('settingsSavedMsg').textContent = 'Saved!';
+    document.getElementById('myPlayerCard').innerHTML = '';
+    const freshStats = (await db.ref('users/'+CURRENT_USER.uid+'/stats').get()).val();
+    document.getElementById('myPlayerCard').appendChild(renderPlayerCard({ username:CURRENT_USER.username, name, avatarUrl:selected, stats:freshStats, status }));
+    renderBadges(document.getElementById('myBadgeRow'), freshStats);
+    setTimeout(()=> document.getElementById('settingsSavedMsg').textContent='', 1600);
+  };
+  applyAccentColor(selectedAccent);
+}
+
+/* ============================================================
+   ADMIN DASHBOARD
+   Reminder: this file has no server, so these actions just write
+   directly to the same open database any client can reach — they
+   are convenience controls for a trusted host, not an enforced
+   permission system.
+============================================================ */
+function initAdminPanel(){
+  document.getElementById('adminFab').addEventListener('click', ()=>{ renderAdminPanel(); openSheet('adminSheet'); });
+}
+function renderAdminPanel(){
+  const body = document.getElementById('adminSheetBody');
+  const hasServer = !!state.activeServerId;
+  body.innerHTML = `
+    <div class="admin-row"><span>Force random turn (active server's Truth or Dare)</span><button class="btn btn-solid" id="adminForceTurnBtn" ${hasServer?'':'disabled'}>Force</button></div>
+    <div class="admin-row">
+      <span>Switch active game (${hasServer ? esc(state.activeServerName) : 'no server selected'})</span>
+      <select id="adminGameSelect" ${hasServer?'':'disabled'}>
+        <option value="truthOrDare">Truth or Dare</option>
+        <option value="neverHaveIEver">Never Have I Ever</option>
+        <option value="wouldYouRather">Would You Rather</option>
+      </select>
+      <button class="btn" id="adminSwitchGameBtn" ${hasServer?'':'disabled'}>Go</button>
+    </div>
+    <div style="margin-top:12px; font-size:10.5px; color:var(--text-dim); text-transform:uppercase;">Members of ${hasServer?esc(state.activeServerName):'—'}</div>
+    <div id="adminPlayerList"></div>
+  `;
+  document.getElementById('adminForceTurnBtn')?.addEventListener('click', ()=> hasServer && spinWheel());
+  document.getElementById('adminSwitchGameBtn')?.addEventListener('click', async ()=>{
+    const gameId = document.getElementById('adminGameSelect').value;
+    const roster = await resolveRosterUsernames();
+    await db.ref(`servers/${state.activeServerId}/game`).set({ gameId, state: GAME_INIT[gameId](roster) });
+    toast('Switched server game to ' + gameId, 'ok');
+  });
+  refreshAdminPlayerList();
+}
+async function refreshAdminPlayerList(){
+  const listEl = document.getElementById('adminPlayerList');
+  if(!listEl || !state.activeServerId) { if(listEl) listEl.innerHTML=''; return; }
+  const members = state.servers[state.activeServerId]?.members || {};
+  const rows = [];
+  for(const memberUid of Object.keys(members)){
+    const snap = await db.ref('users/'+memberUid+'/username').get();
+    rows.push(`<div class="admin-row"><span>${esc(snap.val()||memberUid)}</span><button class="btn btn-pink" data-kick="${memberUid}">Kick</button></div>`);
+  }
+  listEl.innerHTML = rows.join('');
+  listEl.querySelectorAll('[data-kick]').forEach(btn=>{
+    btn.addEventListener('click', ()=> db.ref(`servers/${state.activeServerId}/members/${btn.dataset.kick}`).remove());
+  });
+}
+
+/* ============================================================
+   RICH-MEDIA CHAT: typing indicators, GIF search, uploads
+   (applies to both server chat and DM chat)
+============================================================ */
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
+const ALLOWED_UPLOAD_TYPES = /^image\/(png|jpe?g|gif|webp)$|^video\/(mp4|webm|quicktime)$/;
+let gifTargetContext = null; // 'server' | 'dm'
+let typingTimeoutServer = null, typingTimeoutDM = null;
+
+// ---- typing: server chat ----
+document.getElementById('serverMsgInput').addEventListener('input', ()=>{
+  if(!state.activeServerId) return;
+  db.ref(`servers/${state.activeServerId}/typing/${CURRENT_USER.uid}`).set(CURRENT_USER.username);
+  db.ref(`servers/${state.activeServerId}/typing/${CURRENT_USER.uid}`).onDisconnect().remove();
+  clearTimeout(typingTimeoutServer);
+  typingTimeoutServer = setTimeout(()=> db.ref(`servers/${state.activeServerId}/typing/${CURRENT_USER.uid}`).remove(), 1500);
+});
+// ---- typing: DM chat ----
+document.getElementById('dmMsgInput').addEventListener('input', ()=>{
+  if(!state.activeDmUid) return;
+  const chatId = dmChatId(CURRENT_USER.uid, state.activeDmUid);
+  db.ref(`dms_typing/${chatId}/${CURRENT_USER.uid}`).set(CURRENT_USER.username);
+  db.ref(`dms_typing/${chatId}/${CURRENT_USER.uid}`).onDisconnect().remove();
+  clearTimeout(typingTimeoutDM);
+  typingTimeoutDM = setTimeout(()=> db.ref(`dms_typing/${chatId}/${CURRENT_USER.uid}`).remove(), 1500);
+});
+
+// ---- uploads: server chat ----
+document.getElementById('serverUploadBtn').addEventListener('click', ()=> document.getElementById('serverUploadInput').click());
+document.getElementById('serverUploadInput').addEventListener('change', (e)=> handleUpload(e.target.files[0], 'server'));
+// ---- uploads: DM chat ----
+document.getElementById('dmUploadBtn').addEventListener('click', ()=> document.getElementById('dmUploadInput').click());
+document.getElementById('dmUploadInput').addEventListener('change', (e)=> handleUpload(e.target.files[0], 'dm'));
+
+function handleUpload(file, context){
+  const errEl = document.getElementById(context==='server' ? 'uploadErrorServer' : 'uploadErrorDM');
+  errEl.textContent = '';
+  if(!file) return;
+  if(!ALLOWED_UPLOAD_TYPES.test(file.type)){ errEl.textContent = 'Only images (png/jpg/gif/webp) or videos (mp4/webm/mov) are allowed.'; return; }
+  if(file.size > MAX_UPLOAD_BYTES){ errEl.textContent = `File is ${(file.size/1024/1024).toFixed(1)}MB — the limit is 15MB.`; return; }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    const msg = { uid:CURRENT_USER.uid, username:CURRENT_USER.username, type: file.type.startsWith('video')?'video':'image', dataUrl:reader.result, fileName:file.name, ts:Date.now() };
+    if(context==='server' && state.activeServerId) db.ref('serverMessages/'+state.activeServerId).push(msg);
+    if(context==='dm' && state.activeDmUid) db.ref('dms/'+dmChatId(CURRENT_USER.uid, state.activeDmUid)).push(msg);
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---- GIF search (mock provider, Tenor/Giphy-ready — see comment below) ----
+async function searchGifs(query){
+  await new Promise(res=>setTimeout(res,250));
+  const seed = encodeURIComponent(query || 'reaction');
+  return Array.from({length:9},(_,i)=>({ id:`${seed}-${i}`, url:`https://placehold.co/160x120/1a1a2e/00f6ff?text=${seed}+${i+1}` }));
+  // Swap this body for a real fetch(), e.g.:
+  // const res = await fetch(`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=YOUR_KEY&limit=12`);
+  // const data = await res.json();
+  // return data.results.map(r => ({ id:r.id, url:r.media_formats.tinygif.url }));
+}
+document.getElementById('serverGifBtn').addEventListener('click', ()=>{ gifTargetContext='server'; openGifSheet(); });
+document.getElementById('dmGifBtn').addEventListener('click', ()=>{ gifTargetContext='dm'; openGifSheet(); });
+function openGifSheet(){
+  openSheet('gifSheet');
+  const grid = document.getElementById('gifGrid');
+  const searchInput = document.getElementById('gifSearchInput');
+  let debounceTimer;
+  async function run(q){
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-dim); font-size:12px;">Searching...</div>';
+    const gifs = await searchGifs(q);
+    grid.innerHTML = '';
+    gifs.forEach(g=>{
+      const btn = document.createElement('button');
+      btn.innerHTML = `<img src="${g.url}" alt="gif">`;
+      btn.addEventListener('click', ()=>{
+        const msg = { uid:CURRENT_USER.uid, username:CURRENT_USER.username, type:'gif', url:g.url, ts:Date.now() };
+        if(gifTargetContext==='server' && state.activeServerId) db.ref('serverMessages/'+state.activeServerId).push(msg);
+        if(gifTargetContext==='dm' && state.activeDmUid) db.ref('dms/'+dmChatId(CURRENT_USER.uid, state.activeDmUid)).push(msg);
+        closeSheet('gifSheet');
+      });
+      grid.appendChild(btn);
+    });
+  }
+  searchInput.oninput = ()=>{ clearTimeout(debounceTimer); debounceTimer=setTimeout(()=>run(searchInput.value),300); };
+  run('');
+}
+
+// ---- extend renderMsg to support image/video/gif message types ----
+const _origRenderMsg = renderMsg;
+renderMsg = function(m){
+  const div = _origRenderMsg(m);
+  if(m.type && m.type !== 'text'){
+    const txtEl = div.querySelector('.txt');
+    let media = '';
+    if(m.type==='gif') media = `<img src="${m.url}" alt="gif">`;
+    else if(m.type==='image') media = `<img src="${m.dataUrl}" alt="${esc(m.fileName||'')}">`;
+    else if(m.type==='video') media = `<video src="${m.dataUrl}" controls></video>`;
+    if(txtEl) txtEl.outerHTML = media;
+  }
+  return div;
+};
+
+// ---- typing indicator listeners now that a server/DM is opened ----
+const _origOpenServer = openServer;
+openServer = function(sid, name){
+  _origOpenServer(sid, name);
+  attachListener('typingServer', db.ref(`servers/${sid}/typing`), 'value', (snap)=>{
+    const val = snap.val() || {};
+    const others = Object.entries(val).filter(([id])=>id!==CURRENT_USER.uid).map(([,name])=>name);
+    document.getElementById('typingIndicatorServer').innerHTML = others.length
+      ? `${esc(others.join(', '))} typing <span class="typing-dots"><span></span><span></span><span></span></span>` : '';
+  });
+  document.getElementById('serverUploadBtn').disabled = false;
+  document.getElementById('serverGifBtn').disabled = false;
+};
+const _origOpenDM = openDM;
+openDM = function(uid, username){
+  _origOpenDM(uid, username);
+  const chatId = dmChatId(CURRENT_USER.uid, uid);
+  attachListener('typingDM', db.ref(`dms_typing/${chatId}`), 'value', (snap)=>{
+    const val = snap.val() || {};
+    const others = Object.entries(val).filter(([id])=>id!==CURRENT_USER.uid).map(([,name])=>name);
+    document.getElementById('typingIndicatorDM').innerHTML = others.length
+      ? `${esc(others.join(', '))} typing <span class="typing-dots"><span></span><span></span><span></span></span>` : '';
+  });
+};
+
+/* ============================================================
+   LANGUAGES (i18n) — EN / TR / ES, applied via data-i18n attrs
+============================================================ */
+const TRANSLATIONS = {
+  en: { selectServer:'Select a server', profileSettings:'Profile & Settings', uploadPhoto:'Upload Photo', displayName:'Display name',
+        statusMsg:'Status / bio', accentColor:'Accent Color', saveProfile:'Save Profile', yourStats:'Your Stats', theme:'Theme',
+        dark:'🌙 Dark', light:'☀️ Light', language:'Language', logout:'Logout', servers:'Servers',
+        tagline:'Jack in. Connect. Play.', tabLogin:'Login', tabRegister:'Register', enterGrid:'Enter the Grid', createIdentity:'Create Identity',
+        friends:'Friends', incomingRequests:'Incoming Requests', allFriends:'All Friends', arcade:'Arcade',
+        joinPlaceholder:'Paste invite link or code', join:'Join', send:'Send', invite:'Invite', backArcade:'← Back to Arcade',
+        typingPlaceholderServer:'Send a transmission...', typingPlaceholderDM:'Message...', spin:'Spin the Wheel' },
+  tr: { selectServer:'Bir sunucu seç', profileSettings:'Profil ve Ayarlar', uploadPhoto:'Fotoğraf Yükle', displayName:'Görünen ad',
+        statusMsg:'Durum / biyografi', accentColor:'Vurgu Rengi', saveProfile:'Profili Kaydet', yourStats:'İstatistiklerin', theme:'Tema',
+        dark:'🌙 Koyu', light:'☀️ Açık', language:'Dil', logout:'Çıkış Yap', servers:'Sunucular',
+        tagline:'Bağlan. Sohbet et. Oyna.', tabLogin:'Giriş', tabRegister:'Kayıt Ol', enterGrid:'Ağa Bağlan', createIdentity:'Kimlik Oluştur',
+        friends:'Arkadaşlar', incomingRequests:'Gelen İstekler', allFriends:'Tüm Arkadaşlar', arcade:'Oyun Salonu',
+        joinPlaceholder:'Davet linki veya kodu yapıştır', join:'Katıl', send:'Gönder', invite:'Davet Et', backArcade:'← Oyun Salonuna Dön',
+        typingPlaceholderServer:'Bir mesaj gönder...', typingPlaceholderDM:'Mesaj...', spin:'Çarkı Çevir' },
+  es: { selectServer:'Selecciona un servidor', profileSettings:'Perfil y Ajustes', uploadPhoto:'Subir Foto', displayName:'Nombre visible',
+        statusMsg:'Estado / bio', accentColor:'Color de Acento', saveProfile:'Guardar Perfil', yourStats:'Tus Estadísticas', theme:'Tema',
+        dark:'🌙 Oscuro', light:'☀️ Claro', language:'Idioma', logout:'Cerrar Sesión', servers:'Servidores',
+        tagline:'Conéctate. Charla. Juega.', tabLogin:'Iniciar sesión', tabRegister:'Registrarse', enterGrid:'Entrar a la Red', createIdentity:'Crear Identidad',
+        friends:'Amigos', incomingRequests:'Solicitudes Entrantes', allFriends:'Todos los Amigos', arcade:'Sala de Juegos',
+        joinPlaceholder:'Pega el enlace o código de invitación', join:'Unirse', send:'Enviar', invite:'Invitar', backArcade:'← Volver a la Sala',
+        typingPlaceholderServer:'Envía un mensaje...', typingPlaceholderDM:'Mensaje...', spin:'Girar la Rueda' },
+};
+const LANG_NAMES = { en:'EN', tr:'TR', es:'ES' };
+function applyLanguage(lang){
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(dict[key]) el.textContent = dict[key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(dict[key]) el.placeholder = dict[key];
+  });
+  localStorage.setItem('nn_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b=> b.classList.toggle('active', b.dataset.lang===lang));
+  // Re-apply the "select a server" placeholder only if no server is active (avoid overwriting a live server name)
+  if(!state.activeServerId && state.view==='servers'){ document.getElementById('topTitle').textContent = dict.selectServer; }
+}
+function initLanguageControls(){
+  const row = document.getElementById('langRow');
+  row.innerHTML = Object.keys(TRANSLATIONS).map(code=>`<button class="lang-btn" data-lang="${code}">${LANG_NAMES[code]}</button>`).join('');
+  row.querySelectorAll('[data-lang]').forEach(b=> b.addEventListener('click', ()=> applyLanguage(b.dataset.lang)));
+  applyLanguage(localStorage.getItem('nn_lang') || 'en');
+}
+
+/* ============================================================
+   DARK / LIGHT THEME
+============================================================ */
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('nn_theme', t);
+  document.getElementById('themeDarkBtn')?.classList.toggle('active', t==='dark');
+  document.getElementById('themeLightBtn')?.classList.toggle('active', t==='light');
+}
+function initThemeControls(){
+  document.getElementById('themeDarkBtn').addEventListener('click', ()=> setTheme('dark'));
+  document.getElementById('themeLightBtn').addEventListener('click', ()=> setTheme('light'));
+  setTheme(localStorage.getItem('nn_theme') || 'dark');
+}
+
+/* ============================================================
+   IN-APP CLOCK + WEATHER — fully apiless / keyless:
+   - Time comes straight from the browser's Date object.
+   - Weather uses Open-Meteo (open-meteo.com), a free forecast API
+     that requires no signup and no API key, paired with the
+     browser's built-in Geolocation API for coordinates.
+============================================================ */
+function startClock(){
+  function tick(){
+    const now = new Date();
+    document.getElementById('wcTime').textContent = now.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('wcDate').textContent = now.toLocaleDateString([], { month:'short', day:'numeric' });
+  }
+  tick();
+  setInterval(tick, 15000);
+}
+const WEATHER_ICONS = { // WMO weather codes -> emoji, per Open-Meteo's documented code table
+  0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',
+  71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'
+};
+function initWeather(){
+  const el = document.getElementById('wcWeather');
+  if(!navigator.geolocation){ el.textContent = ''; return; }
+  navigator.geolocation.getCurrentPosition(async (pos)=>{
+    try{
+      const { latitude, longitude } = pos.coords;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&temperature_unit=celsius`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const temp = Math.round(data.current.temperature_2m);
+      const icon = WEATHER_ICONS[data.current.weather_code] || '🌡️';
+      el.textContent = `${icon} ${temp}°C`;
+    }catch(e){ el.textContent = ''; }
+  }, ()=>{ el.textContent = ''; }, { timeout:8000 });
+}
+
+/* ============================================================
+   ACCOUNT CUSTOMIZATION: status/bio + accent color
+============================================================ */
+const ACCENT_COLORS = ['#ff2bd6','#00f6ff','#9b30ff','#39ff88','#ffd23f','#ff6b3d'];
+function applyAccentColor(hex){
+  document.querySelectorAll('.rail-avatar').forEach(a=> a.style.boxShadow = `0 0 10px ${hex}`);
+  document.getElementById('avatarPreview').style.borderColor = hex;
+}
+
+/* ============================================================
+   CONFETTI BURST — pure CSS/DOM, no libraries
+============================================================ */
+const CONFETTI_COLORS = ['#ff2bd6','#00f6ff','#9b30ff','#39ff88','#ffd23f'];
+function fireConfetti(){
+  const count = 28;
+  for(let i=0;i<count;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random()*100 + 'vw';
+    piece.style.background = CONFETTI_COLORS[Math.floor(Math.random()*CONFETTI_COLORS.length)];
+    piece.style.animation = `confettiFall ${1.6 + Math.random()*1.2}s ease-in forwards`;
+    piece.style.animationDelay = (Math.random()*0.3) + 's';
+    document.body.appendChild(piece);
+    setTimeout(()=> piece.remove(), 3200);
+  }
+}
+
+/* ============================================================
+   RIPPLE TAP FEEDBACK — delegated so it covers dynamically
+   created buttons (game cards, list items, etc.) automatically
+============================================================ */
+document.addEventListener('pointerdown', (e)=>{
+  const target = e.target.closest('.btn, .icon-btn, .rail-btn, .game-card, .list-item');
+  if(!target) return;
+  const rect = target.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+  target.appendChild(ripple);
+  setTimeout(()=> ripple.remove(), 600);
+});
+
+/* ============================================================
+   SOUND EFFECTS — Web Audio oscillator beeps, no audio files
+============================================================ */
+let SOUND_ON = localStorage.getItem('nn_sound') !== 'off';
+let audioCtx = null;
+function playBeep(freq=880, duration=0.09, type='sine'){
+  if(!SOUND_ON) return;
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + duration);
+  }catch(e){ /* Web Audio unsupported/blocked — fail silently */ }
+}
+function playMessageChime(){ playBeep(1046, 0.07, 'sine'); }
+function playSpinChime(){ playBeep(660, 0.12, 'triangle'); setTimeout(()=>playBeep(880,0.12,'triangle'), 90); }
+function initSoundControls(){
+  const onBtn = document.getElementById('soundOnBtn'), offBtn = document.getElementById('soundOffBtn');
+  function refresh(){ onBtn.classList.toggle('active', SOUND_ON); offBtn.classList.toggle('active', !SOUND_ON); }
+  onBtn.addEventListener('click', ()=>{ SOUND_ON = true; localStorage.setItem('nn_sound','on'); refresh(); playBeep(880,0.08); });
+  offBtn.addEventListener('click', ()=>{ SOUND_ON = false; localStorage.setItem('nn_sound','off'); refresh(); });
+  refresh();
+}
+
+/* ============================================================
+   CONNECTION STATUS BANNER
+============================================================ */
+function initConnectionBanner(){
+  const banner = document.getElementById('connBanner');
+  let firstCheck = true;
+  db.ref('.info/connected').on('value', (snap)=>{
+    const connected = snap.val() === true;
+    if(firstCheck && !connected){ firstCheck = false; return; } // don't flash the banner during the very first handshake
+    firstCheck = false;
+    banner.classList.toggle('show', !connected);
+  });
+  window.addEventListener('offline', ()=> banner.classList.add('show'));
+  window.addEventListener('online', ()=> { if(navigator.onLine) banner.classList.remove('show'); });
+}
+
+/* ============================================================
+   ACHIEVEMENTS — computed client-side from existing stats,
+   no extra database schema needed
+============================================================ */
+const ACHIEVEMENTS = [
+  { id:'firstGame', emoji:'🎮', label:'First Spin', test:s => (s?.gamesPlayed||0) >= 1 },
+  { id:'partyRegular', emoji:'🔥', label:'Party Regular', test:s => (s?.gamesPlayed||0) >= 10 },
+  { id:'braveDare', emoji:'😈', label:'Dare Devil', test:s => (s?.daresCompleted||0) >= 5 },
+  { id:'openBook', emoji:'📖', label:'Open Book', test:s => (s?.truthsAnswered||0) >= 5 },
+  { id:'legend', emoji:'👑', label:'Arcade Legend', test:s => ((s?.gamesPlayed||0)+(s?.daresCompleted||0)+(s?.truthsAnswered||0)) >= 30 },
+];
+function renderBadges(container, stats){
+  const earned = ACHIEVEMENTS.filter(a => a.test(stats));
+  container.innerHTML = earned.length
+    ? earned.map(a=>`<span class="achievement-badge">${a.emoji} ${esc(a.label)}</span>`).join('')
+    : `<span style="font-size:11px; color:var(--text-dim);">Play a game to start earning badges!</span>`;
+}
+
+/* ============================================================
+   SCOREBOARD — live-ranked leaderboard for the active server
+============================================================ */
+function scoreOf(stats){
+  return (stats?.gamesPlayed||0) + (stats?.daresCompleted||0)*2 + (stats?.truthsAnswered||0)*2;
+}
+async function mountScoreboard(){
+  const stage = document.getElementById('scoreboardList');
+  stage.innerHTML = '<div class="empty-hint" style="padding:20px;">Loading scoreboard...</div>';
+  if(!state.activeServerId){
+    stage.innerHTML = '<div class="empty-hint" style="padding:20px;">Select a server to see its scoreboard.</div>';
+    return;
+  }
+  const members = state.servers[state.activeServerId]?.members || {};
+  const rows = [];
+  for(const memberUid of Object.keys(members)){
+    const snap = await db.ref('users/'+memberUid).get();
+    const u = snap.val();
+    if(!u) continue;
+    rows.push({ username:u.username, name:u.name, avatarUrl:u.avatarUrl, stats:u.stats, score: scoreOf(u.stats) });
+  }
+  rows.sort((a,b)=> b.score - a.score);
+  if(rows.length === 0){ stage.innerHTML = '<div class="empty-hint" style="padding:20px;">No members with stats yet — go play something!</div>'; return; }
+  const medals = ['🥇','🥈','🥉'];
+  stage.innerHTML = rows.map((r,i)=>`
+    <div class="player-card" style="animation-delay:${i*60}ms;">
+      <div style="font-family:Orbitron; font-size:16px; width:26px; text-align:center; flex-shrink:0;">${medals[i]||('#'+(i+1))}</div>
+      <img class="avatar" src="${r.avatarUrl||DEFAULT_AVATARS[0].url}" alt="${esc(r.username)}">
+      <div style="flex:1;">
+        <div style="font-weight:800; font-size:13.5px;">${esc(r.name||r.username)}</div>
+        <div class="stats">
+          <div class="stat"><b>${r.score}</b><span>Score</span></div>
+          <div class="stat"><b>${r.stats?.gamesPlayed??0}</b><span>Games</span></div>
+          <div class="stat"><b>${r.stats?.daresCompleted??0}</b><span>Dares</span></div>
+          <div class="stat"><b>${r.stats?.truthsAnswered??0}</b><span>Truths</span></div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+document.getElementById('cardScoreboard').addEventListener('click', ()=> requireServerThen(()=>{ showView('viewScoreboard'); mountScoreboard(); }));
+document.getElementById('scoreboardRefreshBtn').addEventListener('click', mountScoreboard);
+
+/* ============================================================
    INITIAL UI STATE
 ============================================================ */
 renderServerEmpty();
+initConnectionBanner();
 </script>
 </body>
 </html>
