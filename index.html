@@ -3,166 +3,608 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönlendiriliyor | Boralances</title>
+    <title>ULTIMATE PROTOCOL // BORALANCES OS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #ffffff;
-            --bg-gradient-1: #0f172a;
-            --bg-gradient-2: #3b82f6;
-            --bg-gradient-3: #8b5cf6;
+            --cyan: #00f3ff;
+            --magenta: #ff0055;
+            --yellow: #ffe600;
+            --purple: #7928ca;
+            --bg-dark: #02040a;
+            --glass-bg: rgba(6, 11, 25, 0.55);
+            --glass-border: rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            cursor: none; /* Custom Reticle Cursor */
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
             height: 100vh;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
-            background-size: 200% 200%;
-            animation: gradientMove 10s ease infinite;
-            color: var(--primary);
+            perspective: 1000px;
+        }
+
+        /* Custom Cyber Cursor Reticle */
+        #cyber-cursor {
+            position: fixed;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: width 0.1s, height 0.1s, border-color 0.2s;
+            mix-blend-mode: difference;
+        }
+        #cyber-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 4px; height: 4px;
+            background: var(--magenta);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* 3D Warp Field Canvas Background */
+        #warp-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* CRT Overlay & Glitch Grid */
+        .crt-grid {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Ultimate Glass Container */
+        .glass-portal {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 440px;
+            padding: 2px;
+            border-radius: 36px;
+            background: linear-gradient(135deg, var(--cyan), transparent 30%, var(--purple) 70%, var(--magenta));
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.25), 0 0 100px rgba(121, 40, 202, 0.2);
+            transition: transform 0.1s ease-out;
+        }
+
+        .glass-card {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(220%);
+            -webkit-backdrop-filter: blur(40px) saturate(220%);
+            border-radius: 34px;
+            padding: 40px 32px;
+            text-align: center;
             overflow: hidden;
         }
 
-        /* Arkaplan Animasyonu */
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* Interactive Specular Light Reflection */
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                        rgba(255, 255, 255, 0.15), transparent 40%);
+            pointer-events: none;
         }
 
-        /* Glassmorphism (Cam Efekti) Tasarım Sistemi */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 40px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transform: translateY(20px);
-            opacity: 0;
-            animation: floatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        /* HUD Header */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
-        @keyframes floatUp {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        .hud-tag {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            color: var(--cyan);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--cyan);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
 
-        .title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: -0.025em;
+        .audio-toggle {
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .audio-toggle:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* Cyber Glitch Title */
+        .glitch-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            position: relative;
+            color: #fff;
+            text-shadow: 0 0 10px var(--cyan);
+            letter-spacing: 0.05em;
         }
 
         .subtitle {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 30px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 6px;
+            margin-bottom: 28px;
         }
 
-        /* UX Geliştirmesi: İlerleme Çubuğu */
-        .progress-container {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 30px;
+        /* SVG Holographic Reactor Ring */
+        .reactor-box {
             position: relative;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-            transition: width 3s linear;
-        }
-
-        .divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            margin: 20px 0;
-        }
-
-        /* Modern Admin Butonu */
-        .admin-btn {
-            display: inline-flex;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 28px auto;
+            display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px 24px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--primary);
-            text-decoration: none;
+        }
+
+        .reactor-svg {
+            transform: rotate(-90deg);
+            width: 100%; height: 100%;
+        }
+
+        .reactor-track {
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 8; fill: none;
+        }
+
+        .reactor-fill {
+            stroke: url(#cyan-magenta);
+            stroke-width: 8; fill: none;
+            stroke-linecap: round;
+            stroke-dasharray: 408; /* 2 * PI * 65 */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+            filter: drop-shadow(0 0 12px var(--cyan));
+        }
+
+        .reactor-core {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .count-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px var(--cyan);
+            line-height: 1;
+        }
+
+        .count-unit {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.65rem;
+            color: var(--cyan);
+            letter-spacing: 0.2em;
+            margin-top: 4px;
+        }
+
+        /* Action Buttons */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .cyber-btn {
+            padding: 12px;
             border-radius: 12px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.25s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
-        .admin-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .cyber-btn:hover {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--cyan);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.5);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .admin-btn svg {
-            margin-right: 8px;
-            width: 18px;
-            height: 18px;
+        .cyber-btn-accent {
+            background: linear-gradient(135deg, var(--cyan), var(--purple));
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .cyber-btn-accent:hover {
+            box-shadow: 0 0 35px var(--cyan), 0 0 15px var(--magenta);
+        }
+
+        /* CLI Terminal Button & Modal */
+        .cli-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px dashed rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            color: #94a3b8;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.7rem;
+            margin-bottom: 18px;
+            transition: all 0.2s;
+        }
+        .cli-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            text-decoration: none;
+            letter-spacing: 0.1em;
+            transition: all 0.3s;
+        }
+        .admin-link:hover {
+            color: var(--magenta);
+            text-shadow: 0 0 10px var(--magenta);
+        }
+
+        /* CLI Terminal Modal Overlay */
+        #terminal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(2, 4, 10, 0.95);
+            backdrop-filter: blur(20px);
+            display: none;
+            padding: 30px;
+            font-family: 'Fira Code', monospace;
+            color: var(--cyan);
+            flex-direction: column;
+        }
+        #terminal-logs {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 0.85rem;
+        }
+        .cli-input-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #cli-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="glass-card">
-        <div class="title">Bağlantı Kuruluyor</div>
-        <div class="subtitle">Güvenli bir şekilde hedefe yönlendiriliyorsunuz...</div>
-        
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
+    <div id="cyber-cursor"></div>
+    <canvas id="warp-canvas"></canvas>
+    <div class="crt-grid"></div>
 
-        <div class="divider"></div>
-        
-        <a href="admin.html" class="admin-btn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-            </svg>
-            Admin Paneli
-        </a>
+    <div class="glass-portal" id="portal">
+        <div class="glass-card" id="card">
+            
+            <div class="hud-header">
+                <span class="hud-tag">SECURE_GATEWAY // v4.0</span>
+                <button class="audio-toggle" id="audio-btn" onclick="toggleAudio()">SFX: ON</button>
+            </div>
+
+            <h1 class="glitch-title">BORALANCES</h1>
+            <p class="subtitle">Cloudflare Worker ekosistemine aktarılıyorsunuz</p>
+
+            <div class="reactor-box">
+                <svg class="reactor-svg" viewBox="0 0 150 150">
+                    <defs>
+                        <linearGradient id="cyan-magenta" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00f3ff" />
+                            <stop offset="50%" stop-color="#7928ca" />
+                            <stop offset="100%" stop-color="#ff0055" />
+                        </linearGradient>
+                    </defs>
+                    <circle class="reactor-track" cx="75" cy="75" r="65"></circle>
+                    <circle class="reactor-fill" id="reactor-fill" cx="75" cy="75" r="65"></circle>
+                </svg>
+                <div class="reactor-core">
+                    <span class="count-val" id="count-val">3</span>
+                    <span class="count-unit">SECONDS</span>
+                </div>
+            </div>
+
+            <div class="btn-grid">
+                <button class="cyber-btn" id="pause-btn" onclick="togglePause()">
+                    <span id="pause-icon">⏸</span> <span id="pause-txt">HOLD</span>
+                </button>
+                <a href="https://boralances.boranil400.workers.dev/" class="cyber-btn cyber-btn-accent" onclick="playSfx('click')">
+                    WARP ➔
+                </a>
+            </div>
+
+            <button class="cli-btn" onclick="openTerminal()">[ >_ OPEN CLI TERMINAL ]</button>
+
+            <a href="admin.html" class="admin-link" onclick="playSfx('click')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8s0 0 0 0z"/></svg>
+                SYSTEM_ADMIN_ACCESS
+            </a>
+
+        </div>
+    </div>
+
+    <div id="terminal-overlay">
+        <div id="terminal-logs">
+            <div>BORALANCES OS [Version 10.0.26]</div>
+            <div>(c) Boralances Corporation. All rights reserved.</div>
+            <br>
+            <div>Type <span style="color:var(--yellow);">'help'</span> for available commands, <span style="color:var(--yellow);">'exit'</span> to close.</div>
+            <br>
+        </div>
+        <div class="cli-input-line">
+            <span style="color:var(--magenta)">root@boralances:~#</span>
+            <input type="text" id="cli-input" autofocus autocomplete="off" spellcheck="false">
+        </div>
     </div>
 
     <script>
-        // Sayfa yüklendiğinde animasyonları ve zamanlayıcıyı senkronize olarak başlatır
-        window.onload = () => {
-            const progressBar = document.getElementById('progressBar');
-            
-            // Genişliği %100'e çek (CSS transition süresi boyunca yani 3 saniyede dolacak)
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-            }, 50);
+        const targetURL = "https://boralances.boranil400.workers.dev/";
+        let timeLeft = 3;
+        let totalTime = 3;
+        let isPaused = false;
+        let audioEnabled = true;
 
-            // Progress bar'ın bitişiyle senkronize olarak 3 saniye sonra yönlendir
-            setTimeout(() => {
-                window.location.href = "https://boralances.boranil400.workers.dev/";
-            }, 3000);
-        };
+        // Web Audio API Synthesizer (Sistem ses efektlerini JS ile üretir)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSfx(type) {
+            if (!audioEnabled) return;
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'beep') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'warp') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            }
+        }
+
+        function toggleAudio() {
+            audioEnabled = !audioEnabled;
+            document.getElementById('audio-btn').textContent = audioEnabled ? 'SFX: ON' : 'SFX: OFF';
+        }
+
+        // Reactor Ring Timer
+        const countVal = document.getElementById('count-val');
+        const reactorFill = document.getElementById('reactor-fill');
+        const circumference = 2 * Math.PI * 65; // ~408
+
+        const timer = setInterval(() => {
+            if (!isPaused) {
+                timeLeft--;
+                countVal.textContent = timeLeft;
+                playSfx('beep');
+
+                const offset = circumference - (timeLeft / totalTime) * circumference;
+                reactorFill.style.strokeDashoffset = offset;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    playSfx('warp');
+                    setTimeout(() => window.location.href = targetURL, 200);
+                }
+            }
+        }, 1000);
+
+        function togglePause() {
+            isPaused = !isPaused;
+            playSfx('click');
+            const txt = document.getElementById('pause-txt');
+            const icon = document.getElementById('pause-icon');
+            if (isPaused) {
+                txt.textContent = "RESUME";
+                icon.textContent = "▶";
+                reactorFill.style.filter = "drop-shadow(0 0 15px var(--magenta))";
+            } else {
+                txt.textContent = "HOLD";
+                icon.textContent = "⏸";
+                reactorFill.style.filter = "drop-shadow(0 0 12px var(--cyan))";
+            }
+        }
+
+        // Custom Cursor & Liquid Parallax Light Tracking
+        const cursor = document.getElementById('cyber-cursor');
+        const portal = document.getElementById('portal');
+        const card = document.getElementById('card');
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+            card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+
+            const xAxis = (window.innerWidth / 2 - e.clientX) / 25;
+            const yAxis = (window.innerHeight / 2 - e.clientY) / 25;
+            portal.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // Interactive 3D Starfield Warp Tunnel Canvas
+        const canvas = document.getElementById('warp-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        for (let i = 0; i < 200; i++) {
+            stars.push({
+                x: (Math.random() - 0.5) * canvas.width * 2,
+                y: (Math.random() - 0.5) * canvas.height * 2,
+                z: Math.random() * canvas.width,
+                color: Math.random() > 0.5 ? '#00f3ff' : '#ff0055'
+            });
+        }
+
+        function renderWarp() {
+            ctx.fillStyle = "rgba(2, 4, 10, 0.3)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+
+            stars.forEach(s => {
+                s.z -= 4;
+                if (s.z <= 0) s.z = canvas.width;
+
+                const k = 128 / s.z;
+                const px = s.x * k + cx;
+                const py = s.y * k + cy;
+
+                if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
+                    const size = (1 - s.z / canvas.width) * 2.5;
+                    ctx.beginPath();
+                    ctx.fillStyle = s.color;
+                    ctx.arc(px, py, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            requestAnimationFrame(renderWarp);
+        }
+        renderWarp();
+
+        // Terminal CLI Modal System
+        const termOverlay = document.getElementById('terminal-overlay');
+        const cliInput = document.getElementById('cli-input');
+        const termLogs = document.getElementById('terminal-logs');
+
+        function openTerminal() {
+            playSfx('click');
+            termOverlay.style.display = 'flex';
+            cliInput.focus();
+        }
+
+        cliInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = cliInput.value.trim().toLowerCase();
+                appendLog(`root@boralances:~# ${cliInput.value}`, 'var(--cyan)');
+                cliInput.value = '';
+
+                if (cmd === 'help') {
+                    appendLog("Available Commands: status, override, admin, clear, exit");
+                } else if (cmd === 'status') {
+                    appendLog("SYSTEM STATUS: 100% OPERATIONAL // GATEWAY: ACTIVE");
+                } else if (cmd === 'override' || cmd === 'warp') {
+                    appendLog("INITIATING IMMEDIATE WARP PROTOCOL...");
+                    setTimeout(() => window.location.href = targetURL, 500);
+                } else if (cmd === 'admin') {
+                    appendLog("REDIRECTING TO ADMIN PORTAL...");
+                    setTimeout(() => window.location.href = 'admin.html', 500);
+                } else if (cmd === 'clear') {
+                    termLogs.innerHTML = '';
+                } else if (cmd === 'exit') {
+                    termOverlay.style.display = 'none';
+                } else {
+                    appendLog(`Command not recognized: '${cmd}'. Type 'help'.`, 'var(--magenta)');
+                }
+                termLogs.scrollTop = termLogs.scrollHeight;
+            }
+        });
+
+        function appendLog(text, color = '#f8fafc') {
+            const div = document.createElement('div');
+            div.style.color = color;
+            div.textContent = text;
+            termLogs.appendChild(div);
+        }
     </script>
 </body>
 </html>
