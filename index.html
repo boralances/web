@@ -3,72 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>BORALANCES OS // PRO GATEWAY v6.0</title>
+    <title>BORALANCES OS // ULTIMATE HUD v7.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* ==========================================================================
-           1. GELİŞMİŞ TEMA SİSTEMİ & DEĞİŞKENLER
-           ========================================================================== */
+        @property --border-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
         :root {
-            --bg-base: #030712;
-            --accent-primary: #00f0ff;
-            --accent-secondary: #6366f1;
-            --accent-danger: #ff2a6d;
-            --accent-warning: #f59e0b;
-            --accent-success: #10b981;
+            --bg-dark: #030712;
+            --accent-cyan: #00f0ff;
+            --accent-purple: #a855f7;
+            --accent-pink: #ff2a6d;
+            --accent-amber: #f59e0b;
+            --accent-green: #10b981;
             
-            --glass-bg: rgba(10, 16, 32, 0.72);
-            --glass-border: rgba(0, 240, 255, 0.22);
-            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 240, 255, 0.15);
-            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 240, 255, 0.12), transparent 40%);
+            --primary: var(--accent-cyan);
+            --secondary: var(--accent-purple);
+            --danger: var(--accent-pink);
+            
+            --glass-bg: rgba(8, 14, 28, 0.78);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --card-glow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 240, 255, 0.2);
             
             --font-main: 'Plus Jakarta Sans', sans-serif;
             --font-tech: 'Orbitron', sans-serif;
             --font-code: 'Fira Code', monospace;
         }
 
-        /* Tema 2: Solar Amber (Kurumsal Altın) */
+        body[data-theme="obsidian"] {
+            --primary: #c084fc;
+            --secondary: #f43f5e;
+            --glass-bg: rgba(18, 10, 26, 0.8);
+            --card-glow: 0 30px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(192, 132, 252, 0.25);
+        }
+        body[data-theme="matrix"] {
+            --primary: #10b981;
+            --secondary: #06b6d4;
+            --glass-bg: rgba(6, 20, 15, 0.8);
+            --card-glow: 0 30px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(16, 185, 129, 0.25);
+        }
         body[data-theme="amber"] {
-            --bg-base: #080a0f;
-            --accent-primary: #fbbf24;
-            --accent-secondary: #f97316;
-            --accent-danger: #ef4444;
-            --glass-bg: rgba(20, 16, 10, 0.75);
-            --glass-border: rgba(251, 191, 36, 0.25);
-            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(251, 191, 36, 0.15);
-            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(251, 191, 36, 0.12), transparent 40%);
+            --primary: #fbbf24;
+            --secondary: #f97316;
+            --glass-bg: rgba(22, 16, 10, 0.8);
+            --card-glow: 0 30px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(251, 191, 36, 0.25);
         }
 
-        /* Tema 3: Emerald Matrix (Siber Yeşil) */
-        body[data-theme="emerald"] {
-            --bg-base: #020d08;
-            --accent-primary: #10b981;
-            --accent-secondary: #06b6d4;
-            --accent-danger: #ff2a6d;
-            --glass-bg: rgba(6, 20, 15, 0.75);
-            --glass-border: rgba(16, 185, 129, 0.25);
-            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(16, 185, 129, 0.15);
-            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.12), transparent 40%);
-        }
-
-        /* Tema 4: Stealth Obsidian (Minimal Karbon) */
-        body[data-theme="stealth"] {
-            --bg-base: #09090b;
-            --accent-primary: #f4f4f5;
-            --accent-secondary: #71717a;
-            --accent-danger: #ff2a6d;
-            --glass-bg: rgba(18, 18, 22, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.18);
-            --glass-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
-            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.08), transparent 40%);
-        }
-
-        /* ==========================================================================
-           2. TEMEL TEMİZLİK VE MOBİL SIFIRLAMA
-           ========================================================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -81,10 +67,9 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: var(--bg-base);
+            background-color: var(--bg-dark);
             font-family: var(--font-main);
             color: #f8fafc;
-            transition: background-color 0.4s ease;
         }
 
         body {
@@ -94,14 +79,14 @@
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        /* Masaüstünde Custom Cursor, Mobilde Gizli */
+        /* custom cursor (Masaüstü) */
         @media (pointer: fine) {
             * { cursor: none !important; }
             #cyber-cursor {
                 position: fixed;
-                width: 24px;
-                height: 24px;
-                border: 2px solid var(--accent-primary);
+                width: 20px;
+                height: 20px;
+                border: 2px solid var(--primary);
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 9999;
@@ -113,15 +98,15 @@
                 position: absolute;
                 top: 50%; left: 50%;
                 width: 4px; height: 4px;
-                background: var(--accent-secondary);
+                background: var(--secondary);
                 border-radius: 50%;
                 transform: translate(-50%, -50%);
             }
-            #cyber-cursor.active {
+            #cyber-cursor.hovering {
                 width: 38px;
                 height: 38px;
-                border-color: var(--accent-danger);
-                background: rgba(255, 42, 109, 0.1);
+                border-color: var(--primary);
+                background: rgba(0, 240, 255, 0.1);
             }
         }
 
@@ -129,110 +114,96 @@
             #cyber-cursor { display: none !important; }
         }
 
-        /* Arka Plan Canvas & Izgara */
         #canvas-bg {
             position: fixed;
             inset: 0;
             z-index: 1;
         }
 
-        .bg-grid {
-            position: fixed;
-            inset: 0;
-            z-index: 2;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-        }
-
-        /* ==========================================================================
-           3. PRO TELEMETRİ BARI (MOBİL UYUMLU DOKUNMATİK TEPKİLER)
-           ========================================================================== */
+        /* Telemetri & Mini Grafik Barı */
         .telemetry-bar {
             position: fixed;
             top: max(12px, env(safe-area-inset-top));
-            left: 12px;
-            right: 12px;
+            left: 12px; right: 12px;
             z-index: 30;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: var(--font-code);
             font-size: clamp(0.6rem, 2.2vw, 0.72rem);
-            pointer-events: none;
-        }
-
-        .telemetry-group {
-            display: flex;
-            gap: 8px;
-            pointer-events: auto;
         }
 
         .telemetry-pill {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(10, 15, 28, 0.65);
-            backdrop-filter: blur(12px) saturate(160%);
-            -webkit-backdrop-filter: blur(12px) saturate(160%);
-            padding: 5px 12px;
+            gap: 8px;
+            background: rgba(10, 16, 30, 0.7);
+            backdrop-filter: blur(16px);
+            padding: 6px 14px;
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            transition: border-color 0.3s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--accent-success);
-            box-shadow: 0 0 8px var(--accent-success);
-            animation: pulse-dot 2s infinite;
+        .sys-graph {
+            width: 36px;
+            height: 12px;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+        }
+        .sys-bar {
+            flex: 1;
+            background: var(--primary);
+            border-radius: 1px;
+            transition: height 0.2s ease;
         }
 
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        /* ==========================================================================
-           4. ANA PORTAL KARTI (GLASSMORPHISM & MIKRO ANİMASYONLAR)
-           ========================================================================== */
+        /* Dynamic Animated Border Card Wrapper */
         .portal-wrapper {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 450px;
+            max-width: 460px;
             padding: 0 12px;
-            perspective: 1200px;
+            perspective: 1000px;
+        }
+
+        .animated-border-box {
+            position: relative;
+            border-radius: 32px;
+            padding: 2px;
+            background: conic-gradient(from var(--border-angle), transparent 20%, var(--primary), var(--secondary), transparent 80%);
+            animation: rotateBorder 6s linear infinite;
+            box-shadow: var(--card-glow);
+            transition: box-shadow 0.4s ease;
+        }
+
+        @keyframes rotateBorder {
+            to { --border-angle: 360deg; }
         }
 
         .glass-card {
             position: relative;
             background: var(--glass-bg);
-            backdrop-filter: blur(30px) saturate(200%);
-            -webkit-backdrop-filter: blur(30px) saturate(200%);
-            border-radius: 32px;
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--glass-shadow);
-            padding: clamp(22px, 5vw, 36px) clamp(18px, 4.5vw, 28px);
+            backdrop-filter: blur(35px) saturate(210%);
+            -webkit-backdrop-filter: blur(35px) saturate(210%);
+            border-radius: 30px;
+            padding: clamp(24px, 5vw, 36px) clamp(18px, 4.5vw, 28px);
             text-align: center;
             overflow: hidden;
-            transition: border-color 0.4s, box-shadow 0.4s, transform 0.15s ease-out;
+            transform-style: preserve-3d;
         }
 
-        .glass-card::before {
-            content: '';
+        /* Ambient Glow Dynamic Spotlight */
+        .card-spotlight {
             position: absolute;
             inset: 0;
-            background: var(--card-glow);
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.08), transparent 40%);
             pointer-events: none;
-            transition: background 0.3s ease;
         }
 
-        /* HUD Header & Tema Seçici */
+        /* Header UI */
         .hud-header {
             display: flex;
             justify-content: space-between;
@@ -245,67 +216,50 @@
             font-size: clamp(0.58rem, 2vw, 0.65rem);
             font-weight: 800;
             letter-spacing: 0.12em;
-            color: var(--accent-primary);
+            color: var(--primary);
             background: rgba(255, 255, 255, 0.04);
             padding: 5px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--accent-primary);
+            border-radius: 10px;
+            border: 1px solid var(--primary);
             box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
-            transition: all 0.3s;
         }
 
         .hud-badge.aborted {
-            color: var(--accent-danger);
-            border-color: var(--accent-danger);
+            color: var(--danger);
+            border-color: var(--danger);
             box-shadow: 0 0 12px rgba(255, 42, 109, 0.25);
         }
 
-        .theme-selector {
-            display: flex;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4px 8px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .theme-btn {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            border: 2px solid transparent;
+        .cmd-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #94a3b8;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-family: var(--font-code);
+            font-size: 0.65rem;
             cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
-            touch-action: manipulation;
+            transition: all 0.2s;
         }
+        .cmd-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
 
-        .theme-btn:active, .theme-btn.active {
-            transform: scale(1.25);
-            border-color: #ffffff;
-        }
-
-        /* Başlık Yapısı */
         .main-title {
             font-family: var(--font-tech);
-            font-size: clamp(1.6rem, 6.5vw, 2.2rem);
+            font-size: clamp(1.7rem, 6.8vw, 2.3rem);
             font-weight: 900;
-            letter-spacing: 0.06em;
+            letter-spacing: 0.05em;
             color: #ffffff;
-            text-shadow: 0 0 20px var(--accent-primary);
+            text-shadow: 0 0 20px var(--primary);
             margin-bottom: 4px;
         }
 
         .sub-title {
             font-size: clamp(0.8rem, 2.8vw, 0.92rem);
-            font-weight: 500;
             color: #94a3b8;
-            margin-bottom: 24px;
-            line-height: 1.4;
+            margin-bottom: 22px;
         }
 
-        /* ==========================================================================
-           5. REAKTÖR SAYAC VE ANİMASYON HAKALARI
-           ========================================================================== */
+        /* Reactor Progress Bar */
         .reactor-container {
             position: relative;
             width: clamp(120px, 32vw, 150px);
@@ -316,57 +270,38 @@
             justify-content: center;
         }
 
-        .reactor-svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .reactor-track {
-            stroke: rgba(255, 255, 255, 0.06);
-            stroke-width: 7;
-            fill: none;
-        }
-
+        .reactor-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+        .reactor-track { stroke: rgba(255, 255, 255, 0.06); stroke-width: 7; fill: none; }
         .reactor-progress {
-            stroke: var(--accent-primary);
+            stroke: var(--primary);
             stroke-width: 7;
             fill: none;
             stroke-linecap: round;
             stroke-dasharray: 377;
             stroke-dashoffset: 0;
             transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
-            filter: drop-shadow(0 0 8px var(--accent-primary));
+            filter: drop-shadow(0 0 10px var(--primary));
         }
 
-        .reactor-core {
-            position: absolute;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
+        .reactor-core { position: absolute; display: flex; flex-direction: column; align-items: center; }
         .count-number {
             font-family: var(--font-tech);
-            font-size: clamp(2rem, 8vw, 2.6rem);
+            font-size: clamp(2.1rem, 8.5vw, 2.7rem);
             font-weight: 900;
-            color: #ffffff;
+            color: #fff;
             line-height: 1;
-            text-shadow: 0 0 15px var(--accent-primary);
+            text-shadow: 0 0 18px var(--primary);
         }
-
         .count-label {
             font-family: var(--font-code);
             font-size: clamp(0.55rem, 2vw, 0.65rem);
             font-weight: 700;
-            color: var(--accent-primary);
+            color: var(--primary);
             letter-spacing: 0.2em;
             margin-top: 6px;
         }
 
-        /* ==========================================================================
-           6. ULTRA UYUMLU MOBİL/MASAÜSTÜ AKSİYON BUTONLARI
-           ========================================================================== */
+        /* Magnetic Buttons Grid */
         .action-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -374,19 +309,15 @@
             margin-bottom: 20px;
         }
 
-        @media (max-width: 360px) {
-            .action-grid { grid-template-columns: 1fr; }
-        }
-
-        .btn-action {
-            min-height: 48px;
+        .btn-magnetic {
+            position: relative;
+            min-height: 50px;
             padding: 10px 8px;
             border-radius: 14px;
             font-family: var(--font-tech);
-            font-size: clamp(0.62rem, 2.3vw, 0.7rem);
+            font-size: clamp(0.62rem, 2.3vw, 0.72rem);
             font-weight: 800;
-            letter-spacing: 0.05em;
-            color: #ffffff;
+            color: #fff;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(10px);
@@ -396,154 +327,122 @@
             justify-content: center;
             gap: 4px;
             touch-action: manipulation;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.2s, border-color 0.2s;
         }
 
-        .btn-action:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        @media (pointer: fine) {
-            .btn-action:hover {
-                background: rgba(0, 240, 255, 0.15);
-                border-color: var(--accent-primary);
-                box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
-                transform: translateY(-2px);
-            }
-        }
+        .btn-magnetic:active { transform: scale(0.94) !important; }
 
         .btn-danger {
             background: rgba(255, 42, 109, 0.08);
             border-color: rgba(255, 42, 109, 0.25);
-            color: var(--accent-danger);
-        }
-
-        @media (pointer: fine) {
-            .btn-danger:hover {
-                background: rgba(255, 42, 109, 0.25);
-                border-color: var(--accent-danger);
-                box-shadow: 0 0 20px rgba(255, 42, 109, 0.35);
-            }
+            color: var(--danger);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border: none;
-            color: #000000;
+            color: #000;
             font-weight: 900;
-            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 240, 255, 0.35);
         }
 
-        .admin-link {
-            display: inline-block;
-            font-family: var(--font-tech);
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            color: #64748b;
-            text-decoration: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
+        /* Command Palette Modal */
+        #command-palette {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(2, 6, 16, 0.82);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
         }
 
-        .admin-link:active, .admin-link:hover {
-            color: var(--accent-primary);
-            background: rgba(255, 255, 255, 0.05);
+        #command-palette.active {
+            opacity: 1;
+            pointer-events: auto;
         }
 
-        .interaction-hint {
+        .cmd-modal {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(12, 18, 34, 0.95);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            padding: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 30px var(--primary);
+        }
+
+        .cmd-input-box {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            outline: none;
+            margin-bottom: 12px;
+        }
+        .cmd-input-box:focus { border-color: var(--primary); }
+
+        .cmd-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .cmd-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            font-family: var(--font-main);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .cmd-item:hover { background: rgba(0, 240, 255, 0.15); color: var(--primary); }
+
+        /* Gestures Indicator on Mobile */
+        .mobile-gestures-hint {
             display: flex;
             justify-content: center;
             gap: 12px;
             font-family: var(--font-code);
             font-size: 0.62rem;
-            color: #475569;
+            color: #64748b;
             margin-top: 14px;
             padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* ==========================================================================
-           7. AKILLI CONTEXT MENU (SAĞ TIK / MOBİL UZUN BASMA)
-           ========================================================================== */
-        #hud-menu {
+        /* Shockwave Ripple Effect */
+        .click-ripple {
             position: fixed;
-            z-index: 10000;
-            width: min(220px, 80vw);
-            background: rgba(8, 12, 22, 0.88);
-            backdrop-filter: blur(25px) saturate(200%);
-            -webkit-backdrop-filter: blur(25px) saturate(200%);
-            border: 1px solid var(--accent-primary);
-            border-radius: 16px;
-            padding: 8px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.2);
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            opacity: 0;
-            transform: scale(0.92);
-            transition: opacity 0.15s ease, transform 0.15s ease;
-        }
-
-        #hud-menu.active {
-            display: flex;
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .menu-head {
-            font-family: var(--font-tech);
-            font-size: 0.6rem;
-            font-weight: 800;
-            color: var(--accent-primary);
-            letter-spacing: 0.15em;
-            padding: 6px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            margin-bottom: 2px;
-        }
-
-        .menu-opt {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-family: var(--font-main);
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            background: transparent;
-            border: none;
-            text-align: left;
-            touch-action: manipulation;
-        }
-
-        .menu-opt:active, .menu-opt:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--accent-primary);
-        }
-
-        .menu-opt.danger { color: var(--accent-danger); }
-        .menu-opt.danger:active, .menu-opt.danger:hover { background: rgba(255, 42, 109, 0.15); }
-
-        /* Sol Tık Dalga Efekti */
-        .click-wave {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            border: 2px solid var(--accent-primary);
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--primary);
             border-radius: 50%;
             pointer-events: none;
             z-index: 9998;
             transform: translate(-50%, -50%) scale(1);
-            animation: wave-expand 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
+            animation: ripple-out 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
         }
 
-        @keyframes wave-expand {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(6); border-color: var(--accent-secondary); }
+        @keyframes ripple-out {
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(6); border-color: var(--secondary); }
         }
     </style>
 </head>
@@ -551,86 +450,85 @@
 
     <div id="cyber-cursor"></div>
     <canvas id="canvas-bg"></canvas>
-    <div class="bg-grid"></div>
 
     <div class="telemetry-bar">
-        <div class="telemetry-group">
-            <div class="telemetry-pill">
-                <div class="status-dot"></div>
-                <span>FPS: <strong id="fps-val" style="color:#fff">60</strong></span>
+        <div class="telemetry-pill">
+            <span style="color:#64748b">SYS:</span>
+            <div class="sys-graph">
+                <div class="sys-bar" id="b1" style="height:40%"></div>
+                <div class="sys-bar" id="b2" style="height:70%"></div>
+                <div class="sys-bar" id="b3" style="height:50%"></div>
             </div>
-            <div class="telemetry-pill">
-                <span>PING: <strong id="ping-val" style="color:var(--accent-primary)">14ms</strong></span>
-            </div>
+            <span id="fps-txt" style="color:#fff; font-weight:700">60 FPS</span>
         </div>
-        <div class="telemetry-group">
-            <div class="telemetry-pill" onclick="toggleAudio()" style="cursor:pointer">
-                <span>SFX: <strong id="sfx-val" style="color:var(--accent-success)">ON</strong></span>
-            </div>
+
+        <div class="telemetry-pill" onclick="toggleAudio()" style="cursor:pointer">
+            <span>SFX: <strong id="sfx-status" style="color:var(--accent-green)">ON</strong></span>
         </div>
     </div>
 
-    <div id="hud-menu">
-        <div class="menu-head">HUD HIZLI ERİŞİM</div>
-        <button class="menu-opt" onclick="triggerWarp()">⚡ ANINDA GEÇİŞ (WARP)</button>
-        <button class="menu-opt" onclick="togglePause()">⏸ DONDUR / DEVAM ET</button>
-        <button class="menu-opt" onclick="cycleTheme()">🎨 TEMA DEĞİŞTİR</button>
-        <button class="menu-opt danger" onclick="abortProcess()">🛑 SİSTEMİ İPTAL ET</button>
+    <div id="command-palette">
+        <div class="cmd-modal">
+            <input type="text" class="cmd-input-box" id="cmd-search" placeholder="Komut arayın veya yazın... (Örn: tema, dondur)">
+            <div class="cmd-list">
+                <div class="cmd-item" onclick="triggerWarp()"><span>⚡ Anında Geçiş yap (Warp)</span> <kbd>[Enter]</kbd></div>
+                <div class="cmd-item" onclick="togglePause()"><span>⏸ Dondur / Devam Et</span> <kbd>[Space]</kbd></div>
+                <div class="cmd-item" onclick="cycleTheme()"><span>🎨 Temayı Değiştir</span> <kbd>[T]</kbd></div>
+                <div class="cmd-item" onclick="abortProcess()"><span>🛑 İşlemi İptal Et</span> <kbd>[Esc]</kbd></div>
+            </div>
+        </div>
     </div>
 
     <div class="portal-wrapper">
-        <div class="glass-card" id="main-card">
-            
-            <div class="hud-header">
-                <span class="hud-badge" id="hud-status">GATEWAY // AKTİF</span>
-                <div class="theme-selector">
-                    <div class="theme-btn active" style="background:#00f0ff" onclick="setTheme('cyan')" title="Aether Cyan"></div>
-                    <div class="theme-btn" style="background:#fbbf24" onclick="setTheme('amber')" title="Solar Amber"></div>
-                    <div class="theme-btn" style="background:#10b981" onclick="setTheme('emerald')" title="Emerald Matrix"></div>
-                    <div class="theme-btn" style="background:#f4f4f5" onclick="setTheme('stealth')" title="Stealth Obsidian"></div>
-                </div>
-            </div>
-
-            <h1 class="main-title">BORALANCES</h1>
-            <p class="sub-title" id="status-desc">Cloudflare Worker bulut sunucusuna yönlendiriliyorsunuz</p>
-
-            <div class="reactor-container">
-                <svg class="reactor-svg" viewBox="0 0 140 140">
-                    <circle class="reactor-track" cx="70" cy="70" r="60"></circle>
-                    <circle class="reactor-progress" id="reactor-progress" cx="70" cy="70" r="60"></circle>
-                </svg>
-                <div class="reactor-core">
-                    <span class="count-number" id="count-val">3</span>
-                    <span class="count-label" id="count-unit">SANİYE</span>
-                </div>
-            </div>
-
-            <div class="action-grid">
-                <button class="btn-action" id="pause-btn" onclick="togglePause()">
-                    <span id="pause-icon">⏸</span>
-                    <span id="pause-txt">DONDUR</span>
-                </button>
+        <div class="animated-border-box" id="card-box">
+            <div class="glass-card" id="glass-card">
+                <div class="card-spotlight" id="spotlight"></div>
                 
-                <button class="btn-action btn-danger" onclick="abortProcess()">
-                    <span>🛑</span>
-                    <span>İPTAL ET</span>
-                </button>
+                <div class="hud-header">
+                    <span class="hud-badge" id="hud-status">GATEWAY // AKTİF</span>
+                    <button class="cmd-btn" onclick="openCmdPalette()">Ctrl + K</button>
+                </div>
 
-                <button class="btn-action btn-primary" onclick="triggerWarp()">
-                    <span>⚡</span>
-                    <span>HEMEN GEÇ</span>
-                </button>
+                <h1 class="main-title">BORALANCES</h1>
+                <p class="sub-title" id="status-desc">Cloudflare Worker Gateway yönlendirmesi</p>
+
+                <div class="reactor-container">
+                    <svg class="reactor-svg" viewBox="0 0 140 140">
+                        <circle class="reactor-track" cx="70" cy="70" r="60"></circle>
+                        <circle class="reactor-progress" id="reactor-progress" cx="70" cy="70" r="60"></circle>
+                    </svg>
+                    <div class="reactor-core">
+                        <span class="count-number" id="count-val">3</span>
+                        <span class="count-label" id="count-unit">SANİYE</span>
+                    </div>
+                </div>
+
+                <div class="action-grid">
+                    <button class="btn-magnetic" id="pause-btn" onclick="togglePause()">
+                        <span id="pause-icon">⏸</span>
+                        <span id="pause-txt">DONDUR</span>
+                    </button>
+                    
+                    <button class="btn-magnetic btn-danger" onclick="abortProcess()">
+                        <span>🛑</span>
+                        <span>İPTAL ET</span>
+                    </button>
+
+                    <button class="btn-magnetic btn-primary" onclick="triggerWarp()">
+                        <span>⚡</span>
+                        <span>GEÇ</span>
+                    </button>
+                </div>
+
+                <a href="admin.html" style="color:#64748b; font-family:'Orbitron'; font-size:0.65rem; text-decoration:none; letter-spacing:0.1em" onclick="playSfx('click')">
+                    [ ADMIN PORTAL ]
+                </a>
+
+                <div class="mobile-gestures-hint">
+                    <span>📱 Kaydır: ⬆ Geç | ⬇ İptal | ➡ Tema</span>
+                </div>
+
             </div>
-
-            <a href="admin.html" class="admin-link" onclick="playSfx('click')">
-                [ ADMIN PORTAL YÖNETİMİ ]
-            </a>
-
-            <div class="interaction-hint">
-                <span>🖱 Sol Tık: Şok Dalgası</span>
-                <span>📱/🖱 Sağ Tık: HUD Menü</span>
-            </div>
-
         </div>
     </div>
 
@@ -641,15 +539,15 @@
         let isPaused = false;
         let isAborted = false;
         let audioActive = true;
-        
-        const themes = ['cyan', 'amber', 'emerald', 'stealth'];
+
+        const themes = ['default', 'obsidian', 'matrix', 'amber'];
         let currentThemeIdx = 0;
 
-        // Web Audio Synthesizer (SFX Engine)
+        // Web Audio Synthesizer Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        function triggerHaptic(duration = 15) {
-            if ("vibrate" in navigator) navigator.vibrate(duration);
+        function triggerHaptic(ms = 15) {
+            if ("vibrate" in navigator) navigator.vibrate(ms);
         }
 
         function playSfx(type) {
@@ -672,61 +570,36 @@
                 osc.start(); osc.stop(now + 0.08);
             } else if (type === 'click') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(1100, now);
+                osc.frequency.setValueAtTime(1200, now);
                 gain.gain.setValueAtTime(0.04, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
                 osc.start(); osc.stop(now + 0.05);
-            } else if (type === 'menu') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(500, now);
-                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.12);
-                gain.gain.setValueAtTime(0.05, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-                osc.start(); osc.stop(now + 0.12);
             } else if (type === 'abort') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(450, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.22);
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.25);
                 gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-                osc.start(); osc.stop(now + 0.22);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(); osc.stop(now + 0.25);
             } else if (type === 'warp') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(250, now);
-                osc.frequency.exponentialRampToValueAtTime(1500, now + 0.28);
+                osc.frequency.setValueAtTime(280, now);
+                osc.frequency.exponentialRampToValueAtTime(1600, now + 0.3);
                 gain.gain.setValueAtTime(0.08, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-                osc.start(); osc.stop(now + 0.28);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                osc.start(); osc.stop(now + 0.3);
             }
         }
 
         function toggleAudio() {
             audioActive = !audioActive;
-            const el = document.getElementById('sfx-val');
+            const el = document.getElementById('sfx-status');
             el.textContent = audioActive ? 'ON' : 'OFF';
-            el.style.color = audioActive ? 'var(--accent-success)' : 'var(--accent-danger)';
+            el.style.color = audioActive ? 'var(--accent-green)' : 'var(--accent-pink)';
             playSfx('click');
         }
 
-        // Tema Yönetimi
-        function setTheme(themeName) {
-            playSfx('click');
-            if (themeName === 'cyan') document.body.removeAttribute('data-theme');
-            else document.body.setAttribute('data-theme', themeName);
-
-            document.querySelectorAll('.theme-btn').forEach((btn, idx) => {
-                btn.classList.toggle('active', themes[idx] === themeName);
-            });
-            currentThemeIdx = themes.indexOf(themeName);
-        }
-
-        function cycleTheme() {
-            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
-            setTheme(themes[currentThemeIdx]);
-            hideContextMenu();
-        }
-
-        // Sayaç Mantığı
+        // Timer Logic
         const countVal = document.getElementById('count-val');
         const countUnit = document.getElementById('count-unit');
         const reactorProgress = document.getElementById('reactor-progress');
@@ -755,21 +628,20 @@
         function togglePause() {
             if (isAborted) return;
             isPaused = !isPaused;
-            hideContextMenu();
             playSfx('click');
 
             if (isPaused) {
                 pauseTxt.textContent = "DEVAM";
                 pauseIcon.textContent = "▶";
-                hudStatus.textContent = "GATEWAY // DONDURULDU";
-                statusDesc.textContent = "Aktarım işlemi kullanıcı tarafından duraklatıldı";
-                reactorProgress.style.stroke = "var(--accent-warning)";
+                hudStatus.textContent = "GATEWAY // PAUSED";
+                statusDesc.textContent = "Zamanlayıcı duraklatıldı";
+                reactorProgress.style.stroke = "var(--accent-amber)";
             } else {
                 pauseTxt.textContent = "DONDUR";
                 pauseIcon.textContent = "⏸";
                 hudStatus.textContent = "GATEWAY // AKTİF";
-                statusDesc.textContent = "Cloudflare Worker bulut sunucusuna yönlendiriliyorsunuz";
-                reactorProgress.style.stroke = "var(--accent-primary)";
+                statusDesc.textContent = "Cloudflare Worker Gateway yönlendirmesi";
+                reactorProgress.style.stroke = "var(--primary)";
             }
         }
 
@@ -777,94 +649,126 @@
             if (isAborted) return;
             isAborted = true;
             clearInterval(timer);
-            hideContextMenu();
             playSfx('abort');
 
             hudStatus.textContent = "GATEWAY // İPTAL EDİLDİ";
             hudStatus.classList.add('aborted');
-            statusDesc.textContent = "Bağlantı işlemi güvenli bir şekilde kesildi.";
-            statusDesc.style.color = "var(--accent-danger)";
+            statusDesc.textContent = "Yönlendirme iptal edildi.";
+            statusDesc.style.color = "var(--danger)";
 
             countVal.textContent = "OFF";
-            countVal.style.color = "var(--accent-danger)";
+            countVal.style.color = "var(--danger)";
             countUnit.textContent = "CANCELLED";
-            countUnit.style.color = "var(--accent-danger)";
+            countUnit.style.color = "var(--danger)";
 
             reactorProgress.style.strokeDashoffset = CIRCUMFERENCE;
-            reactorProgress.style.stroke = "var(--accent-danger)";
+            reactorProgress.style.stroke = "var(--danger)";
         }
 
         function triggerWarp() {
-            hideContextMenu();
             playSfx('warp');
             setTimeout(() => window.location.href = TARGET_URL, 180);
         }
 
-        // Tıklama Şok Dalgası ve Bağlam Menüsü
-        const hudMenu = document.getElementById('hud-menu');
-
-        document.addEventListener('pointerdown', (e) => {
-            if (e.button !== 2) {
-                const wave = document.createElement('div');
-                wave.className = 'click-wave';
-                wave.style.left = e.clientX + 'px';
-                wave.style.top = e.clientY + 'px';
-                document.body.appendChild(wave);
-                playSfx('click');
-                setTimeout(() => wave.remove(), 450);
-                hideContextMenu();
-            }
-        });
-
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            playSfx('menu');
-
-            let x = e.clientX;
-            let y = e.clientY;
-            const menuWidth = 220;
-            const menuHeight = 180;
-
-            if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 12;
-            if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 12;
-
-            hudMenu.style.left = x + 'px';
-            hudMenu.style.top = y + 'px';
-            hudMenu.classList.add('active');
-        });
-
-        function hideContextMenu() {
-            hudMenu.classList.remove('active');
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+            const theme = themes[currentThemeIdx];
+            if (theme === 'default') document.body.removeAttribute('data-theme');
+            else document.body.setAttribute('data-theme', theme);
+            playSfx('click');
         }
 
-        // Imleç ve Parallax Efekti
-        const cursor = document.getElementById('cyber-cursor');
-        const card = document.getElementById('main-card');
+        // Command Palette Logic
+        const cmdModal = document.getElementById('command-palette');
+        function openCmdPalette() {
+            cmdModal.classList.add('active');
+            document.getElementById('cmd-search').focus();
+            playSfx('click');
+        }
+        function closeCmdPalette() { cmdModal.classList.remove('active'); }
 
-        window.addEventListener('pointermove', (e) => {
-            if (cursor && window.matchMedia('(pointer: fine)').matches) {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                cmdModal.classList.contains('active') ? closeCmdPalette() : openCmdPalette();
+            } else if (e.key === 'Escape') {
+                closeCmdPalette();
             }
-
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-
-            const xAxis = (window.innerWidth / 2 - e.clientX) / 45;
-            const yAxis = (window.innerHeight / 2 - e.clientY) / 45;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 
-        // Arka Plan Canvas Animasyonu
+        // 3D Magnetic & Tilt Lerp Engine
+        const cardBox = document.getElementById('card-box');
+        const glassCard = document.getElementById('glass-card');
+        const spotlight = document.getElementById('spotlight');
+        const cursor = document.getElementById('cyber-cursor');
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+        let cardX = 0, cardY = 0;
+
+        window.addEventListener('pointermove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+
+            if (cursor && window.matchMedia('(pointer: fine)').matches) {
+                cursor.style.left = mouseX + 'px';
+                cursor.style.top = mouseY + 'px';
+            }
+
+            const rect = glassCard.getBoundingClientRect();
+            spotlight.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+            spotlight.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        });
+
+        // Magnetic Buttons Logic
+        document.querySelectorAll('.btn-magnetic').forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate3d(${x * 0.25}px, ${y * 0.25}px, 0)`;
+                if (cursor) cursor.classList.add('hovering');
+            });
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate3d(0, 0, 0)';
+                if (cursor) cursor.classList.remove('hovering');
+            });
+        });
+
+        // Click Shockwave Effect
+        document.addEventListener('pointerdown', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'click-ripple';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            playSfx('click');
+            setTimeout(() => ripple.remove(), 450);
+        });
+
+        // Mobile Touch Gestures (Swipe Detection)
+        let touchStartX = 0, touchStartY = 0;
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, {passive: true});
+
+        document.addEventListener('touchend', e => {
+            const diffX = e.changedTouches[0].screenX - touchStartX;
+            const diffY = e.changedTouches[0].screenY - touchStartY;
+
+            if (Math.abs(diffY) > Math.abs(diffX)) {
+                if (diffY < -60) triggerWarp(); // Swipe Up -> Warp
+                else if (diffY > 60) abortProcess(); // Swipe Down -> Cancel
+            } else {
+                if (Math.abs(diffX) > 60) cycleTheme(); // Swipe Horizontal -> Theme
+            }
+        }, {passive: true});
+
+        // Canvas Starfield Engine
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
-        let particles = [];
-        let lastFrameTime = performance.now();
-        let frames = 0;
+        let stars = [];
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -873,49 +777,52 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const particleCount = window.innerWidth < 480 ? 80 : 150;
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
+        for (let i = 0; i < (window.innerWidth < 480 ? 70 : 130); i++) {
+            stars.push({
                 x: (Math.random() - 0.5) * canvas.width * 2,
                 y: (Math.random() - 0.5) * canvas.height * 2,
                 z: Math.random() * canvas.width
             });
         }
 
-        function renderEngine(now) {
-            frames++;
-            if (now - lastFrameTime >= 1000) {
-                document.getElementById('fps-val').textContent = frames;
-                document.getElementById('ping-val').textContent = Math.floor(Math.random() * 3 + 12) + 'ms';
-                frames = 0;
-                lastFrameTime = now;
-            }
+        function render() {
+            // Smooth Card Tilt Interpolation
+            const targetX = (window.innerWidth / 2 - mouseX) / 35;
+            const targetY = (window.innerHeight / 2 - mouseY) / 35;
+            cardX += (targetX - cardX) * 0.1;
+            cardY += (targetY - cardY) * 0.1;
+            cardBox.style.transform = `rotateY(${cardX}deg) rotateX(${-cardY}deg)`;
 
-            ctx.fillStyle = "rgba(3, 7, 18, 0.38)";
+            // Mini Sys Graph Animation
+            document.getElementById('b1').style.height = `${30 + Math.random() * 50}%`;
+            document.getElementById('b2').style.height = `${40 + Math.random() * 50}%`;
+            document.getElementById('b3').style.height = `${20 + Math.random() * 60}%`;
+
+            ctx.fillStyle = "rgba(3, 7, 18, 0.4)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
 
-            particles.forEach(p => {
-                p.z -= isPaused || isAborted ? 0.5 : 3.2;
-                if (p.z <= 0) p.z = canvas.width;
+            stars.forEach(s => {
+                s.z -= isPaused || isStopped ? 0.6 : 3.5;
+                if (s.z <= 0) s.z = canvas.width;
 
-                const k = 128 / p.z;
-                const px = p.x * k + cx;
-                const py = p.y * k + cy;
+                const k = 128 / s.z;
+                const px = s.x * k + cx;
+                const py = s.y * k + cy;
 
                 if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
-                    const size = (1 - p.z / canvas.width) * 2.2;
+                    const size = (1 - s.z / canvas.width) * 2.2;
                     ctx.beginPath();
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent-primary');
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
                     ctx.arc(px, py, size, 0, Math.PI * 2);
                     ctx.fill();
                 }
             });
-            requestAnimationFrame(renderEngine);
+            requestAnimationFrame(render);
         }
-        requestAnimationFrame(renderEngine);
+        requestAnimationFrame(render);
     </script>
 </body>
 </html>
