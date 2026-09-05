@@ -2,34 +2,73 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BORALANCES OS // MOUSE INTERACTIVE GATEWAY</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BORALANCES OS // PRO GATEWAY v6.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
     
     <style>
+        /* ==========================================================================
+           1. GELİŞMİŞ TEMA SİSTEMİ & DEĞİŞKENLER
+           ========================================================================== */
         :root {
-            --cyan: #00f3ff;
-            --magenta: #ff0055;
-            --yellow: #ffe600;
-            --green: #00ff88;
-            --bg-dark: #02040a;
-            --glass-bg: rgba(6, 11, 25, 0.75);
-            --accent-glow: rgba(0, 243, 255, 0.4);
+            --bg-base: #030712;
+            --accent-primary: #00f0ff;
+            --accent-secondary: #6366f1;
+            --accent-danger: #ff2a6d;
+            --accent-warning: #f59e0b;
+            --accent-success: #10b981;
+            
+            --glass-bg: rgba(10, 16, 32, 0.72);
+            --glass-border: rgba(0, 240, 255, 0.22);
+            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 240, 255, 0.15);
+            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 240, 255, 0.12), transparent 40%);
+            
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-tech: 'Orbitron', sans-serif;
+            --font-code: 'Fira Code', monospace;
         }
 
-        body[data-theme="obsidian"] {
-            --cyan: #a855f7;
-            --magenta: #ec4899;
-            --accent-glow: rgba(168, 85, 247, 0.4);
-        }
-        body[data-theme="matrix"] {
-            --cyan: #00ff88;
-            --magenta: #00b894;
-            --accent-glow: rgba(0, 255, 136, 0.4);
+        /* Tema 2: Solar Amber (Kurumsal Altın) */
+        body[data-theme="amber"] {
+            --bg-base: #080a0f;
+            --accent-primary: #fbbf24;
+            --accent-secondary: #f97316;
+            --accent-danger: #ef4444;
+            --glass-bg: rgba(20, 16, 10, 0.75);
+            --glass-border: rgba(251, 191, 36, 0.25);
+            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(251, 191, 36, 0.15);
+            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(251, 191, 36, 0.12), transparent 40%);
         }
 
+        /* Tema 3: Emerald Matrix (Siber Yeşil) */
+        body[data-theme="emerald"] {
+            --bg-base: #020d08;
+            --accent-primary: #10b981;
+            --accent-secondary: #06b6d4;
+            --accent-danger: #ff2a6d;
+            --glass-bg: rgba(6, 20, 15, 0.75);
+            --glass-border: rgba(16, 185, 129, 0.25);
+            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(16, 185, 129, 0.15);
+            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(16, 185, 129, 0.12), transparent 40%);
+        }
+
+        /* Tema 4: Stealth Obsidian (Minimal Karbon) */
+        body[data-theme="stealth"] {
+            --bg-base: #09090b;
+            --accent-primary: #f4f4f5;
+            --accent-secondary: #71717a;
+            --accent-danger: #ff2a6d;
+            --glass-bg: rgba(18, 18, 22, 0.8);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --glass-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
+            --card-glow: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.08), transparent 40%);
+        }
+
+        /* ==========================================================================
+           2. TEMEL TEMİZLİK VE MOBİL SIFIRLAMA
+           ========================================================================== */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -38,343 +77,473 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f8fafc;
-            min-height: 100vh;
-            min-height: 100dvh;
-            width: 100vw;
+        html, body {
+            width: 100%;
+            height: 100%;
             overflow: hidden;
+            background-color: var(--bg-base);
+            font-family: var(--font-main);
+            color: #f8fafc;
+            transition: background-color 0.4s ease;
+        }
+
+        body {
             display: flex;
             align-items: center;
             justify-content: center;
-            perspective: 1000px;
-            padding: 16px 12px;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
+        /* Masaüstünde Custom Cursor, Mobilde Gizli */
         @media (pointer: fine) {
-            * { cursor: none; }
+            * { cursor: none !important; }
             #cyber-cursor {
                 position: fixed;
-                width: 26px;
-                height: 26px;
-                border: 2px solid var(--cyan);
+                width: 24px;
+                height: 24px;
+                border: 2px solid var(--accent-primary);
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 9999;
                 transform: translate(-50%, -50%);
-                mix-blend-mode: difference;
-                transition: width 0.1s, height 0.1s, border-color 0.2s;
+                transition: width 0.15s, height 0.15s, border-color 0.2s, background-color 0.2s;
             }
             #cyber-cursor::after {
                 content: '';
                 position: absolute;
                 top: 50%; left: 50%;
                 width: 4px; height: 4px;
-                background: var(--magenta);
+                background: var(--accent-secondary);
                 border-radius: 50%;
                 transform: translate(-50%, -50%);
             }
             #cyber-cursor.active {
-                width: 36px;
-                height: 36px;
-                border-color: var(--magenta);
+                width: 38px;
+                height: 38px;
+                border-color: var(--accent-danger);
+                background: rgba(255, 42, 109, 0.1);
             }
         }
 
         @media (pointer: coarse) {
-            #cyber-cursor { display: none; }
+            #cyber-cursor { display: none !important; }
         }
 
+        /* Arka Plan Canvas & Izgara */
         #canvas-bg {
             position: fixed;
             inset: 0;
             z-index: 1;
         }
 
-        .crt-scanlines {
+        .bg-grid {
             position: fixed;
             inset: 0;
             z-index: 2;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 6px 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
             pointer-events: none;
         }
 
-        /* Özel Sağ Tık Cyberpunk HUD Bağlam Menüsü */
-        #hud-context-menu {
-            position: fixed;
-            z-index: 10000;
-            width: 200px;
-            background: rgba(6, 11, 25, 0.9);
-            backdrop-filter: blur(20px) saturate(200%);
-            border: 1px solid var(--cyan);
-            border-radius: 14px;
-            padding: 8px;
-            box-shadow: 0 0 25px var(--accent-glow);
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            transform: scale(0.95);
-            opacity: 0;
-            transition: transform 0.15s ease, opacity 0.15s ease;
-        }
-
-        #hud-context-menu.visible {
-            display: flex;
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .menu-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.6rem;
-            color: var(--cyan);
-            letter-spacing: 0.15em;
-            padding: 6px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 4px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            color: #f8fafc;
-            background: transparent;
-            border: none;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .menu-item:hover {
-            background: rgba(0, 243, 255, 0.15);
-            color: var(--cyan);
-            transform: translateX(4px);
-        }
-
-        .menu-item.danger:hover {
-            background: rgba(255, 0, 85, 0.2);
-            color: var(--magenta);
-        }
-
-        /* Sol Tık Şok Dalgası Efekti */
-        .click-ripple {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--cyan);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%) scale(0.5);
-            animation: ripple-anim 0.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
-        }
-
-        @keyframes ripple-anim {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(3.5); border-color: var(--magenta); }
-        }
-
-        /* Telemetri Barı */
+        /* ==========================================================================
+           3. PRO TELEMETRİ BARI (MOBİL UYUMLU DOKUNMATİK TEPKİLER)
+           ========================================================================== */
         .telemetry-bar {
             position: fixed;
-            top: 12px;
+            top: max(12px, env(safe-area-inset-top));
             left: 12px;
             right: 12px;
-            z-index: 20;
+            z-index: 30;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-family: 'Fira Code', monospace;
-            font-size: clamp(0.55rem, 2.5vw, 0.7rem);
-            color: rgba(255, 255, 255, 0.6);
+            font-family: var(--font-code);
+            font-size: clamp(0.6rem, 2.2vw, 0.72rem);
+            pointer-events: none;
         }
 
-        .telemetry-item {
+        .telemetry-group {
+            display: flex;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .telemetry-pill {
             display: flex;
             align-items: center;
-            gap: 4px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(8px);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            gap: 6px;
+            background: rgba(10, 15, 28, 0.65);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s;
         }
 
-        /* Glass Container */
-        .glass-portal {
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--accent-success);
+            box-shadow: 0 0 8px var(--accent-success);
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        /* ==========================================================================
+           4. ANA PORTAL KARTI (GLASSMORPHISM & MIKRO ANİMASYONLAR)
+           ========================================================================== */
+        .portal-wrapper {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 440px;
-            margin: auto;
-            padding: 2px;
-            border-radius: 28px;
-            background: linear-gradient(135deg, var(--cyan), transparent 40%, var(--magenta));
-            box-shadow: 0 0 30px var(--accent-glow);
-            transition: transform 0.15s ease-out;
+            max-width: 450px;
+            padding: 0 12px;
+            perspective: 1200px;
         }
 
         .glass-card {
             position: relative;
             background: var(--glass-bg);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 26px;
-            padding: clamp(20px, 5vw, 32px) clamp(16px, 4vw, 24px);
+            backdrop-filter: blur(30px) saturate(200%);
+            -webkit-backdrop-filter: blur(30px) saturate(200%);
+            border-radius: 32px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            padding: clamp(22px, 5vw, 36px) clamp(18px, 4.5vw, 28px);
             text-align: center;
             overflow: hidden;
+            transition: border-color 0.4s, box-shadow 0.4s, transform 0.15s ease-out;
         }
 
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--card-glow);
+            pointer-events: none;
+            transition: background 0.3s ease;
+        }
+
+        /* HUD Header & Tema Seçici */
         .hud-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
-        .hud-tag {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(0.55rem, 2.2vw, 0.65rem);
-            letter-spacing: 0.1em;
-            color: var(--cyan);
-            background: rgba(0, 243, 255, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            border: 1px solid var(--cyan);
+        .hud-badge {
+            font-family: var(--font-tech);
+            font-size: clamp(0.58rem, 2vw, 0.65rem);
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.15);
+            transition: all 0.3s;
         }
 
-        .hud-tag.aborted {
-            color: var(--magenta);
-            border-color: var(--magenta);
-            background: rgba(255, 0, 85, 0.15);
+        .hud-badge.aborted {
+            color: var(--accent-danger);
+            border-color: var(--accent-danger);
+            box-shadow: 0 0 12px rgba(255, 42, 109, 0.25);
         }
 
         .theme-selector {
             display: flex;
             gap: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px 8px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .theme-dot {
-            width: 16px;
-            height: 16px;
+
+        .theme-btn {
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            border: 2px solid transparent;
             cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            touch-action: manipulation;
         }
 
-        .glitch-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.4rem, 6vw, 1.9rem);
+        .theme-btn:active, .theme-btn.active {
+            transform: scale(1.25);
+            border-color: #ffffff;
+        }
+
+        /* Başlık Yapısı */
+        .main-title {
+            font-family: var(--font-tech);
+            font-size: clamp(1.6rem, 6.5vw, 2.2rem);
             font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 12px var(--cyan);
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
+            color: #ffffff;
+            text-shadow: 0 0 20px var(--accent-primary);
+            margin-bottom: 4px;
         }
 
-        .subtitle {
-            font-size: clamp(0.75rem, 3vw, 0.88rem);
+        .sub-title {
+            font-size: clamp(0.8rem, 2.8vw, 0.92rem);
+            font-weight: 500;
             color: #94a3b8;
-            margin-top: 4px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            line-height: 1.4;
         }
 
-        .reactor-box {
+        /* ==========================================================================
+           5. REAKTÖR SAYAC VE ANİMASYON HAKALARI
+           ========================================================================== */
+        .reactor-container {
             position: relative;
-            width: clamp(110px, 30vw, 140px);
-            height: clamp(110px, 30vw, 140px);
-            margin: 0 auto 20px auto;
+            width: clamp(120px, 32vw, 150px);
+            height: clamp(120px, 32vw, 150px);
+            margin: 0 auto 24px auto;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .reactor-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        .reactor-track { stroke: rgba(255, 255, 255, 0.05); stroke-width: 8; fill: none; }
-        .reactor-fill {
-            stroke: var(--cyan);
-            stroke-width: 8; fill: none;
+        .reactor-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .reactor-track {
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 7;
+            fill: none;
+        }
+
+        .reactor-progress {
+            stroke: var(--accent-primary);
+            stroke-width: 7;
+            fill: none;
             stroke-linecap: round;
             stroke-dasharray: 377;
             stroke-dashoffset: 0;
             transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+            filter: drop-shadow(0 0 8px var(--accent-primary));
         }
 
-        .reactor-core { position: absolute; display: flex; flex-direction: column; align-items: center; }
-        .count-val {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1.8rem, 8vw, 2.3rem);
+        .reactor-core {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .count-number {
+            font-family: var(--font-tech);
+            font-size: clamp(2rem, 8vw, 2.6rem);
             font-weight: 900;
-            color: #fff;
+            color: #ffffff;
             line-height: 1;
-        }
-        .count-unit {
-            font-family: 'Fira Code', monospace;
-            font-size: clamp(0.5rem, 2vw, 0.6rem);
-            color: var(--cyan);
-            letter-spacing: 0.15em;
-            margin-top: 4px;
+            text-shadow: 0 0 15px var(--accent-primary);
         }
 
-        .control-panel {
+        .count-label {
+            font-family: var(--font-code);
+            font-size: clamp(0.55rem, 2vw, 0.65rem);
+            font-weight: 700;
+            color: var(--accent-primary);
+            letter-spacing: 0.2em;
+            margin-top: 6px;
+        }
+
+        /* ==========================================================================
+           6. ULTRA UYUMLU MOBİL/MASAÜSTÜ AKSİYON BUTONLARI
+           ========================================================================== */
+        .action-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            margin-bottom: 16px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .cyber-btn {
-            padding: 12px 4px;
-            border-radius: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(0.6rem, 2.4vw, 0.68rem);
-            font-weight: 700;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            text-decoration: none;
+        @media (max-width: 360px) {
+            .action-grid { grid-template-columns: 1fr; }
+        }
+
+        .btn-action {
+            min-height: 48px;
+            padding: 10px 8px;
+            border-radius: 14px;
+            font-family: var(--font-tech);
+            font-size: clamp(0.62rem, 2.3vw, 0.7rem);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 4px;
             touch-action: manipulation;
-            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .cyber-btn:active {
-            transform: scale(0.96);
-            background: rgba(0, 243, 255, 0.25);
+        .btn-action:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.15);
         }
 
-        .cyber-btn-stop {
-            background: rgba(255, 0, 85, 0.1);
-            border-color: rgba(255, 0, 85, 0.3);
-            color: var(--magenta);
+        @media (pointer: fine) {
+            .btn-action:hover {
+                background: rgba(0, 240, 255, 0.15);
+                border-color: var(--accent-primary);
+                box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+                transform: translateY(-2px);
+            }
         }
 
-        .cyber-btn-accent {
-            background: linear-gradient(135deg, var(--cyan), var(--magenta));
+        .btn-danger {
+            background: rgba(255, 42, 109, 0.08);
+            border-color: rgba(255, 42, 109, 0.25);
+            color: var(--accent-danger);
+        }
+
+        @media (pointer: fine) {
+            .btn-danger:hover {
+                background: rgba(255, 42, 109, 0.25);
+                border-color: var(--accent-danger);
+                box-shadow: 0 0 20px rgba(255, 42, 109, 0.35);
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             border: none;
+            color: #000000;
+            font-weight: 900;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
         }
 
-        .mouse-guide {
+        .admin-link {
+            display: inline-block;
+            font-family: var(--font-tech);
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #64748b;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .admin-link:active, .admin-link:hover {
+            color: var(--accent-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .interaction-hint {
             display: flex;
             justify-content: center;
             gap: 12px;
-            font-family: 'Fira Code', monospace;
+            font-family: var(--font-code);
             font-size: 0.62rem;
-            color: #64748b;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #475569;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* ==========================================================================
+           7. AKILLI CONTEXT MENU (SAĞ TIK / MOBİL UZUN BASMA)
+           ========================================================================== */
+        #hud-menu {
+            position: fixed;
+            z-index: 10000;
+            width: min(220px, 80vw);
+            background: rgba(8, 12, 22, 0.88);
+            backdrop-filter: blur(25px) saturate(200%);
+            -webkit-backdrop-filter: blur(25px) saturate(200%);
+            border: 1px solid var(--accent-primary);
+            border-radius: 16px;
+            padding: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.2);
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+        }
+
+        #hud-menu.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .menu-head {
+            font-family: var(--font-tech);
+            font-size: 0.6rem;
+            font-weight: 800;
+            color: var(--accent-primary);
+            letter-spacing: 0.15em;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 2px;
+        }
+
+        .menu-opt {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-family: var(--font-main);
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            background: transparent;
+            border: none;
+            text-align: left;
+            touch-action: manipulation;
+        }
+
+        .menu-opt:active, .menu-opt:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--accent-primary);
+        }
+
+        .menu-opt.danger { color: var(--accent-danger); }
+        .menu-opt.danger:active, .menu-opt.danger:hover { background: rgba(255, 42, 109, 0.15); }
+
+        /* Sol Tık Dalga Efekti */
+        .click-wave {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%) scale(1);
+            animation: wave-expand 0.45s cubic-bezier(0, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes wave-expand {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(6); border-color: var(--accent-secondary); }
         }
     </style>
 </head>
@@ -382,101 +551,110 @@
 
     <div id="cyber-cursor"></div>
     <canvas id="canvas-bg"></canvas>
-    <div class="crt-scanlines"></div>
-
-    <div id="hud-context-menu">
-        <div class="menu-title">HUD QUICK ACTIONS</div>
-        <button class="menu-item" onclick="executeWarp()">⚡ WARP SPEED (GEÇ)</button>
-        <button class="menu-item" onclick="togglePause()">⏸ DONDUR / DEVAM</button>
-        <button class="menu-item" onclick="cycleTheme()">🎨 TEMA DEĞİŞTİR</button>
-        <button class="menu-item danger" onclick="stopRedirect()">🛑 SİSTEMİ İPTAL ET</button>
-    </div>
+    <div class="bg-grid"></div>
 
     <div class="telemetry-bar">
-        <div class="telemetry-item">
-            <span>FPS:</span> <span id="fps-val" style="color:var(--green)">60</span>
+        <div class="telemetry-group">
+            <div class="telemetry-pill">
+                <div class="status-dot"></div>
+                <span>FPS: <strong id="fps-val" style="color:#fff">60</strong></span>
+            </div>
+            <div class="telemetry-pill">
+                <span>PING: <strong id="ping-val" style="color:var(--accent-primary)">14ms</strong></span>
+            </div>
         </div>
-        <div class="telemetry-item">
-            <span>PING:</span> <span id="ping-val" style="color:var(--cyan)">12ms</span>
-        </div>
-        <div class="telemetry-item" onclick="toggleAudio()">
-            <span>SFX:</span> <span id="sfx-status" style="color:var(--green)">ON</span>
+        <div class="telemetry-group">
+            <div class="telemetry-pill" onclick="toggleAudio()" style="cursor:pointer">
+                <span>SFX: <strong id="sfx-val" style="color:var(--accent-success)">ON</strong></span>
+            </div>
         </div>
     </div>
 
-    <div class="glass-portal" id="portal">
-        <div class="glass-card" id="card">
+    <div id="hud-menu">
+        <div class="menu-head">HUD HIZLI ERİŞİM</div>
+        <button class="menu-opt" onclick="triggerWarp()">⚡ ANINDA GEÇİŞ (WARP)</button>
+        <button class="menu-opt" onclick="togglePause()">⏸ DONDUR / DEVAM ET</button>
+        <button class="menu-opt" onclick="cycleTheme()">🎨 TEMA DEĞİŞTİR</button>
+        <button class="menu-opt danger" onclick="abortProcess()">🛑 SİSTEMİ İPTAL ET</button>
+    </div>
+
+    <div class="portal-wrapper">
+        <div class="glass-card" id="main-card">
             
             <div class="hud-header">
-                <span class="hud-tag" id="hud-status">GATEWAY // ACTIVE</span>
+                <span class="hud-badge" id="hud-status">GATEWAY // AKTİF</span>
                 <div class="theme-selector">
-                    <div class="theme-dot" style="background:#00f3ff" onclick="setTheme('default')"></div>
-                    <div class="theme-dot" style="background:#a855f7" onclick="setTheme('obsidian')"></div>
-                    <div class="theme-dot" style="background:#00ff88" onclick="setTheme('matrix')"></div>
+                    <div class="theme-btn active" style="background:#00f0ff" onclick="setTheme('cyan')" title="Aether Cyan"></div>
+                    <div class="theme-btn" style="background:#fbbf24" onclick="setTheme('amber')" title="Solar Amber"></div>
+                    <div class="theme-btn" style="background:#10b981" onclick="setTheme('emerald')" title="Emerald Matrix"></div>
+                    <div class="theme-btn" style="background:#f4f4f5" onclick="setTheme('stealth')" title="Stealth Obsidian"></div>
                 </div>
             </div>
 
-            <h1 class="glitch-title">BORALANCES</h1>
-            <p class="subtitle" id="status-desc">Cloudflare Worker Gateway yönlendirmesi</p>
+            <h1 class="main-title">BORALANCES</h1>
+            <p class="sub-title" id="status-desc">Cloudflare Worker bulut sunucusuna yönlendiriliyorsunuz</p>
 
-            <div class="reactor-box">
+            <div class="reactor-container">
                 <svg class="reactor-svg" viewBox="0 0 140 140">
                     <circle class="reactor-track" cx="70" cy="70" r="60"></circle>
-                    <circle class="reactor-fill" id="reactor-fill" cx="70" cy="70" r="60"></circle>
+                    <circle class="reactor-progress" id="reactor-progress" cx="70" cy="70" r="60"></circle>
                 </svg>
                 <div class="reactor-core">
-                    <span class="count-val" id="count-val">3</span>
-                    <span class="count-unit" id="count-unit">SECONDS</span>
+                    <span class="count-number" id="count-val">3</span>
+                    <span class="count-label" id="count-unit">SANİYE</span>
                 </div>
             </div>
 
-            <div class="control-panel">
-                <button class="cyber-btn" id="pause-btn" onclick="togglePause()">
+            <div class="action-grid">
+                <button class="btn-action" id="pause-btn" onclick="togglePause()">
                     <span id="pause-icon">⏸</span>
                     <span id="pause-txt">DONDUR</span>
                 </button>
                 
-                <button class="cyber-btn cyber-btn-stop" id="stop-btn" onclick="stopRedirect()">
+                <button class="btn-action btn-danger" onclick="abortProcess()">
                     <span>🛑</span>
                     <span>İPTAL ET</span>
                 </button>
 
-                <button class="cyber-btn cyber-btn-accent" onclick="executeWarp()">
+                <button class="btn-action btn-primary" onclick="triggerWarp()">
                     <span>⚡</span>
-                    <span>GEÇ</span>
+                    <span>HEMEN GEÇ</span>
                 </button>
             </div>
 
-            <a href="admin.html" style="color:#64748b; font-family:'Orbitron'; font-size:0.65rem; text-decoration:none; letter-spacing:0.1em" onclick="playSfx('click')">
-                [ ADMIN PORTAL ]
+            <a href="admin.html" class="admin-link" onclick="playSfx('click')">
+                [ ADMIN PORTAL YÖNETİMİ ]
             </a>
 
-            <div class="mouse-guide">
+            <div class="interaction-hint">
                 <span>🖱 Sol Tık: Şok Dalgası</span>
-                <span>🖱 Sağ Tık: HUD Menü</span>
+                <span>📱/🖱 Sağ Tık: HUD Menü</span>
             </div>
 
         </div>
     </div>
 
     <script>
-        const targetURL = "https://boralances.boranil400.workers.dev/";
+        const TARGET_URL = "https://boralances.boranil400.workers.dev/";
         let timeLeft = 3;
         let totalTime = 3;
         let isPaused = false;
-        let isStopped = false;
-        let audioEnabled = true;
-        let currentThemeIndex = 0;
-        const themes = ['default', 'obsidian', 'matrix'];
+        let isAborted = false;
+        let audioActive = true;
+        
+        const themes = ['cyan', 'amber', 'emerald', 'stealth'];
+        let currentThemeIdx = 0;
 
-        function triggerHaptic() {
-            if ("vibrate" in navigator) navigator.vibrate(15);
+        // Web Audio Synthesizer (SFX Engine)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function triggerHaptic(duration = 15) {
+            if ("vibrate" in navigator) navigator.vibrate(duration);
         }
 
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSfx(type) {
             triggerHaptic();
-            if (!audioEnabled) return;
+            if (!audioActive) return;
             if (audioCtx.state === 'suspended') audioCtx.resume();
 
             const osc = audioCtx.createOscillator();
@@ -484,134 +662,98 @@
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
+            const now = audioCtx.currentTime;
+
             if (type === 'beep') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.03, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(); osc.stop(now + 0.08);
             } else if (type === 'click') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.06);
+                osc.frequency.setValueAtTime(1100, now);
+                gain.gain.setValueAtTime(0.04, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(); osc.stop(now + 0.05);
             } else if (type === 'menu') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
-                gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
-            } else if (type === 'stop') {
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.12);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                osc.start(); osc.stop(now + 0.12);
+            } else if (type === 'abort') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.2);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+                osc.frequency.setValueAtTime(450, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.22);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+                osc.start(); osc.stop(now + 0.22);
             } else if (type === 'warp') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                osc.frequency.setValueAtTime(250, now);
+                osc.frequency.exponentialRampToValueAtTime(1500, now + 0.28);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+                osc.start(); osc.stop(now + 0.28);
             }
-        }
-
-        // Sol Tık Şok Dalgası Mantığı
-        document.addEventListener('pointerdown', (e) => {
-            // Sağ tık değilse şok dalgası üret
-            if (e.button !== 2) {
-                const ripple = document.createElement('div');
-                ripple.className = 'click-ripple';
-                ripple.style.left = e.clientX + 'px';
-                ripple.style.top = e.clientY + 'px';
-                document.body.appendChild(ripple);
-                
-                playSfx('click');
-
-                setTimeout(() => ripple.remove(), 500);
-
-                // HUD Menüsünü kapat
-                hideContextMenu();
-            }
-        });
-
-        // Sağ Tık Özel Bağlam Menüsü Mantığı
-        const contextMenu = document.getElementById('hud-context-menu');
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            playSfx('menu');
-
-            let x = e.clientX;
-            let y = e.clientY;
-
-            // Ekran sınırlarını aşmasını önle
-            if (x + 200 > window.innerWidth) x = window.innerWidth - 210;
-            if (y + 160 > window.innerHeight) y = window.innerHeight - 170;
-
-            contextMenu.style.left = x + 'px';
-            contextMenu.style.top = y + 'px';
-            contextMenu.classList.add('visible');
-        });
-
-        function hideContextMenu() {
-            contextMenu.classList.remove('visible');
-        }
-
-        function executeWarp() {
-            hideContextMenu();
-            playSfx('warp');
-            setTimeout(() => window.location.href = targetURL, 150);
-        }
-
-        function cycleTheme() {
-            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-            setTheme(themes[currentThemeIndex]);
-            hideContextMenu();
         }
 
         function toggleAudio() {
-            audioEnabled = !audioEnabled;
-            document.getElementById('sfx-status').textContent = audioEnabled ? 'ON' : 'OFF';
-            document.getElementById('sfx-status').style.color = audioEnabled ? 'var(--green)' : 'var(--magenta)';
-        }
-
-        function setTheme(theme) {
+            audioActive = !audioActive;
+            const el = document.getElementById('sfx-val');
+            el.textContent = audioActive ? 'ON' : 'OFF';
+            el.style.color = audioActive ? 'var(--accent-success)' : 'var(--accent-danger)';
             playSfx('click');
-            if (theme === 'default') document.body.removeAttribute('data-theme');
-            else document.body.setAttribute('data-theme', theme);
         }
 
+        // Tema Yönetimi
+        function setTheme(themeName) {
+            playSfx('click');
+            if (themeName === 'cyan') document.body.removeAttribute('data-theme');
+            else document.body.setAttribute('data-theme', themeName);
+
+            document.querySelectorAll('.theme-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', themes[idx] === themeName);
+            });
+            currentThemeIdx = themes.indexOf(themeName);
+        }
+
+        function cycleTheme() {
+            currentThemeIdx = (currentThemeIdx + 1) % themes.length;
+            setTheme(themes[currentThemeIdx]);
+            hideContextMenu();
+        }
+
+        // Sayaç Mantığı
         const countVal = document.getElementById('count-val');
         const countUnit = document.getElementById('count-unit');
-        const reactorFill = document.getElementById('reactor-fill');
+        const reactorProgress = document.getElementById('reactor-progress');
         const hudStatus = document.getElementById('hud-status');
         const statusDesc = document.getElementById('status-desc');
         const pauseTxt = document.getElementById('pause-txt');
         const pauseIcon = document.getElementById('pause-icon');
-        const circumference = 377;
+        const CIRCUMFERENCE = 377;
 
         const timer = setInterval(() => {
-            if (!isPaused && !isStopped) {
+            if (!isPaused && !isAborted) {
                 timeLeft--;
                 countVal.textContent = timeLeft;
                 playSfx('beep');
 
-                const offset = circumference - (timeLeft / totalTime) * circumference;
-                reactorFill.style.strokeDashoffset = offset;
+                const offset = CIRCUMFERENCE - (timeLeft / totalTime) * CIRCUMFERENCE;
+                reactorProgress.style.strokeDashoffset = offset;
 
                 if (timeLeft <= 0) {
                     clearInterval(timer);
-                    executeWarp();
+                    triggerWarp();
                 }
             }
         }, 1000);
 
         function togglePause() {
-            if (isStopped) return;
+            if (isAborted) return;
             isPaused = !isPaused;
             hideContextMenu();
             playSfx('click');
@@ -619,42 +761,85 @@
             if (isPaused) {
                 pauseTxt.textContent = "DEVAM";
                 pauseIcon.textContent = "▶";
-                hudStatus.textContent = "GATEWAY // PAUSED";
-                statusDesc.textContent = "Zamanlayıcı donduruldu";
-                reactorFill.style.stroke = "var(--yellow)";
+                hudStatus.textContent = "GATEWAY // DONDURULDU";
+                statusDesc.textContent = "Aktarım işlemi kullanıcı tarafından duraklatıldı";
+                reactorProgress.style.stroke = "var(--accent-warning)";
             } else {
                 pauseTxt.textContent = "DONDUR";
                 pauseIcon.textContent = "⏸";
-                hudStatus.textContent = "GATEWAY // ACTIVE";
-                statusDesc.textContent = "Cloudflare Worker Gateway yönlendirmesi";
-                reactorFill.style.stroke = "var(--cyan)";
+                hudStatus.textContent = "GATEWAY // AKTİF";
+                statusDesc.textContent = "Cloudflare Worker bulut sunucusuna yönlendiriliyorsunuz";
+                reactorProgress.style.stroke = "var(--accent-primary)";
             }
         }
 
-        function stopRedirect() {
-            if (isStopped) return;
-            isStopped = true;
+        function abortProcess() {
+            if (isAborted) return;
+            isAborted = true;
             clearInterval(timer);
             hideContextMenu();
-            playSfx('stop');
+            playSfx('abort');
 
-            hudStatus.textContent = "GATEWAY // ABORTED";
+            hudStatus.textContent = "GATEWAY // İPTAL EDİLDİ";
             hudStatus.classList.add('aborted');
-            statusDesc.textContent = "Yönlendirme iptal edildi.";
-            statusDesc.style.color = "var(--magenta)";
+            statusDesc.textContent = "Bağlantı işlemi güvenli bir şekilde kesildi.";
+            statusDesc.style.color = "var(--accent-danger)";
 
             countVal.textContent = "OFF";
-            countVal.style.color = "var(--magenta)";
+            countVal.style.color = "var(--accent-danger)";
             countUnit.textContent = "CANCELLED";
-            countUnit.style.color = "var(--magenta)";
+            countUnit.style.color = "var(--accent-danger)";
 
-            reactorFill.style.strokeDashoffset = circumference;
-            reactorFill.style.stroke = "var(--magenta)";
+            reactorProgress.style.strokeDashoffset = CIRCUMFERENCE;
+            reactorProgress.style.stroke = "var(--accent-danger)";
         }
 
-        // Pointer/Cursor Takibi
+        function triggerWarp() {
+            hideContextMenu();
+            playSfx('warp');
+            setTimeout(() => window.location.href = TARGET_URL, 180);
+        }
+
+        // Tıklama Şok Dalgası ve Bağlam Menüsü
+        const hudMenu = document.getElementById('hud-menu');
+
+        document.addEventListener('pointerdown', (e) => {
+            if (e.button !== 2) {
+                const wave = document.createElement('div');
+                wave.className = 'click-wave';
+                wave.style.left = e.clientX + 'px';
+                wave.style.top = e.clientY + 'px';
+                document.body.appendChild(wave);
+                playSfx('click');
+                setTimeout(() => wave.remove(), 450);
+                hideContextMenu();
+            }
+        });
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            playSfx('menu');
+
+            let x = e.clientX;
+            let y = e.clientY;
+            const menuWidth = 220;
+            const menuHeight = 180;
+
+            if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 12;
+            if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 12;
+
+            hudMenu.style.left = x + 'px';
+            hudMenu.style.top = y + 'px';
+            hudMenu.classList.add('active');
+        });
+
+        function hideContextMenu() {
+            hudMenu.classList.remove('active');
+        }
+
+        // Imleç ve Parallax Efekti
         const cursor = document.getElementById('cyber-cursor');
-        const portal = document.getElementById('portal');
+        const card = document.getElementById('main-card');
 
         window.addEventListener('pointermove', (e) => {
             if (cursor && window.matchMedia('(pointer: fine)').matches) {
@@ -662,17 +847,24 @@
                 cursor.style.top = e.clientY + 'px';
             }
 
-            const xAxis = (window.innerWidth / 2 - e.clientX) / 30;
-            const yAxis = (window.innerHeight / 2 - e.clientY) / 30;
-            portal.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+
+            const xAxis = (window.innerWidth / 2 - e.clientX) / 45;
+            const yAxis = (window.innerHeight / 2 - e.clientY) / 45;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
 
-        // Background Animation
+        // Arka Plan Canvas Animasyonu
         const canvas = document.getElementById('canvas-bg');
         const ctx = canvas.getContext('2d');
-        let stars = [];
-        let lastTime = performance.now();
-        let frameCount = 0;
+        let particles = [];
+        let lastFrameTime = performance.now();
+        let frames = 0;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -681,48 +873,49 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        for (let i = 0; i < (window.innerWidth < 480 ? 90 : 160); i++) {
-            stars.push({
+        const particleCount = window.innerWidth < 480 ? 80 : 150;
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
                 x: (Math.random() - 0.5) * canvas.width * 2,
                 y: (Math.random() - 0.5) * canvas.height * 2,
                 z: Math.random() * canvas.width
             });
         }
 
-        function render(now) {
-            frameCount++;
-            if (now - lastTime >= 1000) {
-                document.getElementById('fps-val').textContent = frameCount;
-                document.getElementById('ping-val').textContent = Math.floor(Math.random() * 4 + 10) + 'ms';
-                frameCount = 0;
-                lastTime = now;
+        function renderEngine(now) {
+            frames++;
+            if (now - lastFrameTime >= 1000) {
+                document.getElementById('fps-val').textContent = frames;
+                document.getElementById('ping-val').textContent = Math.floor(Math.random() * 3 + 12) + 'ms';
+                frames = 0;
+                lastFrameTime = now;
             }
 
-            ctx.fillStyle = "rgba(2, 4, 10, 0.35)";
+            ctx.fillStyle = "rgba(3, 7, 18, 0.38)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const cx = canvas.width / 2;
             const cy = canvas.height / 2;
 
-            stars.forEach(s => {
-                s.z -= isPaused || isStopped ? 0.6 : 3.5;
-                if (s.z <= 0) s.z = canvas.width;
+            particles.forEach(p => {
+                p.z -= isPaused || isAborted ? 0.5 : 3.2;
+                if (p.z <= 0) p.z = canvas.width;
 
-                const k = 128 / s.z;
-                const px = s.x * k + cx;
-                const py = s.y * k + cy;
+                const k = 128 / p.z;
+                const px = p.x * k + cx;
+                const py = p.y * k + cy;
 
                 if (px >= 0 && px <= canvas.width && py >= 0 && py <= canvas.height) {
-                    const size = (1 - s.z / canvas.width) * 2.2;
+                    const size = (1 - p.z / canvas.width) * 2.2;
                     ctx.beginPath();
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--cyan');
+                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--accent-primary');
                     ctx.arc(px, py, size, 0, Math.PI * 2);
                     ctx.fill();
                 }
             });
-            requestAnimationFrame(render);
+            requestAnimationFrame(renderEngine);
         }
-        requestAnimationFrame(render);
+        requestAnimationFrame(renderEngine);
     </script>
 </body>
 </html>
