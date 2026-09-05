@@ -3,78 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönlendiriliyorsunuz...</title>
+    <title>Yönlendiriliyor | Boralances</title>
     <style>
+        :root {
+            --primary: #ffffff;
+            --bg-gradient-1: #0f172a;
+            --bg-gradient-2: #3b82f6;
+            --bg-gradient-3: #8b5cf6;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            height: 100vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f4f4f9;
-            color: #333;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            background-size: 200% 200%;
+            animation: gradientMove 10s ease infinite;
+            color: var(--primary);
+            overflow: hidden;
         }
-        .container {
+
+        /* Arkaplan Animasyonu */
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism (Cam Efekti) Tasarım Sistemi */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
-            padding: 30px;
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 300px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: floatUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .redirect-text {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+
+        @keyframes floatUp {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: -0.025em;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
         }
-        .admin-link {
-            display: inline-block;
-            margin-top: 25px;
-            padding: 8px 16px;
-            background-color: #333;
-            color: #fff;
+
+        /* UX Geliştirmesi: İlerleme Çubuğu */
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transition: width 3s linear;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            margin: 20px 0;
+        }
+
+        /* Modern Admin Butonu */
+        .admin-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--primary);
             text-decoration: none;
-            border-radius: 6px;
+            border-radius: 12px;
             font-size: 0.9rem;
-            transition: background-color 0.3s ease;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
-        .admin-link:hover {
-            background-color: #555;
+
+        .admin-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .admin-btn svg {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
         }
     </style>
-    <script>
-        // 3 saniye (3000 ms) sonra ana siteye yönlendirir
-        setTimeout(function() {
-            window.location.href = "https://boralances.boranil400.workers.dev/";
-        }, 3000);
-    </script>
 </head>
 <body>
 
-<div class="container">
-    <div class="loader"></div>
-    <div class="redirect-text">
-        Siteye yönlendiriliyorsunuz...
-    </div>
-    
-    <hr style="border: 0; height: 1px; background: #eee; margin: 20px 0;">
-    
-    <a href="admin.html" class="admin-link">Admin Paneli</a>
-</div>
+    <div class="glass-card">
+        <div class="title">Bağlantı Kuruluyor</div>
+        <div class="subtitle">Güvenli bir şekilde hedefe yönlendiriliyorsunuz...</div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
 
+        <div class="divider"></div>
+        
+        <a href="admin.html" class="admin-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            </svg>
+            Admin Paneli
+        </a>
+    </div>
+
+    <script>
+        // Sayfa yüklendiğinde animasyonları ve zamanlayıcıyı senkronize olarak başlatır
+        window.onload = () => {
+            const progressBar = document.getElementById('progressBar');
+            
+            // Genişliği %100'e çek (CSS transition süresi boyunca yani 3 saniyede dolacak)
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+            }, 50);
+
+            // Progress bar'ın bitişiyle senkronize olarak 3 saniye sonra yönlendir
+            setTimeout(() => {
+                window.location.href = "https://boralances.boranil400.workers.dev/";
+            }, 3000);
+        };
+    </script>
 </body>
 </html>
